@@ -72,6 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)Dependencies\Directx\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\Directx\Lib\x86;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -151,14 +153,123 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AES.h" />
+    <ClInclude Include="Base64.h" />
+    <ClInclude Include="Basedef.h" />
+    <ClInclude Include="BlockKeyBoard.h" />
     <ClInclude Include="CPSock.h" />
+    <ClInclude Include="D3DDevice.h" />
+    <ClInclude Include="D3DSettings.h" />
+    <ClInclude Include="desbase64.h" />
+    <ClInclude Include="DirShow.h" />
+    <ClInclude Include="dsutil.h" />
+    <ClInclude Include="EventTranslator.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GeomObject.h" />
+    <ClInclude Include="JBlur.h" />
+    <ClInclude Include="md5.h" />
+    <ClInclude Include="MD5Checksum.h" />
+    <ClInclude Include="MeshManager.h" />
+    <ClInclude Include="Mission.h" />
+    <ClInclude Include="MrItemMix.h" />
+    <ClInclude Include="NewApp.h" />
+    <ClInclude Include="NewClientB.h" />
+    <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Quest.h" />
+    <ClInclude Include="RenderDevice.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SControl.h" />
+    <ClInclude Include="SControlContainer.h" />
+    <ClInclude Include="SGrid.h" />
+    <ClInclude Include="StackWalker.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="TimerManager.h" />
+    <ClInclude Include="TMArrow.h" />
+    <ClInclude Include="TMBike.h" />
+    <ClInclude Include="TMButterFly.h" />
+    <ClInclude Include="TMCamera.h" />
+    <ClInclude Include="TMCannon.h" />
+    <ClInclude Include="TMDemoScene.h" />
+    <ClInclude Include="TMDust.h" />
+    <ClInclude Include="TMEffect.h" />
+    <ClInclude Include="TMEffectBillBoard.h" />
+    <ClInclude Include="TMEffectBillBoard2.h" />
+    <ClInclude Include="TMEffectBillBoard3.h" />
+    <ClInclude Include="TMEffectBillBoard4.h" />
+    <ClInclude Include="TMEffectCharge.h" />
+    <ClInclude Include="TMEffectDust.h" />
+    <ClInclude Include="TMEffectFirework.h" />
+    <ClInclude Include="TMEffectGold.h" />
+    <ClInclude Include="TMEffectLevelUp.h" />
+    <ClInclude Include="TMEffectMesh.h" />
+    <ClInclude Include="TMEffectMeshRotate.h" />
+    <ClInclude Include="TMEffectParticle.h" />
+    <ClInclude Include="TMEffectSkinMesh.h" />
+    <ClInclude Include="TMEffectSpark.h" />
+    <ClInclude Include="TMEffectSpark2.h" />
+    <ClInclude Include="TMEffectStart.h" />
+    <ClInclude Include="TMEffectSWSwing.h" />
+    <ClInclude Include="TMFieldScene.h" />
+    <ClInclude Include="TMFireEffect.h" />
+    <ClInclude Include="TMFish.h" />
+    <ClInclude Include="TMFlail.h" />
+    <ClInclude Include="TMFloat.h" />
+    <ClInclude Include="TMFont2.h" />
+    <ClInclude Include="TMFont3.h" />
+    <ClInclude Include="TMGate.h" />
+    <ClInclude Include="TMGround.h" />
+    <ClInclude Include="TMHouse.h" />
+    <ClInclude Include="TMHuman.h" />
+    <ClInclude Include="TMItem.h" />
+    <ClInclude Include="TMLeaf.h" />
+    <ClInclude Include="TMLight.h" />
+    <ClInclude Include="TMLog.h" />
+    <ClInclude Include="TMMesh.h" />
+    <ClInclude Include="TMObject.h" />
     <ClInclude Include="TMProject.h" />
+    <ClInclude Include="TMRain.h" />
+    <ClInclude Include="TMScene.h" />
+    <ClInclude Include="TMSea.h" />
+    <ClInclude Include="TMSelectCharScene.h" />
+    <ClInclude Include="TMSelectServerScene.h" />
+    <ClInclude Include="TMShade.h" />
+    <ClInclude Include="TMShip.h" />
+    <ClInclude Include="TMSkillBash.h" />
+    <ClInclude Include="TMSkillCure.h" />
+    <ClInclude Include="TMSkillDoubleSwing.h" />
+    <ClInclude Include="TMSkillExplosion2.h" />
+    <ClInclude Include="TMSkillFire.h" />
+    <ClInclude Include="TMSkillFlash.h" />
+    <ClInclude Include="TMSkillFreezeBlade.h" />
+    <ClInclude Include="TMSkillHaste.h" />
+    <ClInclude Include="TMSkillHeal.h" />
+    <ClInclude Include="TMSkillHeavenDust.h" />
+    <ClInclude Include="TMSkillHolyTouch.h" />
+    <ClInclude Include="TMSkillIceSpear.h" />
+    <ClInclude Include="TMSkillJudgement.h" />
+    <ClInclude Include="TMSkillLusterFurnish.h" />
+    <ClInclude Include="TMSkillMagicArrow.h" />
+    <ClInclude Include="TMSkillMagicShield.h" />
+    <ClInclude Include="TMSkillMeteorStorm.h" />
+    <ClInclude Include="TMSkillPoison.h" />
+    <ClInclude Include="TMSkillSlowSlash.h" />
+    <ClInclude Include="TMSkillSnow.h" />
+    <ClInclude Include="TMSkillSpChange.h" />
+    <ClInclude Include="TMSkillSpeedUp.h" />
+    <ClInclude Include="TMSkillThunderBolt.h" />
+    <ClInclude Include="TMSkillTownPortal.h" />
+    <ClInclude Include="TMSkinMesh.h" />
+    <ClInclude Include="TMSky.h" />
+    <ClInclude Include="TMSun.h" />
+    <ClInclude Include="TMTree.h" />
+    <ClInclude Include="TMVideoWnd.h" />
+    <ClInclude Include="TreeNode.h" />
+    <ClInclude Include="UIBinary.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Basedef.cpp" />
     <ClCompile Include="CPSock.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

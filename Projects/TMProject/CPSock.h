@@ -5,6 +5,8 @@
 
 #define MAX_KEYWORD_QUEUE 16
 
+#define INIT_CODE 521270033
+
 class CPSock
 {
 public:
