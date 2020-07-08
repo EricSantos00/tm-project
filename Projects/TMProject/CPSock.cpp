@@ -95,7 +95,10 @@ unsigned int CPSock::StartListen(HWND hWnd, int ip, int port, int WSA)
 
 unsigned int CPSock::ConnectServer(char* HostAddr, int Port, int ip, int WSA)
 {
-	return 0;
+	sockaddr_in InAddr;
+	memset((char*)& InAddr, 0, sizeof(InAddr));
+	sockaddr_in local_sin;
+	memset((char*)& local_sin, 0, sizeof(local_sin));
 }
 
 unsigned int CPSock::SingleConnect(char* HostAddr, int Port, int ip, int WSA)

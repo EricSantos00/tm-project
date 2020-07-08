@@ -12,7 +12,7 @@ public:
 	~CPSock();
 
 	bool WSAInitialize();
-	unsigned int StartListen(HWND* hWnd, int ip, int port, int WSA);
+	unsigned int StartListen(HWND hWnd, int ip, int port, int WSA);
 	unsigned int ConnectServer(char* HostAddr, int Port, int ip, int WSA);
 	unsigned int SingleConnect(char* HostAddr, int Port, int ip, int WSA);
 	int Receive();
