@@ -97,6 +97,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>winmm.lib;d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -159,10 +160,12 @@
     <ClInclude Include="BlockKeyBoard.h" />
     <ClInclude Include="CPSock.h" />
     <ClInclude Include="D3DDevice.h" />
+    <ClInclude Include="D3DEnumeration.h" />
     <ClInclude Include="D3DSettings.h" />
     <ClInclude Include="desbase64.h" />
     <ClInclude Include="DirShow.h" />
     <ClInclude Include="dsutil.h" />
+    <ClInclude Include="DXUtil.h" />
     <ClInclude Include="EventTranslator.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GeomObject.h" />
@@ -271,6 +274,12 @@
   <ItemGroup>
     <ClCompile Include="Basedef.cpp" />
     <ClCompile Include="CPSock.cpp" />
+    <ClCompile Include="D3DEnumeration.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="DXUtil.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

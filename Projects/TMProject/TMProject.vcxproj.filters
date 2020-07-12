@@ -40,6 +40,12 @@
     <Filter Include="Header Files\Util">
       <UniqueIdentifier>{2e868618-a873-42be-baf9-1159ec60bc05}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{f3c911b3-0575-424a-84bc-96b248e1a8f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Core">
+      <UniqueIdentifier>{2b86938f-c51f-4db4-8a62-5dd1f180b31e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -384,6 +390,12 @@
     <ClInclude Include="UIBinary.h">
       <Filter>Header Files\Engine\UI</Filter>
     </ClInclude>
+    <ClInclude Include="DXUtil.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DEnumeration.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TMProject.cpp">
@@ -397,6 +409,12 @@
     </ClCompile>
     <ClCompile Include="Basedef.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUtil.cpp">
+      <Filter>Source Files\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DEnumeration.cpp">
+      <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
