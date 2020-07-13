@@ -116,10 +116,3 @@ enum class EGATE_STATE
 	EGATE_LOCKING = 0x6,
 };
 
-enum class PLAYSTATE
-{
-	Stopped = 0x0,
-	Paused = 0x1,
-	Running = 0x2,
-	Init = 0x3,
-};
