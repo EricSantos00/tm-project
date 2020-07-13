@@ -1,16 +1,18 @@
 #pragma once
 
 #include "D3DDevice.h"
+#include "Structures.h"
 
 class TMFont2;
 class TextureManager;
 class MeshManager;
+class GeomControl;
 
 class RenderDevice : public D3DDevice
 {
 public:
 	RenderDevice(DWORD dwScreenWidth, DWORD dwScreenHeight, DWORD dwBitCount, int bFullScreen);
-	~RenderDevice() override;
+	~RenderDevice();
 
 	int Initialize(HWND hWnd) override;
 

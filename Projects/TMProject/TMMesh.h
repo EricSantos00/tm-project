@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Structures.h"
+
 class TMMesh
 {
 public:

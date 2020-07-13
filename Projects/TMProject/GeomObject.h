@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Enums.h"
+
 class TMFont2;
+
 class GeomControl
 {
 public:

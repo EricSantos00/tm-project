@@ -168,6 +168,7 @@
     <ClInclude Include="DirShow.h" />
     <ClInclude Include="dsutil.h" />
     <ClInclude Include="DXUtil.h" />
+    <ClInclude Include="Enums.h" />
     <ClInclude Include="EventTranslator.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GeomObject.h" />
@@ -188,6 +189,7 @@
     <ClInclude Include="SControlContainer.h" />
     <ClInclude Include="SGrid.h" />
     <ClInclude Include="StackWalker.h" />
+    <ClInclude Include="Structures.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="TimerManager.h" />
