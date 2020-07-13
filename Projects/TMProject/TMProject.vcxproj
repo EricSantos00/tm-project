@@ -291,6 +291,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="RenderDevice.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TMMesh.cpp" />
     <ClCompile Include="TMProject.cpp" />
     <ClCompile Include="TMSkinMesh.cpp" />
