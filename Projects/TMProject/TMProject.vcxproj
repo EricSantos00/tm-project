@@ -296,6 +296,7 @@
     </ClCompile>
     <ClCompile Include="RenderDevice.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="TimerManager.cpp" />
     <ClCompile Include="TMMesh.cpp" />
     <ClCompile Include="TMProject.cpp" />
     <ClCompile Include="TMSkinMesh.cpp" />
