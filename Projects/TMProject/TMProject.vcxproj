@@ -158,6 +158,8 @@
     <ClInclude Include="Base64.h" />
     <ClInclude Include="Basedef.h" />
     <ClInclude Include="BlockKeyBoard.h" />
+    <ClInclude Include="CFrame.h" />
+    <ClInclude Include="CMesh.h" />
     <ClInclude Include="CPSock.h" />
     <ClInclude Include="D3DDevice.h" />
     <ClInclude Include="D3DEnumeration.h" />
@@ -273,6 +275,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basedef.cpp" />
+    <ClCompile Include="CFrame.cpp" />
+    <ClCompile Include="CMesh.cpp" />
     <ClCompile Include="CPSock.cpp" />
     <ClCompile Include="D3DEnumeration.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -286,7 +290,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TMMesh.cpp" />
     <ClCompile Include="TMProject.cpp" />
+    <ClCompile Include="TMSkinMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TMProject.rc" />

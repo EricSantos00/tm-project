@@ -5,5 +5,6 @@
 #include "framework.h"
 
 #include <Windows.h>
+#include <d3dx9.h>
 
 #endif //PCH_H

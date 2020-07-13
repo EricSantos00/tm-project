@@ -1,0 +1,5 @@
+#include "pch.h"
+#include "CFrame.h"
+#include "TMObject.h"
+#include "TMEffectSWSwing.h"
+#include "TMSkinMesh.h"
