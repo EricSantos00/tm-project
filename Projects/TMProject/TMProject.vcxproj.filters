@@ -46,6 +46,9 @@
     <Filter Include="Source Files\Engine\Core">
       <UniqueIdentifier>{2b86938f-c51f-4db4-8a62-5dd1f180b31e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{c528d729-989d-410d-8a9b-b9423f51f7a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -460,6 +463,12 @@
     </ClCompile>
     <ClCompile Include="JBlur.cpp">
       <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dsutil.cpp">
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
