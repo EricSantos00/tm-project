@@ -2,6 +2,12 @@
 
 #include <dinput.h>
 
+class IEventListener
+{
+public:
+	virtual int OnControlEvent(DWORD idwControlID, DWORD idwEvent) = 0;
+};
+
 class EventTranslator
 {
 public:
@@ -49,7 +55,6 @@ private:
 	IDirectInputDevice8* m_pMouseDevice;
 
 public:
-
 	int dx;
 	int dy;
 	int wheel;

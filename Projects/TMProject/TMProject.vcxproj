@@ -288,6 +288,7 @@
     </ClCompile>
     <ClCompile Include="EventTranslator.cpp" />
     <ClCompile Include="GeomObject.cpp" />
+    <ClCompile Include="JBlur.cpp" />
     <ClCompile Include="MeshManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
