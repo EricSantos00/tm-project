@@ -286,6 +286,7 @@
     <ClCompile Include="DXUtil.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="EventTranslator.cpp" />
     <ClCompile Include="GeomObject.cpp" />
     <ClCompile Include="MeshManager.cpp" />
     <ClCompile Include="pch.cpp">
