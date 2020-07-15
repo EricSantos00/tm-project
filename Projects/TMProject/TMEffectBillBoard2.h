@@ -1,14 +1,18 @@
 #pragma once
 
+#include "TMEffect.h"
+
+class TMVector3;
+
 class TMEffectBillBoard2 : public TMEffect
 {
 public:
     TMEffectBillBoard2(int nTextureIndex, unsigned int dwLifeTime, float fScaleX, float fScaleY, float fScaleZ, float fVelocity, unsigned int dwVel);
     virtual ~TMEffectBillBoard2();
 
-    virtual int Render();
+    int Render();
     virtual void SetColor(unsigned int dwColor);
-    virtual int FrameMove(unsigned int dwServerTime);
+    int FrameMove(unsigned int dwServerTime);
     virtual void SetLifeTime(unsigned int dwLifeTime);
 
 public:

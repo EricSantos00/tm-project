@@ -1,5 +1,26 @@
 #pragma once
 
+#include "TreeNode.h"
+
+//Need to check where this struct goes...
+struct RDTLVERTEX
+{
+	TMVector3 position;
+	float rhw;
+	unsigned int diffuse;
+	float tu;
+	float tv;
+};
+
+//Need to check where this struct goes...
+struct RDLVERTEX
+{
+	TMVector3 position;
+	unsigned int diffuse;
+	float tu;
+	float tv;
+};
+
 class TMEffect : public TreeNode
 {
 public:
