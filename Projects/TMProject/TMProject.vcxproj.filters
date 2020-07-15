@@ -539,6 +539,9 @@
     <ClCompile Include="TMFont3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TMShade.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TMProject.rc">

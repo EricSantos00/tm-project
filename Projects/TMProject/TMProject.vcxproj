@@ -324,6 +324,7 @@
     <ClCompile Include="TMLog.cpp" />
     <ClCompile Include="TMMesh.cpp" />
     <ClCompile Include="TMProject.cpp" />
+    <ClCompile Include="TMShade.cpp" />
     <ClCompile Include="TMSkinMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
