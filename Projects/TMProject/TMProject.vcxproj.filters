@@ -171,9 +171,6 @@
     <ClInclude Include="TMShip.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="TMShade.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="TMSelectServerScene.h">
       <Filter>Header Files\Engine\Scenes</Filter>
     </ClInclude>
@@ -417,6 +414,9 @@
     <ClInclude Include="Enums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TMShade.h">
+      <Filter>Header Files\Effects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TMProject.cpp">
@@ -540,7 +540,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TMShade.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
