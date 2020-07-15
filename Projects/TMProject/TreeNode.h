@@ -13,6 +13,7 @@ public:
 	virtual int OnDataEvent(unsigned int wParam, int lParam);
 	virtual int OnCommand(unsigned int dwID, int iCommand);
 	virtual int FrameMove(unsigned int dwServerTime);
+	virtual int Render();
 	virtual void RestoreDeviceObjects();
 	virtual void InvalidateDeviceObjects();
 	virtual void SetupGeomInformation(IVector2 ivCenterPos);

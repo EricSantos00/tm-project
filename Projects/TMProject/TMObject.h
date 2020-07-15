@@ -16,8 +16,8 @@ public:
 	virtual void SetPosition(float fX, float fY, float fZ);
 	virtual void SetAngle(float fYaw, float fPitch, float fRoll);
 
-	int FrameMove(unsigned int dwServerTime);
-	int Render();
+	int FrameMove(unsigned int dwServerTime) override;
+	int Render() override;
 
 	virtual int IsVisible();
 	virtual int IsInTown();
