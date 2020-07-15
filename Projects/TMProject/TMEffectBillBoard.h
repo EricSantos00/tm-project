@@ -1,26 +1,23 @@
 #pragma once
 
 #include "TMEffect.h"
-
-class TMVector3;
+#include "Structures.h"
 
 class TMShade;
-
 class TMEffectBillBoard : public TMEffect
 {
 public:
-	//Functions
-	TMEffectBillBoard(int nTextureIndex, unsigned int dwLifeTime, float fScaleX, float fScaleY, float fScaleZ, float fVelocity, int nCycleCount, int nCycleTime);
-	virtual ~TMEffectBillBoard();
+	TMEffectBillBoard(int nTextureIndex, unsigned int dwLifeTime, float fScaleX, float fScaleY, float fScaleZ, 
+		float fVelocity, int nCycleCount, int nCycleTime);
+	~TMEffectBillBoard();
 
-    int Render();
+    int Render() override;
     virtual void SetColor(unsigned int dwColor);
-    int FrameMove(unsigned int dwServerTime);
+    int FrameMove(unsigned int dwServerTime) override;
     virtual void SetLifeTime(unsigned int dwLifeTime);
     virtual void SetLightMap(unsigned int dwColor, int nSize);
 
 public:
-	//Variables
     RDLVERTEX m_vertex[4];
     TMVector3 m_vecScale;
     float m_fScaleVelX;

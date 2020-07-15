@@ -1,11 +1,7 @@
 #pragma once
 
 #include "TreeNode.h"
-
-//The TMEffect include is just to catch the RDLVERTEX struct...
-#include "TMEffect.h"
-
-class TMVector3;
+#include "Structures.h"
 
 struct Particle
 {
@@ -25,8 +21,8 @@ public:
     TMEffectFireWork(TMVector3 vecPositiont, int nType);
     ~TMEffectFireWork();
     
-    int FrameMove(unsigned int dwServerTime);
-    int Render();
+    int FrameMove(unsigned int dwServerTime) override;
+    int Render() override;
     Particle* SetParticle(Particle* result, unsigned short wType, float fLifeTime, TMVector3 vBasePosition, TMVector3 vBaseVelocity);
     void SetCustomFireWork(char* pBuffer);
 

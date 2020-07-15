@@ -1,16 +1,15 @@
 #pragma once
 
 #include "TMEffect.h"
-
-class TMVector3;
+#include "Structures.h"
 
 class TMEffectGold : public TMEffect
 {
 public:
     TMEffectGold(TMVector3 vecStart, float vecLiveTime);
     ~TMEffectGold();
-    int FrameMove(unsigned int dwServerTime);
-    int Render();
+    int FrameMove(unsigned int dwServerTime) override;
+    int Render() override;
 
 public:
     unsigned int m_dwStartTime;

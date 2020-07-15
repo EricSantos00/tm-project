@@ -3,17 +3,16 @@
 #include "TMEffect.h"
 
 class TMMesh;
-
 class TMEffectMesh : public TMEffect
 {
 public:
     TMEffectMesh(int nMeshIndex, unsigned int dwColor, float fAngle, int nType);
     ~TMEffectMesh();
 
-    int Render();
-    int FrameMove(unsigned int dwServerTime);
+    int Render() override;
+    int FrameMove(unsigned int dwServerTime) override;
     void SetColor(unsigned int dwColor);
-    int IsVisible();
+    int IsVisible() override;
     int IsInView();
 
 public:

@@ -1,34 +1,24 @@
 #pragma once
 
 #include "TreeNode.h"
+#include "Structures.h"
 
-//Need to check where this struct goes...
-struct RDTLVERTEX
+enum EEFFECT_ALPHATYPE
 {
-	TMVector3 position;
-	float rhw;
-	unsigned int diffuse;
-	float tu;
-	float tv;
-};
-
-//Need to check where this struct goes...
-struct RDLVERTEX
-{
-	TMVector3 position;
-	unsigned int diffuse;
-	float tu;
-	float tv;
+	EF_DEFAULT = 0x0,
+	EF_BRIGHT = 0x1,
+	EF_NONEBRIGHT = 0x2,
+	EF_ALPHA = 0x3,
 };
 
 class TMEffect : public TreeNode
 {
 public:
 	TMEffect();
-	virtual ~TMEffect();
+	~TMEffect();
 
-	virtual int Render();
-	virtual int FrameMove(unsigned int dwServerTime);
+	int Render() override;
+	int FrameMove(unsigned int dwServerTime) override;
 	virtual int IsVisible();
 
 public:

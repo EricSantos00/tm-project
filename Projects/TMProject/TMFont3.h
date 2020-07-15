@@ -2,6 +2,7 @@
 
 #include "TreeNode.h"
 #include "TMFont2.h"
+#include "Structures.h"
 
 struct stNum
 {
@@ -10,23 +11,22 @@ struct stNum
     int nTexIndex;
 };
 
-class IVector2;
-
 class TMFont3 : public TreeNode
 {
 public:
-    TMFont3(char* szText, int nStartX, int nStartY, unsigned int dwColor, float fSize, unsigned int dwDelay, __int16 sDir, unsigned int dwLifeTime, int bViewHalf, int nType);
+    TMFont3(char* szText, int nStartX, int nStartY, unsigned int dwColor, float fSize, unsigned int dwDelay,
+		short sDir, unsigned int dwLifeTime, int bViewHalf, int nType);
     ~TMFont3();
     
-    int Render();
-    int FrameMove(unsigned int dwServerTime);
+    int Render() override;
+    int FrameMove(unsigned int dwServerTime) override;
 
 public:
     int m_nStrLen;
     stNum m_stNum[11];
     int m_nType;
     int m_nTextureSetIndex;
-    __int16 m_sDir;
+    short m_sDir;
     IVector2 m_vecPosition;
     IVector2 m_vecStartPosition;
     unsigned int m_dwCreateTime;

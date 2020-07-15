@@ -1,17 +1,16 @@
 #pragma once
 
 #include "TreeNode.h"
+#include "Structures.h"
 
-class TMVector3;
 class TMObject;
-
 class TMFireEffect : public TreeNode
 {
 public:
     TMFireEffect(TMVector3 vecStart, TMObject* pTarget, int nTextureIndex);
     ~TMFireEffect();
     
-    int FrameMove(unsigned int dwServerTime);
+    int FrameMove(unsigned int dwServerTime) override;
 
 public:
     TMVector3 m_vecStartPos;

@@ -1,18 +1,17 @@
 #pragma once
 
 #include "TMEffect.h"
-
-class TMVector3;
+#include "Structures.h"
 
 class TMEffectBillBoard2 : public TMEffect
 {
 public:
     TMEffectBillBoard2(int nTextureIndex, unsigned int dwLifeTime, float fScaleX, float fScaleY, float fScaleZ, float fVelocity, unsigned int dwVel);
-    virtual ~TMEffectBillBoard2();
+    ~TMEffectBillBoard2();
 
-    int Render();
+    int Render() override;
     virtual void SetColor(unsigned int dwColor);
-    int FrameMove(unsigned int dwServerTime);
+    int FrameMove(unsigned int dwServerTime) override;
     virtual void SetLifeTime(unsigned int dwLifeTime);
 
 public:
@@ -32,5 +31,4 @@ public:
     unsigned int m_dwR;
     unsigned int m_dwG;
     unsigned int m_dwB;
-
 };

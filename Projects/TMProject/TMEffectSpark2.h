@@ -1,17 +1,17 @@
 #pragma once
 
 #include "TMEffect.h"
-#include "TMEffectBillBoard3.h"
+#include "Structures.h"
 
 class TMObject;
-
+class TMEffectBillBoard3;
 class TMEffectSpark2 : public TMEffect
 {
 public:
     TMEffectSpark2(TMObject* pTarget, unsigned int dwID, float fEffectStart, float fEffectLength, unsigned int dwColor, unsigned int dwColor2, float fWidth);
     ~TMEffectSpark2();
     
-    int FrameMove(unsigned int dwServerTime);
+    int FrameMove(unsigned int dwServerTime) override;
 
 public:
     float m_fWidth;

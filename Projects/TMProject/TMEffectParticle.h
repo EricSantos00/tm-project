@@ -1,18 +1,18 @@
 #pragma once
 
 #include "TMEffect.h"
-
-class TMVector3;
+#include "Structures.h"
 
 class TMEffectParticle : public TMEffect
 {
 public:
-    TMEffectParticle(TMVector3 vecPosition, int nType, int nCount, float fSize, unsigned int dwColor, int bRand, int nTextureIndex, float fRadius, int bBright, TMVector3 vecDir, unsigned int dwLifeTime);
+    TMEffectParticle(TMVector3 vecPosition, int nType, int nCount, float fSize, unsigned int dwColor,
+		int bRand, int nTextureIndex, float fRadius, int bBright, TMVector3 vecDir, unsigned int dwLifeTime);
     ~TMEffectParticle();
     
-    int Render();
-    int IsVisible();
-    int FrameMove(unsigned int dwServerTime);
+    int Render() override;
+    int IsVisible() override;
+    int FrameMove(unsigned int dwServerTime) override;
 
 public:
     unsigned int m_dwStartTime;

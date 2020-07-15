@@ -1,16 +1,18 @@
 #pragma once
 
 #include "TMEffect.h"
-#include "TMEffectBillBoard.h"
+#include "Structures.h"
 
+class TMEffectBillBoard;
+class TMSkinMesh;
 class TMEffectSWSwing : public TMEffect
 {
 public:
     TMEffectSWSwing();
     ~TMEffectSWSwing();
     
-    int Render();
-    int FrameMove(unsigned int dwServerTime);
+    int Render() override;
+    int FrameMove(unsigned int dwServerTime) override;
     virtual void SetColor(unsigned int dwColor);
 
 public:

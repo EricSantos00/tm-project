@@ -1,18 +1,18 @@
 #pragma once
 
 #include "TMEffect.h"
-#include "TMEffectBillBoard.h"
+#include "Structures.h"
 
 class TMObject;
-
+class TMEffectBillBoard;
 class TMEffectMeshRotate : public TMEffect
 {
 public:
     TMEffectMeshRotate(TMVector3 vecPosition, int nType, TMObject* pOwner, int bFire, int bCenter);
     ~TMEffectMeshRotate();
     
-    int Render();
-    int FrameMove(unsigned int dwServerTime);
+    int Render() override;
+    int FrameMove(unsigned int dwServerTime) override;
     void SetColor(unsigned int dwColor);
 
 public:

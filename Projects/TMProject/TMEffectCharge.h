@@ -3,17 +3,16 @@
 #include "TMEffect.h"
 
 class TMObject;
-
 class TMEffectCharge : public TMEffect
 {
 public:
     TMEffectCharge(TMObject* pParent, int nType, unsigned int dwColor);
     ~TMEffectCharge();
     
-    int Render();
-    int IsVisible();
+    int Render() override;
+    int IsVisible() override;
     virtual void SetColor(unsigned int dwColor);
-    int FrameMove(unsigned int dwServerTime);
+    int FrameMove(unsigned int dwServerTime) override;
 
 public:
     unsigned int m_dwStartTime;

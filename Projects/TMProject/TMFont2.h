@@ -20,6 +20,8 @@ public:
     char m_szString[256];
     char m_szStringArray[3][44];
     IDirect3DTexture9* m_pTexture;
+	static char m_pBuffer[32];
+	static int m_nLength;
     int m_nPosX;
     int m_nPosY;
 };

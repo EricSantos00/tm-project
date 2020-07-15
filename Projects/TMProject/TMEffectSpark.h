@@ -1,19 +1,18 @@
 #pragma once
 
 #include "TMEffect.h"
-#include "TMEffectBillBoard3.h"
+#include "Structures.h"
 
 class TMShade;
-
 class TMObject;
-
+class TMEffectBillBoard3;
 class TMEffectSpark : public TMEffect
 {
 public:
     TMEffectSpark(TMVector3 vecStart, TMObject* pTarget, TMVector3 vecEnd, unsigned int dwColor, unsigned int dwColor2, unsigned int dwLifeTime, float fWidth, int nSparkCount, float fProgress);
     ~TMEffectSpark();
     
-    int FrameMove(unsigned int dwServerTime);
+    int FrameMove(unsigned int dwServerTime) override;
     int SetLifeTime(unsigned int dwLifeTime);
 
 public:

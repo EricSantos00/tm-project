@@ -1,19 +1,18 @@
 #pragma once
 
 #include "TMEffect.h"
+#include "Structures.h"
 
-class TMVector3;
 class TMObject;
-
 class TMEffectStart : public TMEffect
 {
 public:
 	TMEffectStart(TMVector3 vecPosition, int nType, TMObject* pOwner);
 	~TMEffectStart();
 	
-	int Render();
-	int IsVisible();
-	int FrameMove(unsigned int dwServerTime);
+	int Render() override;
+	int IsVisible() override;
+	int FrameMove(unsigned int dwServerTime) override;
 
 public:
 	unsigned int m_dwStartTime;

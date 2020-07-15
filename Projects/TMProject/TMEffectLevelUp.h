@@ -1,14 +1,15 @@
 #pragma once
 
-class TMVector3;
+#include "TMEffect.h"
+#include "Structures.h"
 
-class TMEffectLevelUp
+class TMEffectLevelUp : public TMEffect
 {
 public:
     TMEffectLevelUp(TMVector3 vecPosition, int nType);
     ~TMEffectLevelUp();
     
-    int FrameMove(unsigned int dwServerTime);
+    int FrameMove(unsigned int dwServerTime) override;
 
 public:
     unsigned int m_dwStartTime;

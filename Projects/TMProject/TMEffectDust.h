@@ -1,19 +1,17 @@
 #pragma once
 
 #include "TMEffect.h"
+#include "Structures.h"
 
 class TMMesh;
-
-class TMVector3;
-
 class TMEffectDust : public TMEffect
 {
 public:
     TMEffectDust(TMVector3 vecPosition, float fRadius, int nDustType);
     ~TMEffectDust();
 
-    int FrameMove(unsigned int dwServerTime);
-    int Render();
+    int FrameMove(unsigned int dwServerTime) override;
+    int Render() override;
 
 public:
     int m_nDustType;
