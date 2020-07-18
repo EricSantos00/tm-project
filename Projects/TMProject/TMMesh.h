@@ -2,6 +2,16 @@
 
 #include "Structures.h"
 
+struct RDVERTEX2
+{
+	TMVector3 position;
+	TMVector3 normal;
+	float tu1;
+	float tv1;
+	float tu2;
+	float tv2;
+};
+
 class TMMesh
 {
 public:
@@ -17,6 +27,8 @@ public:
 
 	int LoadMsa(char* szFileName);
 private:
+
+	// This function doesn't exist in the original version
 	HRESULT RenderDraw(int nTexOffset);
 
 public:
