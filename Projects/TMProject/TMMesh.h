@@ -25,10 +25,10 @@ public:
 	virtual int RenderPick(float fX, float fY, float fZ, float fAngle, float fAngle2, float fAngle3, float cMulti, int nTexOffset);
 	virtual int RenderForUI(int nX, int nY, float fAngle, float fScale, DWORD dwColor, int nMultiTex, int nTexOffset, short sLegend);
 
-	int LoadMsa(char* szFileName);
+	int LoadMsa(const char* szFileName);
 private:
 
-	// This two functions doesn't exist in the original version
+	// These two functions doesn't exist in the original version
 	HRESULT RenderDraw(int nTexOffset);
 	void SetTexture(int index);
 

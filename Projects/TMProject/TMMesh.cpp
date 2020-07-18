@@ -2,6 +2,7 @@
 #include "TreeNode.h"
 #include "TMMesh.h"
 #include "TMGlobal.h"
+#include "TMLog.h"
 
 TMMesh::TMMesh()
 {
@@ -281,3 +282,441 @@ int TMMesh::RenderPick(float fX, float fY, float fZ, float fAngle, float fAngle2
 
 	g_pDevice->m_pd3dDevice->SetMaterial(&bmaterials);
 }	
+
+
+int TMMesh::RenderForUI(int nX, int nY, float fAngle, float fScale, DWORD dwColor, int nMultiTex, int nTexOffset, short sLegend)
+{
+	float fWidthRatio = 6.3f;
+	if ((float)g_pDevice->m_viewport.Width / (float)g_pDevice->m_viewport.Height < 1.26f)
+		fWidthRatio = 6.26f;
+
+	float fX = (float)nX / (float)(g_pDevice->m_viewport.Width / fWidthRatio);
+	float fY = (float)nY / ((float)g_pDevice->m_viewport.Height / 4.96f) - 2.48f;
+
+	float fXAux = fX - (float)(fWidthRatio / 2.0f);
+	float fYaw = atan2f(fXAux, 50.0f);
+	float fPitch = atan2f(fY, 50.0f);
+
+	D3DXMATRIX matScale;
+	D3DXMATRIX matPosition;
+	D3DXMATRIX mat;
+
+	D3DXMatrixScaling(&matScale, 0.51999998f * fScale, 0.51999998f * fScale, 0.51999998f * fScale);
+	D3DXMatrixTranslation(&matPosition,
+		fXAux - ((m_vecCenter.z * 0.51999998f) * fScale),
+		fY - ((m_vecCenter.z * 0.51999998f) * fScale),
+		(m_vecCenter.y * 0.51999998f) * fScale);
+
+	D3DXMatrixRotationYawPitchRoll(&mat, fYaw + fAngle, fPitch + -1.5707964f, 0.0);
+	D3DXMatrixMultiply(&mat, &g_pDevice->m_matWorld, &mat);
+	D3DXMatrixMultiply(&mat, &mat, &matScale);
+	D3DXMatrixMultiply(&mat, &mat, &matPosition);
+
+	g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &mat);
+
+	char cAlpha = g_pTextureManager->m_stModelTextureList[m_nTextureIndex[0]].cAlpha;
+
+	D3DCOLORVALUE color;
+	color.r = (double)((dwColor >> 16) & 0xFF) / 256.0f;
+	color.g = (double)((unsigned short)dwColor >> 8) / 256.0f;
+	color.b = (double)((unsigned char)dwColor) / 256.0f;
+
+	D3DMATERIAL9 materials{};
+	materials.Emissive.r = (color.r * 0.30000001f) + 0.1f;
+	materials.Emissive.g = (color.r * 0.30000001f) + 0.1f;
+	materials.Emissive.b = (color.r * 0.30000001f) + 0.1f;
+	materials.Diffuse.r = color.r;
+	materials.Diffuse.g = color.g;
+	materials.Diffuse.b = (float)((unsigned char)dwColor) / 256.0f;
+	materials.Diffuse.a = color.a;
+	materials.Specular.r = color.r;
+	materials.Specular.g = color.g;
+	materials.Specular.b = (float)((unsigned char)dwColor) / 256.0f;
+	materials.Specular.a = color.a;
+	materials.Power = 0;
+
+	g_pDevice->m_pd3dDevice->SetMaterial(&materials);
+
+	if (nMultiTex <= 0 && (sLegend < 4 || sLegend > 8))
+	{
+		g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 0);
+		Render(1, nTexOffset);
+		return 1;	
+	}
+
+	g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_TEXCOORDINDEX, 1);
+
+	if (sLegend == 4)
+	{
+		g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(nMultiTex + 179, 5000));
+		g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, (g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400) ? 4 : 5);
+		g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 4);
+	}
+	else if (sLegend > 4 && sLegend <= 8)
+	{
+		int texSum = 153;
+		if (sLegend == 6)
+			texSum = 166;
+		if (sLegend == 7)
+			texSum = 246;
+		if (sLegend == 8)
+			texSum = 260;
+
+		g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(nMultiTex + texSum, 5000));
+		g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 4);
+		g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, (g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400) ? 7 : 11);
+	}
+	else if (sLegend > 9 && sLegend <= 12)
+	{
+		int texSum = 153;
+		if (sLegend == 10)
+			texSum = 166;
+		if (sLegend == 11)
+			texSum = 246;
+		if (sLegend == 12)
+			texSum = 440;
+
+		g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(nMultiTex + texSum, 5000));
+
+		if (cAlpha != 67 || g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400)
+		{
+			g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAOP, 2);
+			g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAOP, 1);
+			g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAARG1, 2);
+		}
+		else
+		{
+			g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLORARG1, 1);
+			g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLORARG2, 2);
+			g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 18);
+		}
+
+		if (g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400)
+		{
+			g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 4);
+			g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 7);
+		}
+		else
+		{
+			g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, nMultiTex < 7 ? 4 : 5);
+			if (cAlpha != 67)
+				g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 11);
+		}
+	}
+	else if (sLegend > 116 && sLegend <= 125)
+	{
+		int texSum = 153;
+		if (sLegend == 116)
+			texSum = 275;
+		if (sLegend == 117)
+			texSum = 288;
+		if (sLegend == 118)
+			texSum = 301;
+		if (sLegend == 119)
+			texSum = 314;
+		if (sLegend == 120)
+			texSum = 327;
+		if (sLegend == 121)
+			texSum = 340;
+		if (sLegend == 122)
+			texSum = 353;
+		if (sLegend == 123)
+			texSum = 366;
+		if (sLegend == 124)
+			texSum = 425;
+		if (sLegend == 125)
+			texSum = 392;
+
+		g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(nMultiTex + texSum - 1, 5000));
+
+		if (g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400 || g_pDevice->m_bTNT)
+		{
+			g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 4);
+			g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 7);
+		}
+		else
+		{
+			g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLORARG2, 1);
+			g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 24);
+			g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 6);
+		}
+	}
+	else
+	{
+		g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(nMultiTex + 233, 5000));
+
+		if (g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400 || g_pDevice->m_bTNT)
+		{
+			g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 4);
+			g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 7);
+		}
+		else
+		{
+			if (cAlpha == 67)
+			{
+				g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLORARG1, 1);
+				g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLORARG2, 2);
+				g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 18);
+			}
+			else
+			{
+				g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAOP, 2);
+				g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAOP, 1);
+				g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAARG1, 2);
+			}
+
+			g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, nMultiTex < 7 ? 4 : 5);
+			if (cAlpha != 67)
+				g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 11);
+
+			g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_FOGVERTEXMODE, 0);
+		}
+	}
+
+	Render(1, nTexOffset);
+
+	g_pDevice->SetTexture(1, nullptr);
+	g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_TEXCOORDINDEX, 1);
+	g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 4);
+	g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 1);
+	return 1;
+}
+
+int TMMesh::LoadMsa(const char* szFileName)
+{
+	if (!strlen(szFileName))
+		return 0;
+
+	FILE* fp = nullptr;
+	fopen_s(&fp, szFileName, "rb");
+	if (!fp)
+	{
+		LOG_WRITELOG("ReadingError : %s\n", szFileName);
+		return 0;
+	}
+
+	fread(&m_dwFVF, 4, 1, fp);
+	fread(&m_sizeVertex, 4, 1, fp);
+	fread(&m_dwAttCount, 4, 1, fp);
+	fread(m_AttRange, sizeof(D3DXATTRIBUTERANGE), m_dwAttCount, fp);
+
+	int len = strlen(szFileName);
+
+	char szPathName[24] = { 0, };
+	int nIndex = 0;
+	for (nIndex = 0; nIndex < len && szFileName[nIndex] != 92; ++nIndex)
+		szPathName[nIndex] = szFileName[nIndex];
+
+	char szTmpFileName[24];
+	sprintf_s(szTmpFileName, "%s", &szFileName[nIndex + 2]);
+
+	char szTextureName[24] = { 0, };
+	char szTemp[24] = { 0, };
+	char szTex[64] = { 0, };
+
+	for (int i = 0; i < m_dwAttCount; ++i)
+	{
+		if (szTmpFileName[0] != 97 || szTmpFileName[1] != 97)
+		{
+			memset(szTextureName, 0, sizeof szTextureName);
+			fread(szTemp, 11, 1, fp);
+			len = strlen(szTemp);
+
+			for (nIndex = len - 1; nIndex > 0; --nIndex)
+			{
+				if (szTemp[nIndex] == 92)
+				{
+					sprintf_s(szTextureName, "%s", &szTemp[nIndex + 1]);
+					break;
+				}
+			}
+			if (!nIndex)
+				sprintf_s(szTextureName, "%s", szTemp);
+
+			sprintf_s(szTemp, "%s", szTextureName);
+			memset(szTextureName, 0, 24);
+			len = strlen(szTemp);
+
+			for (nIndex = 0; nIndex < len && szTemp[nIndex] != 46; ++nIndex)
+				szTextureName[nIndex] = szTemp[nIndex];
+
+			if (!stricmp(szPathName, "effect"))
+			{
+				sprintf_s(szTex, "Effect\\%s.wys", szTextureName);
+				m_nTextureIndex[i] = g_pTextureManager->GetEffectTextureIndex(szTex);
+			}
+			else
+			{
+				sprintf_s(szTex, "mesh\\%s.wys", szTextureName);
+				m_nTextureIndex[i] = g_pTextureManager->GetModelTextureIndex(szTex);
+			}
+		}
+		else
+		{
+			fread(szTextureName, 11, 1, fp);
+			memset(szTextureName, 0, 24);
+			for (nIndex = 0; nIndex < len && szTmpFileName[nIndex] != 46; ++nIndex)
+				szTextureName[nIndex] = szTmpFileName[nIndex];
+
+			if (!stricmp(szPathName, "effect"))
+			{
+				sprintf_s(szTex, "Effect\\%s.wys", szTextureName);
+				m_nTextureIndex[i] = g_pTextureManager->GetEffectTextureIndex(szTex);
+			}
+			else
+			{
+				sprintf_s(szTex, "mesh\\%s.wys", szTextureName);
+				m_nTextureIndex[i] = g_pTextureManager->GetModelTextureIndex(szTex);
+			}
+		}
+		if (m_nTextureIndex[i] == -1)
+		{
+			len = strlen(szTmpFileName);
+			memset(szTextureName, 0, 24);
+
+			for (nIndex = 0; nIndex < len && szTmpFileName[nIndex] != 46; ++nIndex)
+				szTextureName[nIndex] = szTmpFileName[nIndex];
+
+			if (!stricmp(szPathName, "effect"))
+			{
+				sprintf_s(szTex, "Effect\\%s.wys", szTextureName);
+				m_nTextureIndex[i] = g_pTextureManager->GetEffectTextureIndex(szTex);
+			}
+			else
+			{
+				sprintf_s(szTex, "mesh\\%s.wys", szTextureName);
+				m_nTextureIndex[i] = g_pTextureManager->GetModelTextureIndex(szTex);
+			}
+
+			if (m_nTextureIndex[i] == -1)
+			{
+				LOG_WRITELOG("%s , %s \r\n", szFileName, szTex);
+				if (fp)
+				{
+					fclose(fp);
+
+					fp = nullptr;
+					return 0;
+				}
+			}
+		}
+	}
+
+	char* pIndex = nullptr;
+	D3DINDEXBUFFER_DESC iDesc{};
+	fread(&iDesc.Size, 4, 1, fp);
+
+	if (iDesc.Size)
+	{
+		g_pDevice->m_pd3dDevice->CreateIndexBuffer(
+			iDesc.Size,
+			8,
+			D3DFORMAT::D3DFMT_INDEX16,
+			D3DPOOL::D3DPOOL_MANAGED,
+			&m_pIB,
+			nullptr);
+
+		if (!m_pIB)
+			return 0;
+
+		m_pIB->Lock(0, 0, (void**)&pIndex, 0);
+		fread(pIndex, iDesc.Size, 1, fp);
+		m_pIB->Unlock();
+	}
+
+	float* pVertex = nullptr;
+	char* pVertexB = nullptr;
+
+	D3DVERTEXBUFFER_DESC vDesc;
+	fread(&vDesc.Size, 4, 1, fp);
+
+	int nFloatCount = m_sizeVertex >> 2;
+	int nNumVertex = vDesc.Size / m_sizeVertex;
+
+	if (m_dwFVF == 322)
+	{
+		g_pDevice->m_pd3dDevice->CreateVertexBuffer(
+			vDesc.Size,
+			8,
+			m_dwFVF,
+			D3DPOOL::D3DPOOL_MANAGED,
+			&m_pVB,
+			nullptr);
+	}
+	else
+	{
+		m_dwFVF += 256;
+		g_pDevice->m_pd3dDevice->CreateVertexBuffer(
+			vDesc.Size + 8 * nNumVertex,
+			8,
+			m_dwFVF,
+			D3DPOOL::D3DPOOL_MANAGED,
+			&m_pVB,
+			nullptr);
+	}
+
+	if (!m_pVB)
+		return 0;
+
+	m_pVB->Lock(0, 0, (void**)&pVertex, 0);
+
+	if (m_dwFVF == 322)
+	{
+		fread(pVertex, vDesc.Size, 1u, fp);
+	}
+	else
+	{
+		pVertexB = (char*)pVertex;
+		for (int i = 0; i < nNumVertex; ++i)
+			fread(&pVertexB[i * (m_sizeVertex + 8)], m_sizeVertex, 1u, fp);
+
+		m_sizeVertex += 8;
+	}
+
+	int nAddedFloatNum = 0;
+	if (m_dwFVF != 322)
+		nAddedFloatNum = 2;
+
+	m_fMinX = pVertex[nAddedFloatNum + nFloatCount];
+	m_fMaxX = m_fMinX;
+	m_fMinY = *(&pVertex[nAddedFloatNum + 1] + nFloatCount);
+	m_fMaxY = m_fMinY;
+	m_fMinZ = *(&pVertex[nAddedFloatNum + 2] + nFloatCount);
+	m_fMaxZ = m_fMinZ;
+
+	for (int i = 0; i < nNumVertex - 1; ++i)
+	{
+		if (m_dwFVF == 530)
+		{
+			pVertex[i * (nAddedFloatNum + nFloatCount) + 8] = pVertex[i * (nAddedFloatNum + nFloatCount) + 6];
+			pVertex[i * (nAddedFloatNum + nFloatCount) + 9] = pVertex[i * (nAddedFloatNum + nFloatCount) + 7];
+		}
+
+		if (pVertex[i * (nAddedFloatNum + nFloatCount)] > m_fMaxX)
+			m_fMaxX = pVertex[i * (nAddedFloatNum + nFloatCount)];
+		if (m_fMinX > pVertex[i * (nAddedFloatNum + nFloatCount)])
+			m_fMinX = pVertex[i * (nAddedFloatNum + nFloatCount)];
+		if (pVertex[i * (nAddedFloatNum + nFloatCount) + 1] > m_fMaxY)
+			m_fMaxY = pVertex[i * (nAddedFloatNum + nFloatCount) + 1];
+		if (m_fMinY > pVertex[i * (nAddedFloatNum + nFloatCount) + 1])
+			m_fMinY = pVertex[i * (nAddedFloatNum + nFloatCount) + 1];
+		if (pVertex[i * (nAddedFloatNum + nFloatCount) + 2] > m_fMaxZ)
+			m_fMaxZ = pVertex[i * (nAddedFloatNum + nFloatCount) + 2];
+		if (m_fMinZ > pVertex[i * (nAddedFloatNum + nFloatCount) + 2])
+			m_fMinZ = pVertex[i * (nAddedFloatNum + nFloatCount) + 2];
+	}
+
+	// TODO: Check if is clamp here
+	std::clamp(m_fRadius, m_fMinX, m_fMaxX);
+	std::clamp(m_fRadius, m_fMinY, m_fMaxY);
+	std::clamp(m_fRadius, m_fMinZ, m_fMaxZ);
+
+	m_vecCenter = TMVector3((float)(m_fMaxX + m_fMinX) * 0.5f,
+		(float)(m_fMaxY + m_fMinY) * 0.5f,
+		(float)(m_fMaxZ + m_fMinZ) * 0.5f);
+
+	m_pVB->Unlock();
+
+	fclose(fp);
+	return 1;
+}
