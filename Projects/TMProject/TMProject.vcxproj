@@ -226,6 +226,7 @@
     <ClInclude Include="TMFont2.h" />
     <ClInclude Include="TMFont3.h" />
     <ClInclude Include="TMGate.h" />
+    <ClInclude Include="TMGlobal.h" />
     <ClInclude Include="TMGround.h" />
     <ClInclude Include="TMHouse.h" />
     <ClInclude Include="TMHuman.h" />
@@ -321,6 +322,7 @@
     <ClCompile Include="TMFireEffect.cpp" />
     <ClCompile Include="TMFont2.cpp" />
     <ClCompile Include="TMFont3.cpp" />
+    <ClCompile Include="TMGlobal.cpp" />
     <ClCompile Include="TMLog.cpp" />
     <ClCompile Include="TMMesh.cpp" />
     <ClCompile Include="TMProject.cpp" />

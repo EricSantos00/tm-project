@@ -417,6 +417,9 @@
     <ClInclude Include="TMShade.h">
       <Filter>Header Files\Effects</Filter>
     </ClInclude>
+    <ClInclude Include="TMGlobal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TMProject.cpp">
@@ -541,6 +544,9 @@
     </ClCompile>
     <ClCompile Include="TMShade.cpp">
       <Filter>Source Files\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="TMGlobal.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
