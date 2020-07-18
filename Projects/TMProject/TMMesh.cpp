@@ -156,6 +156,83 @@ int TMMesh::Render(char cMulti, int nTexOffset)
 	return RenderDraw(nTexOffset);
 }
 
+int TMMesh::Render(float fX, float fY, float fZ, float fAngle, float fAngle2, float fAngle3, char cMulti, int nTexOffset)
+{
+	D3DXMATRIX mat{};
+	D3DXMATRIX matPosition{};
+	D3DXMATRIX matScale{};
+
+	IDirect3DBaseTexture9* texture = nullptr;
+	if (this->m_bEffect == 1)
+	{
+		if (this->m_dwShowTime <= 5000)
+			texture = g_pTextureManager->GetEffectTexture(nTexOffset + m_nTextureIndex[0], 5000u);
+		else
+			texture = g_pTextureManager->GetEffectTexture(nTexOffset + m_nTextureIndex[0], m_dwShowTime);
+	}
+	else
+	{
+		if (m_dwShowTime <= 10000)
+			texture = g_pTextureManager->GetModelTexture(nTexOffset + m_nTextureIndex[0], 10000u);
+		else
+			texture = g_pTextureManager->GetModelTexture(nTexOffset + m_nTextureIndex[0], m_dwShowTime);
+	}
+
+	g_pDevice->SetTexture(0, texture);
+
+	D3DXMatrixScaling(&matScale, m_fScaleH, m_fScaleV, m_fScaleH);
+	D3DXMatrixTranslation(&matPosition, fX, fY, fZ);
+	D3DXMatrixRotationYawPitchRoll(&mat, fAngle, fAngle2 + -1.5707964f, fAngle3);
+	D3DXMatrixMultiply(&mat, &g_pDevice->m_matWorld, &mat);
+	D3DXMatrixMultiply(&mat, &mat, &matScale);
+	D3DXMatrixMultiply(&mat, &mat, &matPosition);
+
+	// In the original ER shows 256 value but this macro do the job according to arg
+	g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &mat);
+
+	Render(cMulti, nTexOffset);
+	return 1;
+}
+
+int TMMesh::Render(float fX, float fY, float fZ, D3DXQUATERNION quat, char cMulti, int nTexOffset)
+{
+	D3DXMATRIX mat{};
+	D3DXMATRIX matPosition{};
+	D3DXMATRIX matScale{};
+	D3DXMATRIX matQuat{};
+
+	IDirect3DBaseTexture9* texture = nullptr;
+	if (this->m_bEffect == 1)
+	{
+		if (this->m_dwShowTime <= 5000)
+			texture = g_pTextureManager->GetEffectTexture(nTexOffset + m_nTextureIndex[0], 5000u);
+		else
+			texture = g_pTextureManager->GetEffectTexture(nTexOffset + m_nTextureIndex[0], m_dwShowTime);
+	}
+	else
+	{
+		if (m_dwShowTime <= 10000)
+			texture = g_pTextureManager->GetModelTexture(nTexOffset + m_nTextureIndex[0], 10000u);
+		else
+			texture = g_pTextureManager->GetModelTexture(nTexOffset + m_nTextureIndex[0], m_dwShowTime);
+	}
+
+	g_pDevice->SetTexture(0, texture);
+
+	D3DXMatrixScaling(&matScale, m_fScaleH, m_fScaleV, m_fScaleH);
+	D3DXMatrixTranslation(&matPosition, fX, fY, fZ);
+	D3DXMatrixRotationQuaternion(&matQuat, &quat);
+	D3DXMatrixMultiply(&mat, &matQuat, &g_pDevice->m_matWorld);
+	D3DXMatrixMultiply(&mat, &mat, &matScale);
+	D3DXMatrixMultiply(&mat, &mat, &matPosition);
+
+	// In the original ER shows 256 value but this macro do the job according to arg
+	g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &mat);
+
+	Render(cMulti, nTexOffset);
+	return 1;
+}
+
 HRESULT TMMesh::RenderDraw(int nTexOffset)
 {
 	for (int i = 0; i < m_dwAttCount; ++i)
@@ -189,4 +266,9 @@ HRESULT TMMesh::RenderDraw(int nTexOffset)
 	}
 
 	return S_OK;
+}
+
+int TMMesh::RenderPick(float fX, float fY, float fZ, float fAngle, float fAngle2, float fAngle3, float cMulti, int nTexOffset)
+{
+
 }
