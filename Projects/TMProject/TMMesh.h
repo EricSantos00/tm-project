@@ -28,8 +28,9 @@ public:
 	int LoadMsa(char* szFileName);
 private:
 
-	// This function doesn't exist in the original version
+	// This two functions doesn't exist in the original version
 	HRESULT RenderDraw(int nTexOffset);
+	void SetTexture(int index);
 
 public:
 	int m_bEffect;

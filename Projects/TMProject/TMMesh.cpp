@@ -162,23 +162,7 @@ int TMMesh::Render(float fX, float fY, float fZ, float fAngle, float fAngle2, fl
 	D3DXMATRIX matPosition{};
 	D3DXMATRIX matScale{};
 
-	IDirect3DBaseTexture9* texture = nullptr;
-	if (this->m_bEffect == 1)
-	{
-		if (this->m_dwShowTime <= 5000)
-			texture = g_pTextureManager->GetEffectTexture(nTexOffset + m_nTextureIndex[0], 5000u);
-		else
-			texture = g_pTextureManager->GetEffectTexture(nTexOffset + m_nTextureIndex[0], m_dwShowTime);
-	}
-	else
-	{
-		if (m_dwShowTime <= 10000)
-			texture = g_pTextureManager->GetModelTexture(nTexOffset + m_nTextureIndex[0], 10000u);
-		else
-			texture = g_pTextureManager->GetModelTexture(nTexOffset + m_nTextureIndex[0], m_dwShowTime);
-	}
-
-	g_pDevice->SetTexture(0, texture);
+	SetTexture(nTexOffset + m_nTextureIndex[0]);
 
 	D3DXMatrixScaling(&matScale, m_fScaleH, m_fScaleV, m_fScaleH);
 	D3DXMatrixTranslation(&matPosition, fX, fY, fZ);
@@ -201,23 +185,7 @@ int TMMesh::Render(float fX, float fY, float fZ, D3DXQUATERNION quat, char cMult
 	D3DXMATRIX matScale{};
 	D3DXMATRIX matQuat{};
 
-	IDirect3DBaseTexture9* texture = nullptr;
-	if (this->m_bEffect == 1)
-	{
-		if (this->m_dwShowTime <= 5000)
-			texture = g_pTextureManager->GetEffectTexture(nTexOffset + m_nTextureIndex[0], 5000u);
-		else
-			texture = g_pTextureManager->GetEffectTexture(nTexOffset + m_nTextureIndex[0], m_dwShowTime);
-	}
-	else
-	{
-		if (m_dwShowTime <= 10000)
-			texture = g_pTextureManager->GetModelTexture(nTexOffset + m_nTextureIndex[0], 10000u);
-		else
-			texture = g_pTextureManager->GetModelTexture(nTexOffset + m_nTextureIndex[0], m_dwShowTime);
-	}
-
-	g_pDevice->SetTexture(0, texture);
+	SetTexture(nTexOffset + m_nTextureIndex[0]);
 
 	D3DXMatrixScaling(&matScale, m_fScaleH, m_fScaleV, m_fScaleH);
 	D3DXMatrixTranslation(&matPosition, fX, fY, fZ);
@@ -233,27 +201,22 @@ int TMMesh::Render(float fX, float fY, float fZ, D3DXQUATERNION quat, char cMult
 	return 1;
 }
 
+void TMMesh::SetTexture(int nIndex)
+{
+	IDirect3DBaseTexture9* texture = nullptr;
+	if (this->m_bEffect == 1)
+		texture = g_pTextureManager->GetEffectTexture(nIndex, m_dwShowTime <= 5000u ? 5000u : m_dwShowTime);
+	else
+		texture = g_pTextureManager->GetModelTexture(nIndex, m_dwShowTime <= 10000 ? 10000u : m_dwShowTime);
+
+	g_pDevice->SetTexture(0, texture);
+}
+
 HRESULT TMMesh::RenderDraw(int nTexOffset)
 {
 	for (int i = 0; i < m_dwAttCount; ++i)
 	{
-		IDirect3DBaseTexture9* texture = nullptr;
-		if (this->m_bEffect == 1)
-		{
-			if (this->m_dwShowTime <= 5000)
-				texture = g_pTextureManager->GetEffectTexture(nTexOffset + m_nTextureIndex[i], 5000u);
-			else
-				texture = g_pTextureManager->GetEffectTexture(nTexOffset + m_nTextureIndex[i], m_dwShowTime);
-		}
-		else
-		{
-			if (m_dwShowTime <= 10000)
-				texture = g_pTextureManager->GetModelTexture(nTexOffset + m_nTextureIndex[i], 10000u);
-			else
-				texture = g_pTextureManager->GetModelTexture(nTexOffset + m_nTextureIndex[i], m_dwShowTime);
-		}
-
-		g_pDevice->SetTexture(0, texture);
+		SetTexture(nTexOffset + m_nTextureIndex[0]);
 
 		if (FAILED(g_pDevice->m_pd3dDevice->DrawIndexedPrimitive(
 			D3DPT_TRIANGLELIST,
@@ -270,5 +233,51 @@ HRESULT TMMesh::RenderDraw(int nTexOffset)
 
 int TMMesh::RenderPick(float fX, float fY, float fZ, float fAngle, float fAngle2, float fAngle3, float cMulti, int nTexOffset)
 {
+	D3DXMATRIX mat{};
+	D3DXMATRIX matPosition{};
+	D3DXMATRIX matScale{};
 
-}
+	SetTexture(nTexOffset + m_nTextureIndex[0]);
+
+	D3DMATERIAL9 bmaterials;
+	g_pDevice->m_pd3dDevice->GetMaterial(&bmaterials);
+
+	D3DCOLORVALUE color;
+	color.r = 1.0f;
+	color.g = 1.0f;
+	color.b = 1.0f;
+
+	D3DMATERIAL9 materials{};
+	materials.Emissive.r = 1.0f;
+	materials.Emissive.g = 1.0f;
+	materials.Emissive.b = 1.0f;
+	materials.Diffuse.r = 1.0f;
+	materials.Diffuse.g = 1.0f;
+	materials.Diffuse.b = 1.0f;
+	materials.Diffuse.a = color.a;
+	materials.Specular.r = 1.0f;
+	materials.Specular.g = 1.0f;
+	materials.Specular.b = 1.0f;
+	materials.Specular.a = color.a;
+	materials.Power = 0.0f;
+
+	g_pDevice->m_pd3dDevice->SetMaterial(&materials);
+
+	D3DXMATRIX matPosition;
+	D3DXMATRIX matScale;
+	D3DXMATRIX matQuat;
+	D3DXMATRIX mat;
+
+	D3DXMatrixScaling(&matScale, m_fScaleH, m_fScaleV, m_fScaleH);
+	D3DXMatrixTranslation(&matPosition, fX, fY, fZ);
+	D3DXMatrixRotationYawPitchRoll(&mat, fAngle, fAngle2 + -1.5707964f, fAngle3);
+	D3DXMatrixMultiply(&mat, &g_pDevice->m_matWorld, &mat);
+	D3DXMatrixMultiply(&mat, &mat, &matScale);
+	D3DXMatrixMultiply(&mat, &mat, &matPosition);
+
+	g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &mat);
+
+	Render(cMulti, nTexOffset);
+
+	g_pDevice->m_pd3dDevice->SetMaterial(&bmaterials);
+}	
