@@ -8,6 +8,7 @@
 #include "TimerManager.h"
 #include "TMScene.h"
 #include "RenderDevice.h"
+#include "EventTranslator.h"
 
 extern NewApp* g_pApp;
 extern CPSock* g_pSocketManager;
