@@ -2,6 +2,16 @@
 
 #include "Structures.h"
 
+struct RDVERTEX2
+{
+	TMVector3 position;
+	TMVector3 normal;
+	float tu1;
+	float tv1;
+	float tu2;
+	float tv2;
+};
+
 class TMMesh
 {
 public:
@@ -15,9 +25,12 @@ public:
 	virtual int RenderPick(float fX, float fY, float fZ, float fAngle, float fAngle2, float fAngle3, float cMulti, int nTexOffset);
 	virtual int RenderForUI(int nX, int nY, float fAngle, float fScale, DWORD dwColor, int nMultiTex, int nTexOffset, short sLegend);
 
-	int LoadMsa(char* szFileName);
+	int LoadMsa(const char* szFileName);
 private:
+
+	// These two functions doesn't exist in the original version
 	HRESULT RenderDraw(int nTexOffset);
+	void SetTexture(int index);
 
 public:
 	int m_bEffect;
