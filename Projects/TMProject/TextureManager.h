@@ -1,5 +1,17 @@
 #pragma once
 
+constexpr auto MAX_UI_TEXTURE_SET_LIST = 600;
+constexpr auto MAX_UI_TEXTURE = 512;
+constexpr auto MAX_EFFECT_TEXTURE = 512;
+constexpr auto MAX_MODEL_TEXTURE = 2048;
+constexpr auto MAX_ENV_TEXTURE = 512;
+constexpr auto MAX_DYNAMIC_TEXTURE = 72;
+
+constexpr auto MAX_GUILD_MARK = 64;
+
+constexpr auto GUILD_MARK_WIDTH = 16;
+constexpr auto GUILD_MARK_HEIGHT = 12;
+
 struct stGuildMark
 {
 	IDirect3DTexture9* pTexture;
