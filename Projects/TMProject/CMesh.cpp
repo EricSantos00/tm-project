@@ -789,7 +789,127 @@ int CMesh::RenderMesh(char cAlpha)
 
 int CMesh::LoadMesh(char* file)
 {
-	return 0;
+    m_nSkinMeshIndex = g_pMeshManager->GetSkinMeshIndex(file);
+    if (m_nSkinMeshIndex == -1)
+    {
+        m_nSkinMeshIndex = g_pMeshManager->GetAvailableSkinMeshIndex();
+
+        if (m_nSkinMeshIndex >= 0 && m_nSkinMeshIndex < 1024)
+        {
+            g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].pMesh = new TMMesh();
+            if (g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].pMesh)
+                m_pMesh = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].pMesh;
+
+            sprintf(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].szFileName, "%s", file);
+        }
+
+        if (m_nSkinMeshIndex < 0)
+            return 0;
+
+        FILE* handle = nullptr;
+        fopen_s(&handle, file, "rb");
+        if (handle == nullptr)
+        {
+            g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].pMesh->m_bDummy = 1;
+            return 0;
+        }
+
+        unsigned int dwParentID = 0;
+        fread(&dwParentID, 4, 1, handle);
+        fread(&m_dwID, 4, 1, handle);
+        fread(&m_pMesh->m_dwFVF, 4, 1, handle);
+        fread(&m_pMesh->m_sizeVertex, 4, 1, handle);
+        fread(&m_numFaceInflunce, 4, 1, handle);
+        fread(&m_numPalette, 4, 1, handle);
+        fread(&m_pMesh->m_AttRange[0].VertexCount, 4, 1, handle);
+        fread(&m_pMesh->m_AttRange[0].FaceCount, 4, 1, handle);
+        m_numFaces = m_pMesh->m_AttRange[0].FaceCount / 3;
+
+        g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_dwID = m_dwID;
+        g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_numFaceInflunce = m_numFaceInflunce;
+        g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_numPalette = m_numPalette;
+        if (m_numPalette)
+        {
+            g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_pBoneMatrix = (D3DXMATRIX*)malloc(m_numPalette << 6);
+            g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_dwNames = (DWORD*)malloc(160);
+            fread(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_pBoneMatrix, m_numPalette << 6, 1, handle);
+            fread(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_dwNames, 4, m_numPalette, handle);
+        }
+        else
+        {
+            m_pBoneMatrix = nullptr;
+        }
+
+        float* pVertex = nullptr;
+        char* pIndices = nullptr;
+
+        g_pDevice->m_pd3dDevice->CreateVertexBuffer(m_pMesh->m_sizeVertex * m_pMesh->m_AttRange[0].VertexCount,
+            0,
+            m_pMesh->m_dwFVF,
+            D3DPOOL_MANAGED,
+            &m_pMesh->m_pVB,
+            0);
+
+        m_pMesh->m_pVB->Lock(0, 0, (void**)&pVertex, 0);
+        fread(pVertex, m_pMesh->m_sizeVertex, m_pMesh->m_AttRange[0].VertexCount, handle);
+        int nFloatCount = m_pMesh->m_sizeVertex >> 2;
+        int nNumVertex = m_pMesh->m_AttRange[0].VertexCount;
+
+        for (int i = 0; i < nNumVertex - 1; ++i)
+        {
+            if (pVertex[nFloatCount * i] > m_pMesh->m_fMaxX)
+                m_pMesh->m_fMaxX = pVertex[nFloatCount * i];
+            if (m_pMesh->m_fMinX > pVertex[nFloatCount * i])
+                m_pMesh->m_fMinX = pVertex[nFloatCount * i];
+            if (pVertex[nFloatCount * i + 1] > m_pMesh->m_fMaxY)
+                m_pMesh->m_fMaxY = pVertex[nFloatCount * i + 1];
+            if (m_pMesh->m_fMinY > pVertex[nFloatCount * i + 1])
+                m_pMesh->m_fMinY = pVertex[nFloatCount * i + 1];
+            if (pVertex[nFloatCount * i + 2] > m_pMesh->m_fMaxZ)
+                m_pMesh->m_fMaxZ = pVertex[nFloatCount * i + 2];
+            if (m_pMesh->m_fMinZ > pVertex[nFloatCount * i + 2])
+                m_pMesh->m_fMinZ = pVertex[nFloatCount * i + 2];
+        }
+
+        std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinX, m_pMesh->m_fMaxX);
+        std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinY, m_pMesh->m_fMaxY);
+        std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinZ, m_pMesh->m_fMaxZ);
+
+        m_pMesh->m_pVB->Unlock();
+
+        g_pDevice->m_pd3dDevice->CreateIndexBuffer(
+            2 * m_pMesh->m_AttRange[0].FaceCount,
+            0,
+            D3DFORMAT::D3DFMT_INDEX16,
+            D3DPOOL::D3DPOOL_MANAGED,
+            &m_pMesh->m_pIB,
+            nullptr);
+
+        m_pMesh->m_pIB->Lock(0, 0, (void**)&pIndices, 0);
+        fread(pIndices, 2, m_pMesh->m_AttRange[0].FaceCount, handle);
+        m_pMesh->m_pIB->Unlock();
+        m_bMeshGenerated = 1;
+        fclose(handle);
+    }
+    else
+    {
+        m_pMesh = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].pMesh;
+        if (!m_pMesh)
+            return 0;
+
+        if (m_pMesh->m_bDummy == 1)
+            return 0;
+
+        m_pBoneMatrix = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_pBoneMatrix;
+        m_dwID = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_dwID;
+        m_numFaceInflunce = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_numFaceInflunce;
+        m_numPalette = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_numPalette;
+        m_dwNames = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_dwNames;
+        m_numFaces = m_pMesh->m_AttRange[0].FaceCount / 3;
+        m_bMeshGenerated = 1;
+    }
+
+    return 1;
 }
 
 int CMesh::InitEffect()
