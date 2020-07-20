@@ -3,6 +3,8 @@
 #include "TMSkinMesh.h"
 #include "CMesh.h"
 #include "TMGlobal.h"
+#include "TMEffectSWSwing.h"
+#include "CFrame.h"
 
 CMesh::CMesh(TMSkinMesh* pParentSkin)
 {
@@ -792,7 +794,49 @@ int CMesh::LoadMesh(char* file)
 
 int CMesh::InitEffect()
 {
-	return 0;
+    if (!m_pParentSkin->m_pOwner)
+        return 1;
+
+    for (int i = 0; i < 2; i++)
+    {
+        if (m_pParentSkin && m_pParentSkin->m_nBoneAniIndex < 19 && m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][i])
+        {
+            TMEffectSWSwing* eff = new TMEffectSWSwing();
+            if (eff != nullptr)
+            {
+                eff->m_pParentSkin = m_pParentSkin;
+                if (m_pParentSkin->m_pSwingEffect[i])
+                {
+                    g_pObjectManager->DeleteObject(m_pParentSkin->m_pSwingEffect[i]);
+                    m_pParentSkin->m_pSwingEffect[i] = 0;
+                }
+
+                m_pParentSkin->m_pSwingEffect[i] = eff;
+                CFrame* pFrame = m_pParentSkin->m_pRoot->FindFrame(m_dwID);
+
+                eff->m_dwNumIndex = 0;
+                for (int j = 0; j < 48; j++)
+                {
+                    if (!pFrame)
+                        break;
+
+                    eff->m_dwIndices[j] = pFrame->m_dwParentID;
+                    pFrame = m_pParentSkin->m_pRoot->FindFrame(pFrame->m_dwParentID);
+                    ++eff->m_dwNumIndex;
+
+                    if (!eff->m_dwIndices[j])
+                        break;
+                }
+
+                if (g_pCurrentScene != nullptr && g_pCurrentScene->m_pEffectContainer != nullptr)
+                {
+                    g_pCurrentScene->m_pEffectContainer->AddChild(eff);
+                }
+            }
+        }
+    }
+
+    return 1;
 }
 
 void CMesh::SetMaterial(char cAlpha)
