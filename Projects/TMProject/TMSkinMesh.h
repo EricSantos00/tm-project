@@ -2,45 +2,7 @@
 
 #define MAX_FRAME_TO_ANIMATE 100
 
-struct LOOK_INFO
-{
-	short Mesh0;
-	short Skin0;
-	short Mesh1;
-	short Skin1;
-	short Mesh2;
-	short Skin2;
-	short Mesh3;
-	short Skin3;
-	short Mesh4;
-	short Skin4;
-	short Mesh5;
-	short Skin5;
-	short Mesh6;
-	short Skin6;
-	short Mesh7;
-	short Skin7;
-};
-
-struct SANC_INFO
-{
-	char Sanc0;
-	char Sanc1;
-	char Sanc2;
-	char Sanc3;
-	char Sanc4;
-	char Sanc5;
-	char Sanc6;
-	char Sanc7;
-	char Legend0;
-	char Legend1;
-	char Legend2;
-	char Legend3;
-	char Legend4;
-	char Legend5;
-	char Legend6;
-	char Legend7;
-};
+#include "Structures.h"
 
 class CFrame;
 class TMHuman;

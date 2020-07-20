@@ -639,5 +639,17 @@ struct STRUCT_AUTOKICK
 	char route[4][128];
 };
 
+struct MSG_Action
+{
+	MSG_STANDARD Header;
+	short PosX;
+	short PosY;
+	int Effect;
+	int Speed;
+	char Route[24];
+	unsigned short TargetX;
+	unsigned short TargetY;
+};
+
 extern HWND hWndMain;
 extern char EncodeByte[4];
