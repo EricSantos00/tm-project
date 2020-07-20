@@ -3,7 +3,7 @@
 #include "TreeNode.h"
 
 class TMGround;
-
+class TMSkinMesh;
 class TMObject : public TreeNode
 {
 public:
