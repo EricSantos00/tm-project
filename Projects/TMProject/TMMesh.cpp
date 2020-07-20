@@ -504,7 +504,7 @@ int TMMesh::LoadMsa(const char* szFileName)
 
 	char szPathName[24] = { 0, };
 	int nIndex = 0;
-	for (nIndex = 0; nIndex < len && szFileName[nIndex] != 92; ++nIndex)
+	for (nIndex = 0; nIndex < len && szFileName[nIndex] != '\\'; ++nIndex)
 		szPathName[nIndex] = szFileName[nIndex];
 
 	char szTmpFileName[24];
@@ -516,7 +516,7 @@ int TMMesh::LoadMsa(const char* szFileName)
 
 	for (int i = 0; i < m_dwAttCount; ++i)
 	{
-		if (szTmpFileName[0] != 97 || szTmpFileName[1] != 97)
+		if (szTmpFileName[0] != 'a' || szTmpFileName[1] != 'a')
 		{
 			memset(szTextureName, 0, sizeof szTextureName);
 			fread(szTemp, 11, 1, fp);
@@ -524,7 +524,7 @@ int TMMesh::LoadMsa(const char* szFileName)
 
 			for (nIndex = len - 1; nIndex > 0; --nIndex)
 			{
-				if (szTemp[nIndex] == 92)
+				if (szTemp[nIndex] == '\\')
 				{
 					sprintf_s(szTextureName, "%s", &szTemp[nIndex + 1]);
 					break;
@@ -537,7 +537,7 @@ int TMMesh::LoadMsa(const char* szFileName)
 			memset(szTextureName, 0, 24);
 			len = strlen(szTemp);
 
-			for (nIndex = 0; nIndex < len && szTemp[nIndex] != 46; ++nIndex)
+			for (nIndex = 0; nIndex < len && szTemp[nIndex] != '.'; ++nIndex)
 				szTextureName[nIndex] = szTemp[nIndex];
 
 			if (!stricmp(szPathName, "effect"))
@@ -555,7 +555,7 @@ int TMMesh::LoadMsa(const char* szFileName)
 		{
 			fread(szTextureName, 11, 1, fp);
 			memset(szTextureName, 0, 24);
-			for (nIndex = 0; nIndex < len && szTmpFileName[nIndex] != 46; ++nIndex)
+			for (nIndex = 0; nIndex < len && szTmpFileName[nIndex] != '.'; ++nIndex)
 				szTextureName[nIndex] = szTmpFileName[nIndex];
 
 			if (!stricmp(szPathName, "effect"))
@@ -574,7 +574,7 @@ int TMMesh::LoadMsa(const char* szFileName)
 			len = strlen(szTmpFileName);
 			memset(szTextureName, 0, 24);
 
-			for (nIndex = 0; nIndex < len && szTmpFileName[nIndex] != 46; ++nIndex)
+			for (nIndex = 0; nIndex < len && szTmpFileName[nIndex] != '.'; ++nIndex)
 				szTextureName[nIndex] = szTmpFileName[nIndex];
 
 			if (!stricmp(szPathName, "effect"))
