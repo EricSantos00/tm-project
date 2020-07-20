@@ -43,7 +43,7 @@ struct SANC_INFO
 };
 
 class CFrame;
-class TMObject;
+class TMHuman;
 class TMEffectSWSwing;
 
 class TMSkinMesh
@@ -109,7 +109,7 @@ public:
 	unsigned int m_dwStartOffset;
 	unsigned int m_dwLastUsedTime;
 	unsigned int m_dwShowTime;
-	TMObject* m_pOwner;
+	TMHuman* m_pOwner;
 	TMEffectSWSwing* m_pSwingEffect[2];
 	float m_fLenDetail;
 
