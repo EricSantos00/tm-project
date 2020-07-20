@@ -4,22 +4,22 @@
 
 struct LOOK_INFO
 {
-	unsigned short Mesh0;
-	unsigned short Skin0;
-	unsigned short Mesh1;
-	unsigned short Skin1;
-	unsigned short Mesh2;
-	unsigned short Skin2;
-	unsigned short Mesh3;
-	unsigned short Skin3;
-	unsigned short Mesh4;
-	unsigned short Skin4;
-	unsigned short Mesh5;
-	unsigned short Skin5;
-	unsigned short Mesh6;
-	unsigned short Skin6;
-	unsigned short Mesh7;
-	unsigned short Skin7;
+	short Mesh0;
+	short Skin0;
+	short Mesh1;
+	short Skin1;
+	short Mesh2;
+	short Skin2;
+	short Mesh3;
+	short Skin3;
+	short Mesh4;
+	short Skin4;
+	short Mesh5;
+	short Skin5;
+	short Mesh6;
+	short Skin6;
+	short Mesh7;
+	short Skin7;
 };
 
 struct SANC_INFO

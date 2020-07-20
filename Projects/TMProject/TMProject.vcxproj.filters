@@ -55,6 +55,9 @@
     <Filter Include="Source Files\Effects">
       <UniqueIdentifier>{e5aef690-9384-4478-8422-ea3ea678ce2f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Scenes">
+      <UniqueIdentifier>{07607fa4-234f-4ce1-87e6-ebf9ee6b35c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -547,6 +550,9 @@
     </ClCompile>
     <ClCompile Include="TMGlobal.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TMScene.cpp">
+      <Filter>Source Files\Engine\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

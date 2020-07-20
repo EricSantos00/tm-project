@@ -125,9 +125,9 @@ struct TMVector3
 	{
 		TMVector3 ret;
 
-		ret.x = x - other.x;
-		ret.y = y - other.y;
-		ret.z = z - other.z;
+		ret.x = this->x - other.x;
+		ret.y = this->y - other.y;
+		ret.z = this->z - other.z;
 
 		return ret;
 	}
