@@ -797,5 +797,70 @@ int CMesh::InitEffect()
 
 void CMesh::SetMaterial(char cAlpha)
 {
+    if (m_pParentSkin != nullptr)
+    {
+        D3DMATERIAL9 materials;
+        memcpy(&materials, &m_pParentSkin->m_materials, sizeof(materials));
+        g_pDevice->m_pd3dDevice->SetMaterial(&materials);
+
+        unsigned int dwTime = g_pTimerManager->GetServerTime();
+        float fProgress = (float)(dwTime % 10000) / 10000.0f;
+
+        D3DXVECTOR4 vConst(1.0f, 0.0f, fProgress, 765.01001f);
+        D3DXCOLOR ambEmm;      
+        
+        D3DXColorModulate(&ambEmm, &D3DXCOLOR(materials.Ambient), &D3DXCOLOR(0.25f, 0.25f, 0.25f, 1.0f));
+
+        if (m_sLegendType >= 116 && m_sLegendType <= 125 && m_sMultiType > 0)
+        {
+            D3DXCOLOR Emi(materials.Emissive);
+
+            Emi.a = 0.89f;
+            if (materials.Emissive.r < 0.55000001f)
+                Emi.r = 0.55000001f;
+            if (materials.Emissive.g < 0.55000001f)
+                Emi.g = 0.55000001f;
+            if (materials.Emissive.b < 0.55000001f)
+                Emi.b = 0.55000001f;
+
+            materials.Diffuse.a = 0.89f;
+            if (materials.Diffuse.r > 0.1f)
+                materials.Diffuse.r = 0.1f;
+            if (materials.Diffuse.g > 0.1f)
+                materials.Diffuse.g = 0.1f;
+            if (materials.Diffuse.b > 0.1f)
+                materials.Diffuse.b = 0.1f;
+
+            ambEmm += Emi;
+        }
+        else
+        {
+            ambEmm += materials.Emissive;
+        }
+
+        vConst.y = materials.Power;
+        g_pDevice->m_pd3dDevice->SetVertexShaderConstantF(
+            8, (const float*)&materials, 1
+        );
+        g_pDevice->m_pd3dDevice->SetVertexShaderConstantF(
+            7, (const float*)&ambEmm, 1
+        );
+        g_pDevice->m_pd3dDevice->SetVertexShaderConstantF(
+            0, (const float*)&vConst, 1
+        );
+
+        float fEnd = g_pDevice->m_fFogEnd;
+        if (m_pParentSkin->m_nBoneAniIndex == 61)
+            fEnd = fEnd * 1.4f;
+
+        float fDistance = fEnd - g_pDevice->m_fFogStart;
+        if (fDistance == 0.0f)
+            fDistance = 0.009f;
+
+        float fFog[4] = {1.0f, fEnd, 1.0f / fDistance, 0.0f};
+        g_pDevice->m_pd3dDevice->SetVertexShaderConstantF(
+            6, (const float*)&fFog, 1
+        );
+    }
 }
 
