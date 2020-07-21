@@ -333,10 +333,12 @@
     <ClCompile Include="TMHuman.cpp" />
     <ClCompile Include="TMLog.cpp" />
     <ClCompile Include="TMMesh.cpp" />
+    <ClCompile Include="TMObject.cpp" />
     <ClCompile Include="TMProject.cpp" />
     <ClCompile Include="TMScene.cpp" />
     <ClCompile Include="TMShade.cpp" />
     <ClCompile Include="TMSkinMesh.cpp" />
+    <ClCompile Include="TreeNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TMProject.rc" />
