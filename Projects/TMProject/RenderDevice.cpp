@@ -1842,11 +1842,39 @@ HRESULT RenderDevice::SetProjectionMatrix()
 
 int RenderDevice::SetMatrixForUI()
 {
-	return 0;
+	D3DXMATRIX matUIProjection;
+	D3DXMatrixPerspectiveFovLH(&matUIProjection, 0.1f, (float)((float)m_d3dsdBackBuffer.Width / (float)m_d3dsdBackBuffer.Height) * 0.94f, 10.0f, 100.0f);
+
+	m_pd3dDevice->SetTransform(D3DTS_PROJECTION, &matUIProjection);
+
+	D3DXMATRIX matView;
+	D3DXVECTOR3 upVector(0.0f, 1.0f, 0.0f);
+	D3DXVECTOR3 vecCam(0.0f, 0.0f, 50.0f);
+	D3DXVECTOR3 vecLookAt(0.0f, 0.0f, 0.0f);
+	D3DXMatrixLookAtLH(&matView, &vecCam, &vecLookAt, &upVector);
+
+	m_pd3dDevice->SetTransform(D3DTS_VIEW, &matView);
+
+	return 1;
 }
 
 void RenderDevice::GetPickRayVector(D3DXVECTOR3* pRickRayOrig, D3DXVECTOR3* pPickRayDir)
 {
+	D3DXVECTOR3 v;
+	v.x = ((((float)(2.0f * g_pCursor->m_nPosX)) / (float)(m_dwScreenWidth - m_nWidthShift) - 1.0f) / m_matProj.m[0][0]);
+	v.x = ((((float)(2.0f * g_pCursor->m_nPosY)) / (float)(m_dwScreenHeight - m_nHeightShift) - 1.0f) / m_matProj.m[1][0]);
+	v.z = 1.0f;
+
+	D3DXMATRIX matViewInv;
+	D3DXMatrixInverse(&matViewInv, 0, &m_matView);
+
+	pPickRayDir->x = (float)((v.x * matViewInv.m[0][0]) + (v.y * matViewInv.m[1][0]) + (v.z * matViewInv.m[2][0]));
+	pPickRayDir->y = (float)((v.x * matViewInv.m[0][1]) + (v.y * matViewInv.m[1][1]) + (v.z * matViewInv.m[2][1]));
+	pPickRayDir->z = (float)((v.x * matViewInv.m[0][2]) + (v.y * matViewInv.m[1][2]) + (v.z * matViewInv.m[2][2]));
+
+	pRickRayOrig->x = matViewInv.m[3][0];
+	pRickRayOrig->x = matViewInv.m[3][1];
+	pRickRayOrig->z = matViewInv.m[3][2];
 }
 
 void RenderDevice::RenderRect(float iStartX, float iStartY, float iCX, float iCY, float iDestX, float iDestY, IDirect3DTexture9* pTexture, float fScaleX, float fScaleY)
@@ -1895,14 +1923,56 @@ void RenderDevice::RenderRectRot(float iStartX, float iStartY, float iCX, float 
 
 void RenderDevice::LogRenderState()
 {
+	FILE* fp = nullptr;
+	fopen_s(&fp, "RenderStateLog.txt", "wt");
+
+	if (fp == nullptr)
+		return;
+
+	for (int i = 0; i < 256; i++)
+	{
+		fprintf(fp, "Index:%d Val=%d\n", i, m_dwRenderStateList[i]);
+	}
+
+	fclose(fp);
 }
 
 void RenderDevice::LogSamplerState()
 {
+	FILE* fp = nullptr;
+	fopen_s(&fp, "SamplerStateLog.txt", "wt");
+
+	if (fp == nullptr)
+		return;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 14; ++j)
+		{
+			fprintf(fp, "Stage:%d State:%d  Val=%d\n", i, j, m_dwSamplerStateList[i][j]);
+		}
+	}
+
+	fclose(fp);
 }
 
 void RenderDevice::LogTextureStageState()
 {
+	FILE* fp = nullptr;
+	fopen_s(&fp, "TextureStageStateLog.txt", "wt");
+
+	if (fp == nullptr)
+		return;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 29; ++j)
+		{
+			fprintf(fp, "Stage:%d State:%d  Val=%d\n", i, j, m_dwTextureStageStateList[i][j]);
+		}
+	}
+
+	fclose(fp);
 }
 
 void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
