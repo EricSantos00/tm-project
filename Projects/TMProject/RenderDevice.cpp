@@ -9,6 +9,7 @@
 #include "TMSky.h"
 #include "TMFieldScene.h"
 #include "TMCamera.h"
+#include "TMMesh.h"
 #include "Basedef.h"
 #include <io.h>
 #include <fcntl.h>
@@ -2395,6 +2396,175 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 
 void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 {
+	if (ipControl != nullptr && ipControl->bVisible == 1)
+	{
+		if (g_pDevice->m_iVGAID == 1)
+		{
+			if (g_pDevice->m_dwBitCount == 32)
+				g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xFF000000);
+			else
+				g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xF000);
+		}
+		else if (g_pDevice->m_dwBitCount == 32)
+		{
+			g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xDD);
+		}
+		else
+		{
+			g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xD);
+		}
+
+		SetRenderStateBlock(0);
+
+		switch (ipControl->eRenderType)
+		{
+		case RENDERCTRLTYPE::RENDER_TEXT:
+		case RENDERCTRLTYPE::RENDER_SHADOW:
+			if (ipControl->pFont)
+			{
+				int nUp = 0;
+				if (m_dwScreenWidth == 640)
+					nUp = -1;
+				ipControl->pFont->Render(
+					(int)ipControl->nPosX,
+					nUp + (int)ipControl->nPosY,
+					(int)ipControl->eRenderType);
+			}
+		case RENDERCTRLTYPE::RENDER_IMAGE:
+		case RENDERCTRLTYPE::RENDER_IMAGE_TILE:
+		case RENDERCTRLTYPE::RENDER_IMAGE_STRETCH:
+		case RENDERCTRLTYPE::RENDER_TEXT_FOCUS:
+			RenderGeomRectImage(ipControl);
+			if (ipControl->strString[0])
+			{
+				int nLength = strlen(ipControl->strString);
+				if (nLength > 0 && nLength < 64 && ipControl->pFont)
+				{
+					int nUp = 0;
+					if (m_dwScreenWidth == 640)
+						nUp = -1;
+					if (ipControl->nTextureSetIndex == 526)
+					{
+						ipControl->pFont->Render(
+							(int)(float)((float)(ipControl->nWidth - (float)(7 * nLength)) + ipControl->nPosX),
+							nUp + (int)(float)((float)(ipControl->nHeight - 12.0) + ipControl->nPosY),
+							(int)ipControl->eRenderType);
+					}
+					else
+					{
+						ipControl->pFont->Render(
+							(int)(float)((float)((float)(ipControl->nWidth - (float)(6 * nLength)) / 2.0) + ipControl->nPosX),
+							nUp + (int)(float)((float)((float)(ipControl->nHeight - 12.0) / 2.0) + ipControl->nPosY),
+							(int)ipControl->eRenderType);
+					}
+				}
+			}
+		case RENDERCTRLTYPE::RENDER_3DOBJ:
+			if (ipControl->n3DObjIndex < 737 || ipControl->n3DObjIndex > 739)
+			{
+				SetRenderStateBlock(1);
+				g_pDevice->SetRenderState(D3DRS_ZFUNC, 8);
+				SetRenderState(D3DRS_FOGENABLE, 0);
+				SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
+				SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+
+				TMMesh *pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 0, 180000);
+				float fScale = 1.0f / RenderDevice::m_fWidthRatio;
+				if (ipControl->dwBGColor == -1)
+					fScale = fScale * 0.80000001;
+
+				fScale = fScale * 0.89999998;
+
+				if (ipControl->n3DObjIndex >= 937 && ipControl->n3DObjIndex <= 946
+					|| ipControl->n3DObjIndex >= 300 && ipControl->n3DObjIndex <= 303)
+				{
+					fScale = 0.5f;
+				}
+
+				fScale = BASE_ScreenResize(fScale);
+
+				if (pMesh)
+				{
+					pMesh->RenderForUI(ipControl->nPosX, ipControl->nPosY, ipControl->fAngle, ipControl->fScale * fScale,
+						ipControl->dwColor, ipControl->nTextureIndex, ipControl->nTextureSetIndex, ipControl->sLegend);
+				}
+				if (ipControl->dwBGColor)
+				{
+					int nTexIndex = 123;
+					if (ipControl->dwBGColor == 0xFFFFFFAA)
+						nTexIndex = 56;
+					if (ipControl->dwBGColor == 0xFFFFFFFF)
+						nTexIndex = 273;
+					if (ipControl->dwBGColor == 0xFF8800BB)
+						nTexIndex = 122;
+					if (ipControl->dwBGColor == 0xFF444488)
+						nTexIndex = 122;
+					if (ipControl->dwBGColor == 0xFFFF0000)
+						nTexIndex = 56;
+
+					RenderGeomControlBG(ipControl, ipControl->dwBGColor, nTexIndex);
+				}
+
+				SetRenderState(D3DRS_FOGENABLE, m_bFog);
+				g_pDevice->SetRenderState(D3DRS_ZFUNC, 4);				
+			}
+			else
+			{
+				unsigned int dwColor[3] = { 0xFFFF4400, 0xFF3366FF, 0xFF00FF00 };
+				g_pDevice->SetRenderState(D3DRS_ZFUNC, 8u);
+				g_pDevice->SetRenderState(D3DRS_LIGHTING, 0);
+				g_pDevice->SetRenderState(D3DRS_DESTBLEND, 2u);
+				g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+				g_pDevice->SetRenderState(D3DRS_SRCBLEND, 5u);
+				g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+				SetRenderState(D3DRS_FOGENABLE, 0);
+
+				float fScale = 1.0 / RenderDevice::m_fWidthRatio;
+				TMMesh* pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 1, 180000);
+
+				if (pMesh)
+				{
+					D3DVERTEXBUFFER_DESC vDesc;
+					if (SUCCEEDED(pMesh->m_pVB->GetDesc(&vDesc)))
+					{
+						RDLVERTEX* pVertex;
+						pMesh->m_pVB->Lock(0, 0, (void**)&pVertex, 0);
+
+						int nCount = vDesc.Size / 24;
+						for (int i = 0; i < nCount; ++i)
+							pVertex[i].diffuse = ipControl->n3DObjIndex - 2964;
+
+						pMesh->m_pVB->Unlock();
+
+						pMesh->m_nTextureIndex[0] = 204;
+
+						pMesh->RenderForUI(ipControl->nPosX, ipControl->nPosY, ipControl->fAngle, ipControl->fScale * fScale,
+							ipControl->dwColor, ipControl->nTextureIndex, ipControl->nTextureSetIndex, ipControl->sLegend);
+					}
+				}
+
+				SetRenderState(D3DRS_FOGENABLE, m_bFog);
+				g_pDevice->SetRenderState(D3DRS_ZFUNC, 4);
+			}
+		default:
+			if (g_pDevice->m_iVGAID == 1)
+			{
+				if (g_pDevice->m_dwBitCount == 32)
+					g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xFF000000);
+				else
+					g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xF000);
+			}
+			else if (g_pDevice->m_dwBitCount == 32)
+			{
+				g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xDD);
+			}
+			else
+			{
+				g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xD);
+			}
+			return;
+		}
+	}
 }
 
 void RenderDevice::RenderGeomControlBG(GeomControl* ipControl, DWORD dwColor, int nTextureIndex)
