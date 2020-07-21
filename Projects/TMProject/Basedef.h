@@ -682,5 +682,14 @@ struct MSG_CombineItem
 	STRUCT_ITEM Item[8];
 	char CarryPos[8];
 };
+
+struct MSG_Mission
+{
+	MSG_STANDARD Header;
+	int MissionNo;
+	STRUCT_ITEM Item[8];
+	char CarryPos[8];
+};
+
 extern HWND hWndMain;
 extern char EncodeByte[4];
