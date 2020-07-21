@@ -217,3 +217,443 @@ public:
     GeomControl m_GCBorder;
 };
 
+class SEditableText : public SText
+{
+public:
+    enum {
+        TMEDIT_MSG_RETURN_PRESS = 0x0,
+        TMEDIT_MSG_TAB_PRESS = 0x1,
+        TMEDIT_MSG_PAGEUP_PRESS = 0x2,
+        TMEDIT_MSG_UP_PRESS = 0x3,
+        TMEDIT_MSG_PAGEDOWN_PRESS = 0x4,
+        TMEDIT_MSG_DOWN_PRESS = 0x5,
+        TMEDIT_MSG_DELETE_PRESS = 0x6,
+        TMEDIT_MSG_NO_STRING = 0x7,
+        TMEDIT_MSG_MAX_STRING = 0x8,
+    };
+
+public:
+    SEditableText(int inTextureSetIndex, char* istrText, int inMaxStringLen, int ibPasswd, 
+        unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, 
+        unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
+    ~SEditableText();
+
+    virtual void SetText(char* istrText);
+    char* GetText() override;
+    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY) override;
+    int OnCharEvent(char iCharCode, int lParam) override;
+    int OnChangeIME() override;
+    int OnIMEEvent(char* ipComposeString) override;
+    int OnKeyDownEvent(unsigned int iKeyCode) override;
+    int OnKeyUpEvent(unsigned int iKeyCode) override;
+    void Update() override;
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParentLayer, int nFlag) override;
+    void SetFocused(int bFocused) override;
+    int IsIMENative() override;
+
+public:
+    char m_strText[256];
+    char m_strComposeText[256];
+    char m_cTempChar;
+    char m_cReserved;
+    int m_nMaxStringLen;
+    int m_nCursorVisible;
+    int m_bPasswd;
+    int m_bEncrypt;
+    int m_bKorean;
+};
+
+class SButton : public SPanel
+{
+public:
+    enum {
+        TMC_IMAGE_COMMON = 0x0,
+        TMC_IMAGE_OVER = 0x1,
+        TMC_IMAGE_PRESS = 0x2,
+        TMC_IMAGE_SELECTED = 0x3,
+    };
+    enum { TMC_BUTTON_CLICK = 0x0 };
+
+public:
+    SButton(int inTextureSetIndex, float inX, float inY, float inWidth, float inHeight, 
+        unsigned int idwColor, int bSound, char* istrText);
+    ~SButton();
+    virtual void SetText(char* istrText);
+    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY) override;
+    virtual void SetSelected(int bSelected);
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParentLayer, int nFlag) override;
+    void Update() override;
+
+public:
+    int m_bMouseOver;
+    int m_bSelected;
+    char m_cAlwaysAlt;
+    char m_cBlink;
+    SText* m_pAltText;
+    int m_bPressed;
+    int m_GrayType;
+
+protected:
+    unsigned int m_dwColor;
+    int m_bSound;
+    unsigned int m_dwOldTime;
+};
+
+class SButtonBox : public SControl
+{
+public:
+    SButtonBox(float inPosX, float inPosY, float inWidth, float inHeight, int nStartCount, int nEndCount, int nCurrnetPage, int nPrevPage,
+        int nNextPage, int nStartPage, int nEndPage);
+    ~SButtonBox();
+
+    void SetEventListener(IEventListener* ipEventListener) override;
+    void SetButtonBox(int nStartCount, int nEndCount, int nCurrnetPage, int nPrevPage, int nNextPage, int nStartPage, int nEndPage);
+
+public:
+    SButton* m_pButtons[14];
+    int m_nCurrentPage;
+    int m_nStartCount;
+    int m_nEndCount;
+    int m_nStartPage;
+    int m_nEndPage;
+    int m_nPrevPage;
+    int m_nNextPage;
+};
+
+class SCheckBox : public SPanel
+{
+public:
+    enum {
+        TMC_IMAGE_UNCHECKED = 0x0,
+        TMC_IMAGE_CHECKED = 0x1,
+    };
+    enum {
+        TMC_CHECKBOX_CHANGED = 0x0,
+    };
+
+public:
+    SCheckBox(unsigned int inTextureSetIndex, float inX, float inY, float inWidth, float inHeight, unsigned int dwColor);
+    ~SCheckBox();
+
+    void SetValue(int ibValue);
+    int GetValue();
+    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY) override;
+    void Update() override;
+
+protected:
+    int m_bValue;
+    int m_bOver;
+    unsigned int m_dwSelectedColor;
+    unsigned int m_dwUnSelectedColor;
+};
+
+class SProgressBar : public SPanel
+{
+public:
+    enum {
+        PROGRESSBAR_DEFAULT_COLOR = 0x11111111,
+    };
+    enum {
+        TMPROGRESS_STYLE_V = 0x0,
+        TMPROGRESS_STYLE_H = 0x1,
+        TMPROGRESS_STYLE_VH = 0x2,
+    };
+public:
+    SProgressBar(int inTextureSetIndex, int inCurrent, int inMax, float inX, float inY, float inWidth, float inHeight,
+        unsigned int idwProgressColor, unsigned int idwColor, unsigned int dwStyle);
+    ~SProgressBar();
+
+    virtual void SetCurrentProgress(int inCurrent);
+    virtual void SetMaxProgress(int inMax);
+    virtual int GetCurrentProgress();
+    virtual int GetMaxProgress();
+    void Update() override;
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParentLayer, int nFlag) override;
+    virtual void ResetBar();
+
+public:
+    unsigned int m_dwStyle;
+    int m_nCurrent;
+    int m_nMax;
+    float m_nProgressWidth;
+    float m_nProgressHeight;
+    GeomControl m_GCProgress;
+    float m_InitHeight;
+    float m_InitStartY;
+    float m_InitWidth;
+    float m_InitStartX;
+};
+
+class SScrollBar : public SControl, public IEventListener
+{
+public:
+    enum {
+        SCROLLBAR_DEFAULT_COLOR = 0x11111111,
+    };
+    enum {
+        TMSCROLL_STYLE_V = 0x0,
+        TMSCROLL_STYLE_H = 0x1,
+    };
+    enum {
+        TMC_PANEL_UP = 0x0,
+        TMC_PANEL_DOWN = 0x1,
+        TMC_PANEL_BAR = 0x2,
+        TMC_PANEL_BACK1 = 0x3,
+        TMC_PANEL_BACK2 = 0x4,
+    };
+public:
+    SScrollBar(int inCurrent, int inMax, float inX, float inY, float inWidth, float inHeight,
+        unsigned int dwStyle, unsigned int idwBarColor, unsigned int idwColor, int bChat);
+    ~SScrollBar();
+
+    virtual void SetCurrentPos(int inCurrent);
+    virtual int GetCurrentPos();
+    virtual void SetMaxValue(int inMax);
+    virtual int GetMaxValue();
+    void SetSize(float nWidth, float nHeight) override;
+    virtual void Up();
+    virtual void Down();
+    void Update() override;
+    int OnControlEvent(DWORD idwControlID, DWORD idwEvent) override;
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParentLayer, int nFlag) override;
+    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY) override;
+    void upbarSetPos(float x, float y);
+    void downbarSetPos(float x, float y);
+    void upbarSetsize(float x, float y);
+    void downbarSetsize(float x, float y);
+    void upbarSetvisible(bool bSet);
+    void downbarSetvisible(bool bSet);
+    void scrollbarSetvisible(bool bSet);
+    void scrollbarbackSetvisible(bool bSet);
+
+protected:
+    unsigned int m_dwStyle;
+    int m_nCurrent;
+    int m_nMax;
+    int m_nScrollPos;
+    int m_nScrollLength;
+    float m_nBarSize;
+    float m_nBtnSize;
+    SPanel* m_pUpPanel;
+    SPanel* m_pDownPanel;
+    SPanel* m_pBar;
+
+public:
+    SPanel* m_pBackground1;
+};
+
+class SListBoxItem : public SText
+{
+public:
+    SListBoxItem(char* istrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight,
+        int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
+    ~SListBoxItem();
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, int inParentLayer, int nFlag) override;
+        
+public:
+    int m_bBGColor;
+    unsigned int m_dwTime;
+};
+
+class SListBoxBoardItem : public SListBoxItem
+{
+public:
+    SListBoxBoardItem(char* szIndex, char* szVIndex, char* szTitle, char* szWriter, char* szCount, char* szDate, unsigned int dwColor, int bTitile);
+    ~SListBoxBoardItem();
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, int inParentLayer, int nFlag) override;
+    void SetPos(float nPosX, float nPosY) override;
+
+public:
+    SText* m_pTitleText;
+    SText* m_pWriterText;
+    SText* m_pCountText;
+    SText* m_pDateText;
+    char m_szIndex[256];
+};
+
+class SListBoxPartyItem : public SListBoxItem
+{
+public:
+    SListBoxPartyItem(char* iStrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight,
+        unsigned int dwCharID, int nClass, int nLevel, int nHp, int nMaxHp);
+    ~SListBoxPartyItem();
+
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, int inParentLayer, int nFlag) override;
+        
+public:
+    unsigned int m_dwCharID;
+    int m_nClass;
+    int m_nLevel;
+    int m_nState;
+    SText* m_pLevelText;
+    SPanel* m_pDirPanel;
+    SProgressBar* m_pHpProgress;
+};
+
+class SListBoxServerItem : public SListBoxItem
+{
+public:
+    SListBoxServerItem(int nTextureSet, char* iStrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight,
+        int nCount, char cCastle, char cGoldBug, int Num);
+    ~SListBoxServerItem();
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, int inParentLayer, int nFlag) override;
+        
+public:
+    SProgressBar* m_pBusyProgress;
+    SPanel* m_pCrownPanel;
+    SPanel* m_pGoldBugPanel;
+    SPanel* m_pAgePanel;
+    int m_nCurrent;
+    char m_cConnected;
+    char m_cCastle;
+    char m_cGoldBug;
+};
+
+class SListBox : public SPanel, public IEventListener
+{
+public:
+    enum {
+        TMC_SCROLL_BAR = 0x1,
+        TMC_EDITBOX = 0x2,
+    };
+
+public:
+    SListBox(int inTextureSetIndex, int inMaxCount, int inVisibleCount, float inX, float inY,
+        float inWidth, float inHeight, unsigned int idwColor, RENDERCTRLTYPE eRenderType,
+        int bSelectEnable, int bScrollBar, int bEditable);
+    ~SListBox();
+
+    int AddItem(SListBoxItem* ipNewItem);
+    int DeleteItem(int inItemIndex);
+    int DeleteItem(SListBoxItem* ipItem);
+    SListBoxItem* GetItem(int inItemIndex);
+    void Empty();
+    void SetStartItemIndex(int nIndex);
+    void SetSize(float nWidth, float nHeight) override;
+    void SetPickSize(float nWidth, float nHeight);
+    void SetEditable();
+    int OnControlEvent(DWORD idwControlID, DWORD idwEvent) override;
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParentLayer, int nFlag) override;
+    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY) override;
+    void SetTextTimer(unsigned int dTime);
+
+public:
+    char m_cScrollBar;
+    char m_cEditable;
+    short m_sEditLine;
+    int m_bRButton;
+    int m_nMaxCount;
+    int m_nVisibleCount;
+    int m_nStartItemIndex;
+    int m_nSelectedItem;
+    float m_fPickWidth;
+    float m_fPickHeight;
+    SEditableText* m_pEditLine;
+    SScrollBar* m_pScrollBar;
+    int m_nNumItem;
+    SListBoxItem* m_pItemList[1000];
+    unsigned int m_dwSetTime;
+    unsigned int m_dwNowTime;
+};
+
+class SMessageBox : public SPanel, public IEventListener
+{
+public:
+    enum {
+        TMC_OKBUTTON_ID = 0x1,
+        TMC_CANCELBUTTON_ID = 0x2,
+    };
+    enum {
+        TMC_MESSAGEBOX_MESSAGE = 0x0,
+        TMC_MESSAGEBOX_ASK = 0x1,
+        TMC_MESSAGEBOX_SLIDE = 0x2,
+        TMC_MESSAGEBOX_COMPLEX = 0x3,
+        TMC_MESSAGEBOX_OK = 0x4,
+    };
+    enum {
+        TMC_MESSAGE_OK = 0x0,
+        TMC_MESSAGE_CANCEL = 0x1,
+    };
+
+public:
+    SMessageBox(char* istrMessage, char ibyMessageBoxType, float inX, float inY);
+    ~SMessageBox();
+
+    int OnControlEvent(DWORD idwControlID, DWORD idwEvent) override;
+    virtual void SetMessage(char* istrMessage, unsigned int dwMessageValue, char* istrMessage2);
+    virtual void SetMessage(unsigned int dwMessageValue);
+    virtual unsigned int GetMessageA();
+    int OnCharEvent(char iCharCode, int lParam) override;
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParentLayer, int nFlag) override;
+    void SetVisible(int bVisible) override;
+    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY) override;
+
+public:
+    unsigned int m_dwArg;
+    unsigned int m_dwMessage;
+    char m_byMessageBoxType;
+
+protected:
+    SPanel* m_pPanel1;
+    SPanel* m_pPanel2;
+    SText* m_pMessage;
+    SText* m_pMessage2;
+    SText* m_pCaption;
+    SButton* m_pOKButton;
+    SButton* m_pCancelButton;
+    SPanel* m_pPanelBtn1;
+    SPanel* m_pPanelBtn2;
+};
+
+class SMessagePanel : public SPanel
+{
+public:
+    SMessagePanel(char* istrMessage, float inX, float inY, float inWidth, float inHeight, unsigned int dwTime);
+    ~SMessagePanel();
+
+    void SetMessage(char* istrMessage, unsigned int dwTime);
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParentLayer, int nFlag) override;
+    virtual void SetVisible(int bVisible, int bSound);
+
+public:
+    SText* m_pText;
+    SText* m_pText2;
+    SPanel* m_pPanelL;
+    SPanel* m_pPanelR;
+    unsigned int m_dwOldServerTime;
+    unsigned int m_dwLifeTime;
+};
+
+class SReelPanel : public SPanel
+{
+public:
+    SReelPanel(unsigned int inTextureSetIndex, float inX, float inY, float inSizeX, float inSizeY, float inPitch);
+    ~SReelPanel();
+
+    void SetRoll(bool bRoll, int StopPos1, int StopPos2, int StopPos3, unsigned int StopTime);
+    void FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParentLayer, int nFlag) override;
+    void SetVisible(int bVisible) override;
+    void SetResult(char cResult);
+    void UpDateJackpot();
+
+public:
+    SPanel* m_pGamBleReel[3][22];
+    SPanel* m_pGamBleBox[2][9];
+    SPanel* m_pJACKPOTCOUNT[10];
+    SPanel* m_pJACKPOTBG;
+    bool m_bGamBleBox[9];
+    bool m_bRoling;
+    int m_RollPos[3];
+    int m_StopPos[3];
+    unsigned int m_dwOldServerTime;
+    unsigned int m_dwStopTime;
+    int m_bResult;
+    unsigned int m_dwJackpot;
+    unsigned int m_dwJackPotView;
+    unsigned int m_dwAutoTime;
+    unsigned int m_dwBoxAniTime;
+    int m_nPresent;
+    TMVector2 m_vSize;
+    int m_nPitch;
+    unsigned int m_dwBatCoin;
+};
