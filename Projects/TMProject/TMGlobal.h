@@ -25,6 +25,9 @@ extern RenderDevice* g_pDevice;
 extern SCursor* g_pCursor;
 extern CSoundManager* g_pSoundManager;
 
+extern int g_nUseBlur;
+extern int g_nAntialias;
+
 static unsigned int g_dwHandIndex[101][2] =
 {
     {19,25},{18,24},{15,21},{15,21},{12,18},{22,28},{23,29},

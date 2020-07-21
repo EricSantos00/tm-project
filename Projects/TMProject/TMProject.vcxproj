@@ -293,6 +293,7 @@
     <ClCompile Include="D3DEnumeration.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="DirShow.cpp" />
     <ClCompile Include="dsutil.cpp" />
     <ClCompile Include="DXUtil.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

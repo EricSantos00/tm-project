@@ -11,3 +11,6 @@ TMScene* g_pCurrentScene;
 RenderDevice* g_pDevice;
 SCursor* g_pCursor;
 CSoundManager* g_pSoundManager;
+
+int g_nUseBlur;
+int g_nAntialias;
