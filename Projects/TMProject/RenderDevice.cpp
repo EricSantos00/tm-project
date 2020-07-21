@@ -9,6 +9,7 @@
 #include "TMSky.h"
 #include "TMFieldScene.h"
 #include "TMCamera.h"
+#include "Basedef.h"
 #include <io.h>
 #include <fcntl.h>
 
@@ -1977,6 +1978,419 @@ void RenderDevice::LogTextureStageState()
 
 void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 {
+	if (ipControl->nTextureSetIndex >= 0)
+	{
+		ControlTextureSet* pUISet = g_pTextureManager->GetUITextureSet(ipControl->nTextureSetIndex);
+
+		if (pUISet == nullptr)
+			return;
+
+		if (pUISet->nCount < ipControl->nTextureIndex)
+			return;
+
+		if (pUISet->pTextureCoord == nullptr)
+			return;
+
+		LPDIRECT3DTEXTURE9 pTexture = g_pTextureManager->GetUITexture(pUISet->pTextureCoord[ipControl->nTextureIndex].nTextureIndex, 2000);
+		if (ipControl->eRenderType == RENDERCTRLTYPE::RENDER_IMAGE)
+		{
+			RenderRect(
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartX,
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartY,
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nWidth,
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nHeight,
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + (float)ipControl->nPosX,
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + (float)ipControl->nPosY,
+				pTexture,
+				1.0f,
+				1.0f);
+		}
+		else if (ipControl->eRenderType == RENDERCTRLTYPE::RENDER_IMAGE_STRETCH)
+		{
+			float fScaleX = ipControl->nWidth / (float)pUISet->pTextureCoord[ipControl->nTextureIndex].nWidth;
+			float fScaleY = ipControl->nHeight / (float)pUISet->pTextureCoord[ipControl->nTextureIndex].nHeight;
+
+			if (ipControl->bClip == 1)
+			{
+				RenderRectRot(					
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartX,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartY + ipControl->fTop,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nWidth,
+					ipControl->fBottom - ipControl->fTop,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
+					(float)((float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY) + ipControl->fTop,
+					ipControl->nWidth / 2.0,
+					ipControl->nHeight / 2.0,
+					ipControl->fAngle,
+					pTexture,
+					fScaleX,
+					fScaleY);
+				return;
+			}
+
+			SetRenderStateBlock(0);
+
+			if (ipControl->sSanc > 0)
+			{
+				float fLayoutScaleX = BASE_ScreenResize(2.0f) + ipControl->nWidth;
+				float fLayoutScaleY = BASE_ScreenResize(2.0f) + ipControl->nHeight;
+				float fLayoutPosX = BASE_ScreenResize(1.0f);
+				float fLayoutPosY = BASE_ScreenResize(1.0f);
+				float lev = (float)((float)ipControl->sSanc - 1.0f) * 35.0f;
+				LPDIRECT3DTEXTURE9 pEfTexture = g_pTextureManager->GetUITexture(338, 2000);
+				if (pEfTexture != nullptr)
+				{
+					RenderRectRot(						
+						lev,
+						0.0,
+						35.0,
+						35.0,
+						(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
+						(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY,
+						ipControl->nWidth / 2.0,
+						ipControl->nHeight / 2.0,
+						ipControl->fAngle,
+						pEfTexture,
+						fScaleX,
+						fScaleY);
+				}
+			}
+			if (ipControl->sLegend > 0)
+			{
+				float fLayoutScaleX = BASE_ScreenResize(2.0f) + ipControl->nWidth;
+				float fLayoutScaleY = BASE_ScreenResize(2.0f) + ipControl->nHeight;
+				float fLayoutPosX = BASE_ScreenResize(1.0f);
+				float fLayoutPosY = BASE_ScreenResize(1.0f);
+				float fStartX = 0.0f;
+				float fStartY = 0.0f;
+
+				LPDIRECT3DTEXTURE9 pEfTexture = g_pTextureManager->GetUITexture(338, 2000);
+				switch (ipControl->sLegend)
+				{
+				case 5:
+				case 9:
+					fStartX = 315.0f;
+					break;
+				case 6:
+				case 10:
+					fStartX = 350.0f;
+					break;
+				case 7:
+				case 11:
+					fStartX = 385.0f;
+					break;
+				case 8:
+				case 12:
+					fStartX = 420.0f;
+					break;
+				case 13:
+				case 14:
+				case 15:
+				case 16:
+				case 17:
+				case 18:
+				case 19:
+				case 20:
+				case 21:
+				case 22:
+				case 23:
+				case 24:
+				case 25:
+				case 26:
+				case 27:
+				case 28:
+				case 29:
+				case 30:
+				case 31:
+				case 32:
+				case 33:
+				case 34:
+				case 35:
+				case 36:
+				case 37:
+				case 38:
+				case 39:
+				case 40:
+				case 41:
+				case 42:
+				case 43:
+				case 44:
+				case 45:
+				case 46:
+				case 47:
+				case 48:
+				case 49:
+				case 50:
+				case 51:
+				case 52:
+				case 53:
+				case 54:
+				case 55:
+				case 56:
+				case 57:
+				case 58:
+				case 59:
+				case 60:
+				case 61:
+				case 62:
+				case 63:
+				case 64:
+				case 65:
+				case 66:
+				case 67:
+				case 68:
+				case 69:
+				case 70:
+				case 71:
+				case 72:
+				case 73:
+				case 74:
+				case 75:
+				case 76:
+				case 77:
+				case 78:
+				case 79:
+				case 80:
+				case 81:
+				case 82:
+				case 83:
+				case 84:
+				case 85:
+				case 86:
+				case 87:
+				case 88:
+				case 89:
+				case 90:
+				case 91:
+				case 92:
+				case 93:
+				case 94:
+				case 95:
+				case 96:
+				case 97:
+				case 98:
+				case 99:
+				case 100:
+				case 101:
+				case 102:
+				case 103:
+				case 104:
+				case 105:
+				case 106:
+				case 107:
+				case 108:
+				case 109:
+				case 110:
+				case 111:
+				case 112:
+				case 113:
+				case 114:
+				case 115:
+					pEfTexture = nullptr;
+					break;
+				case 116:
+					fStartX = 0.0;
+					fStartY = 35.0f;
+					break;
+				case 117:
+					fStartX = 35.0f;
+					fStartY = 35.0f;
+					break;
+				case 118:
+					fStartX = 70.0f;
+					fStartY = 35.0f;
+					break;
+				case 119:
+					fStartX = 105.0f;
+					fStartY = 35.0f;
+					break;
+				case 120:
+					fStartX = 140.0f;
+					fStartY = 35.0f;
+					break;
+				case 121:
+					fStartX = 175.0f;
+					fStartY = 35.0f;
+					break;
+				case 122:
+					fStartX = 210.0f;
+					fStartY = 35.0f;
+					break;
+				case 123:
+					fStartX = 245.0f;
+					fStartY = 35.0f;
+					break;
+				case 124:
+					fStartX = 280.0f;
+					fStartY = 35.0f;
+					break;
+				case 125:
+					fStartX = 315.0f;
+					fStartY = 35.0f;
+					break;
+				}
+
+				if (pEfTexture != nullptr)
+				{
+					RenderDevice::RenderRectRot(
+						fStartX,
+						fStartY,
+						35.0,
+						35.0,
+						(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
+						(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY,
+						ipControl->nWidth / 2.0,
+						ipControl->nHeight / 2.0,
+						ipControl->fAngle,
+						pEfTexture,
+						fScaleX,
+						fScaleY);
+				}
+
+				RenderDevice::RenderRectRot(
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartX,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartY,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nWidth,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nHeight,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY,
+					ipControl->nWidth / 2.0,
+					ipControl->nHeight / 2.0,
+					ipControl->fAngle,
+					pTexture,
+					fScaleX,
+					fScaleY);
+			}
+		}	
+		else if (ipControl->eRenderType == RENDERCTRLTYPE::RENDER_IMAGE_TILE)
+		{
+			RenderRectCoord(			
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY,
+				ipControl->nWidth,
+				ipControl->nHeight,
+				pTexture,
+				ipControl->dwColor,
+				ipControl->nWidth / (float)pUISet->pTextureCoord[ipControl->nTextureIndex].nWidth,
+				ipControl->nHeight / (float)pUISet->pTextureCoord[ipControl->nTextureIndex].nHeight);
+		}
+	}
+	else if (ipControl->nTextureSetIndex < -2)
+	{
+		ControlTextureSet* pUISet = g_pTextureManager->GetUITextureSet(-ipControl->nTextureIndex);
+		if (pUISet != nullptr)
+		{
+			if (pUISet->pTextureCoord == nullptr)
+				return;
+
+			LPDIRECT3DTEXTURE9 pTexture = g_pTextureManager->GetUITexture(pUISet->pTextureCoord[ipControl->nTextureIndex].nTextureIndex,
+				 2000);
+
+			if (pTexture != nullptr)
+			{
+				RenderRectTex(
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartX,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartY,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nWidth,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nHeight,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
+					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY,
+					ipControl->nWidth,
+					ipControl->nHeight,
+					pTexture,
+					ipControl->dwColor,
+					1,
+					ipControl->fAngle,
+					1.0);
+			}
+
+			return;
+		}
+
+		int nMarkIndex = ipControl->nMarkIndex;
+		if (nMarkIndex >= 0 && nMarkIndex <= 64)
+		{
+			if (g_pTextureManager->m_stGuildMark[nMarkIndex].pTexture)
+			{
+				float iX = ipControl->nPosX - 2.0f;
+				float iY = ipControl->nPosY - 2.0f;
+				float iCX = 2.0f + 18.0f;
+				float iCY = 2.0f + 14.0f;
+				float fWidthRatio = RenderDevice::m_fWidthRatio;
+				float fHeightRatio = RenderDevice::m_fHeightRatio;
+				if (RenderDevice::m_fWidthRatio != 1.0f)
+				{
+					iCX = RenderDevice::m_fWidthRatio * 18.5f;
+					iCY = RenderDevice::m_fHeightRatio * 14.5f;
+				}
+				if (RenderDevice::m_fHeightRatio == 0.8f)
+				{
+					iX = iX - 0.0f;
+					iY = iY + 1.0f;
+				}
+				else if (RenderDevice::m_fHeightRatio == 1.0f)
+				{
+					iX = iX + 0.0f;
+					iY = iY + 0.0f;
+				}
+				else if (RenderDevice::m_fWidthRatio == 1.6f)
+				{
+					iX = iX - 1.0f;
+					iY = iY + 0.0f;
+				}
+				else if (RenderDevice::m_fWidthRatio == 2.0f)
+				{
+					iX = iX - 1.0f;
+					iY = iY + 0.0f;
+				}
+				if (ipControl->nMarkLayout == 1)
+				{
+					RenderRectNoTex(						
+						iX - (float)((float)(16.0 * RenderDevice::m_fWidthRatio) - 16.0),
+						iY - (float)((float)(12.0 * RenderDevice::m_fHeightRatio) - 12.0),
+						iCX,
+						iCY,
+						0xFFFFD700,
+						1);
+				}
+				else if (ipControl->nMarkLayout == 2)
+				{
+					RenderRectNoTex(						
+						iX - (float)((float)(16.0 * RenderDevice::m_fWidthRatio) - 16.0),
+						iY - (float)((float)(12.0 * RenderDevice::m_fHeightRatio) - 12.0),
+						iCX,
+						iCY,
+						0xFFC0C0C0,
+						1);
+				}
+
+				RenderRect(
+					0.0,
+					0.0,
+					16.0,
+					12.0,
+					ipControl->nPosX - (float)((float)(16.0 * fWidthRatio) - 16.0),
+					ipControl->nPosY - (float)((float)(12.0 * fHeightRatio) - 12.0),
+					g_pTextureManager->m_stGuildMark[nMarkIndex].pTexture,
+					fWidthRatio,
+					fHeightRatio);
+				g_pTextureManager->m_stGuildMark[nMarkIndex].dwLastRenderTime = timeGetTime();
+			}
+		}
+		else
+		{
+			int bTrans = 0;
+			if (ipControl->nTextureSetIndex == -2)
+				bTrans = 1;
+			RenderRectNoTex(
+				ipControl->nPosX,
+				ipControl->nPosY,
+				ipControl->nWidth,
+				ipControl->nHeight,
+				ipControl->dwColor,
+				bTrans);
+		}
+	}
 }
 
 void RenderDevice::RenderGeomControl(GeomControl* ipControl)
