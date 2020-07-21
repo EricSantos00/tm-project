@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Structures.h"
+class TMObject;
 class TreeNode
 {
 public:

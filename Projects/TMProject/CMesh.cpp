@@ -4,6 +4,8 @@
 #include "CMesh.h"
 #include "TMGlobal.h"
 #include "TMEffectSWSwing.h"
+#include "TMHuman.h"
+#include "TMCamera.h"
 #include "CFrame.h"
 
 CMesh::CMesh(TMSkinMesh* pParentSkin)
@@ -650,7 +652,7 @@ int CMesh::RenderMesh(char cAlpha)
         g_pDevice->SetTextureStageState(2, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_DISABLE);
         g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, D3DCULL::D3DCULL_CCW);
 
-        if (g_pCurrentScene->GetSceneType == ESCENE_TYPE::ESCENE_FIELD
+        if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD
             && !g_pCurrentScene->m_pMouseOverHuman
             && !g_pObjectManager->m_bTvControl)
         {
@@ -707,10 +709,10 @@ int CMesh::RenderMesh(char cAlpha)
                 m_pParentSkin->m_materials.Emissive.g = fvalue;
                 m_pParentSkin->m_materials.Emissive.b = fvalue;
 
-                if (g_pCurrentScene->GetSceneType == ESCENE_TYPE::ESCENE_FIELD)
+                if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
                 {
                     if (g_pCurrentScene->m_pMouseOverHuman)
-                        memcpy(g_pCurrentScene->m_TargetAffect, g_pCurrentScene->m_pMouseOverHuman->m_useAffect, 
+                        memcpy(g_pCurrentScene->m_TargetAffect, g_pCurrentScene->m_pMouseOverHuman->m_usAffect, 
                             sizeof(g_pCurrentScene->m_TargetAffect));
                 }
             }
@@ -800,7 +802,7 @@ int CMesh::LoadMesh(char* file)
             if (g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].pMesh)
                 m_pMesh = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].pMesh;
 
-            sprintf(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].szFileName, "%s", file);
+            sprintf_s(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].szFileName, "%s", file);
         }
 
         if (m_nSkinMeshIndex < 0)
