@@ -90,24 +90,24 @@ public:
 	D3DXMATRIX m_matWorld;
 	D3DXVECTOR3 m_vCamera;
 	D3DXVECTOR3 m_vLookatPos;
-	IDirect3DBaseTexture9* m_pTexture[8];
-	IDirect3DSurface9* m_pOldRenderTarget;
-	IDirect3DSurface9* m_pOldDepthStencil;
+	LPDIRECT3DBASETEXTURE9  m_pTexture[8];
+	LPDIRECT3DSURFACE9 m_pOldRenderTarget;
+	LPDIRECT3DSURFACE9 m_pOldDepthStencil;
 	D3DXVECTOR3 m_vPickRayDir;
 	D3DXVECTOR3 m_vPickRayOrig;
-	IDirect3DVertexShader9* m_pVertexShader[8]; // 4E4 = [0]
-	IDirect3DVertexDeclaration9* m_pVertexDeclaration[8]; // 504 = [0]
-	IDirect3DVertexDeclaration9* m_pVDEffect[4];
-	IDirect3DVertexShader9* m_pVSEffect[4];
-	IDirect3DPixelShader9* m_pPSEffect[6];
+	LPDIRECT3DVERTEXSHADER9 m_pVertexShader[8]; // 4E4 = [0]
+	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclaration[8]; // 504 = [0]
+	LPDIRECT3DVERTEXDECLARATION9 m_pVDEffect[4];
+	LPDIRECT3DVERTEXSHADER9 m_pVSEffect[4];
+	LPDIRECT3DPIXELSHADER9 m_pPSEffect[6];
 	D3DCOLORVALUE m_colorLight;
 	D3DCOLORVALUE m_colorBackLight;
 	D3DCOLORVALUE m_colNormalAmbient;
-	ID3DXSprite* m_pSprite;
+	LPD3DXSPRITE m_pSprite;
 	TMFont2* m_pFont2;
 	TMFont2* m_pFont;
-	ID3DXFont* m_pDXFont;
-	ID3DXFont* m_pDXFontLarge;
+	LPD3DXFONT m_pDXFont;
+	LPD3DXFONT m_pDXFontLarge;
 	TextureManager* m_pTextureManager;
 	MeshManager* m_pMeshManager;
 	RDTLVERTEX m_CtrlVertex[4];
