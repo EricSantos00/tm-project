@@ -125,9 +125,9 @@ struct TMVector3
 	{
 		TMVector3 ret;
 
-		ret.x = x - other.x;
-		ret.y = y - other.y;
-		ret.z = z - other.z;
+		ret.x = this->x - other.x;
+		ret.y = this->y - other.y;
+		ret.z = this->z - other.z;
 
 		return ret;
 	}
@@ -194,4 +194,100 @@ struct RDLVERTEX
 	unsigned int diffuse;
 	float tu;
 	float tv;
+};
+
+
+struct RDLNVERTEX2
+{
+	TMVector3 position;
+	TMVector3 normal;
+	unsigned int diffuse;
+	float tu1;
+	float tv1;
+	float tu2;
+	float tv2;
+};
+
+struct LOOK_INFO
+{
+	short Mesh0;
+	short Skin0;
+	short Mesh1;
+	short Skin1;
+	short Mesh2;
+	short Skin2;
+	short Mesh3;
+	short Skin3;
+	short Mesh4;
+	short Skin4;
+	short Mesh5;
+	short Skin5;
+	short Mesh6;
+	short Skin6;
+	short Mesh7;
+	short Skin7;
+};
+
+struct SANC_INFO
+{
+	char Sanc0;
+	char Sanc1;
+	char Sanc2;
+	char Sanc3;
+	char Sanc4;
+	char Sanc5;
+	char Sanc6;
+	char Sanc7;
+	char Legend0;
+	char Legend1;
+	char Legend2;
+	char Legend3;
+	char Legend4;
+	char Legend5;
+	char Legend6;
+	char Legend7;
+};
+
+struct HUMAN_LOOKINFO
+{
+	unsigned short FaceMesh;
+	unsigned short FaceSkin;
+	unsigned short HelmMesh;
+	unsigned short HelmSkin;
+	unsigned short CoatMesh;
+	unsigned short CoatSkin;
+	unsigned short PantsMesh;
+	unsigned short PantsSkin;
+	unsigned short GlovesMesh;
+	unsigned short GlovesSkin;
+	unsigned short BootsMesh;
+	unsigned short BootsSkin;
+	unsigned short RightMesh;
+	unsigned short RightSkin;
+	unsigned short LeftMesh;
+	unsigned short LeftSkin;
+};
+
+struct ResourceDef
+{
+	char szString[48];
+	int nNumber;
+};
+
+struct stMemo
+{
+	unsigned int dwColor;
+	char szString[128];
+};
+
+struct stPlayTime
+{
+	char strAccount[16];
+	int nServer;
+	unsigned short nYear;
+	unsigned short nMonth;
+	unsigned short nDay;
+	unsigned short nHour;
+	unsigned short nMinute;
+	unsigned short nPlayTime;
 };

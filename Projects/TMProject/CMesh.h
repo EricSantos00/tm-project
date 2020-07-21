@@ -8,11 +8,14 @@ public:
 	CMesh(TMSkinMesh* pParentSkin);
 	~CMesh();
 
-	virtual int Render(int nBright);
+	virtual int Render(int bBright);
 
 	int LoadMesh(char* file);
 	int InitEffect();
 	void SetMaterial(char cAlpha);
+
+private:
+	int RenderMesh(char cAlpha);
 
 public:
 	TMMesh* m_pMesh;

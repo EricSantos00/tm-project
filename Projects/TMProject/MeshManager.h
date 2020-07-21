@@ -54,7 +54,7 @@ public:
 	stCommonMeshList m_stSkinMeshList[1024];
 
 	static stBoneAni m_BoneAnimationList[100];
-	static char m_sAnimationArray[6][60][56];
+	static short m_sAnimationArray[6][60][56];
 	static char m_aObjectMask[2048][16][16];
 	static int m_nFullCount;
 

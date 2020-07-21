@@ -1,8 +1,10 @@
 #pragma once
 
 #include "TreeNode.h"
+#include "Structures.h"
 
 class TMGround;
+class TMSkinMesh;
 
 class TMObject : public TreeNode
 {

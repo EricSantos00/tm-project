@@ -3,6 +3,9 @@
 #include "TMGlobal.h"
 #include "TMLog.h"
 
+int TextureManager::DYNAMIC_TEXTURE_WIDTH = 256;
+int TextureManager::DYNAMIC_TEXTURE_HEIGHT = 256;
+
 TextureManager::TextureManager()
 {
 	// TODO : ? 

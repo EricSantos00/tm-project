@@ -2,6 +2,7 @@
 #include "TreeNode.h"
 #include "TMMesh.h"
 #include "TMGlobal.h"
+#include "TMObject.h"
 #include "TMLog.h"
 
 TMMesh::TMMesh()
@@ -234,16 +235,12 @@ HRESULT TMMesh::RenderDraw(int nTexOffset)
 
 int TMMesh::RenderPick(float fX, float fY, float fZ, float fAngle, float fAngle2, float fAngle3, float cMulti, int nTexOffset)
 {
-	D3DXMATRIX mat{};
-	D3DXMATRIX matPosition{};
-	D3DXMATRIX matScale{};
-
 	SetTexture(nTexOffset + m_nTextureIndex[0]);
 
-	D3DMATERIAL9 bmaterials;
+	D3DMATERIAL9 bmaterials{};
 	g_pDevice->m_pd3dDevice->GetMaterial(&bmaterials);
 
-	D3DCOLORVALUE color;
+	D3DCOLORVALUE color{};
 	color.r = 1.0f;
 	color.g = 1.0f;
 	color.b = 1.0f;
@@ -264,10 +261,10 @@ int TMMesh::RenderPick(float fX, float fY, float fZ, float fAngle, float fAngle2
 
 	g_pDevice->m_pd3dDevice->SetMaterial(&materials);
 
-	D3DXMATRIX matPosition;
-	D3DXMATRIX matScale;
-	D3DXMATRIX matQuat;
-	D3DXMATRIX mat;
+	D3DXMATRIX matPosition{};
+	D3DXMATRIX matScale{};
+	D3DXMATRIX matQuat{};
+	D3DXMATRIX mat{};
 
 	D3DXMatrixScaling(&matScale, m_fScaleH, m_fScaleV, m_fScaleH);
 	D3DXMatrixTranslation(&matPosition, fX, fY, fZ);
@@ -281,6 +278,7 @@ int TMMesh::RenderPick(float fX, float fY, float fZ, float fAngle, float fAngle2
 	Render(cMulti, nTexOffset);
 
 	g_pDevice->m_pd3dDevice->SetMaterial(&bmaterials);
+	return 1;
 }	
 
 
@@ -316,7 +314,7 @@ int TMMesh::RenderForUI(int nX, int nY, float fAngle, float fScale, DWORD dwColo
 
 	char cAlpha = g_pTextureManager->m_stModelTextureList[m_nTextureIndex[0]].cAlpha;
 
-	D3DCOLORVALUE color;
+	D3DCOLORVALUE color{};
 	color.r = (double)((dwColor >> 16) & 0xFF) / 256.0f;
 	color.g = (double)((unsigned short)dwColor >> 8) / 256.0f;
 	color.b = (double)((unsigned char)dwColor) / 256.0f;
@@ -504,7 +502,7 @@ int TMMesh::LoadMsa(const char* szFileName)
 
 	char szPathName[24] = { 0, };
 	int nIndex = 0;
-	for (nIndex = 0; nIndex < len && szFileName[nIndex] != 92; ++nIndex)
+	for (nIndex = 0; nIndex < len && szFileName[nIndex] != '\\'; ++nIndex)
 		szPathName[nIndex] = szFileName[nIndex];
 
 	char szTmpFileName[24];
@@ -516,7 +514,7 @@ int TMMesh::LoadMsa(const char* szFileName)
 
 	for (int i = 0; i < m_dwAttCount; ++i)
 	{
-		if (szTmpFileName[0] != 97 || szTmpFileName[1] != 97)
+		if (szTmpFileName[0] != 'a' || szTmpFileName[1] != 'a')
 		{
 			memset(szTextureName, 0, sizeof szTextureName);
 			fread(szTemp, 11, 1, fp);
@@ -524,7 +522,7 @@ int TMMesh::LoadMsa(const char* szFileName)
 
 			for (nIndex = len - 1; nIndex > 0; --nIndex)
 			{
-				if (szTemp[nIndex] == 92)
+				if (szTemp[nIndex] == '\\')
 				{
 					sprintf_s(szTextureName, "%s", &szTemp[nIndex + 1]);
 					break;
@@ -537,10 +535,10 @@ int TMMesh::LoadMsa(const char* szFileName)
 			memset(szTextureName, 0, 24);
 			len = strlen(szTemp);
 
-			for (nIndex = 0; nIndex < len && szTemp[nIndex] != 46; ++nIndex)
+			for (nIndex = 0; nIndex < len && szTemp[nIndex] != '.'; ++nIndex)
 				szTextureName[nIndex] = szTemp[nIndex];
 
-			if (!stricmp(szPathName, "effect"))
+			if (!_stricmp(szPathName, "effect"))
 			{
 				sprintf_s(szTex, "Effect\\%s.wys", szTextureName);
 				m_nTextureIndex[i] = g_pTextureManager->GetEffectTextureIndex(szTex);
@@ -555,10 +553,10 @@ int TMMesh::LoadMsa(const char* szFileName)
 		{
 			fread(szTextureName, 11, 1, fp);
 			memset(szTextureName, 0, 24);
-			for (nIndex = 0; nIndex < len && szTmpFileName[nIndex] != 46; ++nIndex)
+			for (nIndex = 0; nIndex < len && szTmpFileName[nIndex] != '.'; ++nIndex)
 				szTextureName[nIndex] = szTmpFileName[nIndex];
 
-			if (!stricmp(szPathName, "effect"))
+			if (!_stricmp(szPathName, "effect"))
 			{
 				sprintf_s(szTex, "Effect\\%s.wys", szTextureName);
 				m_nTextureIndex[i] = g_pTextureManager->GetEffectTextureIndex(szTex);
@@ -574,10 +572,10 @@ int TMMesh::LoadMsa(const char* szFileName)
 			len = strlen(szTmpFileName);
 			memset(szTextureName, 0, 24);
 
-			for (nIndex = 0; nIndex < len && szTmpFileName[nIndex] != 46; ++nIndex)
+			for (nIndex = 0; nIndex < len && szTmpFileName[nIndex] != '.'; ++nIndex)
 				szTextureName[nIndex] = szTmpFileName[nIndex];
 
-			if (!stricmp(szPathName, "effect"))
+			if (!_stricmp(szPathName, "effect"))
 			{
 				sprintf_s(szTex, "Effect\\%s.wys", szTextureName);
 				m_nTextureIndex[i] = g_pTextureManager->GetEffectTextureIndex(szTex);

@@ -30,7 +30,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -101,7 +101,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wsock32.lib;dxguid.lib;dsound.lib;imm32.lib;dinput8.lib;winmm.lib;d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -277,6 +277,7 @@
     <ClInclude Include="TMSkillTownPortal.h" />
     <ClInclude Include="TMSkinMesh.h" />
     <ClInclude Include="TMSky.h" />
+    <ClInclude Include="TMSnow.h" />
     <ClInclude Include="TMSun.h" />
     <ClInclude Include="TMTree.h" />
     <ClInclude Include="TMVideoWnd.h" />
@@ -288,9 +289,11 @@
     <ClCompile Include="CFrame.cpp" />
     <ClCompile Include="CMesh.cpp" />
     <ClCompile Include="CPSock.cpp" />
+    <ClCompile Include="D3DDevice.cpp" />
     <ClCompile Include="D3DEnumeration.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="DirShow.cpp" />
     <ClCompile Include="dsutil.cpp" />
     <ClCompile Include="DXUtil.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -299,6 +302,9 @@
     <ClCompile Include="GeomObject.cpp" />
     <ClCompile Include="JBlur.cpp" />
     <ClCompile Include="MeshManager.cpp" />
+    <ClCompile Include="Mission.cpp" />
+    <ClCompile Include="MrItemMix.cpp" />
+    <ClCompile Include="NewApp.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -306,8 +312,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="RenderDevice.cpp" />
+    <ClCompile Include="SControl.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TimerManager.cpp" />
+    <ClCompile Include="TMArrow.cpp" />
     <ClCompile Include="TMEffect.cpp" />
     <ClCompile Include="TMEffectBillBoard.cpp" />
     <ClCompile Include="TMEffectBillBoard2.cpp" />
@@ -327,14 +335,28 @@
     <ClCompile Include="TMEffectStart.cpp" />
     <ClCompile Include="TMEffectSWSwing.cpp" />
     <ClCompile Include="TMFireEffect.cpp" />
+    <ClCompile Include="TMFlail.cpp" />
+    <ClCompile Include="TMFloat.cpp" />
     <ClCompile Include="TMFont2.cpp" />
     <ClCompile Include="TMFont3.cpp" />
+    <ClCompile Include="TMGate.cpp" />
     <ClCompile Include="TMGlobal.cpp" />
+    <ClCompile Include="TMGround.cpp" />
+    <ClCompile Include="TMHuman.cpp" />
+    <ClCompile Include="TMItem.cpp" />
+    <ClCompile Include="TMLight.cpp" />
     <ClCompile Include="TMLog.cpp" />
     <ClCompile Include="TMMesh.cpp" />
+    <ClCompile Include="TMObject.cpp" />
     <ClCompile Include="TMProject.cpp" />
+    <ClCompile Include="TMRain.cpp" />
+    <ClCompile Include="TMScene.cpp" />
+    <ClCompile Include="TMSea.cpp" />
     <ClCompile Include="TMShade.cpp" />
+    <ClCompile Include="TMSkillDoubleSwing.cpp" />
     <ClCompile Include="TMSkinMesh.cpp" />
+    <ClCompile Include="TMSky.cpp" />
+    <ClCompile Include="TreeNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TMProject.rc" />

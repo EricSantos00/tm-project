@@ -2,48 +2,10 @@
 
 #define MAX_FRAME_TO_ANIMATE 100
 
-struct LOOK_INFO
-{
-	unsigned short Mesh0;
-	unsigned short Skin0;
-	unsigned short Mesh1;
-	unsigned short Skin1;
-	unsigned short Mesh2;
-	unsigned short Skin2;
-	unsigned short Mesh3;
-	unsigned short Skin3;
-	unsigned short Mesh4;
-	unsigned short Skin4;
-	unsigned short Mesh5;
-	unsigned short Skin5;
-	unsigned short Mesh6;
-	unsigned short Skin6;
-	unsigned short Mesh7;
-	unsigned short Skin7;
-};
-
-struct SANC_INFO
-{
-	char Sanc0;
-	char Sanc1;
-	char Sanc2;
-	char Sanc3;
-	char Sanc4;
-	char Sanc5;
-	char Sanc6;
-	char Sanc7;
-	char Legend0;
-	char Legend1;
-	char Legend2;
-	char Legend3;
-	char Legend4;
-	char Legend5;
-	char Legend6;
-	char Legend7;
-};
+#include "Structures.h"
 
 class CFrame;
-class TMObject;
+class TMHuman;
 class TMEffectSWSwing;
 
 class TMSkinMesh
@@ -109,7 +71,7 @@ public:
 	unsigned int m_dwStartOffset;
 	unsigned int m_dwLastUsedTime;
 	unsigned int m_dwShowTime;
-	TMObject* m_pOwner;
+	TMHuman* m_pOwner;
 	TMEffectSWSwing* m_pSwingEffect[2];
 	float m_fLenDetail;
 

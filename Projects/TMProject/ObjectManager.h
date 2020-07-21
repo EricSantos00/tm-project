@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Structures.h"
+#include "Basedef.h"
+
 class TreeNode;
 class TMFieldScene;
 class TMScene;

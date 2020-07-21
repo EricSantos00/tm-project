@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Structures.h"
+class TMObject;
 class TreeNode
 {
 public:
@@ -40,13 +42,13 @@ public:
 	unsigned int m_dwID;
 
 public:
-	static unsigned int m_VisualKey1;
-	static unsigned int m_VisualKey2;
-	static unsigned int m_VisualKey3;
-	static unsigned int m_VisualKey4;
-	static unsigned int m_VisualKey5;
-	static unsigned int m_VisualKey6;
-	static unsigned int m_VisualKey7;
-	static unsigned int m_VisualKey8;
-	static unsigned int m_VisualKey9;
+	static int m_VisualKey1;
+	static int m_VisualKey2;
+	static int m_VisualKey3;
+	static int m_VisualKey4;
+	static int m_VisualKey5;
+	static int m_VisualKey6;
+	static int m_VisualKey7;
+	static int m_VisualKey8;
+	static int m_VisualKey9;
 };
