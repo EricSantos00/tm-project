@@ -301,6 +301,9 @@
     <ClCompile Include="GeomObject.cpp" />
     <ClCompile Include="JBlur.cpp" />
     <ClCompile Include="MeshManager.cpp" />
+    <ClCompile Include="Mission.cpp" />
+    <ClCompile Include="MrItemMix.cpp" />
+    <ClCompile Include="NewApp.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -308,6 +311,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="RenderDevice.cpp" />
+    <ClCompile Include="SControl.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TimerManager.cpp" />
     <ClCompile Include="TMArrow.cpp" />
@@ -348,6 +352,7 @@
     <ClCompile Include="TMScene.cpp" />
     <ClCompile Include="TMSea.cpp" />
     <ClCompile Include="TMShade.cpp" />
+    <ClCompile Include="TMSkillDoubleSwing.cpp" />
     <ClCompile Include="TMSkinMesh.cpp" />
     <ClCompile Include="TMSky.cpp" />
     <ClCompile Include="TreeNode.cpp" />

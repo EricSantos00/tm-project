@@ -9,6 +9,8 @@
 #include "TMScene.h"
 #include "RenderDevice.h"
 #include "EventTranslator.h"
+#include "dsutil.h"
+#include "SControl.h"
 
 extern NewApp* g_pApp;
 extern CPSock* g_pSocketManager;
@@ -20,6 +22,8 @@ extern TextureManager* g_pTextureManager;
 extern TimerManager* g_pTimerManager;
 extern TMScene* g_pCurrentScene;
 extern RenderDevice* g_pDevice;
+extern SCursor* g_pCursor;
+extern CSoundManager* g_pSoundManager;
 
 static unsigned int g_dwHandIndex[101][2] =
 {

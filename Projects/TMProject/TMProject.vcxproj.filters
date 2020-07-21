@@ -58,6 +58,9 @@
     <Filter Include="Source Files\Engine\Scenes">
       <UniqueIdentifier>{07607fa4-234f-4ce1-87e6-ebf9ee6b35c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Systems">
+      <UniqueIdentifier>{bb61b35f-857a-4b43-9e7d-74152ade738d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -598,6 +601,21 @@
     </ClCompile>
     <ClCompile Include="D3DDevice.cpp">
       <Filter>Source Files\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Mission.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="MrItemMix.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="NewApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillDoubleSwing.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
