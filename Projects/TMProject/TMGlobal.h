@@ -12,6 +12,14 @@
 #include "dsutil.h"
 #include "SControl.h"
 
+constexpr unsigned int WYDCOLOR_ALPHA(unsigned int color) { return color & 0xFF000000; }
+constexpr unsigned int WYDCOLOR_RED(unsigned int color) { return (((unsigned int)0xFF0000 & color) >> 16); }
+constexpr unsigned int WYDCOLOR_GREEN(unsigned int color) { return (((unsigned short)0xFF00 & color) >> 8); }
+constexpr unsigned int WYDCOLOR_BLUE(unsigned int color) { return ((unsigned char)0xFF & color); }
+constexpr unsigned int WYD_RGBA(unsigned int r, unsigned int  g, unsigned int  b, unsigned int  a) { 
+    return ((DWORD)((a | 0xFF000000) | (b & 0xFF) | ((g << 8) & 0xFF00) | ((r << 16) & 0xFF0000))); 
+}
+
 extern NewApp* g_pApp;
 extern CPSock* g_pSocketManager;
 extern CPSock* g_LoginSocket;

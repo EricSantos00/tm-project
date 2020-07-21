@@ -2569,4 +2569,62 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 
 void RenderDevice::RenderGeomControlBG(GeomControl* ipControl, DWORD dwColor, int nTextureIndex)
 {
+	if (m_dwStartTime == 0)
+		m_dwStartTime = g_pTimerManager->GetServerTime();
+
+	float fCurrRatio = (float)((g_pTimerManager->GetServerTime() - m_dwStartTime) % 2000);
+	fCurrRatio = (((fCurrRatio * 0.0005f) - 0.5f) * 2.0f) * D3DXToRadian(180);
+	fCurrRatio = (fCurrRatio * 0.34f) + 0.64f;
+
+	unsigned int dwCurrColor = WYD_RGBA(WYDCOLOR_RED(dwColor) * fCurrRatio, WYDCOLOR_GREEN(dwColor) * fCurrRatio,
+		WYDCOLOR_BLUE(dwColor) * fCurrRatio, WYDCOLOR_ALPHA(dwColor) * fCurrRatio);
+
+	RDTLVERTEX v[4]{};
+	for (int i = 0; i < 4; ++i)
+	{
+		v[i].rhw = 1.0f;
+		v[i].diffuse = dwCurrColor;
+	}
+
+	float fX = ipControl->nPosX;
+	float fY = ipControl->nPosY;
+	float fHalfWidth = (float)(ipControl->m_fWidth * 0.5) * ipControl->fScale;
+	float fHalfHeight = (float)(ipControl->m_fHeight * 0.5) * ipControl->fScale;
+
+	if (dwColor == -1)
+	{
+		fHalfWidth = fHalfWidth * 2.0;
+		fHalfHeight = fHalfHeight * 2.0;
+	}
+
+	v[0].position.x = fX - fHalfWidth;
+	v[0].position.y = fY - fHalfHeight;
+	v[0].position.z = 0.1f;
+	v[0].tu = 0.0f;
+	v[0].tv = 0.0f;
+	v[1].position.x = fX + fHalfWidth;
+	v[1].position.y = fY - fHalfHeight;
+	v[1].position.z = 0.1f;
+	v[1].tu = 0.1f;
+	v[1].tv = 0.0f;
+	v[2].position.x = fX - fHalfWidth;
+	v[2].position.y = fY + fHalfHeight;
+	v[2].position.z = 0.1f;
+	v[2].tu = 0.0f;
+	v[2].tv = 1.0f;
+	v[3].position.x = fX + fHalfWidth;
+	v[3].position.y = fY + fHalfHeight;
+	v[3].position.z = 0.1f;
+	v[3].tu = 1.0f;
+	v[3].tv = 1.0f;
+
+	SetTexture(0, g_pTextureManager->GetEffectTexture(nTextureIndex, 5000));
+	SetRenderState(D3DRS_ALPHABLENDENABLE, 1);
+	SetRenderState(D3DRS_SRCBLEND, 5);
+	SetRenderState(D3DRS_DESTBLEND, 2);
+	SetTextureStageState(0, D3DTSS_ALPHAOP, 2);
+	SetTextureStageState(0, D3DTSS_ALPHAARG1, 2);
+	m_pd3dDevice->SetFVF(324);
+	m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, v, 28);
+	SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
 }
