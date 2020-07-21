@@ -288,6 +288,7 @@
     <ClCompile Include="CFrame.cpp" />
     <ClCompile Include="CMesh.cpp" />
     <ClCompile Include="CPSock.cpp" />
+    <ClCompile Include="D3DDevice.cpp" />
     <ClCompile Include="D3DEnumeration.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>

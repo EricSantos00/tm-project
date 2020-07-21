@@ -557,10 +557,13 @@
     <ClCompile Include="TMHuman.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TMObject.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
     <ClCompile Include="TreeNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TMObject.cpp">
+    <ClCompile Include="D3DDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
