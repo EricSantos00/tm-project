@@ -197,6 +197,17 @@ struct RDLVERTEX
 };
 
 
+struct RDLNVERTEX2
+{
+	TMVector3 position;
+	TMVector3 normal;
+	unsigned int diffuse;
+	float tu1;
+	float tv1;
+	float tu2;
+	float tv2;
+};
+
 struct LOOK_INFO
 {
 	short Mesh0;
