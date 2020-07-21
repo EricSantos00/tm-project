@@ -554,6 +554,9 @@
     <ClCompile Include="TMScene.cpp">
       <Filter>Source Files\Engine\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="TMHuman.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TMProject.rc">

@@ -4,6 +4,7 @@
 #include "Structures.h"
 #include "Basedef.h"
 #include "Enums.h"
+#include <mmsystem.h>
 #include <dsound.h> 
 
 class SText;
@@ -19,6 +20,7 @@ class TMEffectMesh;
 class TMEffectMeshRotate;
 class TMEffectSkinMesh;
 class TMButterFly;
+class TMShade;
 
 struct stGuildMarkInfo
 {

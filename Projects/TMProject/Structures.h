@@ -256,3 +256,27 @@ struct HUMAN_LOOKINFO
 	unsigned short LeftMesh;
 	unsigned short LeftSkin;
 };
+
+struct ResourceDef
+{
+	char szString[48];
+	int nNumber;
+};
+
+struct stMemo
+{
+	unsigned int dwColor;
+	char szString[128];
+};
+
+struct stPlayTime
+{
+	char strAccount[16];
+	int nServer;
+	unsigned short nYear;
+	unsigned short nMonth;
+	unsigned short nDay;
+	unsigned short nHour;
+	unsigned short nMinute;
+	unsigned short nPlayTime;
+};

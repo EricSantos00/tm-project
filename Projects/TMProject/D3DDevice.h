@@ -106,8 +106,4 @@ public:
 public:
 	static int m_bDxt;
 	static int m_nMipMap;
-
-public:
-	~D3DDevice();
-	D3DDevice();
 };

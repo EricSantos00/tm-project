@@ -417,7 +417,7 @@ void CFrame::UpdateFrames(const D3DXMATRIX& matCur)
 			{
 				D3DXVECTOR4 vecOut1;
 				D3DXVECTOR4 vecOut2;
-				D3DXVECTOR3 vecIn1(0.11f, 0.059f, 0.15);
+				D3DXVECTOR3 vecIn1(0.11f, 0.059f, 0.15f);
 				D3DXVECTOR3 vecIn2(0.11f, -0.029f, 0.15f);
 				D3DXVec3Transform(&vecOut1, &vecIn1, &m_matCombined);
 				D3DXVec3Transform(&vecOut2, &vecIn2, &m_matCombined);

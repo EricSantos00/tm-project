@@ -651,5 +651,36 @@ struct MSG_Action
 	unsigned short TargetY;
 };
 
+struct MSG_CAPSULEINFO
+{
+	MSG_STANDARD Header;
+	unsigned int CIndex;
+	short Class;
+	short Level;
+	short sStr;
+	short sInt;
+	short sDex;
+	short sCon;
+	short Mastery[4];
+	short skill[9];
+	short Quest;
+};
+
+struct MSG_Trade
+{
+	MSG_STANDARD Header;
+	STRUCT_ITEM Item[15];
+	char CarryPos[15];
+	int TradeMoney;
+	char MyCheck;
+	unsigned short OpponentID;
+};
+
+struct MSG_CombineItem
+{
+	MSG_STANDARD Header;
+	STRUCT_ITEM Item[8];
+	char CarryPos[8];
+};
 extern HWND hWndMain;
 extern char EncodeByte[4];

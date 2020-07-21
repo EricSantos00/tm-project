@@ -10,4 +10,5 @@
 #include "TMEffectMeshRotate.h"
 #include "TMEffectSkinMesh.h"
 #include "TMButterFly.h"
+#include "TMShade.h"
 #include "TMHuman.h"
