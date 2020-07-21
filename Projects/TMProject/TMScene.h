@@ -65,7 +65,7 @@ public:
     int OnCharEvent(char iCharCode, int lParam) override;
     virtual int OnIMEEvent(char* ipComposeString);
     virtual int OnChangeIME();
-    virtual int OnControlEvent() = 0; // todo: check the args and if is used
+    virtual int OnControlEvent(unsigned int idwControlID, unsigned int idwEvent) = 0;
     virtual int OnAccel(int nMsg);
     int FrameMove(unsigned int dwServerTime) override;
     virtual int ReloadScene();

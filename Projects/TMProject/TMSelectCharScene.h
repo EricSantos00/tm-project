@@ -5,6 +5,7 @@
 class SPanel;
 class SButton;
 class SEditableText;
+class SText;
 class TMObject;
 class TMRain;
 class TMSnow;
