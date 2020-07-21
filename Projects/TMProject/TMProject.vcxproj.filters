@@ -423,6 +423,9 @@
     <ClInclude Include="TMGlobal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TMSnow.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TMProject.cpp">
@@ -542,9 +545,6 @@
     <ClCompile Include="TMFireEffect.cpp">
       <Filter>Source Files\Effects</Filter>
     </ClCompile>
-    <ClCompile Include="TMFont3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TMShade.cpp">
       <Filter>Source Files\Effects</Filter>
     </ClCompile>
@@ -554,17 +554,50 @@
     <ClCompile Include="TMScene.cpp">
       <Filter>Source Files\Engine\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="TMHuman.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TMObject.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="TreeNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TMArrow.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMFlail.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMFloat.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMGate.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMGround.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMHuman.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMItem.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMLight.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMRain.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSea.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSky.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMFont3.cpp">
+      <Filter>Source Files\Engine\Fonts</Filter>
+    </ClCompile>
     <ClCompile Include="D3DDevice.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

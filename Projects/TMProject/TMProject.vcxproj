@@ -277,6 +277,7 @@
     <ClInclude Include="TMSkillTownPortal.h" />
     <ClInclude Include="TMSkinMesh.h" />
     <ClInclude Include="TMSky.h" />
+    <ClInclude Include="TMSnow.h" />
     <ClInclude Include="TMSun.h" />
     <ClInclude Include="TMTree.h" />
     <ClInclude Include="TMVideoWnd.h" />
@@ -309,6 +310,7 @@
     <ClCompile Include="RenderDevice.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TimerManager.cpp" />
+    <ClCompile Include="TMArrow.cpp" />
     <ClCompile Include="TMEffect.cpp" />
     <ClCompile Include="TMEffectBillBoard.cpp" />
     <ClCompile Include="TMEffectBillBoard2.cpp" />
@@ -328,17 +330,26 @@
     <ClCompile Include="TMEffectStart.cpp" />
     <ClCompile Include="TMEffectSWSwing.cpp" />
     <ClCompile Include="TMFireEffect.cpp" />
+    <ClCompile Include="TMFlail.cpp" />
+    <ClCompile Include="TMFloat.cpp" />
     <ClCompile Include="TMFont2.cpp" />
     <ClCompile Include="TMFont3.cpp" />
+    <ClCompile Include="TMGate.cpp" />
     <ClCompile Include="TMGlobal.cpp" />
+    <ClCompile Include="TMGround.cpp" />
     <ClCompile Include="TMHuman.cpp" />
+    <ClCompile Include="TMItem.cpp" />
+    <ClCompile Include="TMLight.cpp" />
     <ClCompile Include="TMLog.cpp" />
     <ClCompile Include="TMMesh.cpp" />
     <ClCompile Include="TMObject.cpp" />
     <ClCompile Include="TMProject.cpp" />
+    <ClCompile Include="TMRain.cpp" />
     <ClCompile Include="TMScene.cpp" />
+    <ClCompile Include="TMSea.cpp" />
     <ClCompile Include="TMShade.cpp" />
     <ClCompile Include="TMSkinMesh.cpp" />
+    <ClCompile Include="TMSky.cpp" />
     <ClCompile Include="TreeNode.cpp" />
   </ItemGroup>
   <ItemGroup>
