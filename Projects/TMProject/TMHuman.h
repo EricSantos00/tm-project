@@ -406,6 +406,10 @@ public:
     short m_sPunchLR;
     short m_sDelayDel;
     short m_citizen;
+
+    static TMVector2 m_vecPickSize[100];
+    static DWORD m_dwNameColor[9];
+
     TMScene* m_pParentScene;
     unsigned int m_dwLastPlayPunchedTime;
     unsigned int m_dwAttackEffectTime;
