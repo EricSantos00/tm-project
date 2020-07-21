@@ -27,6 +27,12 @@ extern CSoundManager* g_pSoundManager;
 
 extern int g_nUseBlur;
 extern int g_nAntialias;
+extern int g_bDebugMsg;
+extern int g_nReflection;
+extern char g_szFontName[128];
+extern int g_nFontBold;
+extern float g_ClipNear;
+extern float g_ClipFar;
 
 static unsigned int g_dwHandIndex[101][2] =
 {
