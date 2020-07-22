@@ -13,7 +13,6 @@
 #include "Basedef.h"
 #include <io.h>
 #include <fcntl.h>
-#include <d3dx9.h>
 
 int RenderDevice::m_nBright = 50;
 DWORD RenderDevice::m_dwCurrScreenX = 1024;
@@ -1891,10 +1890,9 @@ void RenderDevice::RenderRect(float iStartX, float iStartY, float iCX, float iCY
 	D3DXVECTOR2 rotCenter((float)(iCX / 2.0) + iStartX, (float)(iCY / 2.0) + iStartY);
 	D3DXVECTOR2 destPoint(iDestX, iDestY);
 	D3DXVECTOR2 scaleVec(fScaleX, fScaleY);
-
+	
 	if (pTexture != nullptr && m_pSprite != nullptr)
-	{
-		
+	{		
 		m_pSprite->Draw(pTexture, &srcRect, &scaleVec, &rotCenter, 0, &destPoint, -1);
 	}
 }
