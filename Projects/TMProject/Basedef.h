@@ -1,5 +1,7 @@
 #pragma once
 
+float BASE_ScreenResize(float size);
+
 struct MSG_STANDARD
 {
 	unsigned short Size;
@@ -8,6 +10,12 @@ struct MSG_STANDARD
 	unsigned short Type;
 	unsigned short ID;
 	unsigned int Tick;
+};
+
+struct MSG_STANDARDPARM
+{
+	MSG_STANDARD Header;
+	int Parm;
 };
 
 struct STRUCT_SCORE
@@ -689,6 +697,80 @@ struct MSG_Mission
 	int MissionNo;
 	STRUCT_ITEM Item[8];
 	char CarryPos[8];
+};
+
+struct MSG_UseItem
+{
+	MSG_STANDARD Header;
+	int SourType;
+	int SourPos;
+	int DestType;
+	int DestPos;
+	unsigned short GridX;
+	unsigned short GridY;
+	unsigned short ItemID;
+};
+
+struct MSG_CAPSULEUSEITEM
+{
+	MSG_STANDARD Header;
+	int SourType;
+	int SourPos;
+	int DestType;
+	int DestPos;
+	unsigned short GridX;
+	unsigned short GridY;
+	unsigned short ItemID;
+	char NewMobname[16];
+};
+
+struct MSG_MessageWhisper
+{
+	MSG_STANDARD Header;
+	char MobName[16];
+	char String[128];
+	short Color;
+};
+
+struct MSG_AutoTrade
+{
+	MSG_STANDARD Header;
+	char Desc[24];
+	STRUCT_ITEM Item[12];
+	char CarryPos[12];
+	int TradeMoney[12];
+	unsigned short Tax;
+	unsigned short TargetID;
+};
+
+struct MSG_MOVESTOP
+{
+	MSG_STANDARD Header;
+	int NextX;
+	int NextY;
+	int CurrentX;
+	int CurrentY;
+	int LastX;
+	int LastY;
+};
+
+struct MSG_BuyToto
+{
+	MSG_STANDARD Header;
+	unsigned short TargetID;
+	short TargetCarryPos;
+	short MyCarryPos;
+	int Coin;
+	int Gindex;
+	int A_Score;
+	int B_Score;
+};
+
+struct MSG_CNFRemoveServer
+{
+	MSG_STANDARD Header;
+	char AccountName[16];
+	char TID[52];
 };
 
 extern HWND hWndMain;

@@ -58,8 +58,14 @@
     <Filter Include="Source Files\Engine\Scenes">
       <UniqueIdentifier>{07607fa4-234f-4ce1-87e6-ebf9ee6b35c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\Systems">
+    <Filter Include="Source Files\Skills">
+      <UniqueIdentifier>{8fd856ad-4109-4da4-ab53-3e84dc0b4a20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Systems">
       <UniqueIdentifier>{bb61b35f-857a-4b43-9e7d-74152ade738d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\UI">
+      <UniqueIdentifier>{1f83cbca-a446-45e2-a606-886dc5947ea6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -603,22 +609,151 @@
       <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
     <ClCompile Include="Mission.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="MrItemMix.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="NewApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SControl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TMSkillDoubleSwing.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DirShow.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillBash.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillCure.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillDoubleSwing.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillExplosion2.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillFire.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillFlash.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillFreezeBlade.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillHaste.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillHeal.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillHeavenDust.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillHolyTouch.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillIceSpear.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillJudgement.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillLusterFurnish.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillMagicArrow.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillMagicShield.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillMeteorStorm.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillPoison.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillSlowSlash.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillSnow.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillSpChange.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillSpeedUp.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillThunderBolt.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSkillTownPortal.cpp">
+      <Filter>Source Files\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="TMBike.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMButterFly.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMCamera.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMCannon.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMDust.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMFish.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMHouse.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMLeaf.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMShip.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSnow.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSun.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMTree.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMVideoWnd.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectManager.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSelectCharScene.cpp">
+      <Filter>Source Files\Engine\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="TMSelectServerScene.cpp">
+      <Filter>Source Files\Engine\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="TMDemoScene.cpp">
+      <Filter>Source Files\Engine\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="TMFieldScene.cpp">
+      <Filter>Source Files\Engine\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="SControl.cpp">
+      <Filter>Source Files\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SControlContainer.cpp">
+      <Filter>Source Files\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SGrid.cpp">
+      <Filter>Source Files\Engine\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

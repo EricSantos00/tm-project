@@ -72,12 +72,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependencies\Directx\Lib\x86;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+    <IncludePath>$(IncludePath);$(SolutionDir)Dependencies\Directx\Include</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\Directx\Lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies\Directx\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -93,7 +93,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -305,6 +305,7 @@
     <ClCompile Include="Mission.cpp" />
     <ClCompile Include="MrItemMix.cpp" />
     <ClCompile Include="NewApp.cpp" />
+    <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -313,9 +314,17 @@
     </ClCompile>
     <ClCompile Include="RenderDevice.cpp" />
     <ClCompile Include="SControl.cpp" />
+    <ClCompile Include="SControlContainer.cpp" />
+    <ClCompile Include="SGrid.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TimerManager.cpp" />
     <ClCompile Include="TMArrow.cpp" />
+    <ClCompile Include="TMBike.cpp" />
+    <ClCompile Include="TMButterFly.cpp" />
+    <ClCompile Include="TMCamera.cpp" />
+    <ClCompile Include="TMCannon.cpp" />
+    <ClCompile Include="TMDemoScene.cpp" />
+    <ClCompile Include="TMDust.cpp" />
     <ClCompile Include="TMEffect.cpp" />
     <ClCompile Include="TMEffectBillBoard.cpp" />
     <ClCompile Include="TMEffectBillBoard2.cpp" />
@@ -334,7 +343,9 @@
     <ClCompile Include="TMEffectSpark2.cpp" />
     <ClCompile Include="TMEffectStart.cpp" />
     <ClCompile Include="TMEffectSWSwing.cpp" />
+    <ClCompile Include="TMFieldScene.cpp" />
     <ClCompile Include="TMFireEffect.cpp" />
+    <ClCompile Include="TMFish.cpp" />
     <ClCompile Include="TMFlail.cpp" />
     <ClCompile Include="TMFloat.cpp" />
     <ClCompile Include="TMFont2.cpp" />
@@ -342,8 +353,10 @@
     <ClCompile Include="TMGate.cpp" />
     <ClCompile Include="TMGlobal.cpp" />
     <ClCompile Include="TMGround.cpp" />
+    <ClCompile Include="TMHouse.cpp" />
     <ClCompile Include="TMHuman.cpp" />
     <ClCompile Include="TMItem.cpp" />
+    <ClCompile Include="TMLeaf.cpp" />
     <ClCompile Include="TMLight.cpp" />
     <ClCompile Include="TMLog.cpp" />
     <ClCompile Include="TMMesh.cpp" />
@@ -352,10 +365,40 @@
     <ClCompile Include="TMRain.cpp" />
     <ClCompile Include="TMScene.cpp" />
     <ClCompile Include="TMSea.cpp" />
+    <ClCompile Include="TMSelectCharScene.cpp" />
+    <ClCompile Include="TMSelectServerScene.cpp" />
     <ClCompile Include="TMShade.cpp" />
+    <ClCompile Include="TMShip.cpp" />
+    <ClCompile Include="TMSkillBash.cpp" />
+    <ClCompile Include="TMSkillCure.cpp" />
     <ClCompile Include="TMSkillDoubleSwing.cpp" />
+    <ClCompile Include="TMSkillExplosion2.cpp" />
+    <ClCompile Include="TMSkillFire.cpp" />
+    <ClCompile Include="TMSkillFlash.cpp" />
+    <ClCompile Include="TMSkillFreezeBlade.cpp" />
+    <ClCompile Include="TMSkillHaste.cpp" />
+    <ClCompile Include="TMSkillHeal.cpp" />
+    <ClCompile Include="TMSkillHeavenDust.cpp" />
+    <ClCompile Include="TMSkillHolyTouch.cpp" />
+    <ClCompile Include="TMSkillIceSpear.cpp" />
+    <ClCompile Include="TMSkillJudgement.cpp" />
+    <ClCompile Include="TMSkillLusterFurnish.cpp" />
+    <ClCompile Include="TMSkillMagicArrow.cpp" />
+    <ClCompile Include="TMSkillMagicShield.cpp" />
+    <ClCompile Include="TMSkillMeteorStorm.cpp" />
+    <ClCompile Include="TMSkillPoison.cpp" />
+    <ClCompile Include="TMSkillSlowSlash.cpp" />
+    <ClCompile Include="TMSkillSnow.cpp" />
+    <ClCompile Include="TMSkillSpChange.cpp" />
+    <ClCompile Include="TMSkillSpeedUp.cpp" />
+    <ClCompile Include="TMSkillThunderBolt.cpp" />
+    <ClCompile Include="TMSkillTownPortal.cpp" />
     <ClCompile Include="TMSkinMesh.cpp" />
     <ClCompile Include="TMSky.cpp" />
+    <ClCompile Include="TMSnow.cpp" />
+    <ClCompile Include="TMSun.cpp" />
+    <ClCompile Include="TMTree.cpp" />
+    <ClCompile Include="TMVideoWnd.cpp" />
     <ClCompile Include="TreeNode.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TMScene.h"
+#include "Structures.h"
 
 class SPanel;
 class SButton;

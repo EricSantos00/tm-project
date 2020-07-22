@@ -7,8 +7,8 @@ class TMShade;
 class TMEffectBillBoard : public TMEffect
 {
 public:
-	TMEffectBillBoard(int nTextureIndex, unsigned int dwLifeTime, float fScaleX, float fScaleY, float fScaleZ, 
-		float fVelocity, int nCycleCount, int nCycleTime);
+	TMEffectBillBoard(int nTextureIndex = 0, unsigned int dwLifeTime = 2000, float fScaleX = 0.5f, float fScaleY = 0.5f, float fScaleZ = 0.5f,
+		float fVelocity = 0.0005f, int nCycleCount = 1, int nCycleTime = 80);
 	~TMEffectBillBoard();
 
     int Render() override;

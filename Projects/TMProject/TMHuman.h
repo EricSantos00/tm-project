@@ -42,6 +42,7 @@ struct stPunchEvent
     TMVector2 vecFrom;
 };
 
+class TMHuman;
 struct stEffectEvent
 {
     unsigned int dwTime;

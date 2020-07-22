@@ -3,6 +3,8 @@
 #include "TreeNode.h"
 #include "Structures.h"
 #include "GeomObject.h"
+#include "TMFont2.h"
+#include "EventTranslator.h"
 
 enum class CONTROL_TYPE : int
 {

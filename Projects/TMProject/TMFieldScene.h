@@ -2,6 +2,10 @@
 
 #include "Basedef.h"
 #include "TMScene.h"
+#include "TMHuman.h"
+#include "MrItemMix.h"
+#include "Mission.h"
+#include "Structures.h"
 
 class SGridControlItem;
 class SButton;
@@ -31,7 +35,7 @@ public:
 	int OnPacketEvent(unsigned int dwCode, char* buf) override;
 	int FrameMove(unsigned int dwServerTime) override;
 	int OnAccel(int nMsg) override;
-
+	
 	void PGTVisible(unsigned int dwServerTime);
 	void MouseMove(int nX, int nY);
 	int SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServerTime, int bMoving, TMHuman* pTarget);
@@ -249,7 +253,7 @@ private:
 	int MouseClick_SkillMasterNPC(unsigned int dwServerTime, TMHuman* pOver);
 	int MouseClick_QuestNPC(unsigned int dwServerTime, TMHuman* pOver);
 	void NewCCMode();
-
+	
 public:
 	int m_bAirMove;
 	int m_nOldMountSkinMeshType;

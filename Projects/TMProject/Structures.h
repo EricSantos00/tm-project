@@ -291,3 +291,55 @@ struct stPlayTime
 	unsigned short nMinute;
 	unsigned short nPlayTime;
 };
+
+struct stCam
+{
+	float fHorizonAngle;
+	float fVerticalAngle;
+	float fWantLength;
+	float fX;
+	float fY;
+};
+
+struct stMobAni
+{
+	unsigned int dwTick;
+	char cWhat;
+	short sAni;
+	IVector2 vecPos;
+};
+
+struct stDemoHuman
+{
+	int nFace;
+	int Helm;
+	int Body;
+	int Mantua;
+	int Right;
+	int Left;
+	int nSanc;
+	int nMount;
+	float fX;
+	float fY;
+	float fTX;
+	float fTY;
+	int nAngle;
+	int nSpeed;
+	int nHumanAni;
+};
+
+struct stDemoHuman2
+{
+	int nFace;
+	int Helm;
+	int Body;
+	int Mantua;
+	int Right;
+	int Left;
+	int nSanc;
+	int nMount;
+	int nX;
+	int nY;
+	int nAngle;
+	int nSpeed;
+};

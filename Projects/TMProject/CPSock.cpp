@@ -445,6 +445,8 @@ int CPSock::AddMessage(char* pMsg, int Size)
 			}
 		}
 	}
+
+	return 1;
 }
 
 int CPSock::AddMessage_0(char* pMsg, int Size, int FixedKeyWord)

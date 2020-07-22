@@ -30,3 +30,29 @@ float TMSky::FogList[16][2] =
   {  0.0,  0.0 },
   {  0.0,  0.0 }
 };
+
+TMSky::TMSky()
+{
+}
+
+TMSky::~TMSky()
+{
+}
+
+int TMSky::Render()
+{
+	return 0;
+}
+
+int TMSky::FrameMove(unsigned int dwServerTime)
+{
+	return 0;
+}
+
+void TMSky::RestoreDeviceObjects()
+{
+}
+
+void TMSky::SetWeatherState(int nState)
+{
+}
