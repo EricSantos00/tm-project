@@ -54,6 +54,8 @@ unsigned int g_dwServerTime;
 unsigned int g_dwClientTime;
 unsigned int g_pLastFixTime;
 
+float g_fWide;
+
 HINSTANCE g_hInstance;
 
 char g_szOS[3] = "??";
