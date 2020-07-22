@@ -28,6 +28,7 @@ float RenderDevice::m_fWidthRatio = 1.0f;
 float RenderDevice::m_fHeightRatio = 1.0f;
 float RenderDevice::m_fFOVY = 0.25f;
 int RenderDevice::m_bCameraRot = 1;
+int RenderDevice::m_bDungeon = 0;
 
 RenderDevice::RenderDevice(DWORD dwScreenWidth, DWORD dwScreenHeight, DWORD dwBitCount, int bFullScreen)
 {
