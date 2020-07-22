@@ -2,6 +2,10 @@
 
 #include "Basedef.h"
 #include "TMScene.h"
+#include "TMHuman.h"
+#include "MrItemMix.h"
+#include "Mission.h"
+#include "Structures.h"
 
 class SGridControlItem;
 class SButton;

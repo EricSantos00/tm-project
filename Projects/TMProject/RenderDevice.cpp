@@ -13,6 +13,7 @@
 #include "Basedef.h"
 #include <io.h>
 #include <fcntl.h>
+#include <winnt.h>
 
 int RenderDevice::m_nBright = 50;
 DWORD RenderDevice::m_dwCurrScreenX = 1024;
@@ -291,7 +292,7 @@ void RenderDevice::Finalize()
 
 	for (int i = 0; i < 256; i++)
 	{
-		WORD nVal = (float)((float)(((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f);
+		WORD nVal = (WORD)((float)(((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f);
 		if (nVal > -1)
 			nVal = -1;
 
@@ -435,7 +436,7 @@ int RenderDevice::Unlock(int bEnd)
 
 	if (bEnd == 1)
 	{
-		if (m_pd3dDevice->Present(nullptr, nullptr, nullptr, nullptr) == D3DERR_DEVICEREMOVED)
+		if (m_pd3dDevice->Present(nullptr, nullptr, nullptr, nullptr) == D3DERR_DEVICELOST)
 			m_bDeviceLost = 1;
 	}
 
@@ -566,7 +567,7 @@ HRESULT RenderDevice::RestoreDeviceObjects()
 		m_hDC = CreateCompatibleDC(0);
 		m_hbmBitmap = CreateDIBSection(m_hDC, &m_bmi, 0, (void**)&m_pBitmapBits, 0,	0);
 
-		sprintf(g_szFontName, "Tahoma");
+		sprintf_s(g_szFontName, "Tahoma");
 		FILE* fpFont = nullptr;
 		fopen_s(&fpFont, "font.txt", "rt");
 
@@ -719,7 +720,7 @@ void RenderDevice::SetGamma()
 
 		for (int i = 0; i < 256; i++)
 		{
-			WORD nVal = (float)((float)(((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f);
+			WORD nVal = (WORD)((float)(((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f);
 			if (nVal > -1)
 				nVal = -1;
 
@@ -931,7 +932,7 @@ int RenderDevice::InitVertexShader()
 		{
 			LPD3DXBUFFER pCode = nullptr;
 			char szBinFile[128];
-			sprintf(szBinFile, "Shader\\skinmesh%d.bin", i + 1);
+			sprintf_s(szBinFile, "Shader\\skinmesh%d.bin", i + 1);
 
 			int handle = _open(szBinFile, _O_BINARY);
 			if (handle == -1)
@@ -1719,8 +1720,8 @@ int RenderDevice::SetRenderStateBlock(int nIndex)
 
 		SetRenderState(D3DRS_FOGCOLOR, m_dwClearColor);
 		SetRenderState(D3DRS_FOGVERTEXMODE, 3);
-		SetRenderState(D3DRS_FOGSTART, fstart);
-		SetRenderState(D3DRS_FOGEND, fend);
+		SetRenderState(D3DRS_FOGSTART, (DWORD)fstart);
+		SetRenderState(D3DRS_FOGEND, (DWORD)fend);
 		SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, 1);
 		SetRenderState(D3DRS_SPECULARMATERIALSOURCE, 2);
 		SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, 1);
@@ -2172,10 +2173,10 @@ void RenderDevice::RenderRectTex2C(float iStartX, float iStartY, float iCX, floa
 	}
 	else
 	{
-		float fRX = (float)(DestCX * fScale) / 2.0;
-		float fRY = (float)(DestCY * fScale) / 2.0;
-		float fCenterX = (float)((float)((float)(DestCX * fScale) + iDestX) + iDestX) / 2.0;
-		float fCenterY = (float)((float)((float)(DestCY * fScale) + iDestY) + iDestY) / 2.0;
+		float fRX = (float)(DestCX * fScale) / 2.0f;
+		float fRY = (float)(DestCY * fScale) / 2.0f;
+		float fCenterX = (float)((float)((float)(DestCX * fScale) + iDestX) + iDestX) / 2.0f;
+		float fCenterY = (float)((float)((float)(DestCY * fScale) + iDestY) + iDestY) / 2.0f;
 		float fSin = sinf(fAngle);
 		float fCos = cosf(fAngle);
 		m_CtrlVertexC2[0].position.x = (float)((float)(fRX * fCos)
@@ -2200,8 +2201,8 @@ void RenderDevice::RenderRectTex2C(float iStartX, float iStartY, float iCX, floa
 			+ fCenterY;
 	}
 
-	float fEndX = ((((iStartX + iCX) + 0.5) / fTexWidth) * 10000.0) * 0.000099999997;
-	float fEndY = ((((iStartY + iCY) + 0.5) / fTexHeight) * 10000.0) * 0.000099999997;
+	float fEndX = ((((iStartX + iCX) + 0.5f) / fTexWidth) * 10000.0f) * 0.000099999997f;
+	float fEndY = ((((iStartY + iCY) + 0.5f) / fTexHeight) * 10000.0f) * 0.000099999997f;
 
 	m_CtrlVertexC2[0].tu1 = iStartX / fTexWidth;
 	m_CtrlVertexC2[0].tv1 = iStartY / fTexHeight;
@@ -2220,8 +2221,8 @@ void RenderDevice::RenderRectTex2C(float iStartX, float iStartY, float iCX, floa
 		fTexHeight = (float)desc.Height;
 	}
 
-	float fEndX2 = ((((iStartX + iCX) + 0.5) / fTexWidth) * 10000.0) * 0.000099999997;
-	float fEndY2 = ((((iStartY + iCY) + 0.5) / fTexHeight) * 10000.0) * 0.000099999997;
+	float fEndX2 = ((((iStartX + iCX) + 0.5f) / fTexWidth) * 10000.0f) * 0.000099999997f;
+	float fEndY2 = ((((iStartY + iCY) + 0.5f) / fTexHeight) * 10000.0f) * 0.000099999997f;
 
 	m_CtrlVertexC2[0].tu2 = iStartX2 / fTexWidth;
 	m_CtrlVertexC2[0].tv2 = iStartY2 / fTexHeight;
@@ -2299,8 +2300,8 @@ void RenderDevice::RenderRectTex2(float iStartX, float iStartY, float iCX, float
 	m_CtrlVertex2[3].position.x = iDestX;
 	m_CtrlVertex2[3].position.y = (float)(DestCY * fScale) + iDestY;
 
-	float fEndX = ((((iStartX + iCX) + 0.5) / fTexWidth) * 10000.0)	* 0.000099999997;
-	float fEndY = ((((iStartY + iCY) + 0.5) / fTexHeight) * 10000.0) * 0.000099999997;
+	float fEndX = ((((iStartX + iCX) + 0.5f) / fTexWidth) * 10000.0f)	* 0.000099999997f;
+	float fEndY = ((((iStartY + iCY) + 0.5f) / fTexHeight) * 10000.0f) * 0.000099999997f;
 
 	m_CtrlVertex2[0].tu2 = iStartX / fTexWidth;
 	m_CtrlVertex2[0].tv2 = iStartY / fTexHeight;
@@ -2379,8 +2380,8 @@ void RenderDevice::RenderRectTex2M(float iStartX, float iStartY, float iCX, floa
 	m_MiniMapVertex2[3].position.x = iDestX;
 	m_MiniMapVertex2[3].position.y = (float)(DestCY * fScale) + iDestY;
 
-	float fEndX = ((((iStartX + iCX) + 0.5) / fTexWidth) * 10000.0) * 0.000099999997;
-	float fEndY = ((((iStartY + iCY) + 0.5) / fTexHeight) * 10000.0) * 0.000099999997;
+	float fEndX = ((((iStartX + iCX) + 0.5f) / fTexWidth) * 10000.0f) * 0.000099999997f;
+	float fEndY = ((((iStartY + iCY) + 0.5f) / fTexHeight) * 10000.0f) * 0.000099999997f;
 
 	m_MiniMapVertex2[0].tu2 = iStartX / fTexWidth;
 	m_MiniMapVertex2[0].tv2 = iStartY / fTexHeight;
@@ -2561,20 +2562,20 @@ void RenderDevice::RenderRectProgress2(float iX, float iY, float iCX, float iCY,
 		SetRenderState(D3DRS_ZWRITEENABLE, 0);
 
 		m_pd3dDevice->SetFVF(324);
-		float fSX = (float)(iCX / 2.0) + iX;
-		float fSY = (float)(iCY / 2.0) + iY;
-		float fWidth = iCX / 2.0;
-		float fHeight = iCY / 2.0;
+		float fSX = (float)(iCX / 2.0f) + iX;
+		float fSY = (float)(iCY / 2.0f) + iY;
+		float fWidth = iCX / 2.0f;
+		float fHeight = iCY / 2.0f;
 		for (int i = 0; i < 10; ++i)
 			m_CtrlProgressVertex[i].diffuse = dwColor;
 
-		if (fProgress <= 0.125)
+		if (fProgress <= 0.125f)
 		{
 			m_CtrlProgressVertex[0].position.x = fSX;
 			m_CtrlProgressVertex[0].position.y = fSY;
 			m_CtrlProgressVertex[1].position.x = fSX;
 			m_CtrlProgressVertex[1].position.y = fSY - fHeight;
-			m_CtrlProgressVertex[2].position.x = (float)(fWidth * (float)(fProgress / 0.125)) + fSX;
+			m_CtrlProgressVertex[2].position.x = (float)(fWidth * (float)(fProgress / 0.125f)) + fSX;
 			m_CtrlProgressVertex[2].position.y = fSY - fHeight;
 			m_pd3dDevice->DrawPrimitiveUP(
 				D3DPT_TRIANGLEFAN,
@@ -2582,7 +2583,7 @@ void RenderDevice::RenderRectProgress2(float iX, float iY, float iCX, float iCY,
 				m_CtrlProgressVertex,
 				28u);
 		}
-		else if (fProgress <= 0.25)
+		else if (fProgress <= 0.25f)
 		{
 			m_CtrlProgressVertex[0].position.x = fSX;
 			m_CtrlProgressVertex[0].position.y = fSY;
@@ -2592,14 +2593,14 @@ void RenderDevice::RenderRectProgress2(float iX, float iY, float iCX, float iCY,
 			m_CtrlProgressVertex[2].position.y = fSY - fHeight;
 			m_CtrlProgressVertex[3].position.x = fSX + fWidth;
 			m_CtrlProgressVertex[3].position.y = (float)(fSY - fHeight)
-				+ (float)(fHeight * (float)((float)(fProgress - 0.125) / 0.125));
+				+ (float)(fHeight * (float)((float)(fProgress - 0.125f) / 0.125f));
 			m_pd3dDevice->DrawPrimitiveUP(
 				D3DPT_TRIANGLEFAN,
 				2u,
 				m_CtrlProgressVertex,
 				28u);
 		}
-		else if (fProgress <= 0.375)
+		else if (fProgress <= 0.375f)
 		{
 			m_CtrlProgressVertex[0].position.x = fSX;
 			m_CtrlProgressVertex[0].position.y = fSY;
@@ -2610,14 +2611,14 @@ void RenderDevice::RenderRectProgress2(float iX, float iY, float iCX, float iCY,
 			m_CtrlProgressVertex[3].position.x = fSX + fWidth;
 			m_CtrlProgressVertex[3].position.y = (float)(fSY - fHeight) + fHeight;
 			m_CtrlProgressVertex[4].position.x = fSX + fWidth;
-			m_CtrlProgressVertex[4].position.y = (float)(fHeight * (float)((float)(fProgress - 0.25) / 0.125)) + fSY;
+			m_CtrlProgressVertex[4].position.y = (float)(fHeight * (float)((float)(fProgress - 0.25f) / 0.125f)) + fSY;
 			m_pd3dDevice->DrawPrimitiveUP(
 				D3DPT_TRIANGLEFAN,
 				3u,
 				m_CtrlProgressVertex,
 				28u);
 		}
-		else if (fProgress <= 0.5)
+		else if (fProgress <= 0.5f)
 		{
 			m_CtrlProgressVertex[0].position.x = fSX;
 			m_CtrlProgressVertex[0].position.y = fSY;
@@ -2630,7 +2631,7 @@ void RenderDevice::RenderRectProgress2(float iX, float iY, float iCX, float iCY,
 			m_CtrlProgressVertex[4].position.x = fSX + fWidth;
 			m_CtrlProgressVertex[4].position.y = fSY + fHeight;
 			m_CtrlProgressVertex[5].position.x = (float)(fSX + fWidth)
-				- (float)(fWidth * (float)((float)(fProgress - 0.375) / 0.125));
+				- (float)(fWidth * (float)((float)(fProgress - 0.375f) / 0.125f));
 			m_CtrlProgressVertex[5].position.y = fSY + fHeight;
 			m_pd3dDevice->DrawPrimitiveUP(
 				D3DPT_TRIANGLEFAN,
@@ -2638,7 +2639,7 @@ void RenderDevice::RenderRectProgress2(float iX, float iY, float iCX, float iCY,
 				m_CtrlProgressVertex,
 				28u);
 		}
-		else if (fProgress <= 0.625)
+		else if (fProgress <= 0.625f)
 		{
 			m_CtrlProgressVertex[0].position.x = fSX;
 			m_CtrlProgressVertex[0].position.y = fSY;
@@ -2652,7 +2653,7 @@ void RenderDevice::RenderRectProgress2(float iX, float iY, float iCX, float iCY,
 			m_CtrlProgressVertex[4].position.y = fSY + fHeight;
 			m_CtrlProgressVertex[5].position.x = fSX;
 			m_CtrlProgressVertex[5].position.y = fSY + fHeight;
-			m_CtrlProgressVertex[6].position.x = fSX - (float)(fWidth * (float)((float)(fProgress - 0.5) / 0.125));
+			m_CtrlProgressVertex[6].position.x = fSX - (float)(fWidth * (float)((float)(fProgress - 0.5f) / 0.125f));
 			m_CtrlProgressVertex[6].position.y = fSY + fHeight;
 			m_pd3dDevice->DrawPrimitiveUP(
 				D3DPT_TRIANGLEFAN,
@@ -2660,7 +2661,7 @@ void RenderDevice::RenderRectProgress2(float iX, float iY, float iCX, float iCY,
 				m_CtrlProgressVertex,
 				28u);
 		}
-		else if (fProgress <= 0.75)
+		else if (fProgress <= 0.75f)
 		{
 			m_CtrlProgressVertex[0].position.x = fSX;
 			m_CtrlProgressVertex[0].position.y = fSY;
@@ -2678,14 +2679,14 @@ void RenderDevice::RenderRectProgress2(float iX, float iY, float iCX, float iCY,
 			m_CtrlProgressVertex[6].position.y = fSY + fHeight;
 			m_CtrlProgressVertex[7].position.x = fSX - fWidth;
 			m_CtrlProgressVertex[7].position.y = (float)(fSY + fHeight)
-				- (float)(fHeight * (float)((float)(fProgress - 0.625) / 0.125));
+				- (float)(fHeight * (float)((float)(fProgress - 0.625f) / 0.125f));
 			m_pd3dDevice->DrawPrimitiveUP(
 				D3DPT_TRIANGLEFAN,
 				6u,
 				m_CtrlProgressVertex,
 				28u);
 		}
-		else if (fProgress <= 0.875)
+		else if (fProgress <= 0.875f)
 		{
 			m_CtrlProgressVertex[0].position.x = fSX;
 			m_CtrlProgressVertex[0].position.y = fSY;
@@ -2704,7 +2705,7 @@ void RenderDevice::RenderRectProgress2(float iX, float iY, float iCX, float iCY,
 			m_CtrlProgressVertex[7].position.x = fSX - fWidth;
 			m_CtrlProgressVertex[7].position.y = fSY;
 			m_CtrlProgressVertex[8].position.x = fSX - fWidth;
-			m_CtrlProgressVertex[8].position.y = fSY - (float)(fHeight * (float)((float)(fProgress - 0.75) / 0.125));
+			m_CtrlProgressVertex[8].position.y = fSY - (float)(fHeight * (float)((float)(fProgress - 0.75f) / 0.125f));
 			m_pd3dDevice->DrawPrimitiveUP(
 				D3DPT_TRIANGLEFAN,
 				7u,
@@ -2732,7 +2733,7 @@ void RenderDevice::RenderRectProgress2(float iX, float iY, float iCX, float iCY,
 			m_CtrlProgressVertex[8].position.x = fSX - fWidth;
 			m_CtrlProgressVertex[8].position.y = fSY - fHeight;
 			m_CtrlProgressVertex[9].position.x = (float)(fSX - fWidth)
-				+ (float)(fWidth * (float)((float)(fProgress - 0.875) / 0.125));
+				+ (float)(fWidth * (float)((float)(fProgress - 0.875f) / 0.125f));
 			m_CtrlProgressVertex[9].position.y = fSY - fHeight;
 			m_pd3dDevice->DrawPrimitiveUP(
 				D3DPT_TRIANGLEFAN,
@@ -2860,8 +2861,8 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 					ipControl->fBottom - ipControl->fTop,
 					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
 					(float)((float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY) + ipControl->fTop,
-					ipControl->nWidth / 2.0,
-					ipControl->nHeight / 2.0,
+					ipControl->nWidth / 2.0f,
+					ipControl->nHeight / 2.0f,
 					ipControl->fAngle,
 					pTexture,
 					fScaleX,
@@ -2883,13 +2884,13 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 				{
 					RenderRectRot(						
 						lev,
-						0.0,
-						35.0,
-						35.0,
+						0.0f,
+						35.0f,
+						35.0f,
 						(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
 						(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY,
-						ipControl->nWidth / 2.0,
-						ipControl->nHeight / 2.0,
+						ipControl->nWidth / 2.0f,
+						ipControl->nHeight / 2.0f,
 						ipControl->fAngle,
 						pEfTexture,
 						fScaleX,
@@ -3080,8 +3081,8 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 						35.0,
 						(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
 						(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY,
-						ipControl->nWidth / 2.0,
-						ipControl->nHeight / 2.0,
+						ipControl->nWidth / 2.0f,
+						ipControl->nHeight / 2.0f,
 						ipControl->fAngle,
 						pEfTexture,
 						fScaleX,
@@ -3095,8 +3096,8 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nHeight,
 					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
 					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY,
-					ipControl->nWidth / 2.0,
-					ipControl->nHeight / 2.0,
+					ipControl->nWidth / 2.0f,
+					ipControl->nHeight / 2.0f,
 					ipControl->fAngle,
 					pTexture,
 					fScaleX,
@@ -3311,9 +3312,9 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 				TMMesh *pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 0, 180000);
 				float fScale = 1.0f / RenderDevice::m_fWidthRatio;
 				if (ipControl->dwBGColor == -1)
-					fScale = fScale * 0.80000001;
+					fScale = fScale * 0.80000001f;
 
-				fScale = fScale * 0.89999998;
+				fScale = fScale * 0.89999998f;
 
 				if (ipControl->n3DObjIndex >= 937 && ipControl->n3DObjIndex <= 946
 					|| ipControl->n3DObjIndex >= 300 && ipControl->n3DObjIndex <= 303)
@@ -3325,7 +3326,7 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 
 				if (pMesh)
 				{
-					pMesh->RenderForUI(ipControl->nPosX, ipControl->nPosY, ipControl->fAngle, ipControl->fScale * fScale,
+					pMesh->RenderForUI((int)ipControl->nPosX, (int)ipControl->nPosY, ipControl->fAngle, ipControl->fScale * fScale,
 						ipControl->dwColor, ipControl->nTextureIndex, ipControl->nTextureSetIndex, ipControl->sLegend);
 				}
 				if (ipControl->dwBGColor)
@@ -3359,7 +3360,7 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 				g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
 				SetRenderState(D3DRS_FOGENABLE, 0);
 
-				float fScale = 1.0 / RenderDevice::m_fWidthRatio;
+				float fScale = 1.0f / RenderDevice::m_fWidthRatio;
 				TMMesh* pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 1, 180000);
 
 				if (pMesh)
@@ -3378,7 +3379,7 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 
 						pMesh->m_nTextureIndex[0] = 204;
 
-						pMesh->RenderForUI(ipControl->nPosX, ipControl->nPosY, ipControl->fAngle, ipControl->fScale * fScale,
+						pMesh->RenderForUI((int)ipControl->nPosX, (int)ipControl->nPosY, ipControl->fAngle, ipControl->fScale * fScale,
 							ipControl->dwColor, ipControl->nTextureIndex, ipControl->nTextureSetIndex, ipControl->sLegend);
 					}
 				}
@@ -3416,8 +3417,8 @@ void RenderDevice::RenderGeomControlBG(GeomControl* ipControl, DWORD dwColor, in
 	fCurrRatio = (((fCurrRatio * 0.0005f) - 0.5f) * 2.0f) * D3DXToRadian(180);
 	fCurrRatio = (fCurrRatio * 0.34f) + 0.64f;
 
-	unsigned int dwCurrColor = WYD_RGBA(WYDCOLOR_RED(dwColor) * fCurrRatio, WYDCOLOR_GREEN(dwColor) * fCurrRatio,
-		WYDCOLOR_BLUE(dwColor) * fCurrRatio, WYDCOLOR_ALPHA(dwColor) * fCurrRatio);
+	unsigned int dwCurrColor = WYD_RGBA((unsigned int)((float)WYDCOLOR_RED(dwColor) * fCurrRatio), (unsigned int)((float)WYDCOLOR_GREEN(dwColor) * fCurrRatio),
+		(unsigned int)((float)WYDCOLOR_BLUE(dwColor) * fCurrRatio), (unsigned int)((float)WYDCOLOR_ALPHA(dwColor) * fCurrRatio));
 
 	RDTLVERTEX v[4]{};
 	for (int i = 0; i < 4; ++i)
@@ -3428,13 +3429,13 @@ void RenderDevice::RenderGeomControlBG(GeomControl* ipControl, DWORD dwColor, in
 
 	float fX = ipControl->nPosX;
 	float fY = ipControl->nPosY;
-	float fHalfWidth = (float)(ipControl->m_fWidth * 0.5) * ipControl->fScale;
-	float fHalfHeight = (float)(ipControl->m_fHeight * 0.5) * ipControl->fScale;
+	float fHalfWidth = (float)(ipControl->m_fWidth * 0.5f) * ipControl->fScale;
+	float fHalfHeight = (float)(ipControl->m_fHeight * 0.5f) * ipControl->fScale;
 
 	if (dwColor == -1)
 	{
-		fHalfWidth = fHalfWidth * 2.0;
-		fHalfHeight = fHalfHeight * 2.0;
+		fHalfWidth = fHalfWidth * 2.0f;
+		fHalfHeight = fHalfHeight * 2.0f;
 	}
 
 	v[0].position.x = fX - fHalfWidth;

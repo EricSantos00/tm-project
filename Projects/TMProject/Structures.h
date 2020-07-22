@@ -291,3 +291,12 @@ struct stPlayTime
 	unsigned short nMinute;
 	unsigned short nPlayTime;
 };
+
+struct stCam
+{
+	float fHorizonAngle;
+	float fVerticalAngle;
+	float fWantLength;
+	float fX;
+	float fY;
+};
