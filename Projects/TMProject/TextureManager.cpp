@@ -795,7 +795,7 @@ int TextureManager::LoadModelTexture(int nIndex)
 		else
 			sprintf(szDDSHeader, "DXT3");
 
-		memcpy(pBuffer + 84, szDDSHeader, 4u);
+		memcpy(&pBuffer[84], szDDSHeader, 4u);
 		_close(handle);
 		if (g_pDevice->m_bDXT1 != 1 || g_pDevice->m_bDXT3 != 1 || D3DDevice::m_bDxt != 1)
 		{
@@ -994,7 +994,155 @@ int TextureManager::InitEnvTextureList()
 
 int TextureManager::LoadEnvTexture(int nIndex)
 {
-	return 0;
+	if (m_ppEnvTexture[nIndex] != nullptr)
+		return 0;
+
+	int bDDsType = 0;
+	for (int i = 0; i < 255; ++i)
+	{
+		if (m_stEnvTextureList[nIndex].szFileName[i] == '.')
+		{
+			if (!strcmp(&m_stEnvTextureList[nIndex].szFileName[i], ".wys"))
+			{
+				bDDsType = 1;
+				break;
+			}
+		}
+	}
+	int handle = _open(m_stEnvTextureList[nIndex].szFileName, _O_BINARY, 0);
+	if (handle == -1)
+		return 0;
+	int nLength = _filelength(handle);
+	D3DFORMAT texFormat = g_pDevice->m_eFormat;
+	int PlusLength = 18;
+	int ColorKey = 0xFF000000;
+
+	int nLengtha;
+	char* pBuffer;
+	char szHeader[5]; {}
+	char szDDSHeader[5]; {}
+
+	if (bDDsType == 0)
+	{
+		nLengtha = nLength - 4;
+		pBuffer = new char[nLengtha + PlusLength];
+		_read(handle, szHeader, 4u);
+		_read(handle, pBuffer, nLengtha);
+		memcpy(&pBuffer[nLengtha], m_szTGAHeader, sizeof(m_szTGAHeader));
+		_close(handle);
+		if (m_stEnvTextureList[nIndex].cAlpha == 'A')
+		{
+			if (g_pDevice->m_bVoodoo != 1 && g_pDevice->m_dwBitCount != 16)
+				texFormat = D3DFORMAT::D3DFMT_UNKNOWN;
+			else
+				texFormat = D3DFORMAT::D3DFMT_A4R4G4B4;
+		}
+		else if (m_stEnvTextureList[nIndex].cAlpha == 'a')
+		{
+			if (g_pDevice->m_bVoodoo != 1 && g_pDevice->m_dwBitCount != 16)
+				texFormat = D3DFORMAT::D3DFMT_UNKNOWN;
+			else
+				texFormat = D3DFORMAT::D3DFMT_A1R5G5B5;
+		}
+	}
+	else
+	{
+		nLengtha = nLength - 1;
+		PlusLength = 0;
+		pBuffer = new char[nLengtha];
+		_read(handle, szHeader, 1);
+		_read(handle, pBuffer, nLengtha);
+		memcpy(pBuffer, m_szDDSHeader, 3u);
+		if (pBuffer[84] == '2')
+			sprintf(szDDSHeader, "DXT1");
+		else
+			sprintf(szDDSHeader, "DXT3");
+		memcpy(&pBuffer[84], szDDSHeader, 4u);
+		_close(handle);
+		if (g_pDevice->m_bDXT1 != 1 || g_pDevice->m_bDXT3 != 1 || D3DDevice::m_bDxt != 1)
+		{
+			ColorKey = 0;
+			texFormat = g_pDevice->m_eFormat;
+			if (m_stEnvTextureList[nIndex].cAlpha == 'A' || 
+				m_stEnvTextureList[nIndex].cAlpha == 'C')
+			{
+				if (g_pDevice->m_bVoodoo != 1 && g_pDevice->m_dwBitCount != 16)
+					texFormat = D3DFORMAT::D3DFMT_A8R8G8B8;
+				else
+					texFormat = D3DFORMAT::D3DFMT_A4R4G4B4;
+			}
+			else if (m_stEnvTextureList[nIndex].cAlpha == 'a')
+			{
+				if (g_pDevice->m_bVoodoo != 1 && g_pDevice->m_dwBitCount != 16)
+					texFormat = D3DFORMAT::D3DFMT_A8R8G8B8;
+				else
+					texFormat = D3DFORMAT::D3DFMT_A1R5G5B5;
+			}
+			if (m_stEnvTextureList[nIndex].cAlpha == 'N')
+			{
+				if (g_pDevice->m_bVoodoo != 1 && g_pDevice->m_dwBitCount != 16)
+					texFormat = D3DFORMAT::D3DFMT_X8R8G8B8;
+				else
+					texFormat = D3DFORMAT::D3DFMT_X1R5G5B5;
+			}
+		}
+		else
+		{
+			ColorKey = 0;
+			texFormat = D3DFORMAT::D3DFMT_UNKNOWN;
+		}
+	}
+	int bMipMapType = 1;
+	if (D3DDevice::m_nMipMap < 20)
+		bMipMapType = 0;
+
+	if (bMipMapType != 0)
+	{
+		if (FAILED(D3DXCreateTextureFromFileInMemoryEx(
+			g_pDevice->m_pd3dDevice,
+			pBuffer,
+			PlusLength + nLengtha,
+			-1,
+			-1,
+			4,
+			0,
+			texFormat,
+			D3DPOOL::D3DPOOL_MANAGED,
+			5,
+			5,
+			ColorKey,
+			0,
+			0,
+			&m_ppEnvTexture[nIndex])))
+		{
+			m_ppEnvTexture[nIndex] = nullptr;
+			delete[] pBuffer;
+			return 0;
+		}
+	}
+	else if (FAILED(D3DXCreateTextureFromFileInMemoryEx(
+		g_pDevice->m_pd3dDevice,
+		pBuffer,
+		PlusLength + nLengtha,
+		-1,
+		-1,
+		1,
+		0,
+		texFormat,
+		D3DPOOL::D3DPOOL_MANAGED,
+		1,
+		1,
+		ColorKey,
+		0,
+		0,
+		&m_ppEnvTexture[nIndex])))
+	{
+		m_ppEnvTexture[nIndex] = nullptr;
+		delete[] pBuffer;
+		return 0;
+	}
+
+	delete[] pBuffer;
 }
 
 IDirect3DTexture9* TextureManager::GetEnvTexture(int nIndex, DWORD showTime)
@@ -1290,5 +1438,117 @@ void TextureManager::Release_GuildMarkList()
 
 int TextureManager::InitRenderTargetTexture()
 {
-	return 0;
+	RenderDevice* pRenderDevice = g_pApp->m_pRenderDevice;
+	if (FAILED(D3DXCreateTexture(
+		pRenderDevice->m_pd3dDevice,
+		pRenderDevice->m_d3dsdBackBuffer.Width,
+		pRenderDevice->m_d3dsdBackBuffer.Height,
+		1,
+		1,
+		D3DFORMAT::D3DFMT_X8R8G8B8,
+		D3DPOOL::D3DPOOL_MANAGED,
+		&m_pOriginTexture)))
+	{
+		return 0;
+	}
+
+	m_pOriginTexture->GetSurfaceLevel(0, &m_pOriginSurface);
+	D3DSURFACE_DESC desc;
+	m_pOriginSurface->GetDesc(&desc);
+
+	if (pRenderDevice->m_nAntiAliasLevel > 0)
+	{
+		if (FAILED(pRenderDevice->m_pd3dDevice->CreateRenderTarget(
+			pRenderDevice->m_d3dsdBackBuffer.Width,
+			pRenderDevice->m_d3dsdBackBuffer.Height,
+			pRenderDevice->m_d3dsdBackBuffer.Format,
+			(D3DMULTISAMPLE_TYPE)pRenderDevice->m_nAntiAliasLevel,
+			0,
+			0,
+			&m_pOriginRTT,
+			0)))
+		{
+			return 0;
+		}
+	}
+
+	if (FAILED(D3DXCreateTexture(
+		pRenderDevice->m_pd3dDevice,
+		pRenderDevice->m_d3dsdBackBuffer.Width,
+		pRenderDevice->m_d3dsdBackBuffer.Height,
+		1,
+		1,
+		D3DFORMAT::D3DFMT_X8R8G8B8,
+		D3DPOOL::D3DPOOL_MANAGED,
+		&m_pOriginTexture)))
+	{
+		return 0;
+	}
+
+	m_pOriginTexture->GetSurfaceLevel(0, &m_pOriginSurface);
+	m_pOriginSurface->GetDesc(&desc);
+	if (FAILED(D3DXCreateTexture(
+		pRenderDevice->m_pd3dDevice,
+		pRenderDevice->m_d3dsdBackBuffer.Width,
+		pRenderDevice->m_d3dsdBackBuffer.Height,
+		1,
+		1,
+		D3DFORMAT::D3DFMT_X8R8G8B8,
+		D3DPOOL::D3DPOOL_MANAGED,
+		&m_pAccumTexture)))
+	{
+		return 0;
+	}
+
+	m_pAccumTexture->GetSurfaceLevel(0, &m_pAccumSurface);
+	pRenderDevice->m_pd3dDevice->ColorFill(m_pAccumSurface, 0, 0);
+	if (FAILED(D3DXCreateTexture(
+		pRenderDevice->m_pd3dDevice,
+		pRenderDevice->m_d3dsdBackBuffer.Width,
+		pRenderDevice->m_d3dsdBackBuffer.Height,
+		1,
+		1,
+		D3DFORMAT::D3DFMT_X8R8G8B8,
+		D3DPOOL::D3DPOOL_MANAGED,
+		&m_pRenderTexture)))
+	{
+		return 0;
+	}
+
+	m_pRenderTexture->GetSurfaceLevel(0, &m_pRenderSurface);
+	pRenderDevice->m_pd3dDevice->ColorFill(m_pRenderSurface, 0, 0);
+
+	for (int i = 0; i < 2; ++i)
+	{
+		if (FAILED(D3DXCreateTexture(
+			g_pApp->m_pRenderDevice->m_pd3dDevice,
+			desc.Width >> 2,
+			desc.Height >> 2,
+			1,
+			1,
+			D3DFORMAT::D3DFMT_X8R8G8B8,
+			D3DPOOL::D3DPOOL_MANAGED,
+			&m_pBloomTexture[i])))
+		{
+			return 0;
+		}
+
+		m_pBloomTexture[i]->GetSurfaceLevel(0, &m_pBloomSurface[i]);
+		if (FAILED(D3DXCreateTexture(
+			g_pApp->m_pRenderDevice->m_pd3dDevice,
+			desc.Width >> 1,
+			desc.Height >> 1,
+			1,
+			1,
+			D3DFORMAT::D3DFMT_X8R8G8B8,
+			D3DPOOL::D3DPOOL_MANAGED,
+			&m_pBloomTexture1[i])))
+		{
+			return 0;
+		}
+
+		m_pBloomTexture1[i]->GetSurfaceLevel(0, &m_pBloomSurface1[i]);
+	}
+
+	return 1;
 }
