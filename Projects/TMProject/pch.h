@@ -9,4 +9,8 @@
 #include <d3dx9.h>
 #include <cstdio>
 #include <algorithm>
+#include <io.h>
+#include <fcntl.h>
+#include <winnt.h>
+
 #endif //PCH_H
