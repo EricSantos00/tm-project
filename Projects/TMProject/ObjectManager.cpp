@@ -136,6 +136,7 @@ void ObjectManager::InvalidateDeviceObjects()
 
 void ObjectManager::RenderControl()
 {
+	
 }
 
 void ObjectManager::RenderObject()

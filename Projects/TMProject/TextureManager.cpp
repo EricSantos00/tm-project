@@ -179,19 +179,19 @@ void TextureManager::ReleaseNotUsingTexture()
 
 		for (int nIndex = 0; nIndex < MAX_MODEL_TEXTURE; ++nIndex)
 		{
-			if (m_ppEnvTexture[nIndex] != nullptr &&
-				dwCurrentTime - m_stEnvTextureList[nIndex].dwLastUsedTime > m_stEnvTextureList[nIndex].dwShowTime)
+			if (m_ppModelTexture[nIndex] != nullptr &&
+				dwCurrentTime - m_stModelTextureList[nIndex].dwLastUsedTime > m_stModelTextureList[nIndex].dwShowTime)
 			{
-				SAFE_RELEASE(m_ppModelTexture[nIndex]);
-			}
+				SAFE_RELEASE(m_ppEnvTexture[nIndex]);
+			}			
 		}
 
 		for (int nIndex = 0; nIndex < MAX_ENV_TEXTURE; ++nIndex)
 		{
-			if (m_ppModelTexture[nIndex] != nullptr &&
-				dwCurrentTime - m_stModelTextureList[nIndex].dwLastUsedTime	> m_stModelTextureList[nIndex].dwShowTime)
+			if (m_ppEnvTexture[nIndex] != nullptr &&
+				dwCurrentTime - m_stEnvTextureList[nIndex].dwLastUsedTime > m_stEnvTextureList[nIndex].dwShowTime)
 			{
-				SAFE_RELEASE(m_ppEnvTexture[nIndex]);
+				SAFE_RELEASE(m_ppModelTexture[nIndex]);
 			}
 		}
 
@@ -270,8 +270,8 @@ int TextureManager::LoadUITexture(int nIndex, int nSrcIndex)
 	if (bDDsType == 0)
 	{
 		nLengtha = nLength - 4;
-		pBuffer = new char[nLengtha + PlusLength];
-		_read(handle, szHeader, 4);
+		pBuffer = new char[nLength + PlusLength];
+		_read(handle, &szHeader, 4);
 		_read(handle, pBuffer, nLengtha);
 		memcpy(&pBuffer[nLengtha], m_szTGAHeader, sizeof(m_szTGAHeader));
 		_close(handle);
@@ -402,7 +402,9 @@ int TextureManager::LoadUITexture(int nIndex, int nSrcIndex)
 		return 1;
 	}
 
-	SAFE_DELETE(m_ppUITexture[nIndex]);
+	if (m_ppUITexture[nIndex] != nullptr)
+		m_ppUITexture[nIndex] = nullptr;
+
 	delete[] pBuffer;
 	return 0;
 }
@@ -552,7 +554,7 @@ int TextureManager::LoadEffectTexture(int nIndex)
 	if (bDDsType == 0)
 	{
 		nLengtha = nLength - 4;
-		pBuffer = new char[nLengtha + PlusLength];
+		pBuffer = new char[nLength + PlusLength];
 		_read(handle, szHeader, 4);
 		_read(handle, pBuffer, nLengtha);
 		memcpy(&pBuffer[nLengtha], m_szTGAHeader, sizeof(m_szTGAHeader));
@@ -578,7 +580,7 @@ int TextureManager::LoadEffectTexture(int nIndex)
 		PlusLength = 0;
 		pBuffer = new char[nLengtha];
 		_read(handle, szHeader, 1);
-		_read(handle, pBuffer, nLengtha);
+		_read(handle, &pBuffer, nLengtha);
 		memcpy(pBuffer, m_szDDSHeader, 3);
 		if (pBuffer[84] == '2')
 			sprintf(m_szDDSHeader, "DXT1");
@@ -761,7 +763,7 @@ int TextureManager::LoadModelTexture(int nIndex)
 	if (bDDsType == 0)
 	{
 		nLengtha = nLength - 4;
-		pBuffer = new char[nLengtha + PlusLength];
+		pBuffer = new char[nLength + PlusLength];
 		_read(handle, szHeader, 4);
 		_read(handle, pBuffer, nLengtha);
 		memcpy(&pBuffer[nLengtha], m_szTGAHeader, sizeof(m_szTGAHeader));
@@ -788,7 +790,7 @@ int TextureManager::LoadModelTexture(int nIndex)
 		PlusLength = 0;
 		pBuffer = new char[nLengtha];
 		_read(handle, szHeader, 1);
-		_read(handle, pBuffer, nLengtha);
+		_read(handle, &pBuffer, nLengtha);
 		memcpy(pBuffer, m_szDDSHeader, 3);
 		if (pBuffer[84] == '2')
 			sprintf(szDDSHeader, "DXT1");
@@ -1025,7 +1027,7 @@ int TextureManager::LoadEnvTexture(int nIndex)
 	if (bDDsType == 0)
 	{
 		nLengtha = nLength - 4;
-		pBuffer = new char[nLengtha + PlusLength];
+		pBuffer = new char[nLength + PlusLength];
 		_read(handle, szHeader, 4u);
 		_read(handle, pBuffer, nLengtha);
 		memcpy(&pBuffer[nLengtha], m_szTGAHeader, sizeof(m_szTGAHeader));
@@ -1051,7 +1053,7 @@ int TextureManager::LoadEnvTexture(int nIndex)
 		PlusLength = 0;
 		pBuffer = new char[nLengtha];
 		_read(handle, szHeader, 1);
-		_read(handle, pBuffer, nLengtha);
+		_read(handle, &pBuffer, nLengtha);
 		memcpy(pBuffer, m_szDDSHeader, 3u);
 		if (pBuffer[84] == '2')
 			sprintf(szDDSHeader, "DXT1");

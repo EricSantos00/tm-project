@@ -1053,7 +1053,7 @@ void D3DDevice::CaptureScreen()
 {
 	IDirect3DSurface9* pBackBuffer;
 
-	FILE* handle = nullptr;
+	int handle = -1;
 	int nCount = 0;
 	TCHAR szFileName[128];
 
@@ -1061,13 +1061,11 @@ void D3DDevice::CaptureScreen()
 
 	do
 	{
-		fopen_s(&handle, szFileName, "wb");
-		if (handle != nullptr)
-		{
+		handle = _open((char*)szFileName, _O_BINARY);
+		if (handle < 0)
 			break;
-		}
 
-		fclose(handle);
+		_close(handle);
 		sprintf((char*)szFileName, "ScreenShot\\Capture%04d.bmp", ++nCount);
 	} while (nCount <= 9999);
 
