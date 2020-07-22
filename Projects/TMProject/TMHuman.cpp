@@ -446,9 +446,9 @@ void TMHuman::UpdateMount()
 {
 }
 
-double TMHuman::GetMyHeight()
+float TMHuman::GetMyHeight()
 {
-	return 0.0;
+	return 0.0f;
 }
 
 void TMHuman::SetGuildBattleHPColor()

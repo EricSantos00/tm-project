@@ -69,11 +69,11 @@ RenderDevice::RenderDevice(DWORD dwScreenWidth, DWORD dwScreenHeight, DWORD dwBi
 	RenderDevice::m_nLargeFontSize = (int)((float)RenderDevice::m_nLargeFontSize * RenderDevice::m_fWidthRatio);
 
 	memset(m_dwRenderStateList, -1, sizeof(m_dwRenderStateList));
-	memset(m_hbmBitmap, 0, sizeof(m_hbmBitmap));
-	memset(m_hDC, 0, sizeof(m_hDC));
-	memset(m_hFont, 0, sizeof(m_hFont));
+	memset(&m_hbmBitmap, 0, sizeof(m_hbmBitmap));
+	memset(&m_hDC, 0, sizeof(m_hDC));
+	memset(&m_hFont, 0, sizeof(m_hFont));
 	memset(&m_bmi, 0, sizeof(m_bmi));
-	memset(m_pBitmapBits, 0, sizeof(m_pBitmapBits));
+	memset(&m_pBitmapBits, 0, sizeof(m_pBitmapBits));
 
 	for (int nStage = 0; nStage < 8; ++nStage)
 	{
@@ -149,7 +149,7 @@ RenderDevice::~RenderDevice()
 
 int RenderDevice::Initialize(HWND hWnd)
 {
-	if (!Initialize(hWnd))
+	if (D3DDevice::Initialize(hWnd) != S_OK)
 		return 0;
 
 	if (m_bFull)
@@ -362,7 +362,6 @@ int RenderDevice::Lock(int bClear)
 		HRESULT hr = m_pd3dDevice->TestCooperativeLevel();
 		if (FAILED(hr))
 		{
-			constexpr bool a = D3DERR_INVALIDCALL == -2005530516;
 			if (hr == D3DERR_DEVICELOST)
 				return 0;
 			if (hr != D3DERR_DEVICENOTRESET)
@@ -762,9 +761,9 @@ int RenderDevice::InitMeshManager()
 int RenderDevice::InitVertexShader()
 {
 	D3DVERTEXELEMENT9 VertexDecl1[5];
-	D3DVERTEXELEMENT9 VertexDecl2[5];
-	D3DVERTEXELEMENT9 VertexDecl3[5];
-	D3DVERTEXELEMENT9 VertexDecl4[5];
+	D3DVERTEXELEMENT9 VertexDecl2[6];
+	D3DVERTEXELEMENT9 VertexDecl3[6];
+	D3DVERTEXELEMENT9 VertexDecl4[6];
 
 	VertexDecl1[0].Stream = 0;
 	VertexDecl1[0].Offset = 0;

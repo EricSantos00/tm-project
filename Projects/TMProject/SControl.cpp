@@ -295,7 +295,7 @@ SText::~SText()
 {
 }
 
-void SText::SetText(char* istrText, int bCheckZero)
+void SText::SetText(const char* istrText, int bCheckZero)
 {
 }
 
@@ -805,7 +805,7 @@ SMessagePanel::~SMessagePanel()
 {
 }
 
-void SMessagePanel::SetMessage(char* istrMessage, unsigned int dwTime)
+void SMessagePanel::SetMessage(const char* istrMessage, unsigned int dwTime)
 {
 }
 

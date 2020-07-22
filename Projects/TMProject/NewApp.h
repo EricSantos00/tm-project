@@ -9,6 +9,13 @@ class JBlur;
 class TimerManager;
 class ObjectManager;
 class CPSock;
+
+struct SaveUpdatAndConfig
+{
+    short Version;
+    short Config[14];
+};
+
 class NewApp
 {
 public:
@@ -68,3 +75,5 @@ public:
     int china_Playtime;
     JBlur* m_pBlur;
 };
+
+void InitServerName2();

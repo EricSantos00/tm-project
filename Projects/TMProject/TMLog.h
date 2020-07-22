@@ -1,6 +1,6 @@
 #pragma once
 
-char LOG_INITIALIZELOG(char* szLogFile);
+char LOG_INITIALIZELOG(const char* szLogFile);
 void LOG_WRITELOG(const char* lpszFormat, ...);
 void LOG_WRITELOG(unsigned int dwError);
 void LOG_WRITESYSERROR(unsigned int dwErrorIndex, unsigned int dwErrorCode);

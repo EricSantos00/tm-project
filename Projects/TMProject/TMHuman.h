@@ -151,7 +151,7 @@ public:
     int StartKhepraDieEffect();
     void SetAvatar(char cAvatar);
     void UpdateMount();
-    double GetMyHeight();
+    float GetMyHeight();
     void SetGuildBattleHPColor();
     void SetGuildBattleHPBar(int nHP);
     void SetGuildBattleLifeCount();

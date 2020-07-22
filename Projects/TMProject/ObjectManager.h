@@ -12,7 +12,7 @@ class TMCamera;
 class ObjectManager
 {
 public:
-	enum TM_GAME_STATE
+	enum class TM_GAME_STATE
 	{
 		TM_NONE_STATE = 0xFFFFFFFF,
 		TM_FIELD_STATE = 0x0,

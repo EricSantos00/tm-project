@@ -52,7 +52,7 @@ public:
 	~CSoundManager();
 
 	int LoadSoundData();
-	HRESULT Initialize(HWND hWnd, DWORD dwCoopLevel);
+	HRESULT Initialize(HWND hWnd, DWORD dwCoopLevel, DWORD dwPrimaryChannels, DWORD dwPrimaryFreq, DWORD dwPrimaryBitRate);
 	inline  LPDIRECTSOUND8 GetDirectSound() { return m_pDS; }
 	HRESULT SetPrimaryBufferFormat(DWORD dwPrimaryChannels, DWORD dwPrimaryFreq, DWORD dwPrimaryBitRate);
 	HRESULT Get3DListenerInterface(LPDIRECTSOUND3DLISTENER* ppDSListener);
@@ -81,7 +81,7 @@ protected:
 	HRESULT RestoreBuffer(LPDIRECTSOUNDBUFFER pDSB, BOOL* pbWasRestored);
 
 public:
-	CSound(LPDIRECTSOUNDBUFFER* apDSBuffer, DWORD dwDSBufferSize, DWORD dwNumBuffers, CWaveFile* pWaveFile, DWORD dwCreationFlags);
+	CSound(LPDIRECTSOUNDBUFFER* apDSBuffer, DWORD dwDSBufferSize, DWORD dwNumBuffers, CWaveFile* pWaveFile);
 	virtual ~CSound();
 
 	HRESULT Get3DBufferInterface(DWORD dwIndex, LPDIRECTSOUND3DBUFFER* ppDS3DBuffer);

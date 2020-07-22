@@ -27,7 +27,7 @@ void TMVideoWnd::CheckVisibility()
 {
 }
 
-int TMVideoWnd::OpenClip(char* szFilename)
+int TMVideoWnd::OpenClip(const char* szFilename)
 {
 	return 0;
 }

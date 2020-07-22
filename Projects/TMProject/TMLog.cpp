@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "TMLog.h"
 
-char LOG_INITIALIZELOG(char* szLogFile)
+char LOG_INITIALIZELOG(const char* szLogFile)
 {
 	return 0;
 }

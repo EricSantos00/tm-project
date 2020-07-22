@@ -13,15 +13,15 @@ public:
 
 	void InitCamera();
 
-	virtual TMVector3* GetCameraPos();
-	virtual TMVector3* GetCameraLookatPos();
-	virtual TMVector3* GetCameraLookatDir();
+	virtual TMVector3 GetCameraPos();
+	virtual TMVector3 GetCameraLookatPos();
+	virtual TMVector3 GetCameraLookatDir();
 
 	virtual void TurnView(float horizonAngle, float verticalAngle);
 
 	void EarthQuake(int nLevel);
 
-	double GetHorizonAngle();
+	float GetHorizonAngle();
 
 	virtual void SetFocusedObject(TMObject* pObject);
 

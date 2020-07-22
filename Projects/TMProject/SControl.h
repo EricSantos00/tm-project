@@ -196,7 +196,7 @@ public:
     SText(int inTextureSetIndex, char* istrText, unsigned int idwFontColor, float inX, float inY, 
         float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SText();
-    virtual void SetText(char* istrText, int bCheckZero);
+    virtual void SetText(const char* istrText, int bCheckZero);
     virtual void SetTextColor(unsigned int dwFontColor);
     virtual char* GetText();
     virtual void SetType(unsigned int dwType);
@@ -613,7 +613,7 @@ public:
     SMessagePanel(char* istrMessage, float inX, float inY, float inWidth, float inHeight, unsigned int dwTime);
     ~SMessagePanel();
 
-    void SetMessage(char* istrMessage, unsigned int dwTime);
+    void SetMessage(const char* istrMessage, unsigned int dwTime);
     void FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParentLayer, int nFlag) override;
     virtual void SetVisible(int bVisible, int bSound);
 

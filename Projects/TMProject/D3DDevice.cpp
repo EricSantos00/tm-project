@@ -67,7 +67,7 @@ int D3DDevice::Initialize(HWND hWnd)
 
 	if (!m_hWnd)
 		m_hWnd = hWnd;
-	else if (!m_hWndFocus)
+	if (!m_hWndFocus)
 		m_hWndFocus = m_hWnd;
 
 	m_dwWindowStyle = GetWindowLong(m_hWnd, GWL_STYLE);
@@ -1064,7 +1064,6 @@ void D3DDevice::CaptureScreen()
 		fopen_s(&handle, szFileName, "wb");
 		if (handle != nullptr)
 		{
-			fclose(handle);
 			break;
 		}
 

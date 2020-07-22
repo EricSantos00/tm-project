@@ -76,12 +76,12 @@ public:
     int GroundGetTileType(TMVector2 vecPosition);
     int GroundGetMask(TMVector2 vecPosition);
     int GroundGetMask(IVector2 vecPosition);
-    double GroundGetHeight(TMVector2 vecPosition);
+    float GroundGetHeight(TMVector2 vecPosition);
     D3DCOLORVALUE* GroundGetColor(D3DCOLORVALUE* result, TMVector2 vecPosition);
     void GroundSetColor(TMVector2 vecPosition, unsigned int dwColor);
     int GroundIsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight);
     int GroundIsInWater2(TMVector2 vecPosition, float* pfWaterHeight);
-    double GroundGetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight);
+    float GroundGetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight);
     int GetMask2(TMVector2 vecPosition);
     void Warp();
     void Warp2(int nZoneX, int nZoneY);

@@ -2275,9 +2275,9 @@ D3DXVECTOR3* TMGround::GetPickPos(D3DXVECTOR3* result)
 	return nullptr;
 }
 
-double TMGround::GetHeight(TMVector2 vecPosition)
+float TMGround::GetHeight(TMVector2 vecPosition)
 {
-	return 0.0;
+	return 0.0f;
 }
 
 int TMGround::GetMask(TMVector2 vecPosition)
@@ -2318,7 +2318,7 @@ int TMGround::IsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeig
 	return 0;
 }
 
-double TMGround::GetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight)
+float TMGround::GetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight)
 {
-	return 0.0;
+	return 0.0f;
 }
