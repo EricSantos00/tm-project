@@ -13,6 +13,7 @@
 #include "Basedef.h"
 #include <io.h>
 #include <fcntl.h>
+#include <d3dx9.h>
 
 int RenderDevice::m_nBright = 50;
 DWORD RenderDevice::m_dwCurrScreenX = 1024;
@@ -1881,6 +1882,21 @@ void RenderDevice::GetPickRayVector(D3DXVECTOR3* pRickRayOrig, D3DXVECTOR3* pPic
 
 void RenderDevice::RenderRect(float iStartX, float iStartY, float iCX, float iCY, float iDestX, float iDestY, IDirect3DTexture9* pTexture, float fScaleX, float fScaleY)
 {
+	RECT srcRect{};
+	srcRect.left = (int)iStartX;
+	srcRect.top = (int)iStartY;
+	srcRect.right = (int)(iStartX + iCX);
+	srcRect.bottom = (int)(iStartY + iCY);
+
+	D3DXVECTOR2 rotCenter((float)(iCX / 2.0) + iStartX, (float)(iCY / 2.0) + iStartY);
+	D3DXVECTOR2 destPoint(iDestX, iDestY);
+	D3DXVECTOR2 scaleVec(fScaleX, fScaleY);
+
+	if (pTexture != nullptr && m_pSprite != nullptr)
+	{
+		
+		m_pSprite->Draw(pTexture, &srcRect, &scaleVec, &rotCenter, 0, &destPoint, -1);
+	}
 }
 
 void RenderDevice::RenderRectC(float iStartX, float iStartY, float iCX, float iCY, float iDestX, float iDestY, IDirect3DTexture9* pTexture, DWORD dwColor, float fScaleX, float fScaleY)
