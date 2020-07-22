@@ -69,11 +69,11 @@ RenderDevice::RenderDevice(DWORD dwScreenWidth, DWORD dwScreenHeight, DWORD dwBi
 	RenderDevice::m_nLargeFontSize = (int)((float)RenderDevice::m_nLargeFontSize * RenderDevice::m_fWidthRatio);
 
 	memset(m_dwRenderStateList, -1, sizeof(m_dwRenderStateList));
-	memset(m_hbmBitmap, 0, sizeof(m_hbmBitmap));
-	memset(m_hDC, 0, sizeof(m_hDC));
-	memset(m_hFont, 0, sizeof(m_hFont));
+	memset(&m_hbmBitmap, 0, sizeof(m_hbmBitmap));
+	memset(&m_hDC, 0, sizeof(m_hDC));
+	memset(&m_hFont, 0, sizeof(m_hFont));
 	memset(&m_bmi, 0, sizeof(m_bmi));
-	memset(m_pBitmapBits, 0, sizeof(m_pBitmapBits));
+	memset(&m_pBitmapBits, 0, sizeof(m_pBitmapBits));
 
 	for (int nStage = 0; nStage < 8; ++nStage)
 	{
@@ -149,7 +149,7 @@ RenderDevice::~RenderDevice()
 
 int RenderDevice::Initialize(HWND hWnd)
 {
-	if (!Initialize(hWnd))
+	if (D3DDevice::Initialize(hWnd) != S_OK)
 		return 0;
 
 	if (m_bFull)

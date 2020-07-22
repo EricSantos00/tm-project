@@ -29,7 +29,7 @@ void BASE_InitEffectString()
 
 int BASE_InitializeBaseDef()
 {
-	return 0;
+	return 1;
 }
 
 void BASE_ReadItemPrice()
@@ -46,5 +46,28 @@ void ReadItemName()
 }
 
 void ReadUIString()
+{
+}
+
+char ReadNameFiltraDataBase()
+{
+	return 1;
+}
+
+char ReadChatFiltraDataBase()
+{
+	return 1;
+}
+
+void EnableSysKey()
+{
+}
+
+bool CheckOS()
+{
+	return false;
+}
+
+void DisableSysKey()
 {
 }

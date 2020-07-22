@@ -17,7 +17,7 @@ MeshManager::~MeshManager()
 
 int MeshManager::InitMeshManager()
 {
-	return 0;
+	return 1;
 }
 
 int MeshManager::InitBoneAnimation()

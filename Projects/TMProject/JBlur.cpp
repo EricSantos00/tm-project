@@ -11,7 +11,7 @@ JBlur::~JBlur()
 
 int JBlur::InitObject()
 {
-	return 0;
+	return 1;
 }
 
 int JBlur::MakeVB()

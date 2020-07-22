@@ -786,5 +786,10 @@ void BASE_ReadItemPrice();
 int ReadItemicon();
 void ReadItemName();
 void ReadUIString();
+char ReadNameFiltraDataBase();
+char ReadChatFiltraDataBase();
 
+/* System functions */
 void EnableSysKey();
+bool CheckOS();
+void DisableSysKey();

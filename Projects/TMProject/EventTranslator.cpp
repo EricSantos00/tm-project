@@ -11,17 +11,17 @@ EventTranslator::~EventTranslator()
 
 BOOL EventTranslator::Initialize(HWND hWnd)
 {
-	return 0;
+	return 1;
 }
 
 int EventTranslator::InitializeIME()
 {
-	return 0;
+	return 1;
 }
 
 int EventTranslator::InitializeInputDevice(HWND hWnd)
 {
-	return 0;
+	return 1;
 }
 
 void EventTranslator::Finalize()

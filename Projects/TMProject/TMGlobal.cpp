@@ -2,6 +2,8 @@
 #include "TMGlobal.h"
 
 NewApp* g_pApp;
+CPSock* g_pSocketManager;
+CPSock* g_LoginSocket;
 ObjectManager* g_pObjectManager;
 EventTranslator* g_pEventTranslator;
 MeshManager* g_pMeshManager;
@@ -24,8 +26,6 @@ float g_ClipFar = 540.0f;
 int g_nServerCountList[12];
 char g_szServerNameList[11][9];
 char g_szServerName[10][10][9];
-
-HWND hWndMain;
 
 int g_bActiveWB;
 int g_bHideEffect;
@@ -55,3 +55,5 @@ unsigned int g_dwClientTime;
 unsigned int g_pLastFixTime;
 
 HINSTANCE g_hInstance;
+
+char g_szOS[3] = "??";

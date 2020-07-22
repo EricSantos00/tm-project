@@ -89,7 +89,7 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 	g_hInstance = hInstance;
 	m_dwScreenWidth = 800;
 	m_dwScreenHeight = 600;
-	m_nSound = 1;
+	m_nSound = 0;
 	m_dwColorBit = 16;
 	m_bwFullScreen = nFull;
 	BASE_InitEffectString();
@@ -151,8 +151,8 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 		Config.Version = 7000;
 		Config.Config[0] = 7;
 		Config.Config[1] = 2;
-		Config.Config[2] = 100;
-		Config.Config[3] = 100;
+		Config.Config[2] = 0;
+		Config.Config[3] = 0;
 		Config.Config[4] = -1;
 		Config.Config[5] = 57;
 		Config.Config[6] = 2;
@@ -336,11 +336,13 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 
 	MixHelp();
 
-	FILE* fp = nullptr;
 	fopen_s(&fp, szItemHelpFile, "rt");
 
 	if (fp == nullptr)
+	{
+		MessageBoxA(m_hWnd, "Can't open itemhelp.dat", "Error", 0);
 		return 0;
+	}
 
 	char szCol[7]{};
 	char szTemp[256]{};
@@ -1225,7 +1227,7 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 	break;
 	case WM_ACTIVATE:
 	{
-		if (g_pCurrentScene == nullptr)
+		if (g_pCurrentScene != nullptr)
 		{
 			if (strcmp(g_pCurrentScene->m_pTextIMEDesc->GetText(), "Î"))
 				SendMessageA(hWnd, 0x281, 0, -1073741809);
@@ -1324,5 +1326,56 @@ HRESULT NewApp::CheckResolution(DWORD x, DWORD y, DWORD bpp)
 
 char NewApp::base_chinaTid(char* TID, char* Id)
 {
+	return 0;
+}
+
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow)
+{
+	if (FindWindow(0, ClassName))
+		return 0;
+
+	char* szArgument = GetCommandLine();
+	if (CheckOS())
+		sprintf(g_szOS, "98");
+	else
+		sprintf(g_szOS, "NT");
+
+	NewApp* newApp = new NewApp();
+
+	int nFull = 1;
+	char szDesc[256]{};
+	GetKeyboardLayoutName(szDesc);
+	
+	if (!strcmp((const char*)lpCmdLine, "/w"))
+		nFull = 0;
+
+	// ?:????????????? KKKKKKKKKKKKKKKKKKKKKKKK
+	//if (j___stricmp(lpCmdLine, "China No.1 It is TM Launcher"))
+		//return 0;
+
+	if (!ReadNameFiltraDataBase())
+	{
+		MessageBoxA(0, "Need System File", "WYD", 0);
+		return 0;
+	}
+	else if (!ReadChatFiltraDataBase())
+	{
+		MessageBoxA(0, "Need System File", "WYD", 0);
+		return 0;
+	}
+	else if (newApp->Initialize(hInstance, nFull))
+	{
+		DisableSysKey();
+
+		int nResult = newApp->Run();
+		if (newApp)
+			delete newApp;
+
+		return nResult;
+	}
+
 	return 0;
 }
