@@ -9,7 +9,7 @@
 #include "TMItem.h"
 #include "TMScene.h"
 
-TMScene::TMScene()
+TMScene::TMScene() : TreeNode(0)
 {
 }
 

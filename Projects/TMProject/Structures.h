@@ -308,3 +308,38 @@ struct stMobAni
 	short sAni;
 	IVector2 vecPos;
 };
+
+struct stDemoHuman
+{
+	int nFace;
+	int Helm;
+	int Body;
+	int Mantua;
+	int Right;
+	int Left;
+	int nSanc;
+	int nMount;
+	float fX;
+	float fY;
+	float fTX;
+	float fTY;
+	int nAngle;
+	int nSpeed;
+	int nHumanAni;
+};
+
+struct stDemoHuman2
+{
+	int nFace;
+	int Helm;
+	int Body;
+	int Mantua;
+	int Right;
+	int Left;
+	int nSanc;
+	int nMount;
+	int nX;
+	int nY;
+	int nAngle;
+	int nSpeed;
+};

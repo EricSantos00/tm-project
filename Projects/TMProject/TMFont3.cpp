@@ -2,6 +2,7 @@
 #include "TMFont3.h"
 
 TMFont3::TMFont3(char* szText, int nStartX, int nStartY, unsigned int dwColor, float fSize, unsigned int dwDelay, short sDir, unsigned int dwLifeTime, int bViewHalf, int nType)
+	: TreeNode(0)
 {
 }
 

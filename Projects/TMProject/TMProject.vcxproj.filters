@@ -64,6 +64,9 @@
     <Filter Include="Source Files\Systems">
       <UniqueIdentifier>{bb61b35f-857a-4b43-9e7d-74152ade738d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\UI">
+      <UniqueIdentifier>{1f83cbca-a446-45e2-a606-886dc5947ea6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -614,9 +617,6 @@
     <ClCompile Include="NewApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SControl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DirShow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -734,14 +734,26 @@
     <ClCompile Include="ObjectManager.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="TMDemoScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TMSelectCharScene.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="TMSelectServerScene.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="TMDemoScene.cpp">
+      <Filter>Source Files\Engine\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="TMFieldScene.cpp">
+      <Filter>Source Files\Engine\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="SControl.cpp">
+      <Filter>Source Files\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SControlContainer.cpp">
+      <Filter>Source Files\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SGrid.cpp">
+      <Filter>Source Files\Engine\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
