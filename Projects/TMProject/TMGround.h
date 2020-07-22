@@ -27,7 +27,7 @@ public:
     int Render() override;
     int FrameMove(unsigned int dwServerTime) override;
     D3DXVECTOR3* GetPickPos(D3DXVECTOR3* result);
-    double GetHeight(TMVector2 vecPosition);
+    float GetHeight(TMVector2 vecPosition);
     int GetMask(TMVector2 vecPosition);
     D3DCOLORVALUE* GetColor(D3DCOLORVALUE* result, TMVector2 vecPosition);
     int GetTileType(TMVector2 vecPosition);
@@ -36,7 +36,7 @@ public:
     int SetMiniMapData();
     void SetAttatchEnable(int nX, int nY);
     int IsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight);
-    double GetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight);
+    float GetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight);
 
 public:
     static float TileCoordList[8][4][2];

@@ -668,8 +668,7 @@ HRESULT NewApp::RenderScene()
 	m_pRenderDevice->Lock(1);
 	
 	TMCamera* pCamera = m_pObjectManager->m_pCamera;
-	TMVector3 vecLookAt;
-	pCamera->GetCameraLookatPos(&vecLookAt);
+	TMVector3 vecLookAt = pCamera->GetCameraLookatPos();
 
 	m_pRenderDevice->SetViewVector(pCamera->m_cameraPos, vecLookAt);
 	m_pRenderDevice->SetRenderStateBlock(1);

@@ -29,9 +29,9 @@ D3DXVECTOR3* TMSea::GetPickPos(D3DXVECTOR3* result)
 	return nullptr;
 }
 
-double TMSea::GetHeight(float fX, float fY)
+float TMSea::GetHeight(float fX, float fY)
 {
-	return 0.0;
+	return 0.0f;
 }
 
 int TMSea::FrameMove(unsigned int dwServerTime)

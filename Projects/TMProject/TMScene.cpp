@@ -136,9 +136,9 @@ int TMScene::GroundGetMask(IVector2 vecPosition)
 	return 0;
 }
 
-double TMScene::GroundGetHeight(TMVector2 vecPosition)
+float TMScene::GroundGetHeight(TMVector2 vecPosition)
 {
-	return 0.0;
+	return 0.0f;
 }
 
 D3DCOLORVALUE* TMScene::GroundGetColor(D3DCOLORVALUE* result, TMVector2 vecPosition)
@@ -160,9 +160,9 @@ int TMScene::GroundIsInWater2(TMVector2 vecPosition, float* pfWaterHeight)
 	return 0;
 }
 
-double TMScene::GroundGetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight)
+float TMScene::GroundGetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight)
 {
-	return 0.0;
+	return 0.0f;
 }
 
 int TMScene::GetMask2(TMVector2 vecPosition)
