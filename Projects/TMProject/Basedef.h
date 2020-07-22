@@ -1,5 +1,7 @@
 #pragma once
 
+float BASE_ScreenResize(float size);
+
 struct MSG_STANDARD
 {
 	unsigned short Size;

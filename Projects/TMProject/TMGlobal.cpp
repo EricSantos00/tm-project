@@ -14,3 +14,9 @@ CSoundManager* g_pSoundManager;
 
 int g_nUseBlur;
 int g_nAntialias;
+int g_bDebugMsg;
+int g_nReflection;
+char g_szFontName[128] = { "Tahoma" };
+int g_nFontBold = 500;
+float g_ClipNear = 0.69f;
+float g_ClipFar = 540.0f;
