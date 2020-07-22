@@ -1143,6 +1143,7 @@ int TextureManager::LoadEnvTexture(int nIndex)
 	}
 
 	delete[] pBuffer;
+	return 1;
 }
 
 IDirect3DTexture9* TextureManager::GetEnvTexture(int nIndex, DWORD showTime)
