@@ -270,7 +270,7 @@ int TextureManager::LoadUITexture(int nIndex, int nSrcIndex)
 	if (bDDsType == 0)
 	{
 		nLengtha = nLength - 4;
-		pBuffer = new char[nLengtha + 18];
+		pBuffer = new char[nLengtha + PlusLength];
 		_read(handle, szHeader, 4);
 		_read(handle, pBuffer, nLengtha);
 		memcpy(&pBuffer[nLengtha], m_szTGAHeader, sizeof(m_szTGAHeader));
@@ -521,7 +521,157 @@ int TextureManager::InitEffectTextureList()
 
 int TextureManager::LoadEffectTexture(int nIndex)
 {
-	return 0;
+	if (m_ppEffectTexture[nIndex] != nullptr)
+		return 0;
+
+	int bDDsType = 0;
+	for (int i = 0; i < 255; ++i)
+	{
+		if (m_stEffectTextureList[nIndex].szFileName[i] == '.')
+		{
+			if (!strcmp(&m_stEffectTextureList[nIndex].szFileName[i], ".wys"))
+			{
+				bDDsType = 1;
+				break;
+			}
+		}
+	}
+
+	int PlusLength = 18;
+	int ColorKey = 0xFF000000;
+	int handle = _open(m_stEffectTextureList[nIndex].szFileName, _O_BINARY, 0);
+	if (handle == -1)
+		return 0;
+
+	char szHeader[5]{};
+	int nLength = _filelength(handle);
+	D3DFORMAT texFormat = g_pDevice->m_eFormat;
+
+	int nLengtha = 0;
+	char* pBuffer = nullptr;
+	if (bDDsType == 0)
+	{
+		nLengtha = nLength - 4;
+		pBuffer = new char[nLengtha + PlusLength];
+		_read(handle, szHeader, 4);
+		_read(handle, pBuffer, nLengtha);
+		memcpy(&pBuffer[nLengtha], m_szTGAHeader, sizeof(m_szTGAHeader));
+		_close(handle);
+		if (m_stEffectTextureList[nIndex].cAlpha == 'A')
+		{
+			if (g_pDevice->m_bVoodoo != 1 && g_pDevice->m_dwBitCount != 16)
+				texFormat = D3DFORMAT::D3DFMT_UNKNOWN;
+			else
+				texFormat = D3DFORMAT::D3DFMT_A4R4G4B4;
+		}
+		else if (m_stEffectTextureList[nIndex].cAlpha == 'a')
+		{
+			if (g_pDevice->m_bVoodoo != 1 && g_pDevice->m_dwBitCount != 16)
+				texFormat = D3DFORMAT::D3DFMT_UNKNOWN;
+			else
+				texFormat = D3DFORMAT::D3DFMT_A1R5G5B5;
+		}
+	}
+	else
+	{
+		nLengtha = nLength - 1;
+		PlusLength = 0;
+		pBuffer = new char[nLengtha];
+		_read(handle, szHeader, 1);
+		_read(handle, pBuffer, nLengtha);
+		memcpy(pBuffer, m_szDDSHeader, 3);
+		if (pBuffer[84] == '2')
+			sprintf(m_szDDSHeader, "DXT1");
+		else
+			sprintf(m_szDDSHeader, "DXT3");
+		memcpy(&pBuffer[84], m_szDDSHeader, 4);
+		_close(handle);
+
+		if (g_pDevice->m_bDXT1 == 1 && g_pDevice->m_bDXT3 == 1 && D3DDevice::m_bDxt == 1)
+		{
+			ColorKey = 0;
+			texFormat = D3DFORMAT::D3DFMT_UNKNOWN;
+		}
+		else
+		{
+			ColorKey = 0;
+			texFormat = g_pDevice->m_eFormat;
+			if (m_stEffectTextureList[nIndex].cAlpha == 'A' ||
+				m_stEffectTextureList[nIndex].cAlpha == 'C')
+			{
+				if (g_pDevice->m_bVoodoo != 1 && g_pDevice->m_dwBitCount != 16)
+					texFormat = D3DFORMAT::D3DFMT_A8R8G8B8;
+				else
+					texFormat = D3DFORMAT::D3DFMT_A4R4G4B4;
+			}
+			else if (m_stEffectTextureList[nIndex].cAlpha == 'a')
+			{
+				if (g_pDevice->m_bVoodoo != 1 && g_pDevice->m_dwBitCount != 16)
+					texFormat = D3DFORMAT::D3DFMT_A8R8G8B8;
+				else
+					texFormat = D3DFORMAT::D3DFMT_A1R5G5B5;
+			}
+			if (m_stEffectTextureList[nIndex].cAlpha == 'N')
+			{
+				if (g_pDevice->m_bVoodoo != 1 && g_pDevice->m_dwBitCount != 16)
+					texFormat = D3DFORMAT::D3DFMT_X8R8G8B8;
+				else
+					texFormat = D3DFORMAT::D3DFMT_X1R5G5B5;
+			}
+		}
+	}
+	int bMipMapType = 1;
+	if (D3DDevice::m_nMipMap < 10)
+		bMipMapType = 0;
+
+	if (bMipMapType != 0)
+	{
+		if (FAILED(D3DXCreateTextureFromFileInMemoryEx(
+			g_pDevice->m_pd3dDevice,
+			pBuffer,
+			PlusLength + nLengtha,
+			-1,
+			-1,
+			4,
+			0,
+			texFormat,
+			D3DPOOL::D3DPOOL_MANAGED,
+			5,
+			5,
+			ColorKey,
+			0,
+			0,
+			&m_ppEffectTexture[nIndex])))
+		{
+			m_ppEffectTexture[nIndex] = 0;
+			delete[] pBuffer;
+			return 0;
+		}
+	}
+	else if (FAILED(D3DXCreateTextureFromFileInMemoryEx(
+		g_pDevice->m_pd3dDevice,
+		pBuffer,
+		PlusLength + nLengtha,
+		-1,
+		-1,
+		1,
+		0,
+		texFormat,
+		D3DPOOL::D3DPOOL_MANAGED,
+		1,
+		1,
+		ColorKey,
+		0,
+		0,
+		&m_ppEffectTexture[nIndex])))
+	{
+		m_ppEffectTexture[nIndex] = 0;
+		delete[] pBuffer;
+		return 0;
+	}
+
+	delete[] pBuffer;
+	return 1;
 }
 
 IDirect3DTexture9* TextureManager::GetEffectTexture(int nIndex, DWORD showTime)
