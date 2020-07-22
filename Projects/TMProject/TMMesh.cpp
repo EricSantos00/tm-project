@@ -71,11 +71,11 @@ int TMMesh::Render(char cMulti, int nTexOffset)
 	DWORD dwTime = g_pTimerManager->GetServerTime();
 	float fProgress;
 	if (cMulti == 1)
-		fProgress = (double)(dwTime % 10000);
+		fProgress = (float)(dwTime % 10000);
 	else if (cMulti == 100)
-		fProgress = (double)(dwTime % 8000) / 8000.0f;
+		fProgress = (float)(dwTime % 8000) / 8000.0f;
 	else
-		fProgress = (double)(dwTime % 4000) / 4000.0f;
+		fProgress = (float)(dwTime % 4000) / 4000.0f;
 
 	RDVERTEX2* pVertex = nullptr;
 
@@ -275,7 +275,7 @@ int TMMesh::RenderPick(float fX, float fY, float fZ, float fAngle, float fAngle2
 
 	g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &mat);
 
-	Render(cMulti, nTexOffset);
+	Render((char)cMulti, nTexOffset);
 
 	g_pDevice->m_pd3dDevice->SetMaterial(&bmaterials);
 	return 1;
@@ -315,9 +315,9 @@ int TMMesh::RenderForUI(int nX, int nY, float fAngle, float fScale, DWORD dwColo
 	char cAlpha = g_pTextureManager->m_stModelTextureList[m_nTextureIndex[0]].cAlpha;
 
 	D3DCOLORVALUE color{};
-	color.r = (double)((dwColor >> 16) & 0xFF) / 256.0f;
-	color.g = (double)((unsigned short)dwColor >> 8) / 256.0f;
-	color.b = (double)((unsigned char)dwColor) / 256.0f;
+	color.r = (float)((dwColor >> 16) & 0xFF) / 256.0f;
+	color.g = (float)((unsigned short)dwColor >> 8) / 256.0f;
+	color.b = (float)((unsigned char)dwColor) / 256.0f;
 
 	D3DMATERIAL9 materials{};
 	materials.Emissive.r = (color.r * 0.30000001f) + 0.1f;
