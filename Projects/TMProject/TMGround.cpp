@@ -2232,3 +2232,93 @@ int TMGround::m_nCheckSum[64][32] =
 
 int TMGround::m_bFirst = 1;
 float TMGround::m_fMiniMapScale = 0.60f;
+
+TMGround::TMGround()
+    : TreeNode(0)
+{
+}
+
+TMGround::~TMGround()
+{
+}
+
+void TMGround::RestoreDeviceObjects()
+{
+}
+
+void TMGround::SetPos(int nX, int nY)
+{
+}
+
+int TMGround::Attach(TMGround* pGround)
+{
+	return 0;
+}
+
+int TMGround::LoadTileMap(char* szFileName)
+{
+	return 0;
+}
+
+int TMGround::Render()
+{
+	return 0;
+}
+
+int TMGround::FrameMove(unsigned int dwServerTime)
+{
+	return 0;
+}
+
+D3DXVECTOR3* TMGround::GetPickPos(D3DXVECTOR3* result)
+{
+	return nullptr;
+}
+
+double TMGround::GetHeight(TMVector2 vecPosition)
+{
+	return 0.0;
+}
+
+int TMGround::GetMask(TMVector2 vecPosition)
+{
+	return 0;
+}
+
+D3DCOLORVALUE* TMGround::GetColor(D3DCOLORVALUE* result, TMVector2 vecPosition)
+{
+	return nullptr;
+}
+
+int TMGround::GetTileType(TMVector2 vecPosition)
+{
+	return 0;
+}
+
+void TMGround::SetColor(TMVector2 vecPosition, unsigned int dwColor)
+{
+}
+
+TMVector3* TMGround::GetNormalInGround(TMVector3* result, int nX, int nY)
+{
+	return nullptr;
+}
+
+int TMGround::SetMiniMapData()
+{
+	return 0;
+}
+
+void TMGround::SetAttatchEnable(int nX, int nY)
+{
+}
+
+int TMGround::IsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight)
+{
+	return 0;
+}
+
+double TMGround::GetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight)
+{
+	return 0.0;
+}

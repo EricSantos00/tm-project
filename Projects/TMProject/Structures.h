@@ -300,3 +300,11 @@ struct stCam
 	float fX;
 	float fY;
 };
+
+struct stMobAni
+{
+	unsigned int dwTick;
+	char cWhat;
+	short sAni;
+	IVector2 vecPos;
+};

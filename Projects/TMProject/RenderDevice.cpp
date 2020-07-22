@@ -3188,8 +3188,8 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 				if (ipControl->nMarkLayout == 1)
 				{
 					RenderRectNoTex(						
-						iX - (float)((float)(16.0 * RenderDevice::m_fWidthRatio) - 16.0),
-						iY - (float)((float)(12.0 * RenderDevice::m_fHeightRatio) - 12.0),
+						iX - (float)((float)(16.0f * RenderDevice::m_fWidthRatio) - 16.0f),
+						iY - (float)((float)(12.0f * RenderDevice::m_fHeightRatio) - 12.0f),
 						iCX,
 						iCY,
 						0xFFFFD700,
@@ -3198,8 +3198,8 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 				else if (ipControl->nMarkLayout == 2)
 				{
 					RenderRectNoTex(						
-						iX - (float)((float)(16.0 * RenderDevice::m_fWidthRatio) - 16.0),
-						iY - (float)((float)(12.0 * RenderDevice::m_fHeightRatio) - 12.0),
+						iX - (float)((float)(16.0f * RenderDevice::m_fWidthRatio) - 16.0f),
+						iY - (float)((float)(12.0f * RenderDevice::m_fHeightRatio) - 12.0f),
 						iCX,
 						iCY,
 						0xFFC0C0C0,
@@ -3211,8 +3211,8 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 					0.0,
 					16.0,
 					12.0,
-					ipControl->nPosX - (float)((float)(16.0 * fWidthRatio) - 16.0),
-					ipControl->nPosY - (float)((float)(12.0 * fHeightRatio) - 12.0),
+					ipControl->nPosX - (float)((float)(16.0f * fWidthRatio) - 16.0f),
+					ipControl->nPosY - (float)((float)(12.0f * fHeightRatio) - 12.0f),
 					g_pTextureManager->m_stGuildMark[nMarkIndex].pTexture,
 					fWidthRatio,
 					fHeightRatio);
@@ -3294,8 +3294,8 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 					else
 					{
 						ipControl->pFont->Render(
-							(int)(float)((float)((float)(ipControl->nWidth - (float)(6 * nLength)) / 2.0) + ipControl->nPosX),
-							nUp + (int)(float)((float)((float)(ipControl->nHeight - 12.0) / 2.0) + ipControl->nPosY),
+							(int)(float)((float)((float)(ipControl->nWidth - (float)(6 * nLength)) / 2.0f) + ipControl->nPosX),
+							nUp + (int)(float)((float)((float)(ipControl->nHeight - 12.0f) / 2.0f) + ipControl->nPosY),
 							(int)ipControl->eRenderType);
 					}
 				}

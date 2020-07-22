@@ -1,10 +1,27 @@
 #pragma once
 
 #include "TMScene.h"
+#include "Structures.h"
 
 class TMRain;
 class TMSnow;
 class SPanel;
+
+struct stDemoHuman2
+{
+	int nFace;
+	int Helm;
+	int Body;
+	int Mantua;
+	int Right;
+	int Left;
+	int nSanc;
+	int nMount;
+	int nX;
+	int nY;
+	int nAngle;
+	int nSpeed;
+};
 
 class TMDemoScene : public TMScene
 {
