@@ -43,7 +43,15 @@ unsigned int g_dwPausedTime;
 unsigned int g_dwStartPacketTime;
 int g_nCurrentPos;
 int g_nDumpPacketSize;
-int g_hPacketDump;
+FILE* g_hPacketDump;
 char* g_pDumpPacket;
+
+unsigned int g_dwStartQuitGameTime;
+
+int g_bEndGame;
+
+unsigned int g_dwServerTime;
+unsigned int g_dwClientTime;
+unsigned int g_pLastFixTime;
 
 HINSTANCE g_hInstance;

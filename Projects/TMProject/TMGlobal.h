@@ -64,8 +64,16 @@ extern unsigned int g_dwPausedTime;
 extern unsigned int g_dwStartPacketTime;
 extern int g_nCurrentPos;
 extern int g_nDumpPacketSize;
-extern int g_hPacketDump;
+extern FILE* g_hPacketDump;
 extern char* g_pDumpPacket;
+
+extern int g_bEndGame;
+
+extern unsigned int g_dwStartQuitGameTime;
+
+extern unsigned int g_dwServerTime;
+extern unsigned int g_dwClientTime;
+extern unsigned int g_pLastFixTime;
 
 static unsigned int g_dwHandIndex[101][2] =
 {

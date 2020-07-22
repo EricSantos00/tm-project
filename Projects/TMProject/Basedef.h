@@ -786,3 +786,5 @@ void BASE_ReadItemPrice();
 int ReadItemicon();
 void ReadItemName();
 void ReadUIString();
+
+void EnableSysKey();

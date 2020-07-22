@@ -295,7 +295,7 @@ SText::~SText()
 {
 }
 
-void SText::SetText(char* istrText, int bCheckZero)
+void SText::SetText(const char* istrText, int bCheckZero)
 {
 }
 

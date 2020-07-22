@@ -18,6 +18,8 @@
 #include "TMSkinMesh.h"
 #include "resource.h"
 #include "TMHuman.h"
+#include "TMFieldScene.h"
+#include "SControlContainer.h"
 
 const char ClassName[4] = "WYD";
 
@@ -791,7 +793,518 @@ void NewApp::InitServerNameMR()
 
 HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 {
-	return E_NOTIMPL;
+	switch (uMsg)
+	{
+	case WM_MOUSEFIRST:
+	{
+		if (SCursor::m_nCursorType == 0)
+		{
+			SetCursor(0);
+		}
+		else if (SCursor::m_nCursorType == 2 && g_pCursor)
+		{
+			if (g_pCursor->m_GCPanel.nTextureIndex == 0)
+				SetCursor(SCursor::m_hCursor1);
+			else if(g_pCursor->m_GCPanel.nTextureIndex == 1)
+				SetCursor(SCursor::m_hCursor2);
+		}
+
+		if (m_pEventTranslator != nullptr)
+			m_pEventTranslator->OnMouseEvent(uMsg, wParam, LOWORD(lParam), HIWORD(lParam));		
+	}
+	break;
+	case WM_DRAWITEM:
+	{
+		LPDRAWITEMSTRUCT lpdis = (LPDRAWITEMSTRUCT)lParam;
+		HDC hdcMem = CreateCompatibleDC(lpdis->hDC);
+
+		HBITMAP hOldBitMap = nullptr;
+		hOldBitMap = (HBITMAP)SelectObject(hdcMem, m_hBMBtnBG);
+
+		StretchBlt(
+			lpdis->hDC,
+			lpdis->rcItem.left,
+			lpdis->rcItem.top,
+			lpdis->rcItem.right - lpdis->rcItem.left,
+			lpdis->rcItem.bottom - lpdis->rcItem.top,
+			hdcMem,
+			0,
+			0,
+			86,
+			21,
+			0x0CC0020);
+
+		SelectObject(hdcMem, hOldBitMap);
+		DeleteDC(hdcMem);
+	}
+	break;
+	case WM_INPUTLANGCHANGE:
+	{
+		char szDesc[256]{};
+		GetKeyboardLayoutName(szDesc);
+
+		if (!strncmp(szDesc, "0000", 4))
+		{
+			if (g_pCurrentScene != nullptr)
+			{
+				static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText("EN", 0);
+				static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextIMEDesc->SetVisible(0);
+			}
+		}
+		else if (m_pEventTranslator != nullptr)
+		{
+			if (g_pCurrentScene->m_pControlContainer->m_pFocusControl != nullptr &&
+				g_pCurrentScene->m_pControlContainer->m_pFocusControl->m_eCtrlType == CONTROL_TYPE::CTRL_TYPE_EDITABLETEXT)
+			{
+				m_pEventTranslator->SetIMENative();
+				int bNative = m_pEventTranslator->IsNative();
+
+				if (g_pCurrentScene != nullptr)
+				{
+					if (bNative != 0)
+					{
+						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText("Ch", 0);
+						HKL hkl = GetKeyboardLayout(0);
+
+						char dst[256]{};
+						ImmGetDescription(hkl, dst, 256);
+
+						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextIMEDesc->SetText(dst, 0);
+						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextIMEDesc->SetSize((float)(strlen(dst) * 8), 16.0f);
+						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextIMEDesc->SetVisible(1);
+					}
+					else
+					{
+						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText("EN", 0);
+						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextIMEDesc->SetVisible(0);
+					}
+				}
+
+				if (!strcmp(static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextIMEDesc->GetText(), "Î"))
+					SendMessage(hWnd, 0x281, 0, -1073741809);
+				else
+					SendMessage(hWnd, 0x281u, 0, -1);
+			}
+		}
+	}
+	break;
+	case WM_KEYDOWN:
+	{
+		if (m_pAviPlayer != nullptr && m_pAviPlayer->m_psCurrent == PLAYSTATE::Running)
+		{
+			m_pAviPlayer->CloseClip();
+			SAFE_DELETE(m_pAviPlayer);
+			InitDevice();
+		}
+
+		if (m_pEventTranslator == nullptr)
+			break;
+
+		WORD sVal = GetKeyState(VK_CONTROL);
+		m_pEventTranslator->m_bCtrl = (int)sVal >> 8 > 0;
+		WORD sVal2 = GetKeyState(VK_SHIFT);
+		m_pEventTranslator->m_bShift = (int)sVal2 >> 8 > 0;
+
+		if (wParam != VK_CONTROL && g_pCurrentScene != nullptr && m_pEventTranslator->m_bCtrl != 0)
+		{
+			if (wParam == VK_OEM_MINUS || wParam == VK_SUBTRACT)
+			{
+				g_pCurrentScene->OnAccel(40048);
+				break;
+			}
+			else if (wParam == VK_OEM_PLUS || wParam == VK_ADD)
+			{
+				g_pCurrentScene->OnAccel(40047);
+				break;
+			}
+			else if (wParam == VK_OEM_4)
+			{
+				g_pCurrentScene->OnAccel(40027);
+				break;
+			}
+			else if (wParam == VK_OEM_6)
+			{
+				g_pCurrentScene->OnAccel(40028);
+				break;
+			}
+			else if (wParam == VK_OEM_7)
+			{
+				g_pCurrentScene->OnAccel(40029);
+				break;
+			}
+		}
+
+		m_pEventTranslator->OnKeyDown(wParam);
+	}
+	break;
+	case WM_KEYUP:
+	{
+		if (m_pEventTranslator == nullptr)
+			break;
+
+		if (wParam == VK_SNAPSHOT)
+			m_pRenderDevice->CaptureScreen();
+
+		WORD sVal = GetKeyState(VK_CONTROL);
+		m_pEventTranslator->m_bCtrl = (int)sVal >> 8 > 0;
+		WORD sVal2 = GetKeyState(VK_SHIFT);
+		m_pEventTranslator->m_bShift = (int)sVal2 >> 8 > 0;
+
+		m_pEventTranslator->OnKeyUp(wParam);
+	}
+	break;
+	case WM_CHAR:
+	{
+		if (m_pEventTranslator != nullptr && !m_pEventTranslator->m_bCtrl)
+			m_pEventTranslator->OnChar(wParam, lParam);
+	}
+	break;
+	case WM_SYSKEYDOWN:
+	{
+		if (wParam == VK_MENU)
+		{
+			if (!g_nKeyType && m_pEventTranslator != nullptr)
+				m_pEventTranslator->m_bAlt = 1;
+		}
+		else if (wParam == VK_F10 && m_pEventTranslator != nullptr)
+		{
+			m_pEventTranslator->OnKeyDown(VK_F10);
+		}
+	}
+	break;
+	case WM_SYSKEYUP:
+	{
+		if (wParam == VK_MENU && !g_nKeyType && m_pEventTranslator != nullptr)
+		{
+			m_pEventTranslator->m_bAlt = 0;
+		}
+		else if (wParam == VK_F10 && m_pEventTranslator != nullptr)
+		{
+			m_pEventTranslator->OnKeyUp(VK_F10);
+		}
+	}
+	break;
+	case WM_IME_ENDCOMPOSITION:
+	{
+		if (m_pEventTranslator == nullptr)
+			break;
+
+		m_pEventTranslator->SetVisibleCandidateList(lParam, 0);
+		static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextCompose->SetVisible(0);
+		static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextComposeB->SetVisible(0);
+	}
+	break;
+	case WM_IME_COMPOSITION:
+	{
+		if (m_pEventTranslator == nullptr)
+			break;
+
+		m_pEventTranslator->OnIME(wParam, lParam);
+	}
+	break;
+	case WM_COMMAND:
+	{
+		if (wParam == 999)
+		{
+			// SwitchWebBrowserState
+			break;
+		}
+
+		int msg = wParam;
+		HWND hWndFocus = GetFocus();
+
+		if (hWndFocus != g_pApp->m_hWnd)
+		{
+			switch (msg)
+			{
+			case 40086:
+				PostMessageA(hWndFocus, 0x301, 0, 0);
+				return 1;
+			case 40100:
+				PostMessageA(hWndFocus, 0x302, 0, 0);
+				return 1;
+			case 40102:
+				PostMessageA(hWndFocus, 0x300, 0, 0);
+				return 1;
+			}
+		}
+
+		if (g_pCurrentScene != nullptr)
+			g_pCurrentScene->OnAccel(msg);
+	}
+	break;
+	case WM_SYSCOMMAND:
+	{
+		switch (wParam)
+		{
+		case 0xF100u:
+			SendMessageA(hWnd, 0x100, 0xA4, 0);
+			return 0;
+		case 0xF020u:
+			g_pApp->m_Winstate = 0;
+			break;
+		case 0xF030u:
+			g_pApp->m_Winstate = 1;
+			break;
+		}
+	}
+	break;
+	case WM_IME_SETCONTEXT:
+	{
+		return DefWindowProc(hWnd, uMsg, lParam == -1, -2147483634);
+	}
+	break;
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONDBLCLK:
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONDBLCLK:
+	{
+		if (m_pAviPlayer != nullptr && m_pAviPlayer->m_psCurrent == PLAYSTATE::Running)
+		{
+			m_pAviPlayer->CloseClip();
+			SAFE_DELETE(m_pAviPlayer);
+			InitDevice();
+		}
+	}
+	break;
+	case WM_USER + 13:
+	{
+		if (m_pAviPlayer == nullptr)
+			break;
+
+		if (m_pAviPlayer->HandleGraphEvent() == 1)
+		{
+			SAFE_DELETE(m_pAviPlayer);
+			InitDevice();
+		}
+		if (!m_bwFullScreen && m_pAviPlayer != nullptr)
+			m_pAviPlayer->MoveVideoWindow();
+	}
+	break;
+	case WM_IME_NOTIFY:
+	{
+		// stuffs for china
+	}
+	break;
+	case WM_USER + 1:
+	{
+		if (g_LoginSocket == nullptr)
+			break;
+
+		if (lParam != 1)
+		{
+			g_LoginSocket->CloseSocket();
+			m_pObjectManager->OnPacketEvent(0, nullptr);
+			break;
+		}
+
+		if (!g_LoginSocket->Receive())
+		{
+			g_LoginSocket->CloseSocket();
+			break;
+		}
+
+		int Error = 0;
+		int nType = 0;
+		while (1)
+		{
+			char* Msg = g_LoginSocket->ReadMessage(&Error, &nType);
+
+			if (Msg == nullptr || Error != 0)
+				break;
+
+			MSG_STANDARD* pStd = (MSG_STANDARD*)Msg;
+
+			unsigned int dwServerTime = m_pTimerManager->GetServerTime();
+			g_dwServerTime = pStd->Tick;
+			g_dwClientTime = dwServerTime / 1000;
+
+			if (g_hPacketDump != nullptr)
+			{
+				unsigned int dwTermTime = dwServerTime - g_dwStartPacketTime;
+				fwrite(&dwTermTime, 4, 1, g_hPacketDump);
+				fwrite(pStd, pStd->Size, 1, g_hPacketDump);
+			}
+
+			if (dwServerTime > g_pLastFixTime + 10000)
+			{
+				if (g_pCurrentScene != nullptr && g_pCurrentScene->m_nAdjustTime != 0)
+				{
+					if (g_dwServerTime > dwServerTime + 500)
+					{
+						m_pTimerManager->SetServerTime(dwServerTime + 85);
+					}
+					else if (g_dwServerTime < dwServerTime - 500)
+					{
+						m_pTimerManager->SetServerTime(dwServerTime - 85);
+					}
+				}
+				g_pLastFixTime = dwServerTime;
+			}
+			m_pObjectManager->OnPacketEvent(pStd->Type, Msg);
+		}
+	}
+	break;
+	case WM_USER + 100:
+	{
+		if (m_pSocketManager == nullptr)
+			break;
+
+		if (lParam != 1)
+		{
+			m_pSocketManager->CloseSocket();
+			m_pObjectManager->OnPacketEvent(0, nullptr);
+			break;
+		}
+		if (!m_pSocketManager->Receive())
+		{
+			m_pSocketManager->CloseSocket();
+			break;
+		}
+
+		int ErrorCode = 0;
+		int ErrorType = 0;
+		while (1)
+		{
+			char* Msg = m_pSocketManager->ReadMessage(&ErrorCode, &ErrorType);
+
+			if (Msg == nullptr || ErrorCode != 0)
+				break;
+
+			MSG_STANDARD* pStd = (MSG_STANDARD*)Msg;
+
+			unsigned int dwServerTime = m_pTimerManager->GetServerTime();
+			g_dwServerTime = pStd->Tick;
+			g_dwClientTime = dwServerTime / 1000;
+
+			if (g_hPacketDump != nullptr)
+			{
+				unsigned int dwTermTime = dwServerTime - g_dwStartPacketTime;
+				fwrite(&dwTermTime, 4, 1, g_hPacketDump);
+				fwrite(pStd, pStd->Size, 1, g_hPacketDump);
+			}
+
+			if (dwServerTime > g_pLastFixTime + 10000)
+			{
+				if (g_pCurrentScene != nullptr && g_pCurrentScene->m_nAdjustTime != 0)
+				{
+					if (g_dwServerTime > dwServerTime + 500)
+					{
+						m_pTimerManager->SetServerTime(dwServerTime + 85);
+					}
+					else if (g_dwServerTime < dwServerTime - 500)
+					{
+						m_pTimerManager->SetServerTime(dwServerTime - 85);
+					}
+				}
+				g_pLastFixTime = dwServerTime;
+			}
+			m_pObjectManager->OnPacketEvent(pStd->Type, Msg);
+		}
+	}
+	break;
+	case WM_USER + 101:
+	{
+		m_pBGMManager->OnEvent();
+	}
+	break;
+	case WM_CREATE:
+	{
+		OnCreate(hWnd, wParam, lParam);
+	}
+	break;
+	case WM_DESTROY:
+	case 4:
+		break;
+	case WM_MOVE:
+	case WM_SIZE:
+	{
+		if (m_pAviPlayer != nullptr)
+			m_pAviPlayer->MoveVideoWindow();
+	}
+	break;
+	case WM_ACTIVATE:
+	{
+		if (g_pCurrentScene == nullptr)
+		{
+			if (strcmp(g_pCurrentScene->m_pTextIMEDesc->GetText(), "Î"))
+				SendMessageA(hWnd, 0x281, 0, -1073741809);
+			else
+				SendMessageA(hWnd, 0x281, 0, -1);
+		}
+		if (wParam != 0)
+		{
+			if (m_pEventTranslator != nullptr)
+				m_pEventTranslator->m_bAlt = 0;
+			if (m_pBGMManager != nullptr)
+				m_pBGMManager->SetVolume(0, m_pBGMManager->m_lBGMVolume);
+
+			g_pApp->m_binactive = 1;
+		}
+		else if (!g_bEndGame && m_pRenderDevice != nullptr && m_bwFullScreen == 1)
+		{
+			ShowWindow(hWnd, 3);
+		}
+		else if (!g_bEndGame && m_pRenderDevice != nullptr && m_bwFullScreen == 1)
+		{
+			CloseWindow(hWnd);
+		}
+		else
+		{
+			if (m_pEventTranslator)
+				m_pEventTranslator->m_bAlt = 0;
+			if (m_pBGMManager)
+				m_pBGMManager->SetVolume(0, -10000);
+			g_pApp->m_binactive = 0;
+		}
+	}
+	break;
+	case WM_CLOSE:
+	{
+		if (g_pCurrentScene != nullptr && g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+		{
+			if (g_dwStartQuitGameTime == 0)
+			{
+				g_dwStartQuitGameTime = m_pTimerManager->GetServerTime();
+				MSG_STANDARDPARM stDelayStart{};
+				stDelayStart.Header.ID = g_pCurrentScene->m_pMyHuman->m_dwID;
+				stDelayStart.Header.Type = 942;
+				stDelayStart.Parm = 0;
+
+				g_pSocketManager->SendOneMessage((char*)&stDelayStart, sizeof(stDelayStart));
+				return 0;
+			}
+
+			if (m_pTimerManager->GetServerTime() < g_dwStartQuitGameTime + 3000)
+				return 0;
+		}
+
+		Finalize();
+		if (g_hPacketDump != nullptr)
+		{
+			fclose(g_hPacketDump);
+			g_hPacketDump = nullptr;
+		}
+
+		g_bEndGame = 1;
+		EnableSysKey();
+		DestroyWindow(hWnd);
+		PostQuitMessage(0);
+		g_dwStartQuitGameTime = 0;
+		return 0;
+	}
+	break;
+	default:
+		break;
+	}
+
+	if (m_pAviPlayer != nullptr)
+	{
+		if (m_pAviPlayer->m_pVW != nullptr)
+			m_pAviPlayer->m_pVW->NotifyOwnerMessage((OAHWND)hWnd, uMsg, wParam, lParam);
+	}
+
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 HRESULT NewApp::CheckResolution(DWORD x, DWORD y, DWORD bpp)
