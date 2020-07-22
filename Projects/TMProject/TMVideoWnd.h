@@ -21,7 +21,7 @@ public:
 	HRESULT InitVideoWindow();
 	void MoveVideoWindow();
 	void CheckVisibility();
-	int OpenClip(char* szFilename);
+	int OpenClip(const char* szFilename);
 	void CloseClip();
 	void CloseInterfaces();
 	HRESULT ToggleFullScreen();

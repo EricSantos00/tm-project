@@ -362,7 +362,6 @@ int RenderDevice::Lock(int bClear)
 		HRESULT hr = m_pd3dDevice->TestCooperativeLevel();
 		if (FAILED(hr))
 		{
-			constexpr bool a = D3DERR_INVALIDCALL == -2005530516;
 			if (hr == D3DERR_DEVICELOST)
 				return 0;
 			if (hr != D3DERR_DEVICENOTRESET)
@@ -762,9 +761,9 @@ int RenderDevice::InitMeshManager()
 int RenderDevice::InitVertexShader()
 {
 	D3DVERTEXELEMENT9 VertexDecl1[5];
-	D3DVERTEXELEMENT9 VertexDecl2[5];
-	D3DVERTEXELEMENT9 VertexDecl3[5];
-	D3DVERTEXELEMENT9 VertexDecl4[5];
+	D3DVERTEXELEMENT9 VertexDecl2[6];
+	D3DVERTEXELEMENT9 VertexDecl3[6];
+	D3DVERTEXELEMENT9 VertexDecl4[6];
 
 	VertexDecl1[0].Stream = 0;
 	VertexDecl1[0].Offset = 0;

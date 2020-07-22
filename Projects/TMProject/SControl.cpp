@@ -805,7 +805,7 @@ SMessagePanel::~SMessagePanel()
 {
 }
 
-void SMessagePanel::SetMessage(char* istrMessage, unsigned int dwTime)
+void SMessagePanel::SetMessage(const char* istrMessage, unsigned int dwTime)
 {
 }
 

@@ -9,7 +9,7 @@ EventTranslator::~EventTranslator()
 {
 }
 
-BOOL EventTranslator::Initialize(HWND* hWnd)
+BOOL EventTranslator::Initialize(HWND hWnd)
 {
 	return 0;
 }
@@ -19,7 +19,7 @@ int EventTranslator::InitializeIME()
 	return 0;
 }
 
-int EventTranslator::InitializeInputDevice(HWND* hWnd)
+int EventTranslator::InitializeInputDevice(HWND hWnd)
 {
 	return 0;
 }

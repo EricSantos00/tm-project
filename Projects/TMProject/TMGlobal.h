@@ -42,6 +42,31 @@ extern int g_nFontBold;
 extern float g_ClipNear;
 extern float g_ClipFar;
 
+extern int g_nServerCountList[12];
+extern char g_szServerNameList[11][9];
+extern char g_szServerName[10][10][9];
+extern int g_bActiveWB;
+extern HWND hWndMain; // This goes in basedef probably
+
+extern int g_bHideEffect;
+extern int g_bHideSkillBuffEffect;
+extern int g_bHideSkillBuffEffect2;
+extern int g_nPlayDemo;
+extern int g_UIVer;
+extern int g_nKeyType;
+
+extern HINSTANCE g_hInstance;
+extern STRUCT_MIXHELP g_pItemMixHelp[11500];
+extern STRUCT_ITEMHELP g_pItemHelp[6500];
+
+extern unsigned int g_dwStartPlayTime;
+extern unsigned int g_dwPausedTime;
+extern unsigned int g_dwStartPacketTime;
+extern int g_nCurrentPos;
+extern int g_nDumpPacketSize;
+extern int g_hPacketDump;
+extern char* g_pDumpPacket;
+
 static unsigned int g_dwHandIndex[101][2] =
 {
     {19,25},{18,24},{15,21},{15,21},{12,18},{22,28},{23,29},

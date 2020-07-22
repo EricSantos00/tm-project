@@ -1,7 +1,5 @@
 #pragma once
 
-float BASE_ScreenResize(float size);
-
 struct MSG_STANDARD
 {
 	unsigned short Size;
@@ -775,3 +773,16 @@ struct MSG_CNFRemoveServer
 
 extern HWND hWndMain;
 extern char EncodeByte[4];
+
+float BASE_ScreenResize(float size);
+void BASE_InitModuleDir();
+void BASE_InitializeHitRate();
+int	BASE_ReadMessageBin();
+void BASE_InitEffectString();
+int BASE_InitializeBaseDef();
+void BASE_ReadItemPrice();
+
+/* Read Functions */
+int ReadItemicon();
+void ReadItemName();
+void ReadUIString();

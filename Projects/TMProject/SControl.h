@@ -613,7 +613,7 @@ public:
     SMessagePanel(char* istrMessage, float inX, float inY, float inWidth, float inHeight, unsigned int dwTime);
     ~SMessagePanel();
 
-    void SetMessage(char* istrMessage, unsigned int dwTime);
+    void SetMessage(const char* istrMessage, unsigned int dwTime);
     void FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParentLayer, int nFlag) override;
     virtual void SetVisible(int bVisible, int bSound);
 

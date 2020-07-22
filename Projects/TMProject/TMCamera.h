@@ -14,7 +14,7 @@ public:
 	void InitCamera();
 
 	virtual TMVector3* GetCameraPos();
-	virtual TMVector3* GetCameraLookatPos();
+	virtual TMVector3* GetCameraLookatPos(TMVector3* result);
 	virtual TMVector3* GetCameraLookatDir();
 
 	virtual void TurnView(float horizonAngle, float verticalAngle);

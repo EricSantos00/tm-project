@@ -9,3 +9,42 @@ float BASE_ScreenResize(float size)
 {
 	return (float)((float)g_pDevice->m_dwScreenWidth * (float)(size / 800.0f));
 }
+
+void BASE_InitModuleDir()
+{
+}
+
+void BASE_InitializeHitRate()
+{
+}
+
+int BASE_ReadMessageBin()
+{
+	return 0;
+}
+
+void BASE_InitEffectString()
+{
+}
+
+int BASE_InitializeBaseDef()
+{
+	return 0;
+}
+
+void BASE_ReadItemPrice()
+{
+}
+
+int ReadItemicon()
+{
+	return 0;
+}
+
+void ReadItemName()
+{
+}
+
+void ReadUIString()
+{
+}

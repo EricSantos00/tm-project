@@ -14,9 +14,9 @@ public:
 	EventTranslator();
 	virtual ~EventTranslator();
 
-	BOOL Initialize(HWND* hWnd);
+	BOOL Initialize(HWND hWnd);
 	int InitializeIME();
-	int InitializeInputDevice(HWND* hWnd);
+	int InitializeInputDevice(HWND hWnd);
 
 	void Finalize();
 	void FinalizeIME();

@@ -79,8 +79,10 @@ public:
     static char m_szMusicPathOrigin[15][256];
     static char m_szMusicPath[15][256];
 
-protected:
+public:
     int m_lBGMVolume;
+
+protected:
     DS_SOUND_CHANNEL* channels;
     bool init_flag;
     int cur_channel;
