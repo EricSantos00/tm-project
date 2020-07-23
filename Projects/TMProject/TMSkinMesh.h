@@ -1,12 +1,13 @@
 #pragma once
 
-#define MAX_FRAME_TO_ANIMATE 100
-
 #include "Structures.h"
 
 class CFrame;
 class TMHuman;
 class TMEffectSWSwing;
+
+constexpr auto MAX_FRAME_TO_ANIMATE = 100;
+constexpr auto MAX_VALID_FRAME_TO_ANIMATE = MAX_FRAME_TO_ANIMATE - 20;
 
 class TMSkinMesh
 {
