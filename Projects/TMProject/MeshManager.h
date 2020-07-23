@@ -31,6 +31,20 @@ struct stBoneAni
 	D3DXQUATERNION* matQuaternion; // 0x0ED9860
 };
 
+constexpr auto MAX_COMMON_MESH = 3048;
+constexpr auto MAX_SKIN_MESH_LIST = 1024;
+constexpr auto MAX_BONE_ANIMATION_LIST = 100;
+
+constexpr auto MAX_ANI_CLASS = 6;
+constexpr auto MAX_ANI_TYPE = 60;
+constexpr auto MAX_ANI_MOTION = 56;
+
+constexpr auto MAX_OBJECT_MASK = 2048;
+constexpr auto MAX_MASK_X = 16;
+constexpr auto MAX_MASK_Y = 16;
+
+constexpr auto MAX_VALID_ANI_LIST = 100;
+
 class MeshManager
 {
 public:
@@ -50,13 +64,13 @@ public:
 
 public:
 	DWORD m_LastLoadTime;
-	stCommonMeshList m_stCommonMesh[3048];
-	stCommonMeshList m_stSkinMeshList[1024];
+	stCommonMeshList m_stCommonMesh[MAX_COMMON_MESH];
+	stCommonMeshList m_stSkinMeshList[MAX_SKIN_MESH_LIST];
 
-	static stBoneAni m_BoneAnimationList[100];
-	static short m_sAnimationArray[6][60][56];
-	static char m_aObjectMask[2048][16][16];
+	static stBoneAni m_BoneAnimationList[MAX_BONE_ANIMATION_LIST];
+	static short m_sAnimationArray[MAX_ANI_CLASS][MAX_ANI_TYPE][MAX_ANI_MOTION];
+	static char m_aObjectMask[MAX_OBJECT_MASK][MAX_MASK_X][MAX_MASK_Y];
 	static int m_nFullCount;
 
-	stValidAniList m_stValidAniList[100][186];
+	stValidAniList m_stValidAniList[MAX_VALID_ANI_LIST][186];
 };
