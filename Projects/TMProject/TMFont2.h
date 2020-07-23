@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TMGlobal.h"
+
 class TMFont2
 {
 public:

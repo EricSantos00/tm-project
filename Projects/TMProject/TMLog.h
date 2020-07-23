@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TMGlobal.h"
+
 char LOG_INITIALIZELOG(const char* szLogFile);
 void LOG_WRITELOG(const char* lpszFormat, ...);
 void LOG_WRITELOG(unsigned int dwError);

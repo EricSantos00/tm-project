@@ -59,3 +59,5 @@ float g_fWide;
 HINSTANCE g_hInstance;
 
 char g_szOS[3] = "??";
+
+int g_hLogFile; //Language File WYD.log

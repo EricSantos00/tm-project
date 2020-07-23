@@ -789,6 +789,9 @@ void ReadUIString();
 char ReadNameFiltraDataBase();
 char ReadChatFiltraDataBase();
 
+/* String Related functions */
+int IsClearString(char* str, int target);
+
 /* System functions */
 void EnableSysKey();
 bool CheckOS();
