@@ -580,7 +580,117 @@ void TMSkinMesh::InitMaterial(D3DMATERIAL9 material)
 
 int TMSkinMesh::Render(float fLen, float fScale, float fLen2)
 {
-	return 0;
+	if (m_bMeshGenerated == 0)
+		return 0;
+
+	if (m_pRoot == nullptr)
+		return 0;
+
+	if (m_bBaseMat >= 1 && m_bBaseMat <= 5)
+	{
+		m_pRoot->m_matRot = m_BaseMatrix;
+		D3DXMATRIX matPos;
+		D3DXMATRIX matScale;
+		D3DXMATRIX matTemp;
+		D3DXMatrixIdentity(&matTemp);
+		D3DXMatrixScaling(&matScale, fScale, fScale, fScale);
+		D3DXMatrixTranslation(&matPos, fLen2, fLen, 0);
+		D3DXMatrixMultiply(&matTemp, &m_matMantua, &matPos);
+		D3DXMatrixMultiply(&matTemp, &matTemp, &matScale);
+		D3DXMatrixMultiply(&m_pRoot->m_matRot, &matTemp, &m_pRoot->m_matRot);
+	}
+	else
+	{
+		D3DXMATRIX matTemp;
+		D3DXMATRIX matScale;
+		D3DXMatrixIdentity(&m_pRoot->m_matRot);
+		D3DXMatrixIdentity(&matTemp);
+		D3DXMatrixTranslation(&m_pRoot->m_matRot, m_vPosition.x, m_vPosition.y, m_vPosition.z);
+		if (m_nBoneAniIndex >= 45 && m_nBoneAniIndex <= 57)
+		{
+			if (m_nBoneAniIndex == 48)
+			{
+				D3DXMatrixScaling(&matScale, 0.85f, 0.85f, 0.85f);
+				D3DXMatrixMultiply(&matTemp, &matTemp, &matScale);
+				D3DXMatrixMultiply(&m_pRoot->m_matRot, &matTemp, &m_pRoot->m_matRot);
+			}
+			if (m_nBoneAniIndex == 47)
+			{
+				m_vScale.x = 1.5f;
+				m_vScale.y = 1.5f;
+				m_vScale.z = 1.5f;
+			}
+
+			D3DXMatrixTranslation(&m_pRoot->m_matRot, m_vPosition.x, m_vPosition.y, m_vPosition.z);
+
+			if ((m_nBoneAniIndex == 45 && m_nAniIndex != 7 && m_nAniIndex != 8 && m_nAniIndex != 9) 
+				|| m_nBoneAniIndex != 45)
+			{				
+				D3DXMatrixRotationYawPitchRoll(&matTemp, m_vAngle.y + D3DXToRadian(90), m_vAngle.x, m_vAngle.z);
+			}
+		}
+		else
+		{		
+			D3DXMatrixRotationYawPitchRoll(
+				&matTemp,
+				m_vAngle.y - D3DXToRadian(90),
+				m_vAngle.x - D3DXToRadian(90),
+				m_vAngle.z);
+		}
+
+		D3DXMatrixScaling(&matScale, m_vScale.x, m_vScale.y, m_vScale.z);
+		if (m_pOwner != nullptr)
+		{
+			if (m_nMeshType == 1)
+			{
+				TMHuman* pHuman = m_pOwner;
+				if (pHuman != nullptr)
+				{
+					D3DXMATRIX matFlip;
+					D3DXMatrixIdentity(&matFlip);
+					matFlip._33 = 1.0f;
+					D3DXMatrixMultiply(&matScale, &matScale, &matFlip);
+				}
+			}
+		}
+		D3DXMatrixMultiply(&matTemp, &matTemp, &matScale);
+		D3DXMatrixMultiply(&m_pRoot->m_matRot, &matTemp, &m_pRoot->m_matRot);
+	}
+
+	D3DXMATRIX mCur;
+	D3DXMatrixIdentity(&mCur);
+
+	if (m_nBoneAniIndex == 44)
+	{
+		if (m_dwTexAni == 0)
+			m_dwTexAni = g_pTimerManager->GetServerTime();
+
+		unsigned int dwNowTime = g_pTimerManager->GetServerTime();
+		float fProgress = (float)((m_dwTexAni - dwNowTime) % 3000);
+		fProgress = sinf(D3DXToRadian(180) * (float)(fProgress / 3000.0f));
+		fProgress = fProgress / 2.0f;
+
+		D3DMATERIAL9 materials{};
+		materials.Diffuse.r = 1.0f;
+		materials.Diffuse.g = 1.0f;
+		materials.Diffuse.b = 1.0f;
+		materials.Specular.r = m_materials.Diffuse.r;
+		materials.Specular.g = m_materials.Diffuse.g;
+		materials.Specular.b = m_materials.Diffuse.b;
+		materials.Specular.a = m_materials.Diffuse.a;
+		materials.Power = 0.0f;
+		materials.Emissive.r = (float)(fProgress) + 0.40000001f;
+		materials.Emissive.g = (float)(fProgress) + 0.40000001f;
+		materials.Emissive.b = (float)(fProgress) + 0.40000001f;
+		InitMaterial(materials);
+	}
+
+	g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_FOGENABLE, g_pDevice->m_bFog);
+	m_pRoot->UpdateFrames(mCur);
+	m_pRoot->Render();
+	g_pDevice->SetTexture(1, nullptr);
+	RenderSkinMeshEffect();
+	return 1;
 }
 
 HRESULT TMSkinMesh::DeleteDeviceObjects()
