@@ -30,3 +30,5 @@ public:
 	LONGLONG m_time;
 	DWORD m_dwLastMin;
 };
+
+double GetTimerTime();

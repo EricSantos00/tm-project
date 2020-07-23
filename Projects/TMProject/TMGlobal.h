@@ -75,6 +75,9 @@ extern unsigned int g_dwServerTime;
 extern unsigned int g_dwClientTime;
 extern unsigned int g_pLastFixTime;
 
+extern unsigned int CurrentTime;
+extern unsigned int LastSendTime;
+
 extern float g_fWide;
 
 extern char g_szOS[3];
