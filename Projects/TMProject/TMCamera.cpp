@@ -124,8 +124,7 @@ TMVector3 TMCamera::GetCameraPos()
         nY1 = (int)m_fY1;
         nY2 = (int)m_fY2;
     }
-
-    if (nIndex == 5 || nIndex == 6)
+    else if (nIndex == 5 || nIndex == 6)
     {
         m_fX1 = vecCenterPos.x - (fSightLength * 0.80000001f);
         m_fX2 = vecCenterPos.x + 4.0f;
@@ -136,8 +135,7 @@ TMVector3 TMCamera::GetCameraPos()
         nY1 = (int)m_fY1;
         nY2 = (int)m_fY2;
     }
-
-    if (nIndex == 9 || nIndex == 10)
+    else if (nIndex == 9 || nIndex == 10)
     {
         m_fX1 = vecCenterPos.x - (fSightLength * 0.80000001f);
         m_fX2 = vecCenterPos.x;
@@ -148,8 +146,7 @@ TMVector3 TMCamera::GetCameraPos()
         nY1 = (int)m_fY2;
         nY2 = (int)m_fY1;
     }
-
-    if (nIndex == 13 || nIndex == 14)
+    else if (nIndex == 13 || nIndex == 14)
     {
         m_fX1 = vecCenterPos.x - 4.0f;
         m_fX2 = vecCenterPos.x + (fSightLength * 0.80000001f);
@@ -160,8 +157,7 @@ TMVector3 TMCamera::GetCameraPos()
         nY1 = (int)m_fY2;
         nY2 = (int)m_fY1;
     }
-
-    if (nIndex == 0 || nIndex == 15)
+    else if (nIndex == 0 || nIndex == 15)
     {
         m_fCX = vecCenterPos.x + (fSightLength * 1.5f);
         m_fCY = vecCenterPos.z;
@@ -170,8 +166,7 @@ TMVector3 TMCamera::GetCameraPos()
         nY1 = (int)(vecCenterPos.z - (fSightLength * 0.80000001f));
         nY2 = (int)(vecCenterPos.z + (fSightLength * 0.80000001f));
     }
-
-    if (nIndex == 3 || nIndex == 4)
+    else if (nIndex == 3 || nIndex == 4)
     {
         m_fCX = vecCenterPos.x;
         m_fCY = vecCenterPos.z + (fSightLength * 1.5f);
@@ -180,8 +175,7 @@ TMVector3 TMCamera::GetCameraPos()
         nY1 = (int)(vecCenterPos.z - 4.0f);
         nY2 = (int)(vecCenterPos.z + (fSightLength * 0.80000001f));
     }
-
-    if (nIndex == 7 || nIndex == 8)
+    else if (nIndex == 7 || nIndex == 8)
     {
         m_fCX = vecCenterPos.x - (fSightLength * 1.5f);
         m_fCY = vecCenterPos.z;
@@ -190,8 +184,7 @@ TMVector3 TMCamera::GetCameraPos()
         nY1 = (int)(vecCenterPos.z - (fSightLength * 0.80000001f));
         nY2 = (int)(vecCenterPos.z + (fSightLength * 0.80000001f));
     }
-
-    if (nIndex == 11 || nIndex == 12)
+    else if (nIndex == 11 || nIndex == 12)
     {
         m_fCX = vecCenterPos.x;
         m_fCY = vecCenterPos.z - (fSightLength * 1.5f);
@@ -284,14 +277,15 @@ TMVector3 TMCamera::GetCameraPos()
                 m_fMinClose = 2.5f;
                 m_fCamHeight = 1.0f;
 
-                if (pMyHuman->m_nMountSkinMeshType == 38)
-                    m_fMinClose = 3.5f;
-
                 if (pMyHuman->m_nMountSkinMeshType == 39 ||
                     pMyHuman->m_nMountSkinMeshType == 40 ||
-                   (pMyHuman->m_nMountSkinMeshType == 20 && pMyHuman->m_sMountIndex != 3))
+                    pMyHuman->m_nMountSkinMeshType == 20 && pMyHuman->m_sMountIndex != 3)
                 {
                     m_fMinClose = 4.6999998f;
+                }
+                else if (pMyHuman->m_nMountSkinMeshType == 38)
+                {
+                    m_fMinClose = 3.5f;
                 }
 
                 m_fMinClose = (pMyHuman->m_stScore.Con * 0.001f) + m_fMinClose;
@@ -406,13 +400,13 @@ void TMCamera::TurnView(float horizonAngle, float verticalAngle)
     if (m_fHorizonAngle > 6.2831855f)
         m_fHorizonAngle -= 6.2831855f;
 
-    if (m_fHorizonAngle < 0.0f)
+    else if (m_fHorizonAngle < 0.0f)
         m_fHorizonAngle += 6.2831855f;
 
     if (m_fVerticalAngle >= 1.5707964f)
         m_fVerticalAngle = 1.5697963f;
 
-    if (m_fVerticalAngle <= -1.5707964f)
+    else if (m_fVerticalAngle <= -1.5707964f)
         m_fVerticalAngle = -1.5697963f;
 }
 
@@ -454,8 +448,7 @@ void TMCamera::SetViewMode(int nMode)
         m_fCamHeight = 0.0f;
         m_fHorizonAngle = 0.78539819f;
     }
-
-    if (m_nQuaterView == 1)
+    else if (m_nQuaterView == 1)
     {
         m_fVerticalAngle = -0.76999825f;
         m_fSightLength = m_fMaxCamLen;
@@ -463,8 +456,7 @@ void TMCamera::SetViewMode(int nMode)
         m_fCamHeight = 0.33000001f;
         m_fHorizonAngle = 0.78539819f;
     }
-
-    if (m_nQuaterView == 2)
+    else if (m_nQuaterView == 2)
     {
         m_fVerticalAngle = -1.0471976f;
         m_fSightLength = m_fMaxCamLen - 1.0f;
@@ -472,8 +464,7 @@ void TMCamera::SetViewMode(int nMode)
         m_fCamHeight = 0.5f;
         m_fHorizonAngle = 0.78539819f;
     }
-
-    if (m_nQuaterView == 4)
+    else if (m_nQuaterView == 4)
     {
         m_fVerticalAngle = -0.78539819f;
         m_fHorizonAngle = 0.78539819f;
