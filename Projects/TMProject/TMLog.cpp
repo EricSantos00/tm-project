@@ -4,7 +4,7 @@
 char LOG_INITIALIZELOG(const char* szLogFile)
 {
 	char result;
-	_iobuf* fp;
+	FILE* fp;
 	char szDir[256];
 	char DirlogFile[256];
 
@@ -20,7 +20,7 @@ char LOG_INITIALIZELOG(const char* szLogFile)
 
 	Sleep(100);
 
-	g_hLogFile = _open(szLogFile, _O_TEXT | _O_EXCL | _O_WRONLY | _O_RDWR | _O_APPEND, _S_IWRITE);
+	g_hLogFile = _open(szLogFile, 33049, _S_IWRITE);
 	if (g_hLogFile == -1)
 	{
 		result = 0;
@@ -50,7 +50,6 @@ void LOG_WRITELOG(const char* lpszFormat, ...)
 	LOG_WRITELOGSTRING("%02d/%02d %02d:%02d:%02d - %s",
 		sysTime.wMonth,
 		sysTime.wDay,
-		sysTime.wHour,
 		sysTime.wHour,
 		sysTime.wMinute,
 		sysTime.wSecond,

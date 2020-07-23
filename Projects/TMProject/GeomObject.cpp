@@ -11,7 +11,7 @@ GeomControl::GeomControl()
     nHeight = 0.0;
     fAngle = 0.0;
     fScale = 1.0f;
-    dwColor = -5592406;
+    dwColor = 0xFFAAAAAA;
     bVisible = 1;
     n3DObjIndex = 0;
     nTextureSetIndex = -1;
