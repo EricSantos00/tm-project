@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TMFont2.h"
+#include "TMGlobal.h"
 
 char* TMFont2::m_pBuffer{};
 unsigned int TMFont2::m_nLength = 0;
@@ -8,7 +9,7 @@ TMFont2::TMFont2()
 {
 	m_dwShadeColor = 0xFF000000;
 	m_dwColor = 0xFFFFFFFF;
-	m_pTexture = 0;
+	m_pTexture = nullptr;
 	m_fSize = 1.0f;
 	m_bMultiLine = 0;
 	memset(m_szString, 0, sizeof(m_szString));
@@ -19,11 +20,7 @@ TMFont2::TMFont2()
 
 TMFont2::~TMFont2()
 {
-	if (m_pTexture)
-	{
-		m_pTexture->Release();
-		m_pTexture = nullptr;
-	}
+	SAFE_RELEASE(m_pTexture);
 }
 
 int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
@@ -31,17 +28,14 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 	m_nLineNumber = 0;
 	int nStrLength = strlen(szString);
 
-	// TODO: change to define
-	if (nStrLength < 0 || nStrLength >= 120) //MAX_STRLENGTH?
-		return FALSE;
-
+	if (nStrLength < 0 || nStrLength >= MAX_STRLENGTH)
+		return 0;
 
 	if (RenderDevice::m_nBright > 58)
 	{
 		int nValue = RenderDevice::m_nBright - 40;
 		int dwA = dwColor & 0xFF000000;
 
-		// TODO: if color bug check here
 		int nR = WYDCOLOR_RED(dwColor) - nValue;
 		int nG = WYDCOLOR_GREEN(dwColor) - nValue;
 		int nB = WYDCOLOR_BLUE(dwColor) - nValue;
@@ -61,72 +55,63 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 	sprintf(m_szString, "%s", szString);
 
 	char tempbuff[256];
-
 	char* temp = tempbuff;
 
 	strcpy(tempbuff, m_szString);
 	int nLen = strlen(m_szString);
 
-	if (nLen <= 84)
+	if (nLen > 84)
 	{
-		if (nLen <= 42)
-		{
-			memset(m_szStringArray[0], 0, 44);
-
-			strncpy(m_szStringArray[0], temp, nLen);
-			m_nLineNumber = 1;
-		}
-		else
-		{
-			// Split the text in lines
-			memset(m_szStringArray[0], 0, 44);
-			memset(m_szStringArray[1], 0, 44);
-
-			// ')' ?
-			if (IsClearString(temp, 41))
-			{
-				strncpy(m_szStringArray[0], temp, 42);
-				temp += 42;
-				strcpy(m_szStringArray[1], temp);
-			}
-			else
-			{
-				strncpy(m_szStringArray[0], temp, 41);
-				temp += 41;
-				strcpy(m_szStringArray[1], temp);
-			}
-		}
-	}
-	else
-	{
-		if (IsClearString(temp, 41))
+		if (IsClearString(temp, ')'))
 		{
 			strncpy(m_szStringArray[0], temp, 42);
-			temp += 42;
+			temp += '*';
 		}
 		else
 		{
 			strncpy(m_szStringArray[0], temp, 41);
-			temp += 41;
+			temp += ')';
 		}
-
-		if (IsClearString(temp, 41))
+		if (IsClearString(temp, ')'))
 		{
 			strncpy(m_szStringArray[1], temp, 42);
-			temp += 42;
+			temp += '*';
 			strncpy(m_szStringArray[2], temp, strlen(temp));
 		}
 		else
 		{
 			strncpy(m_szStringArray[1], temp, 41);
-			temp += 41;
+			temp += ')';
 			strcpy(m_szStringArray[2], temp);
 		}
-
 		m_nLineNumber = 3;
 	}
+	else if (nLen > 42)
+	{
+		memset(m_szStringArray[0], 0, 44);
+		memset(m_szStringArray[1], 0, 44);
+		if (IsClearString(temp, ')'))
+		{
+			strncpy(m_szStringArray[0], temp, 42);
+			temp += '*';
+		}
+		else
+		{
+			strncpy(m_szStringArray[0], temp, 41);
+			temp += ')';
+		}
 
-	if (g_pDevice->m_hbmBitmap)
+		strcpy(m_szStringArray[1], temp);
+		m_nLineNumber = 2;
+	}
+	else
+	{
+		memset(m_szStringArray[0], 0, 44);
+		strncpy(m_szStringArray[0], temp, nLen);
+		m_nLineNumber = 1;
+	}
+
+	if (g_pDevice->m_hbmBitmap != nullptr)
 	{
 		RECT rect;
 		rect.left = 0;
@@ -144,7 +129,7 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 
 			sprintf(szTemp, "%s", m_szStringArray[nLine]);
 
-			if (strlen(szTemp))
+			if (strlen(szTemp) != 0)
 			{
 				TextOut(g_pDevice->m_hDC, 0, nLine * (RenderDevice::m_nFontSize + 1), szTemp,
 					strlen(szTemp));
@@ -159,14 +144,14 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 
 				for (int nT = 0; nT < nLenTemp; ++nT)
 				{
-					if (szTemp[nT] == 48)
+					if (szTemp[nT] == '0')
 					{
-						szTemp2[nT] = 47;
+						szTemp2[nT] = '/';
 						bFind = true;
 					}
 					else
 					{
-						szTemp2[nT] = 32;
+						szTemp2[nT] = ' ';
 					}
 				}
 
@@ -181,7 +166,7 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 		}
 	}
 
-	if (!m_pTexture)
+	if (m_pTexture == nullptr)
 	{
 		if (g_pDevice->m_bSavage == 1)
 		{
@@ -196,7 +181,7 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 		}
 		else
 		{
-			if (!TMFont2::m_pBuffer)
+			if (TMFont2::m_pBuffer == nullptr)
 			{
 				int handle = _open(MiniMap_Path, _O_BINARY);
 
@@ -209,7 +194,7 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 				TMFont2::m_nLength = _filelength(handle) - 4;
 				TMFont2::m_pBuffer = new char[m_nLength + 18];
 
-				if (!TMFont2::m_pBuffer)
+				if (TMFont2::m_pBuffer == nullptr)
 				{
 					_close(handle);
 					return FALSE;
@@ -238,7 +223,7 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 				&m_pTexture
 				);
 
-			if (rst < 0)
+			if (FAILED(rst))
 			{
 				m_pTexture = nullptr;
 				return FALSE;
@@ -246,43 +231,35 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 		}
 	}
 
-	if (m_pTexture)
+	if (m_pTexture == nullptr)
+		return 0;
+
+	D3DLOCKED_RECT d3dlr;
+	m_pTexture->LockRect(0, &d3dlr, nullptr, 0);
+
+	char* pDstRow = (char*)d3dlr.pBits;
+	short* pDst16;
+
+	for (int nY = 0; nY < m_nLineNumber * (RenderDevice::m_nFontSize + 1); ++nY)
 	{
-		D3DLOCKED_RECT d3dlr;
-		m_pTexture->LockRect(0, &d3dlr, nullptr, 0);
-
-		char* pDstRow = (char*)d3dlr.pBits;
-		short* pDst16;
-
-		for (int nY = 0; nY < m_nLineNumber * (RenderDevice::m_nFontSize + 1); ++nY)
+		pDst16 = (short*)pDstRow;
+		for (int nX = 0; nX < RenderDevice::m_nFontTextureSize; ++nX)
 		{
-			pDst16 = (short*)pDstRow;
-			for (int nX = 0; nX < RenderDevice::m_nFontTextureSize; ++nX)
-			{
-				char bAlpha = (g_pDevice->m_pBitmapBits[nX + nY * RenderDevice::m_nFontTextureSize] & 0xFF) >> 4;
+			char bAlpha = (g_pDevice->m_pBitmapBits[nX + nY * RenderDevice::m_nFontTextureSize] & 0xFF) >> 4;
 
-				if (bAlpha <= 0)
-				{
-					*pDst16 = 0;
-					++pDst16;
-				}
-				else
-				{
-					*pDst16 = ((unsigned char)bAlpha << 16) | 0xFFF;
-					++pDst16;
-				}
-			}
+			if (bAlpha <= 0)
+				*pDst16 = 0;
+			else
+				*pDst16 = (bAlpha << 12) | 0xFFF;
 
-			pDstRow += d3dlr.Pitch;
+			++pDst16;
 		}
 
-		m_pTexture->UnlockRect(0);
-
-		m_pTexture->Release();
-		return TRUE;
+		pDstRow += d3dlr.Pitch;
 	}
 
-	return FALSE;
+	m_pTexture->UnlockRect(0);
+	return TRUE;
 }
 
 char* TMFont2::GetText()
@@ -292,35 +269,29 @@ char* TMFont2::GetText()
 
 int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 {
-	int strLen = strlen(m_szString);
-
-	// TODO: change to define
-	if (strLen <= 0 || strLen >= 256) //MAX_CHARSTR?
-	{
-		return 0;
-	}
-
 	if (m_nPosX != -1)
 		nPosX = m_nPosX;
 	if (m_nPosY != -1)
 		nPosY = m_nPosY;
 
-	if (!m_pTexture)
+	int nPosYa = nPosY + 1;
+	if (m_pTexture == nullptr)
 		SetText(m_szString, m_dwColor, 0);
 
-	int nPosYa = nPosY + 1;
+	int strLen = strlen(m_szString);
+
+	if (strLen <= 0 || strLen >= MAX_STRRENDER)
+		return 0;
 
 	g_pDevice->SetRenderStateBlock(2);
-	int nLength = 0;
 
+	int nLength = 0;
 	for (int nLine = 0; nLine < m_nLineNumber; ++nLine)
 	{
 		int nLocLen = strlen(m_szStringArray[nLine]);
-
 		if (m_bMultiLine == 1)
 		{
-			// Border?
-			if (nRenderType == 6)
+			if (nRenderType == (int)RENDERCTRLTYPE::RENDER_TEXT_FOCUS)
 			{
 				g_pDevice->RenderRectC(
 					0.0f,
@@ -370,7 +341,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 					1.0f,
 					1.0f);
 			}
-			else if (nRenderType > 0)
+			else if (nRenderType > (int)RENDERCTRLTYPE::RENDER_TEXT)
 			{
 				float _cx = 0.0f;
 				float _cy = 0.0f;
@@ -425,7 +396,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 		}
 		else
 		{
-			if (nRenderType == 6)
+			if (nRenderType == (int)RENDERCTRLTYPE::RENDER_TEXT_FOCUS)
 			{
 				g_pDevice->RenderRectC(
 					0.0f,
@@ -475,7 +446,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 					m_fSize,
 					m_fSize);
 			}
-			else if (nRenderType > 0)
+			else if (nRenderType > (int)RENDERCTRLTYPE::RENDER_TEXT)
 			{
 				g_pDevice->RenderRectC(
 					0.0f,
@@ -513,21 +484,24 @@ int TMFont2::StrByteCheck(char* szString)
 {
 	int value = 0;
 	bool byteCheck = false;
-	int strLen = strlen(szString);
-	for (int i = 0; i < strLen; ++i)
+	for (int i = 0; ; ++i)
 	{
-		if (szString[i] < 65 || szString[i] > 122)
+		if (i >= strlen(szString))
+			break;
+
+		if (szString[i] >= 'A' && szString[i] <= 'z')
 		{
-			if (byteCheck)
-			{
-				++value;
-				byteCheck = false;
-			}
-			else
-				byteCheck = true;
+			++value;
+		}
+		else if (byteCheck == 1)
+		{
+			++value;
+			byteCheck = 0;
 		}
 		else
-			++value;
+		{
+			byteCheck = 1;
+		}
 	}
 
 	return value;

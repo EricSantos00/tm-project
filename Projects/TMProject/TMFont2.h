@@ -1,6 +1,7 @@
 #pragma once
 
-#include "TMGlobal.h"
+constexpr int MAX_STRLENGTH = 120;
+constexpr int MAX_STRRENDER = 256;
 
 class TMFont2
 {
@@ -19,7 +20,7 @@ public:
     int m_bMultiLine;
     float m_fSize;
     int m_nLineNumber;
-    char m_szString[256];
+    char m_szString[MAX_STRRENDER];
     char m_szStringArray[3][44];
     IDirect3DTexture9* m_pTexture;
 	static char* m_pBuffer;
