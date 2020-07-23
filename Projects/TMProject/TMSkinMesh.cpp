@@ -164,31 +164,31 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 		if (look[2 * i] == '_' || look[2 * i] == 'a' || look[2 * i] == 'N' || look[2 * i] == 'L')
 			god2cos = true;
 
-		sprintf(szName,	"%s%02d%02d.msh", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex],
+		sprintf(szName,	"%s%02d%02d.msh", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName,
 			i + 1,
 			look[2 * i] + 20 * m_bExpand + 1);
 
 		if (m_nBoneAniIndex == 45 || m_nBoneAniIndex == 46 || m_nBoneAniIndex == 53|| m_nBoneAniIndex == 54)
 		{
-			sprintf(szName, "%s%02d%02d.msh", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex], i + 1, 1);
+			sprintf(szName, "%s%02d%02d.msh", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName, i + 1, 1);
 		}
 
 		if (God2Exception(i))
 		{
-			sprintf(szTexture, "%s%02d%02d.wyt", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex],
+			sprintf(szTexture, "%s%02d%02d.wyt", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName,
 				1, (look[2 * i + 1] & 0xFFF) + look[2 * i] + 20 * m_bExpand + 1);
 			if (m_nBoneAniIndex == 53)
-				sprintf(szTexture, "%s%02d%02d.wyt", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex], i + 1, 1);
+				sprintf(szTexture, "%s%02d%02d.wyt", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName, i + 1, 1);
 		}
 		else
 		{
-			sprintf(szTexture, "%s%02d%02d.wyt", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex],
+			sprintf(szTexture, "%s%02d%02d.wyt", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName,
 				i + 1,
 				(look[2 * i + 1] & 0xFFF) + look[2 * i] + 20 * m_bExpand + 1);
 
 			if (m_nBoneAniIndex == 45 || m_nBoneAniIndex == 46 || m_nBoneAniIndex == 53	|| m_nBoneAniIndex == 54)
 			{
-				sprintf(szTexture, "%s%02d%02d.wyt", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex], i + 1, 1);
+				sprintf(szTexture, "%s%02d%02d.wyt", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName, i + 1, 1);
 			}
 
 			if (!strcmp(szName, "mesh\\ch010218.msh") && !strcmp(szTexture, "mesh\\ch010219.wyt"))
@@ -548,7 +548,7 @@ void TMSkinMesh::FrameMove(unsigned int dwServerTime)
 										&NewQuat,
 										&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matQuaternion[j + addr],
 										&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matQuaternion[j + m_dwTickLast],
-										(float)InvTick / 10.0);
+										(float)InvTick / 10.0f);
 									D3DXMatrixRotationQuaternion(&QuatMat, &NewQuat);
 									D3DXMATRIX NewMat2 = *matRot;
 									ori = (float*)&NewMat2;
@@ -703,6 +703,8 @@ HRESULT TMSkinMesh::InvalidateDeviceObjects()
 {
 	if (m_pRoot != nullptr)
 		m_pRoot->InvalidateDeviceObjects();
+
+	return 0;
 }
 
 int TMSkinMesh::SetAnimation(int nIndex)
@@ -869,7 +871,7 @@ void TMSkinMesh::SetVecMantua(int nType, int nSkinIndex)
 		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), 1.3707963f, 0);
 		break;
 	case 5:
-		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), 1.9707963, 0);
+		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), 1.9707963f, 0);
 		break;
 	}
 }
