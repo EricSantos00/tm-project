@@ -65,6 +65,8 @@ ObjectManager::ObjectManager()
 
 ObjectManager::~ObjectManager()
 {
+	SAFE_DELETE(m_pRoot);
+	g_pCurrentScene = nullptr;
 }
 
 void ObjectManager::Finalize()
@@ -73,6 +75,49 @@ void ObjectManager::Finalize()
 
 void ObjectManager::OnPacketEvent(unsigned int dwCode, char* buf)
 {
+	TreeNode* pCurrentNode = g_pCurrentScene;
+	TreeNode* pRootNode = g_pCurrentScene;
+	
+	if (g_pCurrentScene != nullptr)
+	{
+		if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELCHAR && buf != nullptr)
+		{
+			MSG_SendItem* pMsg = (MSG_SendItem*)buf;
+			if (pMsg->Header.Type == MSG_SendItem_Opcode)
+			{
+				if (pMsg->DestType == 2)
+					memcpy(&m_stItemCargo[pMsg->DestPos], &pMsg->Item, sizeof(pMsg->Item));
+			}
+			return;
+		}
+
+		do
+		{
+			if (!pCurrentNode->m_cDeleted)
+			{
+				if (pCurrentNode->OnPacketEvent(dwCode, buf) == 1)
+					break;
+
+				if (pCurrentNode->m_pDown)
+				{
+					pCurrentNode = pCurrentNode->m_pDown;
+					continue;
+				}
+			}
+
+			do
+			{
+				if (pCurrentNode->m_pNextLink != nullptr)
+				{
+					pCurrentNode = pCurrentNode->m_pNextLink;
+					break;
+				}
+
+				pCurrentNode = pCurrentNode->m_pTop;
+			} while (pCurrentNode != pRootNode || pCurrentNode != nullptr);
+
+		} while (pCurrentNode != pRootNode && pCurrentNode != nullptr);
+	}
 }
 
 void ObjectManager::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
