@@ -5,6 +5,10 @@
 #include "TMSkinMesh.h"
 #include "MeshManager.h"
 #include "TMGlobal.h"
+#include "TMEffectBillBoard.h"
+#include "TMHuman.h"
+#include "CMesh.h"
+#include "TMLog.h"
 
 int TMSkinMesh::m_nSmooth = 1;
 
@@ -114,7 +118,303 @@ HRESULT TMSkinMesh::InitDeviceObjects()
 
 HRESULT TMSkinMesh::RestoreDeviceObjects()
 {
-	return E_NOTIMPL;
+	m_bMeshGenerated = 0;
+
+	SAFE_DELETE(m_pRoot);
+
+	m_pRoot = new CFrame(1);
+
+	if (m_pRoot == nullptr)
+		return 0x80004005;
+
+	m_pframeToAnimate[0] = m_pRoot;
+	m_pRoot->m_pParentSkin = this;
+
+	for (int i = 0; i < MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numBone; ++i)
+	{
+		unsigned int parent_ID = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].pBone[2 * i];
+		unsigned int parent_temp = parent_ID;
+		if (parent_ID == -1)
+			parent_ID = 0;
+
+		unsigned int my_ID = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].pBone[2 * i + 1];
+
+		CFrame* tmp = new CFrame(my_ID);
+		if (tmp == nullptr)
+			return 0x80004005;
+
+		tmp->m_dwParentID = parent_temp;
+		tmp->m_pParentSkin = this;
+		m_pframeToAnimate[my_ID] = tmp;
+
+		CFrame* parent = m_pRoot->FindFrame(parent_ID);
+		if (parent != nullptr)
+			parent->AddFrame(tmp);
+	}
+
+	char szName[32]{};
+	char szTexture[64]{};
+
+	unsigned short* look = (unsigned short*)&m_Look;
+	unsigned short* sanc = (unsigned short*)&m_Sanc;
+
+	for (int i = 0; i < MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numParts; ++i)
+	{
+		bool god2cos = false;
+		if (look[2 * i] == '_' || look[2 * i] == 'a' || look[2 * i] == 'N' || look[2 * i] == 'L')
+			god2cos = true;
+
+		sprintf(szName,	"%s%02d%02d.msh", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex],
+			i + 1,
+			look[2 * i] + 20 * m_bExpand + 1);
+
+		if (m_nBoneAniIndex == 45 || m_nBoneAniIndex == 46 || m_nBoneAniIndex == 53|| m_nBoneAniIndex == 54)
+		{
+			sprintf(szName, "%s%02d%02d.msh", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex], i + 1, 1);
+		}
+
+		if (God2Exception(i))
+		{
+			sprintf(szTexture, "%s%02d%02d.wyt", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex],
+				1, (look[2 * i + 1] & 0xFFF) + look[2 * i] + 20 * m_bExpand + 1);
+			if (m_nBoneAniIndex == 53)
+				sprintf(szTexture, "%s%02d%02d.wyt", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex], i + 1, 1);
+		}
+		else
+		{
+			sprintf(szTexture, "%s%02d%02d.wyt", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex],
+				i + 1,
+				(look[2 * i + 1] & 0xFFF) + look[2 * i] + 20 * m_bExpand + 1);
+
+			if (m_nBoneAniIndex == 45 || m_nBoneAniIndex == 46 || m_nBoneAniIndex == 53	|| m_nBoneAniIndex == 54)
+			{
+				sprintf(szTexture, "%s%02d%02d.wyt", &MeshManager::m_BoneAnimationList[m_nBoneAniIndex], i + 1, 1);
+			}
+
+			if (!strcmp(szName, "mesh\\ch010218.msh") && !strcmp(szTexture, "mesh\\ch010219.wyt"))
+			{
+				sprintf(szTexture, "mesh\\ch010214.wyt");
+			}
+			else if (MantleException(szTexture))
+			{
+				sprintf(szName, "mesh\\mt010131.msh");
+			}
+			else if (!strcmp(szTexture, "mesh\\mt010124.wyt"))
+			{
+				sprintf(szName, "mesh\\mt010124.msh");
+			}
+			else if (!strcmp(szTexture, "mesh\\mt010132.wyt") || !strcmp(szTexture, "mesh\\mt010133.wyt") ||
+				!strcmp(szTexture, "mesh\\mt010134.wyt") || !strcmp(szTexture, "mesh\\mt010135.wyt") || 
+				!strcmp(szTexture, "mesh\\mt010136.wyt") || !strcmp(szTexture, "mesh\\mt010137.wyt"))
+			{
+				sprintf(szName, "mesh\\mt010131.msh");
+			}
+			else if (!strcmp(szTexture, "mesh\\mt010124.wyt"))
+				sprintf(szName, "mesh\\mt010124.msh");
+		}
+
+		if (m_nCosType == 100 && m_nBoneAniIndex == 85)
+			SetHardcoreMantle(szTexture, szName);
+
+		if (szTexture[5] == 'c'	&& szTexture[6] == 'h'	&& szTexture[8] == '2'	&& szTexture[11] == '1'	&& szTexture[12] == '3')
+		{
+			if (szTexture[10] == '1')
+				sprintf(szTexture, "mesh\\ch010130.wyt");
+			if (szTexture[10] == '4')
+				sprintf(szTexture, "mesh\\ch010430.wyt");
+			if (szTexture[10] == '5')
+				sprintf(szTexture, "mesh\\ch010530.wyt");
+		}
+
+		if (!strcmp(szTexture, "mesh\\ch020315.wyt"))
+		{
+			sprintf(szTexture, "mesh\\ch020314.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\bm010102.wyt"))
+		{
+			sprintf(szTexture, "mesh\\mi010105.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\tr13"))
+		{
+			sprintf(szTexture, "mesh\\tr130101.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\tr14"))
+		{
+			sprintf(szTexture, "mesh\\tr130101.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\tr15"))
+		{
+			sprintf(szTexture, "mesh\\tr130101.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\tr16"))
+		{
+			sprintf(szTexture, "mesh\\tr130101.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\tr17"))
+		{
+			sprintf(szTexture, "mesh\\tr130101.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\tr190101"))
+		{
+			sprintf(szTexture, "mesh\\tr180101.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\tr190102"))
+		{
+			sprintf(szTexture, "mesh\\tr180102.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\tr200101"))
+		{
+			sprintf(szTexture, "mesh\\tr180101.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\tr200102"))
+		{
+			sprintf(szTexture, "mesh\\tr180102.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\ch010237"))
+		{
+			sprintf(szTexture, "mesh\\ch010137.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\ch010238"))
+		{
+			sprintf(szTexture, "mesh\\ch010138.wyt");
+		}
+		else if (strcmp(szTexture, "mesh\\ch020217"))
+		{
+			sprintf(szTexture, "mesh\\ch020117.wyt");
+		}
+
+		if (m_nCosType != 0 && m_nCosType != 100)
+			SetCostume(m_nCosType, szTexture, szName);
+
+		if ((signed int)*look < 90 || !i || look[2 * i])
+		{
+			CMesh* tmpMesh = new CMesh(this);
+
+			if(tmpMesh == nullptr)
+				return 0x80004005;
+
+			short nSanc = (unsigned short)sanc[i];
+			short nLegnd = (unsigned short)sanc[i + 8];
+
+			if (nSanc > 15)
+				nSanc = 15;
+			if (nLegnd > 15)
+				nLegnd = 15;
+
+			if (!strcmp(szTexture, "mesh\\LB010101.wyt"))
+			{
+				tmpMesh->m_nTextureIndex = 1840;
+			}
+			else if (!strcmp(szTexture, "mesh\\LB010201.wyt"))
+			{
+				tmpMesh->m_nTextureIndex = 1840;
+			}
+			else if (!strcmp(szTexture, "mesh\\LB010301.wyt"))
+			{
+				tmpMesh->m_nTextureIndex = 1841;
+			}
+			else if (!strcmp(szTexture, "mesh\\LK010101.wyt"))
+			{
+				tmpMesh->m_nTextureIndex = 1842;
+			}
+			else if (!strcmp(szTexture, "mesh\\LK010201.wyt"))
+			{
+				tmpMesh->m_nTextureIndex = 1842;
+			}
+			else if (!strcmp(szTexture, "mesh\\LK010301.wyt"))
+			{
+				tmpMesh->m_nTextureIndex = 1843;
+			}
+			else
+				tmpMesh->m_nTextureIndex = g_pTextureManager->GetModelTextureIndex(szTexture);
+
+			tmpMesh->m_sMultiType = nSanc;
+			tmpMesh->m_sLegendType = nLegnd;
+
+			if (i == 1 && m_Look.Mesh1 == 40)
+				tmpMesh->m_bHead = 1;
+			if (m_bMount)
+				tmpMesh->m_bMount = 1;
+			if (god2cos)
+				tmpMesh->m_god2cos = 1;
+
+			char nColor = *((unsigned char*)&m_Color.Sanc0 + i);
+			if (m_nCosType)
+				tmpMesh->m_bHead = 1;
+
+			switch (nColor)
+			{
+			case 116:
+				tmpMesh->m_sLegendType = 116;
+				break;
+			case 117:
+				tmpMesh->m_sLegendType = 117;
+				break;
+			case 118:
+				tmpMesh->m_sLegendType = 118;
+				break;
+			case 119:
+				tmpMesh->m_sLegendType = 119;
+				break;
+			case 120:
+				tmpMesh->m_sLegendType = 120;
+				break;
+			case 121:
+				tmpMesh->m_sLegendType = 121;
+				break;
+			case 122:
+				tmpMesh->m_sLegendType = 122;
+				break;
+			case 123:
+				tmpMesh->m_sLegendType = 123;
+				break;
+			case 124:
+				tmpMesh->m_sLegendType = 124;
+				break;
+			case 125:
+				tmpMesh->m_sLegendType = 125;
+				break;
+			}
+			if (m_nBoneAniIndex < 19 && (i == 6 || i == 7))
+			{
+				if (i == 6)
+				{
+					tmpMesh->m_dwID = g_dwHandIndex[m_nBoneAniIndex][0];
+				}
+				else if (i == 7)
+				{
+					tmpMesh->m_dwID = g_dwHandIndex[m_nBoneAniIndex][1];
+				}
+
+				CFrame* parent = m_pRoot->FindFrame(tmpMesh->m_dwID);
+				if (parent != nullptr)
+				{
+					parent->m_pMesh = tmpMesh;
+					tmpMesh->InitEffect();
+				}
+				else
+				{
+					LOG_WRITELOG("Can't Find Parent Node in ID : %d, MshName : %s\r\n", tmpMesh->m_dwID, szName);
+				}
+			}		
+			else if (tmpMesh->LoadMesh(szName) == 1)
+			{
+				CFrame* parent = m_pRoot->FindFrame(tmpMesh->m_dwID);
+				if (parent)
+					parent->m_pMesh = tmpMesh;
+				else
+					LOG_WRITELOG("Can't Find Parent Node in ID : %d, MshName : %s\r\n", tmpMesh->m_dwID, szName);
+			}
+			else
+			{
+				if (tmpMesh)
+					delete tmpMesh;
+			}
+		}
+	}
+
+	m_pRoot->LinkBones(m_pRoot);
+	return 0;
 }
 
 void TMSkinMesh::FrameMove(unsigned int dwServerTime)
@@ -123,6 +423,7 @@ void TMSkinMesh::FrameMove(unsigned int dwServerTime)
 
 void TMSkinMesh::InitMaterial(D3DMATERIAL9 material)
 {
+	m_materials = material;
 }
 
 int TMSkinMesh::Render(float fLen, float fScale, float fLen2)
@@ -132,73 +433,634 @@ int TMSkinMesh::Render(float fLen, float fScale, float fLen2)
 
 HRESULT TMSkinMesh::DeleteDeviceObjects()
 {
-	return E_NOTIMPL;
+	SAFE_DELETE(m_pRoot);
+	return 0;
 }
 
 HRESULT TMSkinMesh::InvalidateDeviceObjects()
 {
-	return E_NOTIMPL;
+	if (m_pRoot != nullptr)
+		m_pRoot->InvalidateDeviceObjects();
 }
 
 int TMSkinMesh::SetAnimation(int nIndex)
 {
-	return 0;
+	if (MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniTypeCount <= nIndex)
+		return 0;
+
+	if (m_nAniIndex == nIndex)
+		return 0;
+
+	m_nAniIndexLast = m_nAniIndex;
+	m_dwTickLast = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniFrame
+		* (m_dwOffset + m_nAniBaseIndex);
+
+	m_dwStartOffset = g_pTimerManager->GetServerTime();
+	m_nAniIndex = nIndex;
+	m_nAniBaseIndex = 0;
+
+	for (int i = 0; i < m_nAniIndex; ++i)
+		m_nAniBaseIndex += MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniCut[i];
+
+	if (m_pOwner != nullptr)
+	{
+		if (m_nBoneAniIndex < 19)
+			SetSwingMatrix();
+	}
+
+	return 1;
 }
 
 void TMSkinMesh::SetPosition(D3DXVECTOR3 vPos)
 {
+	m_vPosition = vPos;
 }
 
 void TMSkinMesh::SetPosition(float fX, float fY, float fZ)
 {
+	m_vPosition.x = fX;
+	m_vPosition.y = fY;
+	m_vPosition.z = fZ;
 }
 
 void TMSkinMesh::SetAngle(D3DXVECTOR3 vAngle)
 {
+	m_vAngle = vAngle;
 }
 
 void TMSkinMesh::SetAngle(float fYaw, float fPitch, float fRoll)
 {
+	m_vAngle.x = fYaw;
+	m_vAngle.y = fPitch;
+	m_vAngle.z = fRoll;
 }
 
 void TMSkinMesh::SetSwingMatrix()
 {
+	TMEffectSWSwing* pSW[2];
+
+	pSW[0] = m_pSwingEffect[0];
+	pSW[1] = m_pSwingEffect[1];
+
+	DWORD dwNumBones = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniFrame;
+	DWORD addr = dwNumBones * m_nAniBaseIndex;
+	DWORD dwNumTick = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniCut[m_nAniIndex];
+
+	DWORD dwHandIndex[2];
+
+	dwHandIndex[0] = g_dwHandIndex[m_nBoneAniIndex][0];
+	dwHandIndex[1] = g_dwHandIndex[m_nBoneAniIndex][1];
+
+	D3DXMATRIX matTrans{};
+	D3DXMatrixIdentity(&matTrans);
+
+	LPD3DXMATRIX pmatStart = &MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[addr << 6];
+	if (pSW[0])
+	{
+		for (int i = 0; i < 48; ++i)
+			D3DXMatrixIdentity(&pSW[0]->m_matRot[i]);
+
+		for (int i = 0; i < dwNumTick && i <= 47; ++i)
+		{
+			matTrans = pmatStart[dwHandIndex[0] + dwNumBones * i];
+
+			for (int j = 0; j < pSW[0]->m_dwNumIndex - 1; ++j)
+			{
+				matTrans = pmatStart[pSW[0]->m_dwIndices[j] + dwNumBones * i];
+			}
+
+			pSW[0]->m_matRot[i] = matTrans;
+		}
+		pSW[0]->m_nNumTicks = dwNumTick;
+	}
+
+	if (pSW[1])
+	{
+		for (int i = 0; i < 48; ++i)
+			D3DXMatrixIdentity(&pSW[1]->m_matRot[i]);
+		for (int i = 0; i < dwNumTick && i <= 47; ++i)
+		{
+			matTrans = pmatStart[dwHandIndex[1] + dwNumBones * i];
+
+			for (int j = 0; j < pSW[1]->m_dwNumIndex - 1; ++j)
+			{
+				matTrans = pmatStart[pSW[1]->m_dwIndices[j] + dwNumBones * i];
+			}
+
+			pSW[1]->m_matRot[i] = matTrans;
+		}
+		pSW[1]->m_nNumTicks = dwNumTick;
+	}
 }
 
 void TMSkinMesh::SetVecMantua(int nType, int nSkinIndex)
 {
+	m_bBaseMat = nType;
+	float fMantuaUp = 0.0f;
+	switch (nSkinIndex)
+	{
+	case 25:
+		fMantuaUp = 0.1f;
+		break;
+	case 28:
+		fMantuaUp = 0.15f;
+		break;
+	case 20:
+		fMantuaUp = 0.5f;
+		break;
+	case 39:
+		fMantuaUp = 0.25f;
+		break;
+	case 29:
+		fMantuaUp = 0.18f;
+		break;
+	case 31:
+		fMantuaUp = 0.15f;
+		break;
+	case 30:
+		fMantuaUp = 0.25f;
+		break;
+	case 38:
+		fMantuaUp = 0.25f;
+		break;
+	case 40:
+		fMantuaUp = 0.18f;
+		break;
+	}
+
+	switch (nType)
+	{
+	case 1:
+		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), fMantuaUp + -D3DXToRadian(180), 0);
+		break;
+	case 2:
+		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), fMantuaUp + D3DXToRadian(180), 0);
+		break;
+	case 3:
+		D3DXMatrixRotationYawPitchRoll(
+			&m_matMantua,
+			D3DXToRadian(90),
+			(fMantuaUp + -D3DXToRadian(90)) - (fMantuaUp + D3DXToRadian(30)),
+			0);
+		break;
+	case 4:
+		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), 1.3707963f, 0);
+		break;
+	case 5:
+		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), 1.9707963, 0);
+		break;
+	}
 }
 
 void TMSkinMesh::RenderSkinMeshEffect()
 {
+	if (m_nBoneAniIndex == 31)
+	{
+		if (m_bRenderEffect != 0)
+			RenderEffect_HorseFireLeg();
+	}
 }
 
 void TMSkinMesh::RenderEffect_HorseFireLeg()
 {
+	TMEffectBillBoard* mpBill[4];
+
+	for (int i = 0; i < 4; i++)
+	{
+		int j = rand() % 5;
+
+		mpBill[i] = new TMEffectBillBoard(0, j + 500, 0.0f, 0.0f, 0.0f, 0.001f, 0, 80);
+
+		if (mpBill[i])
+		{
+			mpBill[i]->m_vecPosition = TMVector3(((rand() % 5 - 2) * 0.05f) + m_pOwner->m_vecTempPos[i].x,
+				m_pOwner->m_vecTempPos[i].y, ((rand() % 5 - 2) * 0.05f) + m_pOwner->m_vecTempPos[i].z);
+
+			mpBill[i]->m_vecStartPos = mpBill[i]->m_vecPosition;
+			mpBill[i]->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+			mpBill[i]->m_bStickGround = 1;
+			mpBill[i]->m_nParticleType = 1;
+			mpBill[i]->m_fParticleV = 0.05f;
+
+			mpBill[i]->SetColor(j > 3 ? 0xFFFF1111 : 0xFFFFFFFF);
+
+			g_pCurrentScene->m_pEffectContainer->AddChild((TreeNode*)mpBill[i]);
+		}
+	}
 }
 
 void TMSkinMesh::SetHardcoreMantle(char* szTexture, char* szName)
 {
+	sprintf(szName, "mesh\\newmt.msh");
+	if (m_Look.Skin0 == 0)
+	{
+		sprintf(szTexture, "mesh\\newmtB000.wys");
+	}
+	else if (m_Look.Skin0 == 1)
+	{
+		sprintf(szTexture, "mesh\\newmtR000.wys");
+	}
+	else
+	{
+		sprintf(szTexture, "mesh\\newmtW000.wys");
+	}
 }
 
 void TMSkinMesh::SetOldCostume(int costype, char* szTexture, char* szName)
 {
+	switch (costype + 1)
+	{
+	case 0:
+		SetRenewOldCostume(costype, szTexture, szName);
+		break;
+	case 1:
+		return;
+	case 2:
+		switch (m_Cos)
+		{
+		case 1:
+			strcpy(szTexture, "mesh\\ch020161.wyt");
+			strcpy(szName, "mesh\\ch020161.msh");
+			m_Cos = 2;
+			break;
+		case 2:
+			strcpy(szTexture, "mesh\\ch020261.wyt");
+			strcpy(szName, "mesh\\ch020261.msh");
+			m_Cos = 3;
+			break;
+		case 3:
+			strcpy(szTexture, "mesh\\ch020357.wyt");
+			strcpy(szName, "mesh\\ch020357.msh");
+			m_Cos = 4;
+			break;
+		case 4:
+			strcpy(szTexture, "mesh\\ch020457.wyt");
+			strcpy(szName, "mesh\\ch020457.msh");
+			m_Cos = 5;
+			break;
+		case 5:
+			strcpy(szTexture, "mesh\\ch020557.wyt");
+			strcpy(szName, "mesh\\ch020557.msh");
+			m_Cos = 6;
+			break;
+		case 6:
+			strcpy(szTexture, "mesh\\ch020657.wyt");
+			strcpy(szName, "mesh\\ch020657.msh");
+			m_Cos = 1;
+			break;
+		}
+		break;
+	case 3:
+		if (!strncmp(szTexture, "mesh\\ch0101", 11) || !strncmp(szTexture, "mesh\\ch0201", 11))
+		{
+			szTexture[strlen(szTexture) - 9] = '1';
+			szTexture[strlen(szTexture) - 6] = '3';
+			szTexture[strlen(szTexture) - 5] = '0';
+		}
+		else if (!strncmp(szTexture, "mesh\\ch01", 9) || !strncmp(szTexture, "mesh\\ch02", 9))
+		{
+			szTexture[strlen(szTexture) - 9] = '1';
+			szTexture[strlen(szTexture) - 6] = '3';
+			szTexture[strlen(szTexture) - 5] = '1';
+		}
+		if (!strncmp(szName, "mesh\\ch0101", 11) || !strncmp(szName, "mesh\\ch0201", 11))
+		{
+			szName[strlen(szName) - 9] = '1';
+			szName[strlen(szName) - 6] = '3';
+			szName[strlen(szName) - 5] = '0';
+		}
+		else if (!strncmp(szName, "mesh\\ch01", 9) || !strncmp(szName, "mesh\\ch02", 9))
+		{
+			szName[strlen(szName) - 9] = '1';
+			szName[strlen(szName) - 6] = '3';
+			szName[strlen(szName) - 5] = '1';
+		}
+		break;
+	case 4:
+		strcpy(szTexture, "mesh\\SpiderCos.wyt");
+		switch (m_Cos)
+		{
+		case 1:
+			strcpy(szName, "mesh\\ch020190.msh");
+			m_Cos = 2;
+			break;
+		case 2:
+			strcpy(szName, "mesh\\ch020290.msh");
+			m_Cos = 3;
+			break;
+		case 3:
+			strcpy(szName, "mesh\\ch020390.msh");
+			m_Cos = 4;
+			break;
+		case 4:
+			strcpy(szName, "mesh\\ch020490.msh");
+			m_Cos = 5;
+			break;
+		case 5:
+			strcpy(szName, "mesh\\ch020590.msh");
+			m_Cos = 6;
+			break;
+		case 6:
+			strcpy(szName, "mesh\\ch020690.msh");
+			m_Cos = 1;
+			break;
+		}
+		break;
+	case 5:
+		if (!strncmp(szTexture, "mesh\\ch0101", 11) || !strncmp(szTexture, "mesh\\ch0201", 11))
+		{
+			szTexture[strlen(szTexture) - 9] = '1';
+			szTexture[strlen(szTexture) - 6] = '3';
+			szTexture[strlen(szTexture) - 5] = '7';
+		}		
+		else if (!strncmp(szTexture, "mesh\\ch0102", 11) || !strncmp(szTexture, "mesh\\ch0201", 11))
+		{
+			szTexture[strlen(szTexture) - 9] = '1';
+			szTexture[strlen(szTexture) - 7] = '1';
+			szTexture[strlen(szTexture) - 6] = '3';
+			szTexture[strlen(szTexture) - 5] = '7';
+		}
+		else if (!strncmp(szTexture, "mesh\\ch01", 9) || !strncmp(szTexture, "mesh\\ch02", 9))
+		{
+			szTexture[strlen(szTexture) - 9] = '1';
+			szTexture[strlen(szTexture) - 6] = '3';
+			szTexture[strlen(szTexture) - 5] = '7';
+		}
+
+		if (!strncmp(szName, "mesh\\ch0101", 11) || !strncmp(szName, "mesh\\ch0201", 11))
+		{
+			szName[strlen(szName) - 9] = '1';
+			szName[strlen(szName) - 6] = '3';
+			szName[strlen(szName) - 5] = '7';
+		}
+		else if (!strncmp(szName, "mesh\\ch01", 9) || !strncmp(szName, "mesh\\ch02", 9u))
+		{
+			szName[strlen(szName) - 9] = '1';
+			szName[strlen(szName) - 6] = '3';
+			szName[strlen(szName) - 5] = '7';
+		}
+		break;
+	case 6:
+		switch (m_Cos)
+		{
+		case 1:
+			strcpy(szTexture, "mesh\\ch020117.wyt");
+			strcpy(szName, "mesh\\ch020117.msh");
+			m_Cos = 2;
+			break;
+		case 2:
+			strcpy(szTexture, "mesh\\ch020117.wyt");
+			strcpy(szName, "mesh\\ch020217.msh");
+			m_Cos = 3;
+			break;
+		case 3:
+			strcpy(szTexture, "mesh\\ch020317.wyt");
+			strcpy(szName, "mesh\\ch020317.msh");
+			m_Cos = 4;
+			break;
+		case 4:
+			strcpy(szTexture, "mesh\\ch020417.wyt");
+			strcpy(szName, "mesh\\ch020417.msh");
+			m_Cos = 5;
+			break;
+		case 5:
+			strcpy(szTexture, "mesh\\ch020517.wyt");
+			strcpy(szName, "mesh\\ch020517.msh");
+			m_Cos = 6;
+			break;
+		case 6:
+			strcpy(szTexture, "mesh\\ch020617.wyt");
+			strcpy(szName, "mesh\\ch020617.msh");
+			m_Cos = 1;
+			break;
+		}
+		break;
+	case 7:
+		strcpy(szTexture, "mesh\\ch010195.wyt");
+		switch (m_Cos)
+		{
+		case 1:
+			strcpy(szName, "mesh\\ch010195.msh");
+			m_Cos = 2;
+			break;
+		case 2:
+			strcpy(szName, "mesh\\ch010295.msh");
+			m_Cos = 3;
+			break;
+		case 3:
+			strcpy(szName, "mesh\\ch010395.msh");
+			m_Cos = 4;
+			break;
+		case 4:
+			strcpy(szName, "mesh\\ch010495.msh");
+			m_Cos = 5;
+			break;
+		case 5:
+			strcpy(szName, "mesh\\ch010595.msh");
+			m_Cos = 6;
+			break;
+		case 6:
+			strcpy(szName, "mesh\\ch010695.msh");
+			m_Cos = 1;
+			break;
+		}
+		break;
+	case 8:
+		switch (m_Cos)
+		{
+		case 1:
+			strcpy(szTexture, "mesh\\ch020197.wyt");
+			strcpy(szName, "mesh\\ch020197.msh");
+			m_Cos = 2;
+			break;
+		case 2:
+			strcpy(szTexture, "mesh\\ch020297.wyt");
+			strcpy(szName, "mesh\\ch020297.msh");
+			m_Cos = 3;
+			break;
+		case 3:
+			strcpy(szTexture, "mesh\\ch020397.wyt");
+			strcpy(szName, "mesh\\ch020397.msh");
+			m_Cos = 4;
+			break;
+		case 4:
+			strcpy(szTexture, "mesh\\ch020497.wyt");
+			strcpy(szName, "mesh\\ch020497.msh");
+			m_Cos = 5;
+			break;
+		case 5:
+			strcpy(szTexture, "mesh\\ch020597.wyt");
+			strcpy(szName, "mesh\\ch020597.msh");
+			m_Cos = 6;
+			break;
+		case 6:
+			strcpy(szTexture, "mesh\\ch020697.wyt");
+			strcpy(szName, "mesh\\ch020697.msh");
+			m_Cos = 1;
+			break;
+		}
+		break;
+	}
 }
 
 void TMSkinMesh::SetRenewOldCostume(int costype, char* szTexture, char* szName)
 {
+	strcpy(szTexture, "mesh\\ch0101115.wys");
+	switch (m_Cos)
+	{
+	case 1:
+		strcpy(szName, "mesh\\ch0101115.msh");
+		m_Cos = 2;
+		break;
+	case 2:
+		strcpy(szName, "mesh\\ch0102115.msh");
+		m_Cos = 3;
+		break;
+	case 3:
+		strcpy(szName, "mesh\\ch0103115.msh");
+		m_Cos = 4;
+		break;
+	case 4:
+		strcpy(szName, "mesh\\ch0104115.msh");
+		m_Cos = 5;
+		break;
+	case 5:
+		strcpy(szName, "mesh\\ch0105115.msh");
+		m_Cos = 6;
+		break;
+	case 6:
+		strcpy(szName, "mesh\\ch0106115.msh");
+		m_Cos = 1;
+		break;
+	}
 }
 
 void TMSkinMesh::SetCostume(int Costype, char* szTexture, char* szName)
 {
+	// TODO
 }
 
 int TMSkinMesh::MantleException(char* texture)
 {
+	if (!strcmp(texture, "mesh\\mt0101170.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101171.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101172.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101173.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101174.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101175.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101176.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101177.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101178.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101179.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101180.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101181.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101182.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101183.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101184.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101185.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101186.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101187.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101188.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101189.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101190.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101191.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101192.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101193.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101195.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101196.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101197.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101198.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101199.wyt"))
+		return 1;
+	if (!strcmp(texture, "mesh\\mt0101200.wyt"))
+		return 1;
+
 	return 0;
 }
 
 BOOL TMSkinMesh::God2Exception(int i)
 {
-	return 0;
+	return MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'g'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'o'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'd'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'r'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[8] == '2'
+		&& i == 1
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'd'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'r'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[8] == '1'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'b'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'd'
+		&& i == 1
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'b'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'e'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'b'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'o'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'b'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'm'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'h'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'y'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 's'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'p'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'c'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'r'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'w'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'b'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'w'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'f'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'b'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'e'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'c'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'b'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'm'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'i'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'm'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'o'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 't'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'w'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 't'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'r'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'h'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 's'
+		&& i == 1
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'e'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 't'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'b'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'n'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'r'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'c'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'f'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'n'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 'b'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'l'
+		|| MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[5] == 't'
+		&& MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName[6] == 'g';
 }

@@ -27,7 +27,7 @@ struct stBoneAni
 	unsigned int numAniTypeCount; // 0x0ED956C
 	unsigned int numAniCut[186]; // 0x0ED9570
 	unsigned int numAniFrame; // 0x0ED9858
-	LPD3DXMATRIXA16 matAnimation; // 0x0ED985C
+	LPD3DXMATRIX matAnimation; // 0x0ED985C
 	LPD3DXQUATERNION matQuaternion; // 0x0ED9860
 };
 

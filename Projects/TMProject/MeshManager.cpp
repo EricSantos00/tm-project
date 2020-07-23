@@ -136,9 +136,9 @@ int MeshManager::InitBoneAnimation()
 		}
 
 		MeshManager::m_nFullCount = nFullTickCount;
-		MeshManager::m_BoneAnimationList[nCount].matAnimation = (LPD3DXMATRIXA16)malloc(
+		MeshManager::m_BoneAnimationList[nCount].matAnimation = (LPD3DXMATRIX)malloc(
 			MeshManager::m_BoneAnimationList[nCount].numAniFrame
-			* (nFullTickCount * sizeof(D3DXMATRIXA16)));
+			* (nFullTickCount * sizeof(D3DXMATRIX)));
 
 		// This is used on characters animation/bone read. (ch01/02)
 		if (nCount == 0 || nCount == 1)
@@ -165,7 +165,7 @@ int MeshManager::InitBoneAnimation()
 			_read(handle, &buffer, 4);
 			_read(handle, &MeshManager::m_BoneAnimationList[nCount].numAniFrame, 4);
 			_read(handle, &MeshManager::m_BoneAnimationList[nCount].matAnimation[nOffset],
-				MeshManager::m_BoneAnimationList[nCount].numAniFrame * (buffer * sizeof(D3DXMATRIXA16)));
+				MeshManager::m_BoneAnimationList[nCount].numAniFrame * (buffer * sizeof(D3DXMATRIX)));
 
 			if (nCount == 0 || nCount == 1)
 			{
@@ -329,7 +329,7 @@ int MeshManager::InitBoneAnimation()
 
 			if (++dwFileIndex >= MeshManager::m_BoneAnimationList[nCount].numAniTypeCount)
 			{
-				g_nMaxSizeOffset[nCount] = nOffset * sizeof(D3DXMATRIXA16);
+				g_nMaxSizeOffset[nCount] = nOffset * sizeof(D3DXMATRIX);
 				break;
 			}
 		}
