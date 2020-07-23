@@ -1,12 +1,13 @@
 #pragma once
 
-#define MAX_FRAME_TO_ANIMATE 100
-
 #include "Structures.h"
 
 class CFrame;
 class TMHuman;
 class TMEffectSWSwing;
+
+constexpr auto MAX_FRAME_TO_ANIMATE = 100;
+constexpr auto MAX_VALID_FRAME_TO_ANIMATE = MAX_FRAME_TO_ANIMATE - 20;
 
 class TMSkinMesh
 {
@@ -53,8 +54,8 @@ public:
 	D3DXVECTOR3 m_vAngle;
 	D3DXVECTOR3 m_vScale;
 	int m_bBaseMat;
-	D3DXMATRIXA16 m_BaseMatrix;
-	D3DXMATRIXA16 m_OutMatrix;
+	D3DXMATRIX m_BaseMatrix;
+	D3DXMATRIX m_OutMatrix;
 	CFrame* m_pRoot;
 	CFrame* m_pframeToAnimate[MAX_FRAME_TO_ANIMATE];
 	LOOK_INFO m_Look;
@@ -80,7 +81,7 @@ public:
 	char m_cRotate[2];
 	char m_cEnableMultiTex;
 	char m_cDefaultAlpha;
-	D3DXMATRIXA16 m_matMantua;
+	D3DXMATRIX m_matMantua;
 	unsigned int m_dwTexAni;
 	char m_cTexAni;
 	short m_nMeshType;
