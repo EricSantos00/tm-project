@@ -23,7 +23,7 @@ public:
     virtual void AddItem(SControl* pControl);
     int FrameMove(unsigned int dwServerTime) override;
     virtual SControl* FindControl(unsigned int dwID);
-    void GenerateText(char* pFileName);
+    void GenerateText(const char* pFileName);
 
 public:
     SControl* m_pControlRoot;
