@@ -9,7 +9,7 @@ public:
     TMFont2();
     virtual ~TMFont2();
     
-    int SetText(char* szString, unsigned int dwColor, int bCheckZero);
+    int SetText(const char* szString, unsigned int dwColor, int bCheckZero);
     char* GetText();
     int Render(int nPosX, int nPosY, int nRenderType);
     int StrByteCheck(char* szString);

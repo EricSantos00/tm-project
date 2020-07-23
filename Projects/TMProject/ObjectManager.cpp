@@ -136,11 +136,11 @@ void ObjectManager::InvalidateDeviceObjects()
 
 void ObjectManager::RenderControl()
 {
-	
 }
 
 void ObjectManager::RenderObject()
 {
+
 }
 
 void ObjectManager::RenderTargetObject(float fHeight)

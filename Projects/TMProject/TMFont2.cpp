@@ -23,7 +23,7 @@ TMFont2::~TMFont2()
 	SAFE_RELEASE(m_pTexture);
 }
 
-int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
+int TMFont2::SetText(const char* szString, unsigned int dwColor, int bCheckZero)
 {
 	m_nLineNumber = 0;
 	int nStrLength = strlen(szString);
@@ -122,12 +122,12 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 		FillRect(g_pDevice->m_hDC, &rect, 0);
 		for (int nLine = 0; nLine < m_nLineNumber; ++nLine)
 		{
-			char szTemp[45] = { 0, };
+			char szTemp[45] = { 32, };
 
 			TextOut(g_pDevice->m_hDC, 0, nLine * (RenderDevice::m_nFontSize + 1), szTemp,
 				strlen(szTemp));
 
-			sprintf(szTemp, "%s", m_szStringArray[nLine]);
+			sprintf(szTemp, "%s ", m_szStringArray[nLine]);
 
 			if (strlen(szTemp) != 0)
 			{
@@ -202,7 +202,7 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 
 				_read(handle, TMFont2::m_pBuffer, TMFont2::m_nLength);
 				_close(handle);
-				strcpy((char*)TMFont2::m_pBuffer[TMFont2::m_nLength], "TRUEVISION-XFILE");
+				strcpy((char*)&TMFont2::m_pBuffer[TMFont2::m_nLength], "TRUEVISION-XFILE");
 			}
 
 			HRESULT rst = D3DXCreateTextureFromFileInMemoryEx(
@@ -238,11 +238,11 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 	m_pTexture->LockRect(0, &d3dlr, nullptr, 0);
 
 	char* pDstRow = (char*)d3dlr.pBits;
-	short* pDst16;
+	unsigned short* pDst16;
 
 	for (int nY = 0; nY < m_nLineNumber * (RenderDevice::m_nFontSize + 1); ++nY)
 	{
-		pDst16 = (short*)pDstRow;
+		pDst16 = (unsigned short*)pDstRow;
 		for (int nX = 0; nX < RenderDevice::m_nFontTextureSize; ++nX)
 		{
 			char bAlpha = (g_pDevice->m_pBitmapBits[nX + nY * RenderDevice::m_nFontTextureSize] & 0xFF) >> 4;
@@ -250,7 +250,7 @@ int TMFont2::SetText(char* szString, unsigned int dwColor, int bCheckZero)
 			if (bAlpha <= 0)
 				*pDst16 = 0;
 			else
-				*pDst16 = (bAlpha << 12) | 0xFFF;
+				*pDst16 = ((unsigned char)bAlpha << 12) | 0xFFF;
 
 			++pDst16;
 		}
@@ -390,7 +390,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 				_cxa,
 				_cya,
 				m_pTexture,
-				m_dwShadeColor,
+				m_dwColor,
 				1.0f,
 				1.0f);
 		}
@@ -469,7 +469,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 				(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2)),
 				(float)nPosYa,
 				m_pTexture,
-				m_dwShadeColor,
+				m_dwColor,
 				m_fSize,
 				m_fSize);
 		}
