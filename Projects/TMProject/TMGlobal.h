@@ -11,6 +11,7 @@
 #include "EventTranslator.h"
 #include "dsutil.h"
 #include "SControl.h"
+#include "TMPaths.h"
 
 constexpr unsigned int WYDCOLOR_ALPHA(unsigned int color) { return color & 0xFF000000; }
 constexpr unsigned int WYDCOLOR_RED(unsigned int color) { return (((unsigned int)0xFF0000 & color) >> 16); }
@@ -77,6 +78,8 @@ extern unsigned int g_pLastFixTime;
 extern float g_fWide;
 
 extern char g_szOS[3];
+
+extern int g_hLogFile;
 
 static unsigned int g_dwHandIndex[101][2] =
 {

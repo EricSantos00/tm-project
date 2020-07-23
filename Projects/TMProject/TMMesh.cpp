@@ -540,12 +540,12 @@ int TMMesh::LoadMsa(const char* szFileName)
 
 			if (!_stricmp(szPathName, "effect"))
 			{
-				sprintf_s(szTex, "Effect\\%s.wys", szTextureName);
+				sprintf_s(szTex, EffectTexture_FileFormat_Path, szTextureName);
 				m_nTextureIndex[i] = g_pTextureManager->GetEffectTextureIndex(szTex);
 			}
 			else
 			{
-				sprintf_s(szTex, "mesh\\%s.wys", szTextureName);
+				sprintf_s(szTex, MeshTexture_FileFormat_Path, szTextureName);
 				m_nTextureIndex[i] = g_pTextureManager->GetModelTextureIndex(szTex);
 			}
 		}
@@ -558,12 +558,12 @@ int TMMesh::LoadMsa(const char* szFileName)
 
 			if (!_stricmp(szPathName, "effect"))
 			{
-				sprintf_s(szTex, "Effect\\%s.wys", szTextureName);
+				sprintf_s(szTex, EffectTexture_FileFormat_Path, szTextureName);
 				m_nTextureIndex[i] = g_pTextureManager->GetEffectTextureIndex(szTex);
 			}
 			else
 			{
-				sprintf_s(szTex, "mesh\\%s.wys", szTextureName);
+				sprintf_s(szTex, MeshTexture_FileFormat_Path, szTextureName);
 				m_nTextureIndex[i] = g_pTextureManager->GetModelTextureIndex(szTex);
 			}
 		}
@@ -577,12 +577,12 @@ int TMMesh::LoadMsa(const char* szFileName)
 
 			if (!_stricmp(szPathName, "effect"))
 			{
-				sprintf_s(szTex, "Effect\\%s.wys", szTextureName);
+				sprintf_s(szTex, EffectTexture_FileFormat_Path, szTextureName);
 				m_nTextureIndex[i] = g_pTextureManager->GetEffectTextureIndex(szTex);
 			}
 			else
 			{
-				sprintf_s(szTex, "mesh\\%s.wys", szTextureName);
+				sprintf_s(szTex, MeshTexture_FileFormat_Path, szTextureName);
 				m_nTextureIndex[i] = g_pTextureManager->GetModelTextureIndex(szTex);
 			}
 

@@ -71,3 +71,27 @@ bool CheckOS()
 void DisableSysKey()
 {
 }
+
+int IsClearString(char* str, int target)
+{
+	int len = strlen(str);
+	for (int pos = 0; pos < len; ++pos)
+	{
+		if (str[pos] >= 0)
+		{
+			if (pos >= target)
+				return 1;
+		}
+		else
+		{
+			if (pos == target)
+				return 0;
+			if (pos == target + 1)
+				return 1;
+
+			++pos;
+		}
+	}
+
+	return 1;
+}

@@ -218,7 +218,7 @@ int TextureManager::RestoreRenderTargetTexture()
 int TextureManager::InitUITextureList()
 {
 	char szBin[128];
-	sprintf(szBin, "%s", "UI\\UITextureListN.bin");
+	sprintf(szBin, "%s", TextureListNList_Path);
 
 	FILE* fpBin = fopen(szBin, "rb");
 	if (!fpBin)
@@ -246,7 +246,7 @@ int TextureManager::LoadUITexture(int nIndex, int nSrcIndex)
 	{
 		if (m_stUITextureList[nIndex].szFileName[i] == '.')
 		{
-			if (!strcmp(&m_stUITextureList[nIndex].szFileName[i], ".wys"))
+			if (!strcmp(&m_stUITextureList[nIndex].szFileName[i], TextureList_FileFormat))
 			{
 				bDDsType = 1;
 				break;
@@ -426,7 +426,7 @@ IDirect3DTexture9* TextureManager::GetUITexture(int nIndex, DWORD showTime)
 
 int TextureManager::InitUITextureSetList()
 {
-	FILE* fp = fopen("UI\\UITextureSetList.txt", "rt");
+	FILE* fp = fopen(TextureSetList_Path, "rt");
 
 	if (!fp)
 		return 0;
@@ -506,7 +506,7 @@ int TextureManager::GetUITextureIndex(char* szTextureName)
 int TextureManager::InitEffectTextureList()
 {
 	char szBin[128];
-	sprintf(szBin, "%s", "Effect\\EffectTextureList.bin");
+	sprintf(szBin, "%s", EffectTextureList_Path);
 
 	FILE* fpBin = fopen(szBin, "rb");
 	if (!fpBin)
@@ -531,7 +531,7 @@ int TextureManager::LoadEffectTexture(int nIndex)
 	{
 		if (m_stEffectTextureList[nIndex].szFileName[i] == '.')
 		{
-			if (!strcmp(&m_stEffectTextureList[nIndex].szFileName[i], ".wys"))
+			if (!strcmp(&m_stEffectTextureList[nIndex].szFileName[i], TextureList_FileFormat))
 			{
 				bDDsType = 1;
 				break;
@@ -714,7 +714,7 @@ int TextureManager::GetEffectTextureIndex(char* szTextureName)
 int TextureManager::InitModelTextureList()
 {
 	char szBin[128];
-	sprintf(szBin, "%s", "Mesh\\MeshTextureList.bin");
+	sprintf(szBin, "%s", MeshTextureList_Path);
 
 	FILE* fpBin = fopen(szBin, "rb");
 	if (!fpBin)
@@ -738,7 +738,7 @@ int TextureManager::LoadModelTexture(int nIndex)
 	{
 		if (m_stModelTextureList[nIndex].szFileName[i] == '.')
 		{
-			if (!strcmp(&m_stModelTextureList[nIndex].szFileName[i], ".wys"))
+			if (!strcmp(&m_stModelTextureList[nIndex].szFileName[i], TextureList_FileFormat))
 			{
 				bDDsType = 1;
 				break;
@@ -980,7 +980,7 @@ int TextureManager::IsModelTextureAlpha(int nIndex)
 int TextureManager::InitEnvTextureList()
 {
 	char szBin[128];
-	sprintf(szBin, "%s", "Env\\EnvTextureList3.bin");
+	sprintf(szBin, "%s", EnvTextureList_Path);
 
 	FILE* fpBin = fopen(szBin, "rb");
 	if (!fpBin)
@@ -1004,7 +1004,7 @@ int TextureManager::LoadEnvTexture(int nIndex)
 	{
 		if (m_stEnvTextureList[nIndex].szFileName[i] == '.')
 		{
-			if (!strcmp(&m_stEnvTextureList[nIndex].szFileName[i], ".wys"))
+			if (!strcmp(&m_stEnvTextureList[nIndex].szFileName[i], TextureList_FileFormat))
 			{
 				bDDsType = 1;
 				break;
