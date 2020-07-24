@@ -11,7 +11,7 @@ TMSelectServerScene::~TMSelectServerScene()
 
 int TMSelectServerScene::InitializeScene()
 {
-	return 0;
+	return 1;
 }
 
 int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEvent)

@@ -2,6 +2,8 @@
 #include "EventTranslator.h"
 #include "SGrid.h"
 #include "SControl.h"
+#include "TMGlobal.h"
+#include "Basedef.h"
 
 unsigned int SControl::m_dwStaticID{ 0 };
 int SControl::m_nGridCellSize{ 35 };
@@ -9,8 +11,28 @@ int SCursor::m_nCursorType{ 0 };
 HCURSOR SCursor::m_hCursor1{};
 HCURSOR SCursor::m_hCursor2{};
 
-SControl::SControl(float inPosX, float inPosY, float inWidth, float inHeight) : TreeNode(0)
+SControl::SControl(float inPosX, float inPosY, float inWidth, float inHeight) 
+	: TreeNode(0)
 {
+	m_bAlwaysOnTop = 0;
+	m_bVisible = 1;
+	m_bEnable = 1;
+	m_bFocused = 0;
+	m_bOver = 0;
+	m_bDeleteThisObject = 0;
+	m_bSelectEnable = 1;
+	m_eCtrlType = CONTROL_TYPE::CTRL_TYPE_NONE;
+	m_dwControlID = 0;
+	m_pEventListener = nullptr;
+	m_bModal = 0;
+
+	float fWidthRatio = (float)g_pDevice->m_dwScreenWidth / 800.0f;
+	float fHeightRatio = (float)g_pDevice->m_dwScreenHeight / 600.0f;
+	m_nPosX = inPosX * fWidthRatio;
+	m_nPosY = inPosY * fHeightRatio;
+	m_nWidth = inWidth * fWidthRatio;
+	m_nHeight = inHeight * fHeightRatio;
+	m_dwUniqueID = SControl::m_dwStaticID++;
 }
 
 SControl::~SControl()
@@ -239,6 +261,13 @@ void S3DObj::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inPare
 SCursor::SCursor(int inTextureSetIndex, float inX, float inY, float inWidth, float inHeight)
 	: SPanel(inTextureSetIndex, inX, inY, inWidth, inHeight, 0x77777777, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH)
 {
+	m_eStyle = ECursorStyle::TMC_CURSOR_HAND;
+	m_eCtrlType = CONTROL_TYPE::CTRL_TYPE_CURSOR;
+	m_GCPanel.nTextureIndex = 0;
+	m_nPosX = inX;
+	m_nPosY = inY;
+	g_pCursor = this;
+	m_pAttachedItem = nullptr;
 }
 
 SCursor::~SCursor()
@@ -289,6 +318,45 @@ SGridControlItem* SCursor::DetachItem()
 SText::SText(int inTextureSetIndex, const char* istrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType)
 	: SControl(inX, inY, inWidth, inHeight)
 {
+	m_GCText = GeomControl(RENDERCTRLTYPE::RENDER_TEXT, inTextureSetIndex, 0.0f, 0.0f, 0.0f, 0.0f, 0, idwFontColor);
+	m_GCText2 = GeomControl(RENDERCTRLTYPE::RENDER_TEXT, inTextureSetIndex, 0.0f, 0.0f, 0.0f, 0.0f, 0, idwFontColor);
+	m_GCText3 = GeomControl(RENDERCTRLTYPE::RENDER_TEXT, inTextureSetIndex, 0.0f, 0.0f, 0.0f, 0.0f, 0, idwFontColor);
+	m_GCText4 = GeomControl(RENDERCTRLTYPE::RENDER_TEXT, inTextureSetIndex, 0.0f, 0.0f, 0.0f, 0.0f, 0, idwFontColor);
+
+	m_dwAlignType = dwAlignType;
+	m_dwTextType = dwType;
+	m_cBorder = ibBorder;
+
+	m_GCBorder = GeomControl(RENDERCTRLTYPE::RENDER_IMAGE_STRETCH, inTextureSetIndex, 0.0f, 0.0f, 0.0f, 0.0f, 0, idwBorderColor);
+
+	m_cComma = 0;
+	m_eCtrlType = CONTROL_TYPE::CTRL_TYPE_TEXT;
+
+	SetType(m_dwTextType);
+
+	m_GCText.strString[0] = 0;
+	m_GCText.pFont = &m_Font;
+	m_GCText2.strString[0] = 0;
+	m_GCText2.pFont = &m_Font2;
+	m_GCText3.strString[0] = 0;
+	m_GCText3.pFont = &m_Font3;
+	m_GCText4.strString[0] = 0;
+	m_GCText4.pFont = &m_Font4;
+
+	if (istrText != nullptr)
+	{
+		BASE_UnderBarToSpace(istrText);
+		if (!strcmp(istrText, " "))
+			istrText = nullptr;
+	}
+	if (istrText != nullptr)
+	{
+		if (strlen(istrText) != 0)
+		{
+			strcpy(m_GCText.strString, istrText);
+			m_GCText.pFont->SetText(m_GCText.strString, m_GCText.dwColor, 0);
+		}
+	}
 }
 
 SText::~SText()
@@ -305,7 +373,8 @@ void SText::SetTextColor(unsigned int dwFontColor)
 
 char* SText::GetText()
 {
-	return nullptr;
+	char szDummy[256]{};
+	return szDummy;
 }
 
 void SText::SetType(unsigned int dwType)

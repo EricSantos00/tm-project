@@ -299,7 +299,7 @@ int TMScene::FindID(char* szID)
 
 int TMScene::InitializeScene()
 {
-	return 0;
+	return 1;
 }
 
 int TMScene::OnPacketEvent(unsigned int dwCode, char* pSBuffer)

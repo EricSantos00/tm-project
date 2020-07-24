@@ -218,7 +218,7 @@ HRESULT TMMesh::RenderDraw(int nTexOffset)
 {
 	for (int i = 0; i < m_dwAttCount; ++i)
 	{
-		SetTexture(nTexOffset + m_nTextureIndex[0]);
+		SetTexture(nTexOffset + m_nTextureIndex[i]);
 
 		if (FAILED(g_pDevice->m_pd3dDevice->DrawIndexedPrimitive(
 			D3DPT_TRIANGLELIST,
@@ -227,10 +227,10 @@ HRESULT TMMesh::RenderDraw(int nTexOffset)
 			m_AttRange[i].VertexCount,
 			3 * m_AttRange[i].FaceStart,
 			m_AttRange[i].FaceCount)))
-			return 1;
+			return 0;
 	}
 
-	return S_OK;
+	return 1;
 }
 
 int TMMesh::RenderPick(float fX, float fY, float fZ, float fAngle, float fAngle2, float fAngle3, float cMulti, int nTexOffset)
@@ -285,14 +285,14 @@ int TMMesh::RenderPick(float fX, float fY, float fZ, float fAngle, float fAngle2
 int TMMesh::RenderForUI(int nX, int nY, float fAngle, float fScale, DWORD dwColor, int nMultiTex, int nTexOffset, short sLegend)
 {
 	float fWidthRatio = 6.3f;
-	if ((float)g_pDevice->m_viewport.Width / (float)g_pDevice->m_viewport.Height < 1.26f)
+	if (((float)g_pDevice->m_viewport.Width / (float)g_pDevice->m_viewport.Height) < 1.26f)
 		fWidthRatio = 6.26f;
 
-	float fX = (float)nX / (float)(g_pDevice->m_viewport.Width / fWidthRatio);
-	float fY = (float)nY / ((float)g_pDevice->m_viewport.Height / 4.96f) - 2.48f;
+	float fX = (float)nX / (float)((float)g_pDevice->m_viewport.Width / fWidthRatio);
+	float fY = (float)nY / (float)((float)g_pDevice->m_viewport.Height / 4.96f) - 2.48f;
 
-	float fXAux = fX - (float)(fWidthRatio / 2.0f);
-	float fYaw = atan2f(fXAux, 50.0f);
+	fX = fX - (float)(fWidthRatio / 2.0f);
+	float fYaw = atan2f(fX, 50.0f);
 	float fPitch = atan2f(fY, 50.0f);
 
 	D3DXMATRIX matScale;
@@ -301,7 +301,7 @@ int TMMesh::RenderForUI(int nX, int nY, float fAngle, float fScale, DWORD dwColo
 
 	D3DXMatrixScaling(&matScale, 0.51999998f * fScale, 0.51999998f * fScale, 0.51999998f * fScale);
 	D3DXMatrixTranslation(&matPosition,
-		fXAux - ((m_vecCenter.z * 0.51999998f) * fScale),
+		fX - ((m_vecCenter.x * 0.51999998f) * fScale),
 		fY - ((m_vecCenter.z * 0.51999998f) * fScale),
 		(m_vecCenter.y * 0.51999998f) * fScale);
 
