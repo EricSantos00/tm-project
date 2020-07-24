@@ -796,12 +796,32 @@ int TMScene::ReadRCBin(char* szBinFileName)
 
 int TMScene::FindID(char* szID)
 {
-	return 0;
+	int nID = 0;
+	int bFindID = 0;
+
+	if (!strcmp(szID, "NONE"))
+		return 0;
+
+	for (int i = 0; i < 2560; ++i)
+	{
+		if (!strcmp(szID, g_pObjectManager->m_ResourceList[i].szString))
+		{
+			nID = g_pObjectManager->m_ResourceList[i].nNumber;
+			bFindID = 1;
+			break;
+		}
+	}
+
+	if (!bFindID)
+		LOG_WRITELOG("Cannot Match Resource ID [%s] in [%s].\r\n", szID, "UI\\TMResource.h");
+
+	return nID;
 }
 
 int TMScene::InitializeScene()
 {
-	return 0;
+	SetFocus(g_pApp->m_hWnd);
+	return 1;
 }
 
 int TMScene::OnPacketEvent(unsigned int dwCode, char* pSBuffer)
@@ -851,12 +871,115 @@ int TMScene::OnAccel(int nMsg)
 
 int TMScene::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	if (g_pCurrentScene != this)
+		return 1;
+
+	if (m_pControlContainer)
+		m_pControlContainer->FrameMove(dwServerTime);
+
+	if (m_sPlayDemo >= 0)
+		CameraAction();
+
+	if (m_bCriticalError == 1)
+		return 1;
+
+	m_pMouseOverHuman = nullptr;
+	m_pMouseOverItem = nullptr;
+
+	auto pFocusedObject = static_cast<TMObject*>(m_pMyHuman);
+
+	if (pFocusedObject && m_pGround)
+	{
+		float dX = pFocusedObject->m_vecPosition.x - m_pGround->m_vecOffset.x;
+		float dY = pFocusedObject->m_vecPosition.y - m_pGround->m_vecOffset.y;
+
+		int nShold = 14;
+
+		if (((int)pFocusedObject->m_vecPosition.x >> 7) > 26 &&
+			((int)pFocusedObject->m_vecPosition.x >> 7) < 31 &&
+			((int)pFocusedObject->m_vecPosition.y >> 7) > 20 &&
+			((int)pFocusedObject->m_vecPosition.y >> 7) < 25)
+		{
+			nShold = 20;
+		}
+
+		if (m_pGround->m_vecOffsetIndex.x == 17 && m_pGround->m_vecOffsetIndex.y == 10)
+			nShold = 20;
+
+		if (dX >= 0.0f && (float)nShold > dX)
+		{
+			if (!m_pGround->m_pLeftGround)
+				GroundNewAttach(EDirection::EDIR_LEFT);
+		}
+		else if (dX < 0.0f && dX > (float)-nShold)
+		{
+			if (m_pGround->m_pLeftGround)
+			{
+				m_pGround = m_pGround->m_pLeftGround;
+
+				m_nCurrentGroundIndex = (m_nCurrentGroundIndex + 1) % 2;
+				
+				m_pGround->SetMiniMapData();
+			}
+		}
+		else if (dX > (float)(128 - nShold) && dX < 128.0f)
+		{
+			if (!m_pGround->m_pRightGround)
+				GroundNewAttach(EDirection::EDIR_RIGHT);
+		}
+		else if (dX >= 128.0f && (float)(nShold + 128) > dX && m_pGround->m_pRightGround)
+		{
+			m_pGround = m_pGround->m_pRightGround;
+
+			m_nCurrentGroundIndex = (m_nCurrentGroundIndex + 1) % 2;
+
+			m_pGround->SetMiniMapData();
+		}
+
+		if (dY >= 0.0f && (float)nShold > dY)
+		{
+			if (!m_pGround->m_pUpGround)
+				GroundNewAttach(EDirection::EDIR_UP);
+		}
+		else if (dY < 0.0f && dY > (float)-nShold)
+		{
+			if (m_pGround->m_pUpGround)
+			{
+				m_pGround = m_pGround->m_pUpGround;
+
+				m_nCurrentGroundIndex = (m_nCurrentGroundIndex + 1) % 2;
+
+				m_pGround->SetMiniMapData();
+			}
+		}
+		else if (dY > (float)(128 - nShold) && (float)128 > dY)
+		{
+			if (!m_pGround->m_pDownGround)
+				GroundNewAttach(EDirection::EDIR_DOWN);
+		}
+		else if (dY >= (float)128 && (float)(nShold + 128) > dY && m_pGround->m_pDownGround)
+		{
+			m_pGround = m_pGround->m_pDownGround;
+
+			m_nCurrentGroundIndex = (m_nCurrentGroundIndex + 1) % 2;
+
+			m_pGround->SetMiniMapData();
+		}
+	}
+
+	return 1;
 }
 
 int TMScene::ReloadScene()
 {
-	return 0;
+	if (m_pControlContainer != nullptr)
+	{
+		delete m_pControlContainer;
+
+		m_pControlContainer = nullptr;
+	}
+
+	return InitializeScene();
 }
 
 ESCENE_TYPE TMScene::GetSceneType()
@@ -1081,4 +1204,9 @@ void TMScene::LogMsgCriticalError(int Type, int ID, int nMesh, int X, int Y)
 
 void TMScene::DeleteOwnerAllContainer()
 {
+	m_pEffectContainer->DeleteOwner(nullptr);
+	m_pShadeContainer->DeleteOwner(nullptr);
+	m_pHumanContainer->DeleteOwner(nullptr);
+	m_pItemContainer->DeleteOwner(nullptr);
+	m_pExtraContainer->DeleteOwner(nullptr);
 }
