@@ -34,7 +34,6 @@ struct STRUCT_SCORE
 	unsigned short Special[4];
 };
 
-
 union STRUCT_BONUSEFFECT
 {
 	char cEffect;
