@@ -1,65 +1,5 @@
 #pragma once
 
-/* Basedef defines */
-#define		ITEMLIST_CHECKSUM		20201703
-#define		SKILLDATA_CHECKSUM		20201703
-
-#define		MAX_GROUNDMASK			10
-
-#define		MAX_ITEMLIST			6500
-#define		MAX_STRDEF				2000
-
-#define		MAX_ITEMEFFECT			12
-#define		MAX_STITEM_EFFECTS		3
-
-#define		MAX_SPECIALS			4
-#define		MAX_CHARACTERS			4
-#define		MAX_MOBNAME				16
-#define		MAX_EQUIPMENT			16
-#define		MAX_CARRY				64
-#define		MAX_CARGO				128
-#define		MAX_ITEMLISTNAME		64
-#define		MAX_AFFECTS				32
-
-#define		MAX_ACCOUNTLOGIN		16
-#define		MAX_ACCOUNTPASSWD		16
-#define		MAX_ACCOUNTNAME			24
-
-#define		MAX_ROUTE				24
-
-#define		MAX_ITEMTRADE			15
-#define		MAX_COMBINE				8
-
-#define		MAX_MSGSTRING			128
-
-#define		MAX_AUTOTRADENAME		24
-#define		MAX_AUTOTRADEITEM		12
-
-#define		MAX_ITEMPRICE			100
-
-#define		MAX_SKILLINDEX			103
-
-#define		MAX_INITITEM			256
-
-#define		GAME_PORT				8281	  // Game server listening port, client connects to it
-#define		DB_PORT					7514      // DB server listening port, Game server connects to it
-#define		ADMIN_PORT				8895	  // DB server listening port, NPTool connects to it
-
-#define		MAX_SERVER				10      // Max number of game servers that can connect to DB server
-#define		MAX_SERVERGROUP			10		// Max number of servers that can exist
-#define		MAX_SERVERNUMBER		(MAX_SERVER+1) // DB + TMSrvs + BISrv
-
-#define		MAX_HP					150000
-#define		MAX_MP					150000
-#define		MAX_DAMAGE				64000
-#define		MAX_DAMAGE_MG			1000
-#define		AFFECT_1H				450
-#define		AFFECT_1D				10800
-
-#define		MAX_GUILDZONE			5
-
-/* Basedef structs */
-
 struct MSG_STANDARD
 {
 	unsigned short Size;
@@ -91,7 +31,7 @@ struct STRUCT_SCORE
 	short Int;
 	short Dex;
 	short Con;
-	unsigned short Special[MAX_SPECIALS];
+	unsigned short Special[4];
 };
 
 union STRUCT_BONUSEFFECT
@@ -104,24 +44,24 @@ union STRUCT_BONUSEFFECT
 struct STRUCT_ITEM
 {
 	short sIndex;
-	STRUCT_BONUSEFFECT stEffect[MAX_STITEM_EFFECTS];
+	STRUCT_BONUSEFFECT stEffect[3];
 };
 
 struct STRUCT_SELCHAR
 {
-	unsigned short HomeTownX[MAX_CHARACTERS];
-	unsigned short HomeTownY[MAX_CHARACTERS];
-	char MobName[MAX_CHARACTERS][MAX_MOBNAME];
-	STRUCT_SCORE Score[MAX_CHARACTERS];
-	STRUCT_ITEM Equip[MAX_CHARACTERS][MAX_EQUIPMENT];
-	unsigned short Guild[MAX_CHARACTERS];
-	int Coin[MAX_CHARACTERS];
-	long long Exp[MAX_CHARACTERS];
+	unsigned short HomeTownX[4];
+	unsigned short HomeTownY[4];
+	char MobName[4][16];
+	STRUCT_SCORE Score[4];
+	STRUCT_ITEM Equip[4][16];
+	unsigned short Guild[4];
+	int Coin[4];
+	long long Exp[4];
 };
 
 struct STRUCT_MOB
 {
-	char MobName[MAX_MOBNAME];
+	char MobName[16];
 	char Clan;
 	char Merchant;
 	unsigned short Guild;
@@ -134,8 +74,8 @@ struct STRUCT_MOB
 	unsigned short HomeTownY;
 	STRUCT_SCORE BaseScore;
 	STRUCT_SCORE CurrentScore;
-	STRUCT_ITEM Equip[MAX_EQUIPMENT];
-	STRUCT_ITEM Carry[MAX_CARRY];
+	STRUCT_ITEM Equip[16];
+	STRUCT_ITEM Carry[64];
 	unsigned int LearnedSkill[2];
 	short ScoreBonus;
 	short SpecialBonus;
@@ -171,7 +111,7 @@ struct STRUCT_MYBONUSEFFECT
 struct STRUCT_MYITEM
 {
 	short sIndex;
-	STRUCT_MYBONUSEFFECT stEffect[MAX_STITEM_EFFECTS];
+	STRUCT_MYBONUSEFFECT stEffect[3];
 };
 
 struct STRUCT_NEEDITEM
@@ -194,7 +134,7 @@ struct STRUCT_RESULT_ITEMLIST
 	unsigned short sMSG;
 	STRUCT_NEEDITEM dNeedItemList[8];
 	unsigned int dCost;
-	char stSameList[20][MAX_MSGSTRING];
+	char stSameList[20][128];
 };
 
 struct STRUCT_OPTION
@@ -223,8 +163,8 @@ struct STRUCT_MIXHELP
 {
 	short Color[9];
 	short Icon;
-	char Help[9][MAX_MSGSTRING];
-	char Name[MAX_MSGSTRING];
+	char Help[9][128];
+	char Name[128];
 };
 
 struct STRUCT_MISSIONITEM
@@ -248,7 +188,7 @@ struct STRUCT_STATICEFFECT
 
 struct STRUCT_ITEMLIST
 {
-	char Name[MAX_ITEMLISTNAME];
+	char Name[64];
 	short nIndexMesh;
 	short nIndexTexture;
 	short nIndexVisualEffect;
@@ -257,7 +197,7 @@ struct STRUCT_ITEMLIST
 	short nReqInt;
 	short nReqDex;
 	short nReqCon;
-	STRUCT_STATICEFFECT stEffect[MAX_ITEMEFFECT];
+	STRUCT_STATICEFFECT stEffect[12];
 	int nPrice;
 	short nUnique;
 	short nPos;
@@ -268,7 +208,7 @@ struct STRUCT_ITEMLIST
 struct STRUCT_EXT1
 {
 	int Data[8];
-	STRUCT_AFFECT Affect[MAX_AFFECTS];
+	STRUCT_AFFECT Affect[32];
 };
 
 struct STRUCT_SUBCLASS
@@ -368,7 +308,7 @@ struct STRUCT_SCORE_OLD
 	short Int;
 	short Dex;
 	short Con;
-	char Special[MAX_SPECIALS];
+	char Special[4];
 };
 
 struct STRUCT_M_CHECK
@@ -408,9 +348,9 @@ struct STRUCT_TOTODATA
 
 struct STRUCT_ACCOUNT
 {
-	char AccountName[MAX_ACCOUNTLOGIN];
-	char AccountPass[MAX_ACCOUNTPASSWD];
-	char RealName[MAX_ACCOUNTNAME];
+	char AccountName[16];
+	char AccountPass[16];
+	char RealName[24];
 	unsigned int SSN1;
 	unsigned int SSN2;
 	char Temp[102];
@@ -425,12 +365,12 @@ struct STRUCT_ACCOUNT
 struct STRUCT_ACCOUNTFILE
 {
 	STRUCT_ACCOUNT Account;
-	STRUCT_MOB Char[MAX_CHARACTERS];
-	STRUCT_ITEM Cargo[MAX_CARGO];
+	STRUCT_MOB Char[4];
+	STRUCT_ITEM Cargo[128];
 	int Coin;
-	char ShortSkill[MAX_CHARACTERS][16];
-	STRUCT_EXT1 Ext1[MAX_CHARACTERS];
-	STRUCT_EXT2 Ext2[MAX_CHARACTERS];
+	char ShortSkill[4][16];
+	STRUCT_EXT1 Ext1[4];
+	STRUCT_EXT2 Ext2[4];
 };
 
 struct STRUCT_SUBCLASS_OLD
@@ -473,19 +413,19 @@ struct STRUCT_LEVSENDITEM
 
 struct STRUCT_RANDOMQUIZ
 {
-	char Question[MAX_MSGSTRING];
+	char Question[128];
 	char Answer[4][32];
 };
 
 struct STRUCT_ITEMHELP
 {
 	short Color[9];
-	char Help[9][MAX_MSGSTRING];
+	char Help[9][128];
 };
 
 struct STRUCT_MOB_OLD
 {
-	char MobName[MAX_MOBNAME];
+	char MobName[16];
 	char Clan;
 	char Merchant;
 	unsigned short Guild;
@@ -498,8 +438,8 @@ struct STRUCT_MOB_OLD
 	unsigned short HomeTownY;
 	STRUCT_SCORE_OLD BaseScore;
 	STRUCT_SCORE_OLD CurrentScore;
-	STRUCT_ITEM Equip[MAX_EQUIPMENT];
-	STRUCT_ITEM Carry[MAX_CARRY];
+	STRUCT_ITEM Equip[16];
+	STRUCT_ITEM Carry[64];
 	unsigned int LearnedSkill;
 	short ScoreBonus;
 	short SpecialBonus;
@@ -552,11 +492,11 @@ struct STRUCT_EXT
 struct STRUCT_ACCOUNTFILE_OLD
 {
 	STRUCT_ACCOUNT Account;
-	STRUCT_MOB_OLD Char[MAX_CHARACTERS];
-	STRUCT_ITEM Cargo[MAX_CARGO];
+	STRUCT_MOB_OLD Char[4];
+	STRUCT_ITEM Cargo[128];
 	int Coin;
-	char ShortSkill[MAX_CHARACTERS][16];
-	STRUCT_EXT Ext[MAX_CHARACTERS];
+	char ShortSkill[4][16];
+	STRUCT_EXT Ext[4];
 };
 
 struct STRUCT_EXT1_OLD
@@ -578,12 +518,12 @@ struct STRUCT_MISSION
 struct STRUCT_ACCOUNTFILE_OLD2
 {
 	STRUCT_ACCOUNT Account;
-	STRUCT_MOB_OLD Char[MAX_CHARACTERS];
-	STRUCT_ITEM Cargo[MAX_CARGO];
+	STRUCT_MOB_OLD Char[4];
+	STRUCT_ITEM Cargo[128];
 	int Coin;
-	char ShortSkill[MAX_CHARACTERS][16];
-	STRUCT_EXT1_OLD Ext1[MAX_CHARACTERS];
-	STRUCT_EXT2_OLD Ext2[MAX_CHARACTERS];
+	char ShortSkill[4][16];
+	STRUCT_EXT1_OLD Ext1[4];
+	STRUCT_EXT2_OLD Ext2[4];
 };
 
 struct STRUCT_GUILDZONE
@@ -612,21 +552,21 @@ struct STRUCT_GUILDZONE
 
 struct STRUCT_SELCHAR_OLD
 {
-	unsigned short HomeTownX[MAX_CHARACTERS];
-	unsigned short HomeTownY[MAX_CHARACTERS];
-	char MobName[MAX_CHARACTERS][MAX_MOBNAME];
-	STRUCT_SCORE_OLD Score[MAX_CHARACTERS];
-	STRUCT_ITEM Equip[MAX_CHARACTERS][MAX_EQUIPMENT];
-	unsigned short Guild[MAX_CHARACTERS];
-	int Coin[MAX_CHARACTERS];
-	unsigned int Exp[MAX_CHARACTERS];
+	unsigned short HomeTownX[4];
+	unsigned short HomeTownY[4];
+	char MobName[4][16];
+	STRUCT_SCORE_OLD Score[4];
+	STRUCT_ITEM Equip[4][16];
+	unsigned short Guild[4];
+	int Coin[4];
+	unsigned int Exp[4];
 };
 
 struct STRUCT_ACCOUNT_NEW
 {
-	char AccountName[MAX_ACCOUNTLOGIN];
-	char AccountPass[MAX_ACCOUNTPASSWD];
-	char RealName[MAX_ACCOUNTNAME];
+	char AccountName[16];
+	char AccountPass[16];
+	char RealName[24];
 	unsigned int SSN1;
 	unsigned int SSN2;
 	char Temp[102];
@@ -641,11 +581,11 @@ struct STRUCT_ACCOUNT_NEW
 struct STRUCT_ACCOUNTFILE_OLD_NEW
 {
 	STRUCT_ACCOUNT_NEW Account;
-	STRUCT_MOB_OLD Char[MAX_CHARACTERS];
-	STRUCT_ITEM Cargo[MAX_CARGO];
+	STRUCT_MOB_OLD Char[4];
+	STRUCT_ITEM Cargo[128];
 	int Coin;
-	char ShortSkill[MAX_CHARACTERS][16];
-	STRUCT_EXT Ext[MAX_CHARACTERS];
+	char ShortSkill[4][16];
+	STRUCT_EXT Ext[4];
 };
 
 struct STRUCT_SAME
@@ -672,23 +612,23 @@ struct STRUCT_ADMINGUILDITEM
 struct STRUCT_ACCOUNTFILE_NEW
 {
 	STRUCT_ACCOUNT_NEW Account;
-	STRUCT_MOB Char[MAX_CHARACTERS];
-	STRUCT_ITEM Cargo[MAX_CARGO];
+	STRUCT_MOB Char[4];
+	STRUCT_ITEM Cargo[128];
 	int Coin;
-	char ShortSkill[MAX_CHARACTERS][16];
-	STRUCT_EXT1 Ext1[MAX_CHARACTERS];
-	STRUCT_EXT2 Ext2[MAX_CHARACTERS];
+	char ShortSkill[4][16];
+	STRUCT_EXT1 Ext1[4];
+	STRUCT_EXT2 Ext2[4];
 };
 
 struct STRUCT_ACCOUNTFILE_OLD2_NEW
 {
 	STRUCT_ACCOUNT_NEW Account;
-	STRUCT_MOB_OLD Char[MAX_CHARACTERS];
-	STRUCT_ITEM Cargo[MAX_CARGO];
+	STRUCT_MOB_OLD Char[4];
+	STRUCT_ITEM Cargo[128];
 	int Coin;
-	char ShortSkill[MAX_CHARACTERS][16];
-	STRUCT_EXT1_OLD Ext1[MAX_CHARACTERS];
-	STRUCT_EXT2_OLD Ext2[MAX_CHARACTERS];
+	char ShortSkill[4][16];
+	STRUCT_EXT1_OLD Ext1[4];
+	STRUCT_EXT2_OLD Ext2[4];
 };
 
 struct STRUCT_RUNEQUESTZONE
@@ -701,7 +641,7 @@ struct STRUCT_RUNEQUESTZONE
 
 struct STRUCT_AUTOKICK
 {
-	char route[4][MAX_MSGSTRING];
+	char route[4][128];
 };
 
 struct MSG_Action
@@ -711,7 +651,7 @@ struct MSG_Action
 	short PosY;
 	int Effect;
 	int Speed;
-	char Route[MAX_ROUTE];
+	char Route[24];
 	unsigned short TargetX;
 	unsigned short TargetY;
 };
@@ -734,8 +674,8 @@ struct MSG_CAPSULEINFO
 struct MSG_Trade
 {
 	MSG_STANDARD Header;
-	STRUCT_ITEM Item[MAX_ITEMTRADE];
-	char CarryPos[MAX_ITEMTRADE];
+	STRUCT_ITEM Item[15];
+	char CarryPos[15];
 	int TradeMoney;
 	char MyCheck;
 	unsigned short OpponentID;
@@ -744,16 +684,16 @@ struct MSG_Trade
 struct MSG_CombineItem
 {
 	MSG_STANDARD Header;
-	STRUCT_ITEM Item[MAX_COMBINE];
-	char CarryPos[MAX_COMBINE];
+	STRUCT_ITEM Item[8];
+	char CarryPos[8];
 };
 
 struct MSG_Mission
 {
 	MSG_STANDARD Header;
 	int MissionNo;
-	STRUCT_ITEM Item[MAX_COMBINE];
-	char CarryPos[MAX_COMBINE];
+	STRUCT_ITEM Item[8];
+	char CarryPos[8];
 };
 
 struct MSG_UseItem
@@ -778,24 +718,24 @@ struct MSG_CAPSULEUSEITEM
 	unsigned short GridX;
 	unsigned short GridY;
 	unsigned short ItemID;
-	char NewMobname[MAX_MOBNAME];
+	char NewMobname[16];
 };
 
 struct MSG_MessageWhisper
 {
 	MSG_STANDARD Header;
-	char MobName[MAX_MOBNAME];
-	char String[MAX_MSGSTRING];
+	char MobName[16];
+	char String[128];
 	short Color;
 };
 
 struct MSG_AutoTrade
 {
 	MSG_STANDARD Header;
-	char Desc[MAX_AUTOTRADENAME];
-	STRUCT_ITEM Item[MAX_AUTOTRADEITEM];
-	char CarryPos[MAX_AUTOTRADEITEM];
-	int TradeMoney[MAX_AUTOTRADEITEM];
+	char Desc[24];
+	STRUCT_ITEM Item[12];
+	char CarryPos[12];
+	int TradeMoney[12];
 	unsigned short Tax;
 	unsigned short TargetID;
 };
@@ -826,7 +766,7 @@ struct MSG_BuyToto
 struct MSG_CNFRemoveServer
 {
 	MSG_STANDARD Header;
-	char AccountName[MAX_ACCOUNTLOGIN];
+	char AccountName[16];
 	char TID[52];
 };
 
@@ -839,253 +779,30 @@ struct MSG_SendItem
 	STRUCT_ITEM Item;
 };
 
-/* Basedef Enums */
-
-enum EQUIP_INDEX
-{
-	EQUIP_FACE = 0x0,
-	EQUIP_HELM = 0x1,
-	EQUIP_COAT = 0x2,
-	EQUIP_PANTS = 0x3,
-	EQUIP_GLOVES = 0x4,
-	EQUIP_BOOTS = 0x5,
-	EQUIP_LEFT = 0x6,
-	EQUIP_RIGHT = 0x7,
-	EQUIP_RING = 0x8,
-	EQUIP_NECKLACE = 0x9,
-	EQUIP_ORB = 0xA,
-	EQUIP_CABUNCLE = 0xB,
-	EQUIP_GUILD = 0xC,
-	EQUIP_EVENT = 0xD,
-	EQUIP_MOUNT = 0xE,
-	EQUIP_MANTUA = 0xF,
-};
-
-enum CLASS_INDEX
-{
-	CLASS_KNIGHT = 0x0,
-	CLASS_MAGE = 0x1,
-	CLASS_FANCIER = 0x2,
-	CLASS_HUNTER = 0x3,
-};
-
-/* Basedef externs */
 extern HWND hWndMain;
 extern char EncodeByte[4];
-extern unsigned char g_pAttribute[1024][1024];
-extern int g_pGroundMask[MAX_GROUNDMASK][4][6][6];
-extern STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
-extern STRUCT_SPELL g_pSpell[MAX_SKILLINDEX];
 
-extern STRUCT_INITITEM g_pInitItem[MAX_INITITEM];
-extern int g_dwInitItem;
-
-extern int g_pHitRate[1024];
-
-extern char g_pMessageStringTable[MAX_STRDEF][MAX_MSGSTRING];
-
-extern char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
-
-/* Basedef constant values */
-const int g_HeightWidth = 256;
-const int g_HeightHeight = 256;
-const int g_HeightPosX = 2048;
-const int g_HeightPosY = 2048;
-
-/* Functions */
-
-float				BASE_ScreenResize(float size);
-void				BASE_InitModuleDir();
-void				BASE_InitializeHitRate();
-void				BASE_ApplyAttribute(char* pHeight, int size);
-int					BASE_ReadMessageBin();
-void				BASE_InitEffectString();
-int					BASE_InitializeBaseDef();
-void				BASE_ReadItemPrice();
-
-char				BASE_GetAttr(int nX, int nY);
-float				BASE_GetMountScale(int nSkinMeshType, int nMeshIndex);
-int					BASE_GetColorCount(unsigned int dwColor);
-int					BASE_UpdateItem2(int maskidx, int CurrentState, int NextState, int xx, int yy, char* pHeight, int rotate, int height);
-int					BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans);
-int					BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int distance, char* pHeight, int MH);
-int					BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char Type);
-int					BASE_GetMeshIndex(short sIndex);
-int					BASE_GetItemSancSuccess(STRUCT_ITEM* item);
-int					BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer);
-int					BASE_GetManaSpent(int SkillNumber, int SaveMana, int Special);
-int					BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weapondamage, int OriginalFace);
-int					BASE_IsInLowZone(int nX, int nY);
-//int					BASE_IsInView(TMVector3 vec, float fRadius);
-int					BASE_Get3DTo2DPos(float fX, float fY, float fZ, int* pX, int* pY); //Not made
-unsigned int		BASE_GetItemColor(STRUCT_ITEM* pItem);
-int					BASE_ReadItemName(char* filename);
-void				BASE_InitialItemRePrice();
-int					BASE_GetItemAmount(STRUCT_ITEM* item);
-void				BASE_SetItemAmount(STRUCT_ITEM* item, int amount);
-void				BASE_WriteItemList(int nItemList);
-int					BASE_GetSubGuild(int item);
-void				BASE_InitMission(); //Not fully made
-int					BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace);
-int					BASE_GetItemColorEffect(STRUCT_ITEM* item);
-int					BASE_CheckValidString(char* name);
-int					BASE_CheckValidString(char* name);
-int					BASE_GetSum2(char* p, int size);
-void				BASE_InitEffectString(); //Not made
-unsigned int		BASE_GetItemTenColor(STRUCT_ITEM* pItem);
-int					BASE_ReadTOTOList(char* szFileName); //Not made
-void				BASE_UnderBarToSpace(char* szStr);
-void				BASE_SortTradeItem(STRUCT_ITEM* Item, int Type); //Not made
-int					BASE_GetVillage(int x, int y); //Need to re-implement
-int					BASE_GetItemAbility(STRUCT_ITEM* item, char Type);
-int					BASE_InitializeClientGuildName(int group, int nFile); //Not made
-int					BASE_GetMobAbility(STRUCT_MOB* mob, char Type);
-bool				BASE_CheckNameValid(char* name); //Not made
-char*				BASE_TransCurse(char* sz); //Not made
-int					BASE_InitializeAttribute();
-void				BASE_InitializeEffectName(); //Not made
-int					BASE_ReadInitItem();
-int					BASE_GetSum(char* p, int size);
-bool				BASE_CheckChatValid(char* Chat); //Not made
-int					BASE_ReadItemList(); //Need to re-implement
-int					BASE_GetItemSanc(STRUCT_ITEM* item);
-int					BASE_CheckBit(char* byte, int pos);
-void				BASE_SetBit(char* byte, int pos);
-void				BASE_ResetBit(char* byte, int pos);
-int					BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type);
-int					BASE_ReadSkillBin();
-int					BASE_GetSpeed(STRUCT_SCORE* score);
-void				BASE_GetHitPosition2(int sx, int sy, int* tx, int* ty, char* pHeight, int MH);
-int					BASE_CheckQuestBit(char quest, int index);
-unsigned int		BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue); //Not made
-int					BASE_GetMaxAbility(STRUCT_MOB* mob, char Type);
-void				BASE_InitializeMathTable();
-int					BASE_InitializeServerList();
-void				BASE_GetHitPosition(int sx, int sy, int* tx, int* ty, char* pHeight, int MH); //Need to re-implement
-int					BASE_CanCarry(STRUCT_ITEM* Carry, int pos);
-int					BASE_DefineSkinMeshType(int nClass);
-int					BASE_GetWeekNumber(); //Not made
-int					BASE_GetDistance(int x1, int y1, int x2, int y2);
-int					BASE_GetCheckFace(int face);
-int					BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type); //Not made
-int					BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type);
-int					BASE_GetDoubleCritical(STRUCT_MOB* mob, unsigned short* sProgress, unsigned short* cProgress, char* bDoubleCritical);
-void				BASE_ClearItem(STRUCT_ITEM* item);
-void				BASE_ClearMob(STRUCT_MOB* mob);
-int					BASE_GetMobCheckSum(STRUCT_MOB* mob);
-void				BASE_InitializeMobname(char* file); //Not made
-void				BASE_InitializeMessage(char* file);
-void				BASE_WriteMessageBin();
-void				BASE_InitializeItemList(); //Not made
-void				BASE_InitializeInitItem();
-int					BASE_InitializeLotto(); //Not made
-void				BASE_SpaceToUnderBar(char* szStr);
-char				BASE_CheckEngNum(char* szStr);
-bool				BASE_CheckHangul(unsigned short word); //Check this
-void				BASE_InitializeSkill();
-int					BASE_CheckPacket(MSG_STANDARD* m); //Not made
-void				BASE_WriteSkillBin();
-void				BASE_WriteInitItem();
-int					BASE_ReadGameRoomIP(); //Not made
-int					BASE_ReadBlockIP(); //Not made
-int					BASE_CanTrade(STRUCT_ITEM* Dest, STRUCT_ITEM* Carry, char* MyTrade, STRUCT_ITEM* OpponentTrade);
-int					BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY);
-void				BASE_GetDestByAction(unsigned short* x, unsigned short* y, MSG_Action* mv);
-int					BASE_GetHitRate(STRUCT_SCORE* att, STRUCT_SCORE* def);
-int					BASE_GetDamageRate(STRUCT_SCORE* att, int Skill);
-void				BASE_GetCurrentScore(STRUCT_MOB* MOB, STRUCT_AFFECT* Affect, STRUCT_EXT1* Ext1, STRUCT_EXT2* Ext2, int OriginalFace,
-										int TargetX, int TargetY, int* AnotherSkill, int soultype, int* BuffState); //Not made
-int					BASE_UpdateItem(int maskidx, int CurrentState, int NextState, int xx, int yy, char* pHeight, int rotate, int* height);
-int					BASE_GetDamage(int dam, int ac, int combat);
-int					BASE_GetGuild(int x, int y); //Not made
-int					BASE_GetGuild(STRUCT_ITEM* item);
-int					BASE_GetArena(int x, int y);
-void				BASE_GetClientGuildName(int ServerGroup, unsigned short usGuild, char* szGuildName, int Sub); //Not made
-int					BASE_GetAccuracyRate(STRUCT_SCORE* att);
-void				BASE_GetFirstKey(char* source, char* dest);
-void				BASE_GetKorFirst(int temp, int* a);
-int					BASE_GetItemSancEffect(STRUCT_ITEM* item);
-void				BASE_SetColorArmor(STRUCT_ITEM* item, int color);
-void				BASE_SetQuestBit(char* quest, int index);
-void				BASE_CleanQuestBit(char* quest, int index);
-int					BASE_GetSuccessRate(STRUCT_ITEM* item, int OriLacto); //Incomplete
-int					BASE_GetGrowthRate(STRUCT_ITEM* item);
-int					BASE_SetItemSanc(STRUCT_ITEM* dest, int sanc, int success);
-int					BASE_SumItemAmount(STRUCT_ITEM* sour, STRUCT_ITEM* dest); //Not made
-
-void				BASE_GetLanguage(char* str, int idx);
-void				BASE_GetLanguage(char* str, int idx, char* parm1);
-void				BASE_GetLanguage(char* str, int idx, char* parm1, char* parm2);
-void				BASE_GetLanguage(char* str, int idx, int parm1);
-void				BASE_GetLanguage(char* str, int idx, int parm1, int parm2);
-void				BASE_GetLanguage(char* str, int idx, char* parm1, int parm2);
-void				BASE_GetLanguage(char* str, int idx, int parm1, char* parm2);
-
-void				BASE_GetItemCode(STRUCT_ITEM* item, char* str);
-int					BASE_GetEnglish(char* name); //Not made
-int					BASE_GetBonusSkillPoint(STRUCT_MOB* mob, int face);
-int					BASE_GetBonusScorePoint(STRUCT_MOB* mob, int face, STRUCT_EXT2* ext2); //Not made
-int					BASE_GetBonusSpecialPoint(STRUCT_MOB* mob, int face);
-int					BASE_GetHpMp(STRUCT_MOB* mob, int face); //Not made
-int					BASE_GetAC(STRUCT_MOB* mob, int face);
-int					BASE_NeedLog(STRUCT_ITEM* item, int money); //Not made
-void				BASE_ReadLimitTime(); //Not Made
-void				BASE_GetItemFromString(STRUCT_ITEM* item, char* str);
-int					BASE_GetClan(int mantle);
-int					BASE_GetMandleLev(int mantle); //Not made
-int					BASE_OnlyUseEngString(char* str);
-int					BOOL_CanRepurchase(STRUCT_REPURCHASEITEM* pRepurchase);
-
-void				CreateUserPassDir(); //Not Made
-void				ConvertScore(STRUCT_SCORE* newScore, STRUCT_SCORE_OLD* oldScore);
-void				ConvertMob(STRUCT_MOB* newMob, STRUCT_MOB_OLD* oldMob);
-void				ConvertExt(STRUCT_EXT1* newExt, STRUCT_EXT1_OLD* oldExt);
-
-char				BASE_GetAttribute(int x, int y);
-int					BASE_EnCode16Str(char* dest); //Not made
-int					BASE_DeCode16Str(char* dest); //Not made
-
-int					IntFromHex(char* pChars);
-void				SwapChar(char* pOriginal, char cBad, char cGood);
-char				get_hexa(char num);
-
-void				BASE_URLEncode(char* ret_buf, int ret_len, const char* src_buf, int src_len);
-void				BASE_URLDecode(char* pEncoded);
-
-BOOL				IsBuffSkill(int nSkillIndex);
-BOOL				IsPassiveSkill(int nSkillIndex);
-int					IsSkill(int nSkillIndex);
-int					GetSkillIndex(int nSkillIndex);
-int					IsValidClassSkill(int nSkillIndex);
-int					IsValidSkill(int nSkillIndex);
-
-char				CheckGuildName(char* GuildName, bool bSubguild);
-void				DownLoadGuilds();
-
-void				spaceout(char* str1, char* str2);
-int					GetTimeNumber(_SYSTEMTIME* pTime);
-
-int					GetDistance(int x1, int y1, int x2, int y2);
-void				SetMinimapPos(); //Nothing is made in that function
-void				Guildmark_Download(void* pArg); //Not made
-int					IsChannelWarZone();
-
-int					BASE_CheckEngString(char* str);
-unsigned int		BASE_GetCandidateList(HIMC* hIMC, unsigned int dwIndex, tagCANDIDATELIST* lpCand, unsigned int dwBufLen, unsigned int* lpdwListCount);
+float BASE_ScreenResize(float size);
+void BASE_InitModuleDir();
+void BASE_InitializeHitRate();
+void BASE_ApplyAttribute(char* pHeight, int size);
+int	BASE_ReadMessageBin();
+void BASE_InitEffectString();
+int BASE_InitializeBaseDef();
+void BASE_ReadItemPrice();
+void BASE_UnderBarToSpace(const char* szStr);
 
 /* Read Functions */
-int					ReadItemicon();
-void				ReadItemName();
-void				ReadUIString();
-char				ReadNameFiltraDataBase();
-char				ReadChatFiltraDataBase();
-
+int ReadItemicon();
+void ReadItemName();
+void ReadUIString();
+char ReadNameFiltraDataBase();
+char ReadChatFiltraDataBase();
 
 /* String Related functions */
-int					IsClearString(char* str, int target);
-
+int IsClearString(char* str, int target);
 
 /* System functions */
-void				EnableSysKey();
-bool				CheckOS();
-void				DisableSysKey();
+void EnableSysKey();
+bool CheckOS();
+void DisableSysKey();
