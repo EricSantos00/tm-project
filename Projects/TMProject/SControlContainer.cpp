@@ -39,7 +39,79 @@ SControlContainer::~SControlContainer()
 
 int SControlContainer::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
 {
-	return 0;
+	if (m_pCursor->m_bVisible)
+		m_pCursor->OnMouseEvent(dwFlags, wParam, nX, nY);
+
+	int ParentPosX{ 0 };
+	int ParentPosY{ 0 };
+	int bProcessed{ 0 };
+
+	auto pCurrentControl = m_pControlRoot;
+	auto pRootControl = m_pControlRoot;
+	for (int i = 0; i < 8; ++i)
+	{
+		SControl* tmp = m_pModalControl[i];
+		if (tmp != nullptr && tmp->m_bVisible == 1 && tmp->m_bModal == 1)
+		{
+			pCurrentControl = tmp;
+			pRootControl = tmp;
+
+			break;
+		}
+	}
+
+	if (pCurrentControl == nullptr)
+		return 1;
+
+	int b{ 0 };
+	int before{ 0 };
+	do
+	{
+		if (!pCurrentControl->m_cDeleted && pCurrentControl->m_bVisible)
+		{
+			before = pCurrentControl->m_bFocused;
+
+			int ret = pCurrentControl->OnMouseEvent(dwFlags, wParam, nX - ParentPosX, nY - ParentPosY);
+			if (pCurrentControl->m_bFocused && !before && ret == 1 && pCurrentControl->m_eCtrlType == CONTROL_TYPE::CTRL_TYPE_EDITABLETEXT)
+				SetFocusedControl(pCurrentControl);
+
+			if (ret == 1)
+				bProcessed = 1;
+
+			if (pCurrentControl->m_pDown)
+			{
+				ParentPosX += pCurrentControl->m_nPosX;
+				ParentPosY += pCurrentControl->m_nPosY;
+
+				pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pDown);
+				continue;
+			}
+		}
+
+		do
+		{
+			if (pCurrentControl->m_pNextLink != nullptr)
+			{
+				pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pNextLink);
+				break;
+			}
+
+			pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pTop);
+			ParentPosX -= pCurrentControl->m_nPosX;
+			ParentPosY -= pCurrentControl->m_nPosY;
+
+			++b;
+		} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
+	} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
+
+	if (!bProcessed)
+	{
+		auto pPanel = g_pCurrentScene->m_pDescPanel;
+		if (pPanel)
+			pPanel->SetVisible(0);
+	}
+
+	return bProcessed;
 }
 
 int SControlContainer::OnKeyDownEvent(unsigned int iKeyCode)
