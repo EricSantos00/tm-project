@@ -18,6 +18,10 @@ void BASE_InitializeHitRate()
 {
 }
 
+void BASE_ApplyAttribute(char* pHeight, int size)
+{
+}
+
 int BASE_ReadMessageBin()
 {
 	return 0;

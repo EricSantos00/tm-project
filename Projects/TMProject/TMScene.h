@@ -2,6 +2,7 @@
 
 #include "TreeNode.h"
 #include "Structures.h"
+#include "Basedef.h"
 
 enum class ESCENE_TYPE
 {
@@ -130,8 +131,8 @@ public:
     SText* m_pTextBillMsg;
     SMessageBox* m_pMessageBox;
     SMessageBox* m_pMessageBox2;
-    char m_HeightMapData[4096][4096];
-    char m_GateMapData[4096][4096];
+    char m_HeightMapData[65536];
+    char m_GateMapData[65536];
     int n_bPrtScreen;
     short m_sPlayDemo;
     unsigned int m_dwStartCamTime;

@@ -286,7 +286,7 @@ SGridControlItem* SCursor::DetachItem()
 	return nullptr;
 }
 
-SText::SText(int inTextureSetIndex, char* istrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType)
+SText::SText(int inTextureSetIndex, const char* istrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType)
 	: SControl(inX, inY, inWidth, inHeight)
 {
 }
@@ -751,7 +751,7 @@ void SListBox::SetTextTimer(unsigned int dTime)
 {
 }
 
-SMessageBox::SMessageBox(char* istrMessage, char ibyMessageBoxType, float inX, float inY)
+SMessageBox::SMessageBox(const char* istrMessage, char ibyMessageBoxType, float inX, float inY)
 	: SPanel(-2, inX, inY, 256.0, 172.0, 0x1010101, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH)
 {
 }
@@ -796,7 +796,7 @@ int SMessageBox::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX,
 	return 0;
 }
 
-SMessagePanel::SMessagePanel(char* istrMessage, float inX, float inY, float inWidth, float inHeight, unsigned int dwTime)
+SMessagePanel::SMessagePanel(const char* istrMessage, float inX, float inY, float inWidth, float inHeight, unsigned int dwTime)
 	: SPanel(-45, inX, inY, inWidth, inHeight, 0xAAFFFFFF, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH)
 {
 }

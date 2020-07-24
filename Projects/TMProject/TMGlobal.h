@@ -78,6 +78,8 @@ extern unsigned int g_pLastFixTime;
 extern unsigned int CurrentTime;
 extern unsigned int LastSendTime;
 
+extern int g_nUnDelMobCount;
+
 extern float g_fWide;
 
 extern char g_szOS[3];
