@@ -9,6 +9,9 @@ class TMScene;
 class TMObject;
 class TMCamera;
 class TMHuman;
+
+constexpr int MAX_RESOURCE_LIST = 2560;
+
 class ObjectManager
 {
 public:
@@ -87,7 +90,7 @@ public:
 	unsigned __int16 m_usAllyGuild;
 	char m_cAvatar[4];
 	char m_strGuildName[4][12];
-	ResourceDef m_ResourceList[2560];
+	ResourceDef m_ResourceList[MAX_RESOURCE_LIST];
 	TMObject* m_pTargetObject;
 	int m_nServerGroupIndex;
 	int m_nServerIndex;
