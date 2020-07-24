@@ -46,8 +46,10 @@ extern float g_ClipFar;
 extern int g_nServerCountList[12];
 extern char g_szServerNameList[11][9];
 extern char g_szServerName[10][10][9];
-extern int g_bActiveWB;
 
+extern char g_UIString[500][64];
+
+extern int g_bActiveWB;
 extern int g_bHideEffect;
 extern int g_bHideSkillBuffEffect;
 extern int g_bHideSkillBuffEffect2;
