@@ -54,17 +54,17 @@ int SControlContainer::OnKeyUpEvent(unsigned int iKeyCode)
 
 int SControlContainer::OnCharEvent(char iCharCode, int lParam)
 {
-	return 0;
+	return m_pFocusControl == nullptr ? 0 : m_pFocusControl->OnCharEvent(iCharCode, lParam);
 }
 
 int SControlContainer::OnChangeIME()
 {
-	return 0;
+	return m_pFocusControl == nullptr ? 0 : m_pFocusControl->OnChangeIME();
 }
 
 int SControlContainer::OnIMEEvent(char* ipComposeString)
 {
-	return 0;
+	return m_pFocusControl == nullptr ? 0 : m_pFocusControl->OnIMEEvent(ipComposeString);
 }
 
 void SControlContainer::SetFocusedControl(SControl* pControl)
@@ -127,7 +127,56 @@ void SControlContainer::AddItem(SControl* pControl)
 
 int SControlContainer::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	TMVector2 vParentPos{};
+	auto pCurrentControl = m_pControlRoot;
+	auto pRootControl = m_pControlRoot;
+	int vControlLayer = 0;
+	if (pCurrentControl == nullptr)
+		return 1;
+
+	if (m_bInvisibleUI == 1)
+		return 1;
+
+	do
+	{
+		if (!pCurrentControl->m_cDeleted)
+		{
+			if (pCurrentControl->m_bVisible == 1)
+			{
+				pCurrentControl->FrameMove2(m_pDrawControl, vParentPos, vControlLayer, 0);
+
+				if (m_pDown)
+				{
+					vParentPos.x += pCurrentControl->m_nPosX;
+					vParentPos.y += pCurrentControl->m_nPosY;
+					++vControlLayer;
+
+					pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pDown);
+					continue;
+				}
+			}
+		}
+		else
+			m_bCleanUp = 1;
+
+		do
+		{
+			if (pCurrentControl->m_pNextLink != nullptr)
+			{
+				pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pNextLink);
+				break;
+			}
+
+			pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pTop);
+			vParentPos.x -= pCurrentControl->m_nPosX;
+			vParentPos.y -= pCurrentControl->m_nPosY;
+		} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
+	} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
+
+	if (m_pCursor->m_bVisible)
+		m_pCursor->FrameMove2(m_pDrawControl, vParentPos, 29, 0);
+
+	return 1;
 }
 
 SControl* SControlContainer::FindControl(unsigned int dwID)
@@ -161,7 +210,7 @@ SControl* SControlContainer::FindControl(unsigned int dwID)
 			}
 
 			pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pTop);
-		} while (pCurrentControl != pRootControl || pCurrentControl != nullptr);
+		} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
 	} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
 
 	return nullptr;
