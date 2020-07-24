@@ -193,7 +193,7 @@ public:
     };
 
 public:
-    SText(int inTextureSetIndex, char* istrText, unsigned int idwFontColor, float inX, float inY, 
+    SText(int inTextureSetIndex, const char* istrText, unsigned int idwFontColor, float inX, float inY, 
         float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SText();
     virtual void SetText(const char* istrText, int bCheckZero);
@@ -578,7 +578,7 @@ public:
     };
 
 public:
-    SMessageBox(char* istrMessage, char ibyMessageBoxType, float inX, float inY);
+    SMessageBox(const char* istrMessage, char ibyMessageBoxType, float inX, float inY);
     ~SMessageBox();
 
     int OnControlEvent(DWORD idwControlID, DWORD idwEvent) override;
@@ -610,7 +610,7 @@ protected:
 class SMessagePanel : public SPanel
 {
 public:
-    SMessagePanel(char* istrMessage, float inX, float inY, float inWidth, float inHeight, unsigned int dwTime);
+    SMessagePanel(const char* istrMessage, float inX, float inY, float inWidth, float inHeight, unsigned int dwTime);
     ~SMessagePanel();
 
     void SetMessage(const char* istrMessage, unsigned int dwTime);

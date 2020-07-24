@@ -777,6 +777,7 @@ extern char EncodeByte[4];
 float BASE_ScreenResize(float size);
 void BASE_InitModuleDir();
 void BASE_InitializeHitRate();
+void BASE_ApplyAttribute(char* pHeight, int size);
 int	BASE_ReadMessageBin();
 void BASE_InitEffectString();
 int BASE_InitializeBaseDef();

@@ -57,6 +57,8 @@ unsigned int g_pLastFixTime;
 unsigned int CurrentTime;
 unsigned int LastSendTime;
 
+int g_nUnDelMobCount;
+
 float g_fWide;
 
 HINSTANCE g_hInstance;
