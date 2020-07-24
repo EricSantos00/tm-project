@@ -62,7 +62,7 @@ public:
     int IsVisible();
     int IsFocused();
     int IsOver();
-    TMVector2* GetPos(TMVector2* result);
+    TMVector2 GetPos();
    
     virtual int ChildCount();
     virtual void SetPos(float nPosX, float nPosY);
@@ -78,7 +78,7 @@ public:
     void SetStickBottom();
     int PtInControl(int inPosX, int inPosY);
 
-    virtual int GetControlType();
+    virtual CONTROL_TYPE GetControlType();
     virtual void SetCenterPos(unsigned int dwControlID, float inPosX, float inPosY, float inWidth, float inHeight);
 
 public:
@@ -659,3 +659,7 @@ public:
     int m_nPitch;
     unsigned int m_dwBatCoin;
 };
+
+int PointInRect(int inPosX, int inPosY, float ifX, float ifY, float ifWidth, float ifHeight);
+void RemoveRenderControlItem(stGeomList* pDrawList, GeomControl* pGeomControl, int nLayer);
+int AddRenderControlItem(stGeomList* pDrawList, GeomControl* pGeomControl, int nLayer);
