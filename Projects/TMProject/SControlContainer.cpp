@@ -44,11 +44,77 @@ int SControlContainer::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, i
 
 int SControlContainer::OnKeyDownEvent(unsigned int iKeyCode)
 {
+	auto pCurrentControl = m_pControlRoot;
+	auto pRootControl = m_pControlRoot;
+
+	if (pCurrentControl == nullptr)
+		return 0;
+
+	do
+	{
+		if (pCurrentControl->m_cDeleted && pCurrentControl->m_bVisible == 1)
+		{
+			if (pCurrentControl->OnKeyDownEvent(iKeyCode))
+				return 1;
+
+			if (pCurrentControl->m_pDown)
+			{
+				pCurrentControl = static_cast<SControl*>(m_pDown);
+
+				continue;
+			}
+		}
+
+		do
+		{
+			if (pCurrentControl->m_pNextLink != nullptr)
+			{
+				pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pNextLink);
+				break;
+			}
+
+			pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pTop);
+		} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
+	} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
+
 	return 0;
 }
 
 int SControlContainer::OnKeyUpEvent(unsigned int iKeyCode)
 {
+	auto pCurrentControl = m_pControlRoot;
+	auto pRootControl = m_pControlRoot;
+
+	if (pCurrentControl == nullptr)
+		return 0;
+
+	do
+	{
+		if (pCurrentControl->m_cDeleted && pCurrentControl->m_bVisible == 1)
+		{
+			if (pCurrentControl->OnKeyUpEvent(iKeyCode))
+				return 1;
+
+			if (pCurrentControl->m_pDown)
+			{
+				pCurrentControl = static_cast<SControl*>(m_pDown);
+
+				continue;
+			}
+		}
+
+		do
+		{
+			if (pCurrentControl->m_pNextLink != nullptr)
+			{
+				pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pNextLink);
+				break;
+			}
+
+			pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pTop);
+		} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
+	} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
+
 	return 0;
 }
 
@@ -117,7 +183,7 @@ void SControlContainer::SetFocusedControl(SControl* pControl)
 
 int SControlContainer::OnControlEvent(DWORD idwControlID, DWORD idwEvent)
 {
-	return 0;
+	return m_pPrevLink ? dynamic_cast<IEventListener*>(m_pPrevLink)->OnControlEvent(idwControlID, idwEvent) : 0;
 }
 
 void SControlContainer::AddItem(SControl* pControl)
