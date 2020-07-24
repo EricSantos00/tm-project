@@ -78,5 +78,5 @@ int g_nUpdateGuildName;
 stCurse_num g_pCurseList;
 
 int Game_grade = 1;
-extern char g_AccountLock;
-extern int g_nBattleMaster;
+char g_AccountLock;
+int g_nBattleMaster;
