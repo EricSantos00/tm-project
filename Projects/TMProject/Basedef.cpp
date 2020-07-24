@@ -110,10 +110,6 @@ void BASE_ReadItemPrice()
     }
 }
 
-void BASE_UnderBarToSpace(const char* szStr)
-{
-}
-
 int ReadItemicon()
 {
 	return 0;
@@ -2652,8 +2648,9 @@ int BASE_ReadMessageBin()
     int sum = BASE_GetSum((char*)&g_pMessageStringTable, size);
     if (sum == tsum)
     {
-        for (int i = 0; i < size; ++i)
-            *(char*)&g_pMessageStringTable[i] ^= 0x5Au;
+        //NEED TO FIX THIS
+        //for (int i = 0; i < size; ++i)
+        //    *(char*)&g_pMessageStringTable[i] ^= 0x5Au;
 
         result = TRUE;
     }

@@ -345,7 +345,8 @@ SText::SText(int inTextureSetIndex, const char* istrText, unsigned int idwFontCo
 
 	if (istrText != nullptr)
 	{
-		BASE_UnderBarToSpace(istrText);
+		BASE_UnderBarToSpace((char*)istrText);
+
 		if (!strcmp(istrText, " "))
 			istrText = nullptr;
 	}
