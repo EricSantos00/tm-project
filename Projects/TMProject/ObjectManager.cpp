@@ -717,6 +717,7 @@ void ObjectManager::SetCurrentState(TM_GAME_STATE ieNewState)
 		pScene = new TMSelectCharScene();
 		break;
 	case TM_GAME_STATE::TM_SELECTSERVER_STATE:
+	{
 		pScene = new TMSelectServerScene();
 		TMEffectBillBoard2* pEffect2 = new TMEffectBillBoard2(93, 20000, 1000.0f, 1000.0f, 1000.0f, 0.002f, 0);
 		if (pEffect2)
@@ -726,10 +727,11 @@ void ObjectManager::SetCurrentState(TM_GAME_STATE ieNewState)
 			pEffect2->m_vecPosition.y += 0.1f;
 			pScene->m_pEffectContainer->AddChild(pEffect2);
 		}
-		break;
+	}
+	break;
 	case TM_GAME_STATE::TM_DEMO_STATE:
 		pScene = new TMDemoScene();
-			break;
+		break;
 	}
 
 	if (pScene != nullptr)

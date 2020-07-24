@@ -8,7 +8,7 @@ class TMFieldScene;
 class TMScene;
 class TMObject;
 class TMCamera;
-
+class TMHuman;
 class ObjectManager
 {
 public:
