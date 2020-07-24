@@ -155,7 +155,7 @@ public:
     SCursor(int inTextureSetIndex, float inX, float inY, float inWidth, float inHeight);
     ~SCursor();
 
-    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int Y) override;
+    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY) override;
     void FrameMove2(stGeomList* pDrawList, TMVector2 ivParenPos, int inParentLayer, int nFlag) override;
     virtual void SetPosition(int iX, int iY);
     void SetVisible(int bVisible) override;
@@ -196,7 +196,7 @@ public:
     SText(int inTextureSetIndex, const char* istrText, unsigned int idwFontColor, float inX, float inY, 
         float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SText();
-    virtual void SetText(const char* istrText, int bCheckZero);
+    virtual void SetText(char* istrText, int bCheckZero);
     virtual void SetTextColor(unsigned int dwFontColor);
     virtual char* GetText();
     virtual void SetType(unsigned int dwType);
