@@ -59,7 +59,6 @@ TMScene::TMScene() : TreeNode(0)
 	}
 
 	m_pControlContainer = new SControlContainer(this);
-	m_pControlContainer->OnControlEvent(1, 1);
 
 	m_pExtraContainer = new TreeNode(0);
 

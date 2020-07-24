@@ -265,7 +265,7 @@ SCursor::SCursor(int inTextureSetIndex, float inX, float inY, float inWidth, flo
 	m_eCtrlType = CONTROL_TYPE::CTRL_TYPE_CURSOR;
 	m_GCPanel.nTextureIndex = 0;
 	m_nPosX = inX;
-	m_nPickPosY = inY;
+	m_nPosY = inY;
 	g_pCursor = this;
 	m_pAttachedItem = nullptr;
 }

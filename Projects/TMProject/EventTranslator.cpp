@@ -421,8 +421,8 @@ void EventTranslator::OnLMousePressed()
             g_pCurrentScene->OnMouseEvent(               
                 513,
                 m_wParam,
-                g_pCursor->m_nPosX,
-                g_pCursor->m_nPosY);
+                static_cast<int>(g_pCursor->m_nPosX),
+                static_cast<int>(g_pCursor->m_nPosY));
         }      
     }
 }
@@ -441,8 +441,8 @@ void EventTranslator::OnRMousePressed()
             g_pCurrentScene->OnMouseEvent(
                 516,
                 m_wParam,
-                g_pCursor->m_nPosX,
-                g_pCursor->m_nPosY);
+                static_cast<int>(g_pCursor->m_nPosX),
+                static_cast<int>(g_pCursor->m_nPosY));
         }        
     }
 }

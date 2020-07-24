@@ -70,8 +70,8 @@ int SControlContainer::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, i
 
 			if (pCurrentControl->m_pDown)
 			{
-				ParentPosX += pCurrentControl->m_nPosX;
-				ParentPosY += pCurrentControl->m_nPosY;
+				ParentPosX += static_cast<int>(pCurrentControl->m_nPosX);
+				ParentPosY += static_cast<int>(pCurrentControl->m_nPosY);
 
 				pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pDown);
 				continue;
@@ -87,8 +87,8 @@ int SControlContainer::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, i
 			}
 
 			pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pTop);
-			ParentPosX -= pCurrentControl->m_nPosX;
-			ParentPosY -= pCurrentControl->m_nPosY;
+			ParentPosX -= static_cast<int>(pCurrentControl->m_nPosX);
+			ParentPosY -= static_cast<int>(pCurrentControl->m_nPosY);
 
 			++b;
 		} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);

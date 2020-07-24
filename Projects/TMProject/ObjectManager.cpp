@@ -12,6 +12,7 @@
 #include "TMObject.h"
 #include "TMEffectBillBoard2.h"
 #include "TMDemoScene.h"
+#include "TMMesh.h"
 
 ObjectManager::ObjectManager()
 {
@@ -653,8 +654,7 @@ void ObjectManager::RenderObject()
 				pCurrentNode = pCurrentNode->m_pTop;
 			} while (pCurrentNode != pRootNode && pCurrentNode != nullptr);
 		} while (pCurrentNode != pRootNode && pCurrentNode != nullptr);
-	}
-	
+	}	
 }
 
 void ObjectManager::RenderTargetObject(float fHeight)
