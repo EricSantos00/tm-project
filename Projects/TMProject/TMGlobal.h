@@ -94,6 +94,7 @@ extern int g_nUpdateGuildName;
 extern stCurse_num g_pCurseList;
 
 extern int g_pDebugMaxCount;
+
 static unsigned int g_dwHandIndex[101][2] =
 {
     {19,25},{18,24},{15,21},{15,21},{12,18},{22,28},{23,29},

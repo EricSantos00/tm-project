@@ -74,5 +74,4 @@ int g_totaleffect;
 int g_nUpdateGuildName;
 
 stCurse_num g_pCurseList;
-
-int g_pDebugMaxCount;
+int g_pDebugMaxCount; 
