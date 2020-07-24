@@ -40,6 +40,10 @@ void BASE_ReadItemPrice()
 {
 }
 
+void BASE_UnderBarToSpace(const char* szStr)
+{
+}
+
 int ReadItemicon()
 {
 	return 0;

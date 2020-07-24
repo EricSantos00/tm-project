@@ -59,6 +59,7 @@ TMScene::TMScene() : TreeNode(0)
 	}
 
 	m_pControlContainer = new SControlContainer(this);
+	m_pControlContainer->OnControlEvent(1, 1);
 
 	m_pExtraContainer = new TreeNode(0);
 
@@ -299,7 +300,7 @@ int TMScene::FindID(char* szID)
 
 int TMScene::InitializeScene()
 {
-	return 0;
+	return 1;
 }
 
 int TMScene::OnPacketEvent(unsigned int dwCode, char* pSBuffer)

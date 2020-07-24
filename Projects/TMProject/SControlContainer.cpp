@@ -23,18 +23,8 @@ SControlContainer::SControlContainer(TMScene* pScene)
 
 SControlContainer::~SControlContainer()
 {
-	if (m_pControlRoot)
-	{
-		delete m_pControlRoot;
-		m_pControlRoot = nullptr;
-	}
-	
-	if (m_pCursor)
-	{
-		delete m_pCursor;
-		m_pCursor = nullptr;
-	}
-
+	SAFE_DELETE(m_pControlRoot);
+	SAFE_DELETE(m_pCursor);
 }
 
 int SControlContainer::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
@@ -255,7 +245,7 @@ void SControlContainer::SetFocusedControl(SControl* pControl)
 
 int SControlContainer::OnControlEvent(DWORD idwControlID, DWORD idwEvent)
 {
-	return m_pPrevLink ? dynamic_cast<IEventListener*>(m_pPrevLink)->OnControlEvent(idwControlID, idwEvent) : 0;
+	return m_pScene ? m_pScene->OnControlEvent(idwControlID, idwEvent) : 0;
 }
 
 void SControlContainer::AddItem(SControl* pControl)
