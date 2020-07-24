@@ -34,7 +34,6 @@ struct STRUCT_SCORE
 	unsigned short Special[4];
 };
 
-
 union STRUCT_BONUSEFFECT
 {
 	char cEffect;
@@ -769,6 +768,15 @@ struct MSG_CNFRemoveServer
 	MSG_STANDARD Header;
 	char AccountName[16];
 	char TID[52];
+};
+
+constexpr auto MSG_SendItem_Opcode = 0x182;
+struct MSG_SendItem
+{
+	MSG_STANDARD Header;
+	short DestType;
+	short DestPos;
+	STRUCT_ITEM Item;
 };
 
 extern HWND hWndMain;
