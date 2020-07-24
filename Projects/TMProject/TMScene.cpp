@@ -7,6 +7,7 @@
 #include "TMLight.h"
 #include "TMHuman.h"
 #include "TMObject.h"
+#include "TMCamera.h"
 #include "TMItem.h"
 #include "TMGlobal.h"
 #include "TMScene.h"
@@ -439,10 +440,109 @@ void TMScene::SaveHeightMap(char* szFileName)
 
 void TMScene::CameraAction()
 {
+	if (m_dwStartCamTime == 0)
+		return;
+
+	DWORD dwTick = (g_pTimerManager->GetServerTime() - m_dwStartCamTime) + 100;
+
+	TMCamera* pCamera = g_pObjectManager->m_pCamera;
+
+	pCamera->m_fSightLength = 11.0f;
+
+	for (int i = 0; i < (m_nCameraLoop - 1); ++i)
+	{
+		if (m_stCameraTick[i].dwTick >= dwTick || m_stCameraTick[i + 1].dwTick <= dwTick)
+			continue;
+
+		float fRatio =
+			(float)(dwTick - m_stCameraTick[i].dwTick) /
+			(float)(m_stCameraTick[i + 1].dwTick - m_stCameraTick[i].dwTick);
+
+		auto fHorizonAngle = (m_stCameraTick[i].fHorizonAngle * (1.0f - fRatio))
+			+ (m_stCameraTick[i + 1].fHorizonAngle * fRatio);
+
+		pCamera->m_fHorizonAngle = fHorizonAngle;
+		pCamera->m_fBackHorizonAngle = fHorizonAngle;
+
+		auto fVerticalAngle = (m_stCameraTick[i].fVerticalAngle * (1.0f - fRatio))
+			+ (m_stCameraTick[i + 1].fVerticalAngle * fRatio);
+
+		pCamera->m_fVerticalAngle = fVerticalAngle;
+		pCamera->m_fBackVerticalAngle = fVerticalAngle;
+
+		TMVector3 vecLoc1{ 0.0f, 0.0f, 0.0f };
+		TMVector3 vecLoc2{ 0.0f, 0.0f, 0.0f };
+
+		if (m_stCameraTick[i].sLocal == 1 && m_pMyHuman != nullptr)
+		{
+			vecLoc1.x = m_pMyHuman->m_vecPosition.x;
+			vecLoc1.y = m_pMyHuman->m_fHeight;
+			vecLoc1.z = m_pMyHuman->m_vecPosition.y;
+		}
+
+		if (m_stCameraTick[i + 1].sLocal == 1 && m_pMyHuman != nullptr)
+		{
+			vecLoc2.x = m_pMyHuman->m_vecPosition.x;
+			vecLoc2.y = m_pMyHuman->m_fHeight;
+			vecLoc2.z = m_pMyHuman->m_vecPosition.y;
+		}
+
+		pCamera->m_cameraPos.x = ((vecLoc1.x + m_stCameraTick[i].fX) * (1.0f - fRatio))
+			+ ((vecLoc2.x + m_stCameraTick[i + 1].fX) * fRatio);
+
+		pCamera->m_cameraPos.y = ((vecLoc1.y + m_stCameraTick[i].fY) * (1.0f - fRatio))
+			+ ((vecLoc2.y + m_stCameraTick[i + 1].fY) * fRatio);
+
+		pCamera->m_cameraPos.z = ((vecLoc1.z + m_stCameraTick[i].fZ) * (1.0f - fRatio))
+			+ ((vecLoc2.z + m_stCameraTick[i + 1].fZ) * fRatio);
+
+		return;
+	}
+
+	if (m_stCameraTick[m_nCameraLoop - 1].dwTick < dwTick)
+	{
+		pCamera->m_fHorizonAngle = m_stCameraTick[m_nCameraLoop - 1].fHorizonAngle;
+		pCamera->m_fVerticalAngle = m_stCameraTick[m_nCameraLoop - 1].fVerticalAngle;
+
+		TMVector3 vecLoc3{ 0.0f, 0.0f, 0.0f };
+
+		if (m_pMyHuman && m_stCameraTick[m_nCameraLoop - 1].sLocal == 1)
+		{
+			vecLoc3.x = m_pMyHuman->m_vecPosition.x;
+			vecLoc3.y = m_pMyHuman->m_fHeight;
+			vecLoc3.z = m_pMyHuman->m_vecPosition.y;
+		}
+
+		pCamera->m_cameraPos.x = m_stCameraTick[m_nCameraLoop - 1].fX + vecLoc3.x;
+		pCamera->m_cameraPos.y = m_stCameraTick[m_nCameraLoop - 1].fY + vecLoc3.y;
+		pCamera->m_cameraPos.z = m_stCameraTick[m_nCameraLoop - 1].fZ + vecLoc3.z;
+	}
 }
 
 void TMScene::ReadCameraPos(char* szFileName)
 {
+	m_nCameraLoop = 0;
+
+	memset(&m_stCameraTick, 0, sizeof(m_stCameraTick));
+
+	char szBinFileName[128]{};
+
+	sprintf_s(szBinFileName, "%s.bin", szFileName);
+
+	FILE* fpBin = nullptr;
+
+	fopen_s(&fpBin, szBinFileName, "rb");
+
+	fread(&m_nCameraLoop, 1, 4, fpBin);
+
+	if (m_nCameraLoop > 1000)
+		m_nCameraLoop = 1000;
+
+	else if (m_nCameraLoop < 0)
+		m_nCameraLoop = 0;
+
+	fread(&m_stCameraTick, 1, 28 * m_nCameraLoop, fpBin);
+	fclose(fpBin);
 }
 
 int TMScene::LoadMsgText(SListBox* pListBox, char* szFileName)
