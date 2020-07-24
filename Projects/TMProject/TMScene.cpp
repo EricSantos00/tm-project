@@ -831,32 +831,65 @@ int TMScene::OnPacketEvent(unsigned int dwCode, char* pSBuffer)
 
 int TMScene::OnKeyDownEvent(unsigned int iKeyCode)
 {
+	if (g_pCurrentScene != this)
+		return 0;
+
+	if (m_pControlContainer && m_pControlContainer->OnKeyDownEvent(iKeyCode) == 1)
+		return 1;
+	
+	OnKeyDownEvent(iKeyCode);
 	return 0;
 }
 
 int TMScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
 {
+	if (g_pCurrentScene != this)
+		return 0;
+
+	if (m_pControlContainer && m_pControlContainer->OnMouseEvent(dwFlags, wParam, nX, nY) == 1)
+		return 1;
+
+	OnMouseEvent(dwFlags, wParam, nX, nY);
 	return 0;
 }
 
 int TMScene::OnKeyUpEvent(unsigned int iKeyCode)
 {
+	if (g_pCurrentScene != this)
+		return 0;
+
+	if (m_pControlContainer && m_pControlContainer->OnKeyUpEvent(iKeyCode) == 1)
+		return 1;
+
+	OnKeyUpEvent(iKeyCode);
 	return 0;
 }
 
 int TMScene::OnCharEvent(char iCharCode, int lParam)
 {
-	return 0;
+	if (g_pCurrentScene != this)
+		return 0;
+
+	if (m_pControlContainer && m_pControlContainer->OnCharEvent(iCharCode, lParam) == 1)
+		return 1;
+	
+	return OnCharEvent(iCharCode, lParam);
 }
 
 int TMScene::OnIMEEvent(char* ipComposeString)
 {
+	if (g_pCurrentScene != this)
+		return 0;
+
+	if (m_pControlContainer && m_pControlContainer->OnIMEEvent(ipComposeString) == 1)
+		return 1;
+	
 	return 0;
 }
 
 int TMScene::OnChangeIME()
 {
-	return 0;
+	return m_pControlContainer && m_pControlContainer->OnChangeIME() == 1;
 }
 
 int TMScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEvent)
@@ -984,7 +1017,7 @@ int TMScene::ReloadScene()
 
 ESCENE_TYPE TMScene::GetSceneType()
 {
-	return ESCENE_TYPE();
+	return m_eSceneType;
 }
 
 void TMScene::Cleanup()
