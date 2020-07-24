@@ -12,5 +12,6 @@
 #include <io.h>
 #include <fcntl.h>
 #include <winnt.h>
+#include <time.h>
 
 #endif //PCH_H

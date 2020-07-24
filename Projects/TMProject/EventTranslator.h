@@ -66,13 +66,13 @@ public:
 	int m_bCtrl;
 	int m_bRBtn;
 	int m_bShift;
-	HWND* m_hWnd;
+	HWND m_hWnd;
 	int m_bLock;
 	unsigned int m_wParam;
-	HIMC* m_hOldIMC;
+	HIMC m_hOldIMC;
 	char m_strComp[512];
 	char m_szResultStr[512];
 	char m_bCompAttr[512];
 	unsigned int m_dwCompAttrLen;
-	CANDIDATELIST* m_lpCandList;
+	LPCANDIDATELIST m_lpCandList;
 };

@@ -38,12 +38,12 @@ NewApp::NewApp()
 	m_pObjectManager = 0;
 	m_pSocketManager = 0;
 	g_pApp = this;
-	ShellExecute(0, "open", "Change.exe", 0, 0, 1);
+	ShellExecute(0, "open", ChangeUpdate_Path, 0, 0, 1);
 	BASE_InitModuleDir();
 	BASE_InitializeHitRate();
 	BASE_ReadMessageBin();
-	LOG_INITIALIZELOG("WYD.log");
-	sprintf(m_strWindowTitle, "WYD");
+	LOG_INITIALIZELOG(LogFile_Path);
+	sprintf(m_strWindowTitle, GameWindow_Title);
 	m_Winstate = 1;
 	china_bWrite = 0;
 	china_Playtime = -1;
@@ -62,7 +62,7 @@ void InitServerName2()
 {
 	memset(g_szServerName, 0, sizeof(g_szServerName));
 	FILE* fpBin = nullptr;
-	fopen_s(&fpBin, "sn2.bin", "rb");
+	fopen_s(&fpBin, ServerName2_Path, "rb");
 	if (fpBin)
 	{
 		fread(g_szServerName, sizeof(g_szServerName), 1u, fpBin);
@@ -139,7 +139,7 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 	SaveUpdatAndConfig Config;
 
 	FILE* fp = nullptr;
-	fopen_s(&fp, "Config.bin", "rb");
+	fopen_s(&fp, ConfigFile_Path, "rb");
 	if (fp)
 	{
 		fread(&Config, sizeof(Config), 1, fp);
@@ -322,7 +322,7 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 
 	if (m_pAviPlayer != nullptr)
 	{
-		if (!m_pAviPlayer->OpenClip("wyd.avi"))
+		if (!m_pAviPlayer->OpenClip(VideoClipFile_Path))
 		{
 			SAFE_DELETE(m_pAviPlayer);
 		}
@@ -330,9 +330,9 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 
 	memset(g_pItemHelp, 0, sizeof(g_pItemHelp));
 	char szItemHelpFile[128];
-	sprintf(szItemHelpFile, "itemHelp.dat");
+	sprintf(szItemHelpFile, ItemHelp_Path);
 
-	remove("change.exe");
+	remove(ChangeUpdate_Path);
 
 	MixHelp();
 
@@ -499,7 +499,7 @@ void NewApp::InitServerName()
 	memset(nTempList, 0, sizeof(nTempList));
 
 	FILE* fpBin = nullptr;
-	fopen_s(&fpBin, "sn.bin", "rb");
+	fopen_s(&fpBin, ServerName_Path, "rb");
 	if (fpBin)
 	{
 		fread(g_szServerNameList, 1, sizeof(g_szServerNameList), fpBin);
@@ -511,7 +511,7 @@ void NewApp::InitServerName()
 void NewApp::InitMusicList()
 {
 	FILE* fp = nullptr;
-	fopen_s(&fp, "Music.txt", "rt");
+	fopen_s(&fp, MusicConfig_Path, "rt");
 
 	if (fp == nullptr)
 		return;
@@ -538,8 +538,8 @@ void NewApp::InitMusicList()
 
 	fclose(fp);
 
-	sprintf(DS_SOUND_MANAGER::m_szMusicPathOrigin[14], "Mesh\\tn.dat");
-	sprintf(DS_SOUND_MANAGER::m_szMusicPathOrigin[13], "Mesh\\ed.dat");
+	sprintf(DS_SOUND_MANAGER::m_szMusicPathOrigin[14], DSSound_1_Path);
+	sprintf(DS_SOUND_MANAGER::m_szMusicPathOrigin[13], DSSound_2_Path);
 }
 
 HRESULT NewApp::Finalize()
@@ -736,7 +736,7 @@ void NewApp::MixHelp()
 {
 	memset(g_pItemMixHelp, 0, sizeof(g_pItemMixHelp));
 	char szItemHelpFile[128];
-	sprintf(szItemHelpFile, "Mixhelp.dat");
+	sprintf(szItemHelpFile, MixHelp_Path);
 
 	FILE* fp = nullptr;
 	fopen_s(&fp, szItemHelpFile, "rt");
@@ -1287,6 +1287,7 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 			g_hPacketDump = nullptr;
 		}
 
+		LOG_FINALIZELOG(); //Added this to finalize log file write?
 		g_bEndGame = 1;
 		EnableSysKey();
 		DestroyWindow(hWnd);

@@ -18,8 +18,8 @@ public:
 public:
 	DWORD m_dwID;
 	DWORD m_dwParentID;
-	D3DXMATRIXA16 m_matRot;
-	D3DXMATRIXA16 m_matCombined;
+	D3DXMATRIX m_matRot;
+	D3DXMATRIX m_matCombined;
 	CFrame* m_pSibling;
 	CFrame* m_pFirstChild;
 	CMesh* m_pMesh;

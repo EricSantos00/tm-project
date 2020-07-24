@@ -569,7 +569,7 @@ HRESULT RenderDevice::RestoreDeviceObjects()
 
 		sprintf_s(g_szFontName, "Tahoma");
 		FILE* fpFont = nullptr;
-		fopen_s(&fpFont, "font.txt", "rt");
+		fopen_s(&fpFont, FontConfig_Path, "rt");
 
 		if (fpFont != nullptr)
 		{
@@ -932,7 +932,7 @@ int RenderDevice::InitVertexShader()
 		{
 			LPD3DXBUFFER pCode = nullptr;
 			char szBinFile[128];
-			sprintf_s(szBinFile, "Shader\\skinmesh%d.bin", i + 1);
+			sprintf_s(szBinFile, ShaderSkinMesh_Path, i + 1);
 
 			int handle = _open(szBinFile, _O_BINARY);
 			if (handle == -1)
@@ -1492,7 +1492,7 @@ int RenderDevice::InitVertexShader()
 		{
 			LPD3DXBUFFER pCode = nullptr;
 			char szFileName[128];
-			sprintf_s(szFileName, "Shader\\vseffect%d.bin", j + 1);
+			sprintf_s(szFileName, ShaderVertexShader_Path, j + 1);
 
 			int fh = _open(szFileName, _O_BINARY);
 			if (fh == -1)
@@ -1531,7 +1531,7 @@ int RenderDevice::InitPixelShader()
 			{
 				LPD3DXBUFFER pCode = nullptr;
 				char szBinFile[128];
-				sprintf_s(szBinFile, "Shader\\pseffect%d.bin", i + 1);
+				sprintf_s(szBinFile, ShaderPixelShader_Path, i + 1);
 
 				int handle = _open(szBinFile, _O_BINARY);
 				if (handle == -1)
@@ -2767,7 +2767,7 @@ void RenderDevice::RenderRectRot(float iStartX, float iStartY, float iCX, float 
 void RenderDevice::LogRenderState()
 {
 	FILE* fp = nullptr;
-	fopen_s(&fp, "RenderStateLog.txt", "wt");
+	fopen_s(&fp, RenderStateLog_Path, "wt");
 
 	if (fp == nullptr)
 		return;
@@ -2783,7 +2783,7 @@ void RenderDevice::LogRenderState()
 void RenderDevice::LogSamplerState()
 {
 	FILE* fp = nullptr;
-	fopen_s(&fp, "SamplerStateLog.txt", "wt");
+	fopen_s(&fp, SamplerStateLog_Path, "wt");
 
 	if (fp == nullptr)
 		return;
@@ -2802,7 +2802,7 @@ void RenderDevice::LogSamplerState()
 void RenderDevice::LogTextureStageState()
 {
 	FILE* fp = nullptr;
-	fopen_s(&fp, "TextureStageStateLog.txt", "wt");
+	fopen_s(&fp, TextureStateLog_Path, "wt");
 
 	if (fp == nullptr)
 		return;

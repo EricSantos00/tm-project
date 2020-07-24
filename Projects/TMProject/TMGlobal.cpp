@@ -54,8 +54,21 @@ unsigned int g_dwServerTime;
 unsigned int g_dwClientTime;
 unsigned int g_pLastFixTime;
 
+unsigned int CurrentTime;
+unsigned int LastSendTime;
+
 float g_fWide;
 
 HINSTANCE g_hInstance;
 
 char g_szOS[3] = "??";
+
+int g_hLogFile; //Language File WYD.log
+
+int g_objectnumber;
+int g_effectnumber;
+int g_totaleffect;
+
+int g_nUpdateGuildName;
+
+stCurse_num g_pCurseList;

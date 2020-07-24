@@ -3,7 +3,7 @@
 #include "TreeNode.h"
 #include "Structures.h"
 
-enum EEFFECT_ALPHATYPE
+enum class EEFFECT_ALPHATYPE
 {
 	EF_DEFAULT = 0x0,
 	EF_BRIGHT = 0x1,
