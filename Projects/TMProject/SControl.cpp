@@ -1925,40 +1925,72 @@ void SScrollBar::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int in
 }
 
 int SScrollBar::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
-{
+{ 
+	if (m_bSelectEnable == 0)
+		return 0;
+
+	int bInUp = m_pUpPanel->PtInControl((int)((float)nX - m_nPosX), (int)((float)nY - m_nPosY));
+	int bInDown = m_pDownPanel->PtInControl((int)((float)nX - m_nPosX), (int)((float)nY - m_nPosY));
+	int bInBar = PointInRect(nX, nY, (float)(m_nPosX + m_nWidth) - 15.0f, m_nPosY + m_nBtnSize, 15.0f, m_nHeight - (float)(2.0f * m_nBtnSize));
+
+	if (bInUp && dwFlags == WM_LBUTTONUP)
+		Up();
+	if (bInDown && dwFlags == WM_LBUTTONUP)
+		Down();
+
+	if (bInBar && dwFlags == WM_MOUSEMOVE && wParam & 1)
+	{
+		if (m_dwStyle != 0)
+			m_nScrollPos = (float)nX - (float)(m_nPosX + m_nBtnSize);
+		else
+			m_nScrollPos = (float)nY - (float)(m_nPosY + m_nBtnSize);
+
+		m_nCurrent = (int)((float)(m_nScrollPos * m_nMax) / (float)((float)m_nScrollLength - m_nBarSize));
+		if (m_nCurrent > 0 && m_nCurrent < m_nMax)
+			Update();
+	}
+
 	return 0;
 }
 
 void SScrollBar::upbarSetPos(float x, float y)
 {
+	m_pUpPanel->SetPos(x, y);
 }
 
 void SScrollBar::downbarSetPos(float x, float y)
 {
+	m_pDownPanel->SetPos(x, y);
 }
 
 void SScrollBar::upbarSetsize(float x, float y)
 {
+	m_pUpPanel->SetRealSize(x, y);
 }
 
 void SScrollBar::downbarSetsize(float x, float y)
 {
+	m_pDownPanel->SetRealSize(x, y);
 }
 
 void SScrollBar::upbarSetvisible(bool bSet)
 {
+	;
 }
 
 void SScrollBar::downbarSetvisible(bool bSet)
 {
+	;
 }
 
 void SScrollBar::scrollbarSetvisible(bool bSet)
 {
+	m_pBar->SetVisible(bSet);
 }
 
 void SScrollBar::scrollbarbackSetvisible(bool bSet)
 {
+	m_pBackground1->SetVisible(bSet);
 }
 
 SListBoxItem::SListBoxItem(char* istrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType)
@@ -2244,7 +2276,8 @@ void RemoveRenderControlItem(stGeomList* pDrawList, GeomControl* pGeomControl, i
 		pCurrent = pCurrent->m_pNextGeom;
 		if (++nCount > g_pDebugMaxCount)
 			g_pDebugMaxCount = nCount;
-		if (nCount > 100)
+
+		if (nCount > MAX_DRAW_CONTROL)
 			return;
 	}
 }
