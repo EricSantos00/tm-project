@@ -77,3 +77,4 @@ public:
 };
 
 void InitServerName2();
+void CreateConsole();

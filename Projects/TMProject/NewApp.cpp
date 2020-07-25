@@ -48,6 +48,8 @@ NewApp::NewApp()
 	china_bWrite = 0;
 	china_Playtime = -1;
 	m_binactive = 1;
+
+	CreateConsole();
 }
 
 NewApp::~NewApp()
@@ -1378,4 +1380,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	return 0;
+}
+
+void CreateConsole()
+{
+	AllocConsole();
+
+	// Output fix 
+	freopen_s((FILE**)stdout, "CONOUT$", "w", stdout);
+	freopen_s((FILE**)stdin, "CONIN$", "r", stdin);
 }
