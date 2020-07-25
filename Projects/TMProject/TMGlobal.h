@@ -88,6 +88,17 @@ extern char g_szOS[3];
 
 extern int g_hLogFile;
 
+extern int g_objectnumber;
+extern int g_effectnumber;
+extern int g_totaleffect;
+extern int g_nUpdateGuildName;
+
+extern stCurse_num g_pCurseList;
+
+extern int Game_grade;
+extern char g_AccountLock;
+extern int g_nBattleMaster;
+
 static unsigned int g_dwHandIndex[101][2] =
 {
     {19,25},{18,24},{15,21},{15,21},{12,18},{22,28},{23,29},

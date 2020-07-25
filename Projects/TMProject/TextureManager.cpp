@@ -264,16 +264,15 @@ int TextureManager::LoadUITexture(int nIndex, int nSrcIndex)
 	int PlusLength = 18;
 	unsigned int ColorKey = 0xFF000000;
 
-	int nLengtha = 0;
 	char* pBuffer = nullptr;
 
 	if (bDDsType == 0)
 	{
-		nLengtha = nLength - 4;
+		nLength = nLength - 4;
 		pBuffer = new char[nLength + PlusLength];
-		_read(handle, &szHeader, 4);
-		_read(handle, pBuffer, nLengtha);
-		memcpy(&pBuffer[nLengtha], m_szTGAHeader, sizeof(m_szTGAHeader));
+		_read(handle, szHeader, 4);
+		_read(handle, pBuffer, nLength);
+		memcpy(&pBuffer[nLength], m_szTGAHeader, 18);
 		_close(handle);
 
 		if (m_stUITextureList[nIndex].cAlpha == 'A')
@@ -293,13 +292,13 @@ int TextureManager::LoadUITexture(int nIndex, int nSrcIndex)
 	}
 	else
 	{
-		nLengtha = nLength - 1;
+		nLength = nLength - 1;
 		PlusLength = 0;
-		pBuffer = new char[nLengtha];
+		pBuffer = new char[nLength];
 
 		char szDDSHeader[5]{};
 		_read(handle, szHeader, 1);
-		_read(handle, pBuffer, nLengtha);
+		_read(handle, pBuffer, nLength);
 		memcpy(pBuffer, m_szDDSHeader, 3);
 
 		if (pBuffer[84] == '2')
@@ -315,7 +314,7 @@ int TextureManager::LoadUITexture(int nIndex, int nSrcIndex)
 			if (SUCCEEDED(D3DXCreateTextureFromFileInMemoryEx(
 				g_pDevice->m_pd3dDevice,
 				pBuffer,
-				nLengtha,
+				nLength,
 				-1,
 				-1,
 				1,
@@ -355,7 +354,7 @@ int TextureManager::LoadUITexture(int nIndex, int nSrcIndex)
 				if (SUCCEEDED(D3DXCreateTextureFromFileInMemoryEx(
 					g_pDevice->m_pd3dDevice,
 					pBuffer,
-					nLengtha,
+					nLength,
 					-1,
 					-1,
 					1,
@@ -384,7 +383,7 @@ int TextureManager::LoadUITexture(int nIndex, int nSrcIndex)
 	if (SUCCEEDED(D3DXCreateTextureFromFileInMemoryEx(
 		g_pDevice->m_pd3dDevice,
 		pBuffer,
-		PlusLength + nLengtha,
+		PlusLength + nLength,
 		-1,
 		-1,
 		1,
@@ -549,15 +548,14 @@ int TextureManager::LoadEffectTexture(int nIndex)
 	int nLength = _filelength(handle);
 	D3DFORMAT texFormat = g_pDevice->m_eFormat;
 
-	int nLengtha = 0;
 	char* pBuffer = nullptr;
 	if (bDDsType == 0)
 	{
-		nLengtha = nLength - 4;
+		nLength -= 4;
 		pBuffer = new char[nLength + PlusLength];
 		_read(handle, szHeader, 4);
-		_read(handle, pBuffer, nLengtha);
-		memcpy(&pBuffer[nLengtha], m_szTGAHeader, sizeof(m_szTGAHeader));
+		_read(handle, pBuffer, nLength);
+		memcpy(&pBuffer[nLength], m_szTGAHeader, sizeof(m_szTGAHeader));
 		_close(handle);
 		if (m_stEffectTextureList[nIndex].cAlpha == 'A')
 		{
@@ -576,11 +574,11 @@ int TextureManager::LoadEffectTexture(int nIndex)
 	}
 	else
 	{
-		nLengtha = nLength - 1;
+		nLength -= 1;
 		PlusLength = 0;
-		pBuffer = new char[nLengtha];
+		pBuffer = new char[nLength];
 		_read(handle, szHeader, 1);
-		_read(handle, &pBuffer, nLengtha);
+		_read(handle, pBuffer, nLength);
 		memcpy(pBuffer, m_szDDSHeader, 3);
 		if (pBuffer[84] == '2')
 			sprintf(m_szDDSHeader, "DXT1");
@@ -631,7 +629,7 @@ int TextureManager::LoadEffectTexture(int nIndex)
 		if (FAILED(D3DXCreateTextureFromFileInMemoryEx(
 			g_pDevice->m_pd3dDevice,
 			pBuffer,
-			PlusLength + nLengtha,
+			PlusLength + nLength,
 			-1,
 			-1,
 			4,
@@ -653,7 +651,7 @@ int TextureManager::LoadEffectTexture(int nIndex)
 	else if (FAILED(D3DXCreateTextureFromFileInMemoryEx(
 		g_pDevice->m_pd3dDevice,
 		pBuffer,
-		PlusLength + nLengtha,
+		PlusLength + nLength,
 		-1,
 		-1,
 		1,
@@ -701,8 +699,8 @@ int TextureManager::GetEffectTextureIndex(char* szTextureName)
 	for (int i = 0; i < MAX_EFFECT_TEXTURE; i++)
 	{
 		int nStrLen2 = strlen(m_stEffectTextureList[i].szFileName);
-		sprintf((char*)szTextureName[nStrLen - 3],
-			(char*)m_stEffectTextureList[i].szFileName[nStrLen2 - 3]);
+		sprintf((char*)&szTextureName[nStrLen - 3],
+			(char*)&m_stEffectTextureList[i].szFileName[nStrLen2 - 3]);
 
 		if (!strcmp(szTextureName, m_stEffectTextureList[i].szFileName))
 			return i;
@@ -755,18 +753,17 @@ int TextureManager::LoadModelTexture(int nIndex)
 	int PlusLength = 18;
 	int ColorKey = 0xFF000000;
 
-	int nLengtha;
 	char* pBuffer;
 	char szHeader[5]{};
 	char szDDSHeader[5]{};
 
 	if (bDDsType == 0)
 	{
-		nLengtha = nLength - 4;
+		nLength = nLength - 4;
 		pBuffer = new char[nLength + PlusLength];
 		_read(handle, szHeader, 4);
-		_read(handle, pBuffer, nLengtha);
-		memcpy(&pBuffer[nLengtha], m_szTGAHeader, sizeof(m_szTGAHeader));
+		_read(handle, pBuffer, nLength);
+		memcpy(&pBuffer[nLength], m_szTGAHeader, sizeof(m_szTGAHeader));
 		_close(handle);
 
 		if (m_stModelTextureList[nIndex].cAlpha == 'A')
@@ -786,11 +783,11 @@ int TextureManager::LoadModelTexture(int nIndex)
 	}
 	else
 	{
-		nLengtha = nLength - 1;
+		nLength = nLength - 1;
 		PlusLength = 0;
-		pBuffer = new char[nLengtha];
+		pBuffer = new char[nLength];
 		_read(handle, szHeader, 1);
-		_read(handle, &pBuffer, nLengtha);
+		_read(handle, pBuffer, nLength);
 		memcpy(pBuffer, m_szDDSHeader, 3);
 		if (pBuffer[84] == '2')
 			sprintf(szDDSHeader, "DXT1");
@@ -857,7 +854,7 @@ int TextureManager::LoadModelTexture(int nIndex)
 		if (FAILED(D3DXCreateTextureFromFileInMemoryEx(
 			g_pDevice->m_pd3dDevice,
 			pBuffer,
-			PlusLength + nLengtha,
+			PlusLength + nLength,
 			-1,
 			-1,
 			4,
@@ -879,7 +876,7 @@ int TextureManager::LoadModelTexture(int nIndex)
 	else if (FAILED(D3DXCreateTextureFromFileInMemoryEx(
 		g_pDevice->m_pd3dDevice,
 		pBuffer,
-		PlusLength + nLengtha,
+		PlusLength + nLength,
 		-1,
 		-1,
 		1,
@@ -962,8 +959,8 @@ int TextureManager::GetModelTextureIndex(char* szTextureName)
 	for (int i = 0; i < MAX_MODEL_TEXTURE; i++)
 	{
 		int nStrLen2 = strlen(m_stModelTextureList[i].szFileName);
-		sprintf((char*)szTextureName[nStrLen - 3],
-			(char*)m_stModelTextureList[i].szFileName[nStrLen2 - 3]);
+		sprintf((char*)&szTextureName[nStrLen - 3],
+			(char*)&m_stModelTextureList[i].szFileName[nStrLen2 - 3]);
 
 		if (!strcmp(szTextureName, m_stModelTextureList[i].szFileName))
 			return i;
@@ -1019,18 +1016,17 @@ int TextureManager::LoadEnvTexture(int nIndex)
 	int PlusLength = 18;
 	int ColorKey = 0xFF000000;
 
-	int nLengtha;
 	char* pBuffer;
 	char szHeader[5]; {}
 	char szDDSHeader[5]; {}
 
 	if (bDDsType == 0)
 	{
-		nLengtha = nLength - 4;
+		nLength = nLength - 4;
 		pBuffer = new char[nLength + PlusLength];
 		_read(handle, szHeader, 4u);
-		_read(handle, pBuffer, nLengtha);
-		memcpy(&pBuffer[nLengtha], m_szTGAHeader, sizeof(m_szTGAHeader));
+		_read(handle, pBuffer, nLength);
+		memcpy(&pBuffer[nLength], m_szTGAHeader, sizeof(m_szTGAHeader));
 		_close(handle);
 		if (m_stEnvTextureList[nIndex].cAlpha == 'A')
 		{
@@ -1049,11 +1045,11 @@ int TextureManager::LoadEnvTexture(int nIndex)
 	}
 	else
 	{
-		nLengtha = nLength - 1;
+		nLength = nLength - 1;
 		PlusLength = 0;
-		pBuffer = new char[nLengtha];
+		pBuffer = new char[nLength];
 		_read(handle, szHeader, 1);
-		_read(handle, &pBuffer, nLengtha);
+		_read(handle, &pBuffer, nLength);
 		memcpy(pBuffer, m_szDDSHeader, 3u);
 		if (pBuffer[84] == '2')
 			sprintf(szDDSHeader, "DXT1");
@@ -1103,7 +1099,7 @@ int TextureManager::LoadEnvTexture(int nIndex)
 		if (FAILED(D3DXCreateTextureFromFileInMemoryEx(
 			g_pDevice->m_pd3dDevice,
 			pBuffer,
-			PlusLength + nLengtha,
+			PlusLength + nLength,
 			-1,
 			-1,
 			4,
@@ -1125,7 +1121,7 @@ int TextureManager::LoadEnvTexture(int nIndex)
 	else if (FAILED(D3DXCreateTextureFromFileInMemoryEx(
 		g_pDevice->m_pd3dDevice,
 		pBuffer,
-		PlusLength + nLengtha,
+		PlusLength + nLength,
 		-1,
 		-1,
 		1,

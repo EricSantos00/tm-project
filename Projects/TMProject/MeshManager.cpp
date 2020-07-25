@@ -7,6 +7,9 @@
 
 int g_nMaxSizeOffset[MAX_BONE_ANIMATION_LIST];
 
+stAniSoundTable2 g_MobAniTableEx[4][2];
+stAniSoundTable g_MobAniTable[60];
+
 stBoneAni MeshManager::m_BoneAnimationList[MAX_BONE_ANIMATION_LIST]{};
 short MeshManager::m_sAnimationArray[MAX_ANI_CLASS][MAX_ANI_TYPE][MAX_ANI_MOTION]{};
 char MeshManager::m_aObjectMask[MAX_OBJECT_MASK][MAX_MASK_X][MAX_MASK_Y]{};

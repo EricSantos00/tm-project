@@ -8,6 +8,9 @@ class TMFieldScene;
 class TMScene;
 class TMObject;
 class TMCamera;
+class TMHuman;
+
+constexpr int MAX_RESOURCE_LIST = 2560;
 
 class ObjectManager
 {
@@ -41,7 +44,7 @@ public:
 	virtual void OnDataEvent(unsigned int wParam, int lParam);
 	virtual void FrameMove(unsigned int dwServerTime);
 	virtual void EffectFrameMove(TreeNode* pNode, unsigned int dwServerTime);
-	virtual TMFieldScene* GetNodeByID(unsigned int dwID);
+	virtual TMScene* GetNodeByID(unsigned int dwID);
 	virtual TreeNode* GetHumanByID(unsigned int dwID);
 	virtual TreeNode* GetItemByID(unsigned int dwID);
 	virtual void RestoreDeviceObjects();
@@ -51,12 +54,12 @@ public:
 	virtual void RenderTargetObject(float fHeight);
 	virtual void SetCurrentState(TM_GAME_STATE ieNewState);
 	virtual void SetCurrentScene(TMScene* pScene);
-	virtual TMFieldScene* GetCurrentScene();
+	virtual TMScene* GetCurrentScene();
 
 	void DeleteObject(TreeNode* pNode);
 	void DeleteObject(unsigned int dwID);
 
-	virtual void DisconnectEffectFromMob(TMObject* pMob);
+	virtual void DisconnectEffectFromMob(TMHuman* pMob);
 	virtual int InitResourceList();
 	virtual void InitAniSoundTable();
 	virtual void InitCurseList();
@@ -87,7 +90,7 @@ public:
 	unsigned __int16 m_usAllyGuild;
 	char m_cAvatar[4];
 	char m_strGuildName[4][12];
-	ResourceDef m_ResourceList[2560];
+	ResourceDef m_ResourceList[MAX_RESOURCE_LIST];
 	TMObject* m_pTargetObject;
 	int m_nServerGroupIndex;
 	int m_nServerIndex;

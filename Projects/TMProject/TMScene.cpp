@@ -84,7 +84,7 @@ TMScene::TMScene() : TreeNode(0)
 
 	AddChild(m_pHumanContainer);
 
-	m_pTextBillMsg = new SText(-2, "ºô", 0xFFFFFFFF, 120.0f, 70.0f, 540.0f, 20.0f, 1, 0xAAFF0000, 1, 1);
+	m_pTextBillMsg = new SText(-2, "ÂºÃ´", 0xFFFFFFFF, 120.0f, 70.0f, 540.0f, 20.0f, 1, 0xAAFF0000, 1, 1);
 	m_pTextBillMsg->m_bSelectEnable = 0;
 	m_pTextBillMsg->SetVisible(0);
 
