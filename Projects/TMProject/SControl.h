@@ -235,7 +235,7 @@ public:
     };
 
 public:
-    SEditableText(int inTextureSetIndex, char* istrText, int inMaxStringLen, int ibPasswd, 
+    SEditableText(int inTextureSetIndex, const char* istrText, int inMaxStringLen, int ibPasswd, 
         unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, 
         unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SEditableText();
@@ -566,11 +566,11 @@ public:
         TMC_CANCELBUTTON_ID = 0x2,
     };
     enum {
-        TMC_MESSAGEBOX_MESSAGE = 0x0,
-        TMC_MESSAGEBOX_ASK = 0x1,
-        TMC_MESSAGEBOX_SLIDE = 0x2,
-        TMC_MESSAGEBOX_COMPLEX = 0x3,
-        TMC_MESSAGEBOX_OK = 0x4,
+        TMC_MESSAGEBOX_MESSAGE = 0,
+        TMC_MESSAGEBOX_ASK = 1,
+        TMC_MESSAGEBOX_SLIDE = 2,
+        TMC_MESSAGEBOX_COMPLEX = 3,
+        TMC_MESSAGEBOX_OK = 4,
     };
     enum {
         TMC_MESSAGE_OK = 0x0,

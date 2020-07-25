@@ -135,3 +135,21 @@ int IsClearString(char* str, int target)
 
 	return 1;
 }
+
+int IsClearString2(char* str, int nTarget)
+{
+	if (!str)
+		return 1;
+
+	char* pNextRightChar = CharNext(&str[nTarget]);
+	int nLen = pNextRightChar - &str[nTarget];
+	int nLen2 = pNextRightChar - CharPrev(str, pNextRightChar);
+
+	if (nLen == 1 && nLen2 == 2)
+		return 0;
+
+	if (nLen != 2 || nLen2 != 1)
+		return 1;
+
+	return 0;
+}

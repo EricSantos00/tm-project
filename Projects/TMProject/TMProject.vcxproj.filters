@@ -781,4 +781,12 @@
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\..\Users\Eric\Desktop\WYD Resources\Cursor\Cursor2.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\..\..\..\Users\Eric\Desktop\WYD Resources\Cursor\Cursor3.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
