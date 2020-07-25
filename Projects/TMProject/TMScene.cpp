@@ -281,7 +281,7 @@ SControlContainer* TMScene::GetCtrlContainer()
 	return m_pControlContainer;
 }
 
-int TMScene::LoadRC(char* szFileName)
+int TMScene::LoadRC(const char* szFileName)
 {
 	if (!m_pControlContainer)
 		m_pControlContainer = new SControlContainer(this);
@@ -293,9 +293,9 @@ int TMScene::LoadRC(char* szFileName)
 	int nLength = strlen(szBinFileName);
 
 	if (strchr(szBinFileName, '_'))
-		sprintf_s(&szBinFileName[nLength - 7], sizeof(szBinFileName), ".bin");
+		sprintf_s(&szBinFileName[nLength - 7], sizeof(szBinFileName) - nLength - 7, ".bin");
 	else
-		sprintf_s(&szBinFileName[nLength - 3], sizeof(szBinFileName), "bin");
+		sprintf_s(&szBinFileName[nLength - 3], sizeof(szBinFileName) - nLength - 3, "bin");
 
 	return ReadRCBin(szBinFileName);
 }
@@ -347,7 +347,6 @@ int TMScene::ReadRCBin(char* szBinFileName)
 			}
 
 			pPanel->SetControlID(binPanelData.nID);
-
 			pPanel->SetCenterPos(binPanelData.nID,
 				(float)binPanelData.nStartX,
 				(float)binPanelData.nStartY,
