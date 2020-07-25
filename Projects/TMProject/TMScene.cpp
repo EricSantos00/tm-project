@@ -283,7 +283,21 @@ SControlContainer* TMScene::GetCtrlContainer()
 
 int TMScene::LoadRC(char* szFileName)
 {
-	return 0;
+	if (!m_pControlContainer)
+		m_pControlContainer = new SControlContainer(this);
+
+	char szBinFileName[128]{};
+
+	sprintf_s(szBinFileName, "%s", szFileName);
+	
+	int nLength = strlen(szBinFileName);
+
+	if (strchr(szBinFileName, '_'))
+		sprintf_s(&szBinFileName[nLength - 7], sizeof(szBinFileName), ".bin");
+	else
+		sprintf_s(&szBinFileName[nLength - 3], sizeof(szBinFileName), "bin");
+
+	return ReadRCBin(szBinFileName);
 }
 
 int TMScene::ParseRC(FILE* fp, FILE* fpBinary, char* szControlType)
