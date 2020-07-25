@@ -343,17 +343,19 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 	int nMaxGroupN = 0;
 	for (int j = 0; j < m_nMaxGroup; ++j)
 	{
-		if (g_nServerCountList[4 * j])
+		if (g_nServerCountList[j])
 			nMaxGroupN++;
 	}
 
 	SListBoxServerItem* pServerItem[11]{ nullptr };
-
-	int nIndexN = g_nServerCountList[4 * idwEvent];
+	
+	int nIndexN = g_nServerCountList[idwEvent];
 	switch (idwControlID)
 	{
 	case 65542u:
 	{
+		char szStr[128] = { 0 };
+
 		int nUserCount[MAX_SERVERNUMBER] = { 0 };
 		char szUserCount[1024] = { 0 };
 		for (int k = 0; k < MAX_SERVERNUMBER; ++k)
@@ -365,6 +367,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 		m_pMessagePanel->SetMessage(g_pMessageStringTable[23], 0);
 		m_pMessagePanel->OnDataEvent(1u, 0);
 
+		int nUserCount2[MAX_SERVERNUMBER] = { 0 };
 		if (m_bAdmit == 1 && nIndexN == m_nAdmitGroup)
 		{
 			for (int i = m_nAdmitGroup; i < 10; ++i)
@@ -372,7 +375,6 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 
 			for (int i = 0; i < m_nAdmitGroup; ++i)
 			{
-				int nUserCount2[MAX_SERVERNUMBER] = { 0 };
 				BASE_GetHttpRequest(g_pServerList[i][0], szUserCount, sizeof szUserCount);
 
 				sscanf_s(szUserCount, "%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n",
@@ -380,9 +382,9 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 					&nUserCount2[6], &nUserCount2[7], &nUserCount2[8], &nUserCount2[9], &nUserCount2[10]);
 
 				if (m_nDay[i] >= 1)
-					nUserCount2[m_nAdmitGroup - i + 10] = (int)pServerItem[i];
+					nUserCount2[m_nAdmitGroup - i + 10] = (int)pServerItem[m_nDay[i] + 10];
 
-				sprintf_s(g_pServerList[i + 1][nIndexN], "%s", g_pServerList[m_bAdmit + m_nAdmitGroup - i][m_nAdmitGroup - i - i]);
+				sprintf_s(g_pServerList[nIndexN][i + 1], "%s", g_pServerList[m_nAdmitGroup - i - 1][m_bAdmit + m_nAdmitGroup - i]);
 			}
 		}
 		else
@@ -434,9 +436,105 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 					int nCastle = 0;
 					if (nAspGetweek == -1 || nAspGetweek != 1)
 						nCastle = IsCastle(num - 1);
+					else
+						nCastle = num % 2 == ((nAspGetday - 1) / 7 + 1) % 2;
+
+					int nServerAge = num;
+
+					if (m_bAdmit == 1 && nIndexN == m_nAdmitGroup)
+					{
+						int nGIndex = m_nAdmitGroup - num;
+						if (nGIndex < 0)
+							continue;
+
+						bool nCheckServer = false;
+						for (int k = 0; k < m_nAdmitGroup; ++k)
+						{
+							if (g_nServerCountList[k] == nGIndex + 1)
+								nCheckServer = true;
+						}
+
+						if (!nCheckServer)
+							continue;
+
+						nCastle = IsCastle(m_nDay[nGIndex] - 1);
+
+						if (g_szServerName[nGIndex][m_nDay[nGIndex]][0])
+							sprintf_s(szStr, "%s-%s", g_szServerNameList[nGIndex], g_szServerName[nGIndex][m_nDay[nGIndex] - 1][0]);
+						else
+						{
+							sprintf_s(szStr, "%s-%d", g_szServerNameList[nGIndex], m_nDay[nGIndex]);
+
+							nServerAge = m_nDay[nGIndex];
+
+							if (nUserCount2[num] > 600)
+							{
+								int len = strlen(szStr);
+
+								if (len < 14)
+								{
+									for (int n1 = len; n1 < len; ++n1)
+										szStr[n1] = ' ';
+								}
+
+								szStr[14] = 0;
+								strcat(szStr, "FULL");
+							}
+						}
+					}
+					else if (g_szServerNameList[nIndexN][0])
+					{
+						if (g_szServerName[nIndexN][num][0])
+							sprintf_s(szStr, "%s-%s", g_szServerNameList[nIndexN], g_szServerName[nIndexN][num]);
+						else
+						{
+							sprintf_s(szStr, "%s-%d", g_szServerNameList[nIndexN], num);
+
+							if (nUserCount2[num] > 600)
+							{
+								int len = strlen(szStr);
+
+								if (len < 14)
+								{
+									for (int n1 = len; n1 < len; ++n1)
+										szStr[n1] = ' ';
+								}
+
+								szStr[14] = 0;
+								strcat(szStr, "FULL");
+							}
+						}
+					}
+					else
+						sprintf_s(szStr, g_pMessageStringTable[68], nIndexN + 1, num);
+
+					int nCount = nUserCount[num];
+					if (nCount < 0)
+						nCount = 0;
+
+					int nTextureSet = -1;
+					if (m_bAdmit == 1 && m_nDay[nIndexN] == num)
+						nTextureSet = -2;
+
+					if (m_bAdmit == 1 && nIndexN == m_nAdmitGroup)
+						nTextureSet = -2;
+
+					// TODO: need to do that code 
+					//  *(_BYTE *)(*((_DWORD *)&time.wSecond + Num) + 3656) = 0;
+
+					pServerList->AddItem(new SListBoxServerItem(nTextureSet, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nCount, nCastle, 0, nServerAge));
+				}
+				else if (m_bAdmit == -1 && num < m_nMaxGroup)
+				{
+					sprintf_s(szStr, g_pMessageStringTable[70]);
+
+					// TODO : review code					
+					pServerList->AddItem(new SListBoxServerItem(6, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nUserCount2[num], 0, 0, 0));
 				}
 			}
 		}
+
+		SwapLauncher();
 	}
 	break;
 	}
@@ -545,7 +643,7 @@ void TMSelectServerScene::InitializeUI()
 
 		m_nAdmitGroup = 0;
 
-		for (int nCount = 0; nCount <= 111; ++nCount)
+		for (int nCount = 0; nCount <= 11; ++nCount)
 		{
 			if (m_nAdmitGroup <= g_nServerCountList[nCount])
 				m_nAdmitGroup = g_nServerCountList[nCount];
@@ -566,8 +664,8 @@ void TMSelectServerScene::InitializeUI()
 			if (count > -1 && g_pServerList[count][0][0])
 			{
 				char szStr[128]{ 0 };
-				if (g_szServerNameList[g_nServerCountList[i] - 2][0])
-					sprintf_s(szStr, g_szServerNameList[g_nServerCountList[i] - 2]);
+				if (g_szServerNameList[g_nServerCountList[i] - 1][0])
+					sprintf_s(szStr, g_szServerNameList[g_nServerCountList[i] - 1]);
 				else
 					sprintf_s(szStr, g_pMessageStringTable[66], count);
 
