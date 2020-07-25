@@ -1064,7 +1064,52 @@ int TMScene::GroundGetMask(IVector2 vecPosition)
 
 float TMScene::GroundGetHeight(TMVector2 vecPosition)
 {
-	return 0.0f;
+	float fHeight{ -10000.0f };
+
+	if (m_pGround != nullptr)
+	{
+		if (vecPosition.x >= m_pGround->m_vecOffset.x &&
+			vecPosition.x < (m_pGround->m_vecOffset.x + 128.0f) &&
+			vecPosition.y >= m_pGround->m_vecOffset.y &&
+			vecPosition.y < (m_pGround->m_vecOffset.y + 128.0f))
+		{
+			fHeight = m_pGround->GetHeight(vecPosition);
+		}
+		else if (m_pGround->m_pLeftGround
+			&& vecPosition.x >= m_pGround->m_pLeftGround->m_vecOffset.x
+			&& vecPosition.x < (m_pGround->m_pLeftGround->m_vecOffset.x + 128.0f)
+			&& vecPosition.y >= m_pGround->m_pLeftGround->m_vecOffset.y
+			&& vecPosition.y < (m_pGround->m_pLeftGround->m_vecOffset.y + 128.0f))
+		{
+			fHeight = m_pGround->m_pLeftGround->GetHeight(vecPosition);
+		}
+		else if (m_pGround->m_pRightGround
+			&& vecPosition.x >= m_pGround->m_pRightGround->m_vecOffset.x
+			&& vecPosition.x < (m_pGround->m_pRightGround->m_vecOffset.x + 128.0f)
+			&& vecPosition.y >= m_pGround->m_pRightGround->m_vecOffset.y
+			&& vecPosition.y < (m_pGround->m_pRightGround->m_vecOffset.y + 128.0f))
+		{
+			fHeight = m_pGround->m_pRightGround->GetHeight(vecPosition);
+		}
+		else if (m_pGround->m_pUpGround
+			&& vecPosition.x >= m_pGround->m_pUpGround->m_vecOffset.x
+			&& vecPosition.x < (m_pGround->m_pUpGround->m_vecOffset.x + 128.0f)
+			&& vecPosition.y >= m_pGround->m_pUpGround->m_vecOffset.y
+			&& vecPosition.y < (m_pGround->m_pUpGround->m_vecOffset.y + 128.0f))
+		{
+			fHeight = m_pGround->m_pUpGround->GetHeight(vecPosition);
+		}
+		else if (m_pGround->m_pDownGround
+			&& vecPosition.x >= m_pGround->m_pDownGround->m_vecOffset.x
+			&& vecPosition.x < (m_pGround->m_pDownGround->m_vecOffset.x + 128.0f)
+			&& vecPosition.y >= m_pGround->m_pDownGround->m_vecOffset.y
+			&& vecPosition.y < (m_pGround->m_pDownGround->m_vecOffset.y + 128.0f))
+		{
+			fHeight = m_pGround->m_pDownGround->GetHeight(vecPosition);
+		}
+	}
+
+	return fHeight;
 }
 
 D3DCOLORVALUE TMScene::GroundGetColor(TMVector2 vecPosition)
