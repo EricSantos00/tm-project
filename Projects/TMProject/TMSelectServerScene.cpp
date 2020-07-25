@@ -20,6 +20,11 @@ void SwapLauncher()
 
 }
 
+int IsCastle(int nServerIndex)
+{
+	return 0;
+}
+
 TMSelectServerScene::TMSelectServerScene()
 {
 	m_eSceneType = ESCENE_TYPE::ESCENE_SELECT_SERVER;
@@ -174,9 +179,9 @@ int TMSelectServerScene::InitializeScene()
 
 	int nAspGetweek = -1;
 	int nAspGetday = -1;
-	int nUserCount[11] { 0 };
+	int nUserCount[MAX_SERVERNUMBER] { 0 };
 	char szUserCount[1024]{ 0 };
-	for (int i = 0; i < 11; +i)
+	for (int i = 0; i < MAX_SERVERNUMBER; ++i)
 		nUserCount[i] = -1;
 
 	BASE_GetHttpRequest((char*)&g_pServerList, szUserCount, 1024);
@@ -335,6 +340,106 @@ int TMSelectServerScene::InitializeScene()
 
 int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEvent)
 {
+	int nMaxGroupN = 0;
+	for (int j = 0; j < m_nMaxGroup; ++j)
+	{
+		if (g_nServerCountList[4 * j])
+			nMaxGroupN++;
+	}
+
+	SListBoxServerItem* pServerItem[11]{ nullptr };
+
+	int nIndexN = g_nServerCountList[4 * idwEvent];
+	switch (idwControlID)
+	{
+	case 65542u:
+	{
+		int nUserCount[MAX_SERVERNUMBER] = { 0 };
+		char szUserCount[1024] = { 0 };
+		for (int k = 0; k < MAX_SERVERNUMBER; ++k)
+			nUserCount[k] = -1;
+
+		int nAspGetweek = -1;
+		int nAspGetday = -1;
+
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[23], 0);
+		m_pMessagePanel->OnDataEvent(1u, 0);
+
+		if (m_bAdmit == 1 && nIndexN == m_nAdmitGroup)
+		{
+			for (int i = m_nAdmitGroup; i < 10; ++i)
+				g_pServerList[i][0][0] = 0;
+
+			for (int i = 0; i < m_nAdmitGroup; ++i)
+			{
+				int nUserCount2[MAX_SERVERNUMBER] = { 0 };
+				BASE_GetHttpRequest(g_pServerList[i][0], szUserCount, sizeof szUserCount);
+
+				sscanf_s(szUserCount, "%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n",
+					&nUserCount2[0], &nUserCount2[1], &nUserCount2[2], &nUserCount2[3], &nUserCount2[4], &nUserCount2[5],
+					&nUserCount2[6], &nUserCount2[7], &nUserCount2[8], &nUserCount2[9], &nUserCount2[10]);
+
+				if (m_nDay[i] >= 1)
+					nUserCount2[m_nAdmitGroup - i + 10] = (int)pServerItem[i];
+
+				sprintf_s(g_pServerList[i + 1][nIndexN], "%s", g_pServerList[m_bAdmit + m_nAdmitGroup - i][m_nAdmitGroup - i - i]);
+			}
+		}
+		else
+		{
+			BASE_GetHttpRequest(g_pServerList[nIndexN][0], szUserCount, sizeof szUserCount);
+			sscanf_s(szUserCount, "%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n",
+				&nUserCount[0], &nUserCount[1], &nUserCount[2], &nUserCount[3], &nUserCount[4], &nUserCount[5],
+				&nUserCount[6], &nUserCount[7], &nUserCount[8], &nUserCount[9], &nAspGetweek, &nAspGetday);
+
+			if (nAspGetday == -1)
+			{
+				_SYSTEMTIME time{};
+				nAspGetday = time.wDay;
+			}
+
+			for (int i = 0; i < MAX_SERVERGROUP; ++i)
+			{
+				m_nDay[i] = 0;
+				for (int k = 0; k < MAX_SERVERNUMBER; ++k)
+					if (g_pServerList[i][k])
+						++m_nDay[i];
+
+				if (m_nDay[i])
+				{
+					int nDay = nAspGetday % m_nDay[i];
+					if (!nDay)
+						nDay = m_nDay[i];
+
+					m_nDay[i] = nDay;
+				}
+			}
+
+			m_pMessagePanel->OnDataEvent(0, 1);
+
+			SListBox* pServerList = m_pNServerList;
+			pServerList->Empty();
+
+			for (int num = 0;; ++num)
+			{
+				if (num >= MAX_SERVERNUMBER)
+				{
+					pServerList->RestoreDeviceObjects();
+
+					break;
+				}
+
+				if (g_pServerList[nIndexN][num])
+				{
+					int nCastle = 0;
+					if (nAspGetweek == -1 || nAspGetweek != 1)
+						nCastle = IsCastle(num - 1);
+				}
+			}
+		}
+	}
+	break;
+	}
 	return 0;
 }
 
