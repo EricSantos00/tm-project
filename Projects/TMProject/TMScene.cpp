@@ -850,7 +850,7 @@ int TMScene::OnKeyDownEvent(unsigned int iKeyCode)
 	if (m_pControlContainer && m_pControlContainer->OnKeyDownEvent(iKeyCode) == 1)
 		return 1;
 	
-	OnKeyDownEvent(iKeyCode);
+	TreeNode::OnKeyDownEvent(iKeyCode);
 	return 0;
 }
 
@@ -862,7 +862,7 @@ int TMScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int
 	if (m_pControlContainer && m_pControlContainer->OnMouseEvent(dwFlags, wParam, nX, nY) == 1)
 		return 1;
 
-	OnMouseEvent(dwFlags, wParam, nX, nY);
+	TreeNode::OnMouseEvent(dwFlags, wParam, nX, nY);
 	return 0;
 }
 
@@ -874,7 +874,7 @@ int TMScene::OnKeyUpEvent(unsigned int iKeyCode)
 	if (m_pControlContainer && m_pControlContainer->OnKeyUpEvent(iKeyCode) == 1)
 		return 1;
 
-	OnKeyUpEvent(iKeyCode);
+	TreeNode::OnKeyUpEvent(iKeyCode);
 	return 0;
 }
 
@@ -886,7 +886,7 @@ int TMScene::OnCharEvent(char iCharCode, int lParam)
 	if (m_pControlContainer && m_pControlContainer->OnCharEvent(iCharCode, lParam) == 1)
 		return 1;
 	
-	return OnCharEvent(iCharCode, lParam);
+	return TreeNode::OnCharEvent(iCharCode, lParam);
 }
 
 int TMScene::OnIMEEvent(char* ipComposeString)
