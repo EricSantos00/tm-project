@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Basedef.h"
 #include "TMGlobal.h"
 
@@ -29,11 +29,6 @@ void BASE_ApplyAttribute(char* pHeight, int size)
 {
 }
 
-int	BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer)
-{
-	return 0;
-}
-
 int BASE_ReadMessageBin()
 {
 	return 0;
@@ -54,6 +49,11 @@ void BASE_ReadItemPrice()
 
 void BASE_UnderBarToSpace(const char* szStr)
 {
+}
+
+int BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer)
+{
+	return 0;
 }
 
 int ReadItemicon()

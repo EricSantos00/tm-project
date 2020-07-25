@@ -76,7 +76,7 @@ int g_totaleffect;
 int g_nUpdateGuildName;
 
 stCurse_num g_pCurseList;
-
 int Game_grade = 1;
 char g_AccountLock;
 int g_nBattleMaster;
+int g_pDebugMaxCount; 

@@ -98,6 +98,7 @@ extern stCurse_num g_pCurseList;
 extern int Game_grade;
 extern char g_AccountLock;
 extern int g_nBattleMaster;
+extern int g_pDebugMaxCount;
 
 static unsigned int g_dwHandIndex[101][2] =
 {

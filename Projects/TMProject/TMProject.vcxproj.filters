@@ -441,6 +441,9 @@
     <ClInclude Include="TMObjectContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ItemEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TMProject.cpp">

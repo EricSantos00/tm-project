@@ -848,7 +848,7 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 		{
 			if (g_pCurrentScene != nullptr)
 			{
-				static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText("EN", 0);
+				static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText((char*)"EN", 0);
 				static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextIMEDesc->SetVisible(0);
 			}
 		}
@@ -864,7 +864,7 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 				{
 					if (bNative != 0)
 					{
-						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText("Ch", 0);
+						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText((char*)"Ch", 0);
 						HKL hkl = GetKeyboardLayout(0);
 
 						char dst[256]{};
@@ -876,7 +876,7 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 					}
 					else
 					{
-						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText("EN", 0);
+						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText((char*)"EN", 0);
 						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextIMEDesc->SetVisible(0);
 					}
 				}

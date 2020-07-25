@@ -796,6 +796,7 @@ extern char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
 extern int g_HeightPosX;
 extern int g_HeightPosY;
 extern int g_nSelServerWeather;
+
 float BASE_ScreenResize(float size);
 void BASE_InitModuleDir();
 void BASE_InitializeHitRate();
@@ -805,6 +806,7 @@ void BASE_InitEffectString();
 int BASE_InitializeBaseDef();
 void BASE_ReadItemPrice();
 void BASE_UnderBarToSpace(const char* szStr);
+
 int	BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer);
 
 /* Read Functions */
