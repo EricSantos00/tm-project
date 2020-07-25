@@ -221,8 +221,8 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 	SCursor::m_nCursorType = nCursor;
 	if (nCursor == 2)
 	{
-		SCursor::m_hCursor1 = LoadCursorA(hInstance, (LPCSTR)0xA2);
-		SCursor::m_hCursor2 = LoadCursorA(hInstance, (LPCSTR)0xA4);
+		SCursor::m_hCursor1 = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_CURSOR1));
+		SCursor::m_hCursor2 = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_CURSOR2));
 		if (SCursor::m_hCursor1)
 			SetCursor(SCursor::m_hCursor1);
 	}
@@ -291,7 +291,7 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 		SetRect(&rc, 0, 0, m_dwScreenWidth, m_dwScreenHeight);
 		AdjustWindowRect(&rc, m_dwWindowStyle, 0);
 
-		m_hWnd = CreateWindowExA(
+		m_hWnd = CreateWindowEx(
 			0,
 			(LPCSTR)m_strWindowTitle,
 			ClassName,
@@ -798,7 +798,9 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 {
 	switch (uMsg)
 	{
-	case WM_MOUSEFIRST:
+	case WM_MOUSEMOVE:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
 	{
 		if (SCursor::m_nCursorType == 0)
 		{

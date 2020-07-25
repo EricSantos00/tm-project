@@ -818,6 +818,7 @@ char ReadChatFiltraDataBase();
 
 /* String Related functions */
 int IsClearString(char* str, int target);
+int IsClearString2(char* str, int nTarget);
 
 /* System functions */
 void EnableSysKey();

@@ -413,6 +413,10 @@
     <Image Include="small.ico" />
     <Image Include="TMProject.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\..\Users\Eric\Desktop\WYD Resources\Cursor\Cursor2.cur" />
+    <None Include="..\..\..\..\..\..\Users\Eric\Desktop\WYD Resources\Cursor\Cursor3.cur" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

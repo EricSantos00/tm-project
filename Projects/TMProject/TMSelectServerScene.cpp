@@ -350,6 +350,7 @@ int TMSelectServerScene::OnPacketEvent(unsigned int dwCode, char* buf)
 
 int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 {
+	g_pCursor->SetVisible(1);
 	return TMScene::FrameMove(dwServerTime);
 }
 
@@ -465,7 +466,7 @@ void TMSelectServerScene::InitializeUI()
 				else
 					sprintf_s(szStr, g_pMessageStringTable[66], count);
 
-				pGroupItem[i] = new SListBoxItem(szStr, 0xD0FFFFFF, 0.0f, 0.0f, 63.0f, 16.0f, 0, 0x77777777u, 1u, 0);)
+				pGroupItem[i] = new SListBoxItem(szStr, 0xD0FFFFFF, 0.0f, 0.0f, 63.0f, 16.0f, 0, 0x77777777u, 1u, 0);
 				m_pNServerGroupList->AddItem(pGroupItem[i]);
 			}
 		}
