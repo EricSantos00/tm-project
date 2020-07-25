@@ -387,6 +387,7 @@ void TMSelectServerScene::SetAlphaVirtualkey(unsigned int dwStartTime, unsigned 
 
 void TMSelectServerScene::InitializeUI()
 {
+	SListBoxItem* pGroupItem[11];
 	m_pNServerSelect = (SPanel*)m_pControlContainer->FindControl(65537);
 	m_pNServerSelect->SetVisible(1);
 
@@ -400,7 +401,75 @@ void TMSelectServerScene::InitializeUI()
 		((float)g_pDevice->m_dwScreenHeight - m_pNServerSelect->m_nHeight) * 0.5f);
 	m_pNServerSelect->m_nPosY += 75.0f;
 
-	// TODO: finish
+
+	_SYSTEMTIME time{};
+	GetLocalTime(&time);
+	
+	if (m_pNServerGroupList)
+	{
+		for (int i = 0; i < 11; ++i)
+		{
+			if (!g_pServerList[i][0][0])
+			{
+				m_nMaxGroup = i - 1;
+
+				break;
+			}
+		}
+
+		g_pTimerManager->GetServerTime();
+
+		for (int i = 0; i < 10; i++)
+		{
+			for (int j = 0; j < 11; ++j)
+			{
+				if (g_pServerList[i][j][0])
+					m_nDay[i] ++;
+			}
+
+			if (m_nDay[i])
+			{
+				int tmp = time.wDay % m_nDay[i];
+				if (!tmp)
+					tmp = m_nDay[i];
+
+				m_nDay[i] = tmp;
+			}
+		}
+
+		m_nAdmitGroup = 0;
+
+		for (int nCount = 0; nCount <= 111; ++nCount)
+		{
+			if (m_nAdmitGroup <= g_nServerCountList[nCount])
+				m_nAdmitGroup = g_nServerCountList[nCount];
+
+			if (g_nServerCountList[nCount] > m_nMaxGroup)
+				m_nMaxGroup = g_nServerCountList[nCount];
+		}
+
+		--m_nAdmitGroup;
+
+		if (g_pServerList[9][0][0])
+			m_nMaxGroup = 9;
+
+		for (int i = m_nMaxGroup; i > 0; --i)
+		{
+			int count = g_nServerCountList[i] - 1;
+
+			if (count > -1 && g_pServerList[count][0][0])
+			{
+				char szStr[128]{ 0 };
+				if (g_szServerNameList[g_nServerCountList[i] - 2][0])
+					sprintf_s(szStr, g_szServerNameList[g_nServerCountList[i] - 2]);
+				else
+					sprintf_s(szStr, g_pMessageStringTable[66], count);
+
+				pGroupItem[i] = new SListBoxItem(szStr, 0xD0FFFFFF, 0.0f, 0.0f, 63.0f, 16.0f, 0, 0x77777777u, 1u, 0);)
+				m_pNServerGroupList->AddItem(pGroupItem[i]);
+			}
+		}
+	}
 }
 
 int TMSelectServerScene::FrameMoveGameGrade(unsigned int dwServerTime)
