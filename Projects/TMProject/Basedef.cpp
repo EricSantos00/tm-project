@@ -40,6 +40,8 @@ void BASE_InitEffectString()
 
 int BASE_InitializeBaseDef()
 {
+	BASE_InitializeServerList();
+
 	return 1;
 }
 
@@ -150,6 +152,29 @@ int IsClearString2(char* str, int nTarget)
 
 	if (nLen != 2 || nLen2 != 1)
 		return 1;
+
+	return 0;
+}
+
+int BASE_InitializeServerList()
+{
+	FILE* fpBin = nullptr;
+	fopen_s(&fpBin, "./serverlist.bin", "rb");
+
+	if (fpBin)
+	{
+		char szList[65] = { "¤¡¤¤¤§¤©¤±¤²¤µ¤·¤¸¤º¤»¤¼¤½¤¾¤¿¤Á¤Ã¤Å¤Ç¤Ë¤Ì¤Ð¤Ñ¤Ó¤¿¤Ä¤Ó¤Ç¤Ì°¡³ª´Ù"};
+
+		memset(&g_pServerList, 0, sizeof g_pServerList);
+		fread(g_pServerList, 0x6E, 0x40u, fpBin);
+		fclose(fpBin);
+
+		for (int k = 0; k < MAX_SERVERGROUP; k++)
+			for (int j = 0; j < MAX_SERVERNUMBER; j++)
+				for (int i = 0; i < 64; i++)
+					g_pServerList[k][j][i] -= szList[63 - i];
+		return 1;
+	}
 
 	return 0;
 }

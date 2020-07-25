@@ -806,7 +806,7 @@ void BASE_InitEffectString();
 int BASE_InitializeBaseDef();
 void BASE_ReadItemPrice();
 void BASE_UnderBarToSpace(const char* szStr);
-
+int BASE_InitializeServerList();
 int	BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer);
 
 /* Read Functions */
