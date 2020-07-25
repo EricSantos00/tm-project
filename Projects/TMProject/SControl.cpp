@@ -937,29 +937,34 @@ void SText::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParen
 		(float)(m_GCText.nPosY + m_GCText.nHeight) >= 0.0f &&
 		m_GCText.nPosX <= (float)(800.0f * RenderDevice::m_fWidthRatio) && 
 		m_GCText.nPosY <= (float)(600.0f * RenderDevice::m_fHeightRatio))
-	{
-		m_GCText2.nPosY = ((ivParentPos.y + m_nPosY) + 
-			(((m_nHeight - (16.0f * fHeightRatio)) / 2.0f) + 2.0f));
-		m_GCText2.nWidth = m_nWidth;
-		m_GCText2.nHeight = m_nHeight;
-		m_GCText2.nLayer = inParentLayer;
-		AddRenderControlItem(pDrawList, &m_GCText2, inParentLayer);
+	{		
+		AddRenderControlItem(pDrawList, &m_GCText, inParentLayer);
 
-		m_GCText3.nPosY = ((ivParentPos.y + m_nPosY)
-			+ (((m_nHeight - (16.0f * fHeightRatio)) / 2.0f)
-				+ 2.0f));
-		m_GCText3.nWidth = m_nWidth;
-		m_GCText3.nHeight = m_nHeight;
-		m_GCText3.nLayer = inParentLayer;
-		AddRenderControlItem(pDrawList, &m_GCText3, inParentLayer);
+		if (m_cComma == 2)
+		{
+			m_GCText2.nPosY = ((ivParentPos.y + m_nPosY) +
+				(((m_nHeight - (16.0f * fHeightRatio)) / 2.0f) + 2.0f));
+			m_GCText2.nWidth = m_nWidth;
+			m_GCText2.nHeight = m_nHeight;
+			m_GCText2.nLayer = inParentLayer; 
+			AddRenderControlItem(pDrawList, &m_GCText2, inParentLayer);
 
-		m_GCText4.nPosY = ((ivParentPos.y + m_nPosY)
-			+ (((m_nHeight - (16.0f * fHeightRatio)) / 2.0f)
-				+ 2.0f));
-		m_GCText4.nWidth = m_nWidth;
-		m_GCText4.nHeight = m_nHeight;
-		m_GCText4.nLayer = inParentLayer;
-		AddRenderControlItem(pDrawList, &m_GCText4, inParentLayer);
+			m_GCText3.nPosY = ((ivParentPos.y + m_nPosY)
+				+ (((m_nHeight - (16.0f * fHeightRatio)) / 2.0f)
+					+ 2.0f));
+			m_GCText3.nWidth = m_nWidth;
+			m_GCText3.nHeight = m_nHeight;
+			m_GCText3.nLayer = inParentLayer;
+			AddRenderControlItem(pDrawList, &m_GCText3, inParentLayer);
+
+			m_GCText4.nPosY = ((ivParentPos.y + m_nPosY)
+				+ (((m_nHeight - (16.0f * fHeightRatio)) / 2.0f)
+					+ 2.0f));
+			m_GCText4.nWidth = m_nWidth;
+			m_GCText4.nHeight = m_nHeight;
+			m_GCText4.nLayer = inParentLayer;
+			AddRenderControlItem(pDrawList, &m_GCText4, inParentLayer);
+		}		
 	}
 }
 
