@@ -78,7 +78,7 @@ public:
     int GroundGetMask(TMVector2 vecPosition);
     int GroundGetMask(IVector2 vecPosition);
     float GroundGetHeight(TMVector2 vecPosition);
-    D3DCOLORVALUE* GroundGetColor(D3DCOLORVALUE* result, TMVector2 vecPosition);
+    D3DCOLORVALUE GroundGetColor(TMVector2 vecPosition);
     void GroundSetColor(TMVector2 vecPosition, unsigned int dwColor);
     int GroundIsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight);
     int GroundIsInWater2(TMVector2 vecPosition, float* pfWaterHeight);

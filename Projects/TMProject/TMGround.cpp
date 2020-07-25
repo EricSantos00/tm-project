@@ -2285,9 +2285,9 @@ int TMGround::GetMask(TMVector2 vecPosition)
 	return 0;
 }
 
-D3DCOLORVALUE* TMGround::GetColor(D3DCOLORVALUE* result, TMVector2 vecPosition)
+D3DCOLORVALUE TMGround::GetColor(TMVector2 vecPosition)
 {
-	return nullptr;
+    return D3DCOLORVALUE{};
 }
 
 int TMGround::GetTileType(TMVector2 vecPosition)
