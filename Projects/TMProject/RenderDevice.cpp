@@ -3120,7 +3120,7 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 	}
 	else if (ipControl->nTextureSetIndex < -2)
 	{
-		ControlTextureSet* pUISet = g_pTextureManager->GetUITextureSet(-ipControl->nTextureIndex);
+		ControlTextureSet* pUISet = g_pTextureManager->GetUITextureSet(-ipControl->nTextureSetIndex);
 		if (pUISet != nullptr)
 		{
 			if (pUISet->pTextureCoord == nullptr)
@@ -3272,6 +3272,7 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 					nUp + (int)ipControl->nPosY,
 					(int)ipControl->eRenderType);
 			}
+			break;
 		case RENDERCTRLTYPE::RENDER_IMAGE:
 		case RENDERCTRLTYPE::RENDER_IMAGE_TILE:
 		case RENDERCTRLTYPE::RENDER_IMAGE_STRETCH:
@@ -3301,6 +3302,7 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 					}
 				}
 			}
+			break;
 		case RENDERCTRLTYPE::RENDER_3DOBJ:
 			if (ipControl->n3DObjIndex < 737 || ipControl->n3DObjIndex > 739)
 			{
@@ -3388,24 +3390,25 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 				SetRenderState(D3DRS_FOGENABLE, m_bFog);
 				g_pDevice->SetRenderState(D3DRS_ZFUNC, 4);
 			}
-		default:
-			if (g_pDevice->m_iVGAID == 1)
-			{
-				if (g_pDevice->m_dwBitCount == 32)
-					g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xFF000000);
-				else
-					g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xF000);
-			}
-			else if (g_pDevice->m_dwBitCount == 32)
-			{
-				g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xDD);
-			}
-			else
-			{
-				g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xD);
-			}
-			return;
+			break;	
 		}
+
+		if (g_pDevice->m_iVGAID == 1)
+		{
+			if (g_pDevice->m_dwBitCount == 32)
+				g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xFF000000);
+			else
+				g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xF000);
+		}
+		else if (g_pDevice->m_dwBitCount == 32)
+		{
+			g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xDD);
+		}
+		else
+		{
+			g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xD);
+		}
+		return;
 	}
 }
 

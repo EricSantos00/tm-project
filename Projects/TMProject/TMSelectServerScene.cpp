@@ -350,7 +350,7 @@ int TMSelectServerScene::OnPacketEvent(unsigned int dwCode, char* buf)
 
 int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	return TMScene::FrameMove(dwServerTime);
 }
 
 void TMSelectServerScene::ResetDemoPlayer()
@@ -387,6 +387,20 @@ void TMSelectServerScene::SetAlphaVirtualkey(unsigned int dwStartTime, unsigned 
 
 void TMSelectServerScene::InitializeUI()
 {
+	m_pNServerSelect = (SPanel*)m_pControlContainer->FindControl(65537);
+	m_pNServerSelect->SetVisible(1);
+
+	m_pNServerGroupList = (SListBox*)m_pControlContainer->FindControl(65542);
+	m_pNServerList = (SListBox*)m_pControlContainer->FindControl(65543u);
+
+	if (m_pNServerList)
+		m_pNServerList->SetVisible(0);
+
+	m_pNServerSelect->SetPos(((float)g_pDevice->m_dwScreenWidth - m_pNServerSelect->m_nWidth) * 0.5f,
+		((float)g_pDevice->m_dwScreenHeight - m_pNServerSelect->m_nHeight) * 0.5f);
+	m_pNServerSelect->m_nPosY += 75.0f;
+
+	// TODO: finish
 }
 
 int TMSelectServerScene::FrameMoveGameGrade(unsigned int dwServerTime)
