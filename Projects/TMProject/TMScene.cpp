@@ -1075,6 +1075,46 @@ D3DCOLORVALUE* TMScene::GroundGetColor(D3DCOLORVALUE* result, TMVector2 vecPosit
 
 void TMScene::GroundSetColor(TMVector2 vecPosition, unsigned int dwColor)
 {
+	if (!m_pGround)
+		return;
+
+	if (vecPosition.x >= m_pGround->m_vecOffset.x && vecPosition.x < (m_pGround->m_vecOffset.x + 128.0f) &&
+		vecPosition.y >= m_pGround->m_vecOffset.y && vecPosition.y < (m_pGround->m_vecOffset.y + 128.0f))
+	{
+		m_pGround->SetColor(vecPosition, dwColor);
+	}
+	else if (m_pGround->m_pLeftGround 
+		&& vecPosition.x >= m_pGround->m_pLeftGround->m_vecOffset.x
+		&& vecPosition.x < (m_pGround->m_pLeftGround->m_vecOffset.x + 128.0f)
+		&& vecPosition.y >= m_pGround->m_pLeftGround->m_vecOffset.y
+		&& vecPosition.y < (m_pGround->m_pLeftGround->m_vecOffset.y + 128.0f))
+	{
+		m_pGround->m_pLeftGround->SetColor(vecPosition, dwColor);
+	}
+	else if (m_pGround->m_pRightGround
+		&& vecPosition.x >= m_pGround->m_pRightGround->m_vecOffset.x
+		&& vecPosition.x < (m_pGround->m_pRightGround->m_vecOffset.x + 128.0f)
+		&& vecPosition.y >= m_pGround->m_pRightGround->m_vecOffset.y
+		&& vecPosition.y < (m_pGround->m_pRightGround->m_vecOffset.y + 128.0f))
+	{
+		m_pGround->m_pRightGround->SetColor(vecPosition, dwColor);
+	}
+	else if (m_pGround->m_pUpGround
+		&& vecPosition.x >= m_pGround->m_pUpGround->m_vecOffset.x
+		&& vecPosition.x < (m_pGround->m_pUpGround->m_vecOffset.x + 128.0f)
+		&& vecPosition.y >= m_pGround->m_pUpGround->m_vecOffset.y
+		&& vecPosition.y < (m_pGround->m_pUpGround->m_vecOffset.y + 128.0f))
+	{
+		m_pGround->m_pUpGround->SetColor(vecPosition, dwColor);
+	}
+	else if (m_pGround->m_pDownGround
+		&& vecPosition.x >= m_pGround->m_pDownGround->m_vecOffset.x
+		&& vecPosition.x < (m_pGround->m_pDownGround->m_vecOffset.x + 128.0f)
+		&& vecPosition.y >= m_pGround->m_pDownGround->m_vecOffset.y
+		&& vecPosition.y < (m_pGround->m_pDownGround->m_vecOffset.y + 128.0f))
+	{
+		m_pGround->m_pDownGround->SetColor(vecPosition, dwColor);
+	}
 }
 
 int TMScene::GroundIsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight)
