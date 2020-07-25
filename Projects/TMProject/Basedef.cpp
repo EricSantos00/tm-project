@@ -67,6 +67,26 @@ void ReadItemName()
 
 void ReadUIString()
 {
+	FILE* pFile = nullptr;
+	fopen_s(&pFile, UIString_Path, "rt");
+
+	if (pFile)
+	{
+		char str[128]{ 0 };
+		while (fgets(str, sizeof str, pFile))
+		{
+			char part[64]{ 0 };
+			int Index = 0;
+
+			int ret = sscanf_s(str, "%d %s", &Index, part, 64);
+			if (ret != 2)
+				continue;
+
+			strncpy_s(g_UIString[Index], part, sizeof part);
+		}
+
+		fclose(pFile);
+	}
 }
 
 char ReadNameFiltraDataBase()
