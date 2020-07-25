@@ -348,7 +348,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 	}
 
 	SListBoxServerItem* pServerItem[11]{ nullptr };
-	
+
 	int nIndexN = g_nServerCountList[idwEvent];
 	switch (idwControlID)
 	{
@@ -365,7 +365,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 		int nAspGetday = -1;
 
 		m_pMessagePanel->SetMessage(g_pMessageStringTable[23], 0);
-		m_pMessagePanel->OnDataEvent(1u, 0);
+		m_pMessagePanel->SetVisible(1, 0);
 
 		int nUserCount2[MAX_SERVERNUMBER] = { 0 };
 		if (m_bAdmit == 1 && nIndexN == m_nAdmitGroup)
@@ -393,41 +393,44 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 			sscanf_s(szUserCount, "%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n",
 				&nUserCount[0], &nUserCount[1], &nUserCount[2], &nUserCount[3], &nUserCount[4], &nUserCount[5],
 				&nUserCount[6], &nUserCount[7], &nUserCount[8], &nUserCount[9], &nAspGetweek, &nAspGetday);
+		}
 
-			if (nAspGetday == -1)
+		if (nAspGetday == -1)
+		{
+			_SYSTEMTIME time{};
+			nAspGetday = time.wDay;
+		}
+
+		for (int i = 0; i < MAX_SERVERGROUP; ++i)
+		{
+			m_nDay[i] = 0;
+			for (int k = 0; k < MAX_SERVERNUMBER; ++k)
+				if (g_pServerList[i][k])
+					++m_nDay[i];
+
+			if (m_nDay[i])
 			{
-				_SYSTEMTIME time{};
-				nAspGetday = time.wDay;
+				int nDay = nAspGetday % m_nDay[i];
+				if (!nDay)
+					nDay = m_nDay[i];
+
+				m_nDay[i] = nDay;
 			}
+		}
 
-			for (int i = 0; i < MAX_SERVERGROUP; ++i)
-			{
-				m_nDay[i] = 0;
-				for (int k = 0; k < MAX_SERVERNUMBER; ++k)
-					if (g_pServerList[i][k])
-						++m_nDay[i];
+		m_pMessagePanel->SetVisible(0, 1);
 
-				if (m_nDay[i])
-				{
-					int nDay = nAspGetday % m_nDay[i];
-					if (!nDay)
-						nDay = m_nDay[i];
+		SListBox* pServerList = m_pNServerList;
 
-					m_nDay[i] = nDay;
-				}
-			}
-
-			m_pMessagePanel->OnDataEvent(0, 1);
-
-			SListBox* pServerList = m_pNServerList;
+		if (pServerList)
+		{
 			pServerList->Empty();
 
 			for (int num = 0;; ++num)
 			{
 				if (num >= MAX_SERVERNUMBER)
 				{
-					pServerList->RestoreDeviceObjects();
-
+					pServerList->SetVisible(1);
 					break;
 				}
 
@@ -519,23 +522,32 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 					if (m_bAdmit == 1 && nIndexN == m_nAdmitGroup)
 						nTextureSet = -2;
 
-					// TODO: need to do that code 
-					//  *(_BYTE *)(*((_DWORD *)&time.wSecond + Num) + 3656) = 0;
+					// -1??
+					pServerItem[num] = new SListBoxServerItem(nTextureSet, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nCount, nCastle, 0, nServerAge);
+					
+					if (nUserCount2[num] < 0)
+						pServerItem[num - 1]->m_cConnected = 0;
 
-					pServerList->AddItem(new SListBoxServerItem(nTextureSet, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nCount, nCastle, 0, nServerAge));
+					pServerList->AddItem(pServerItem[num]);
 				}
 				else if (m_bAdmit == -1 && num < m_nMaxGroup)
 				{
 					sprintf_s(szStr, g_pMessageStringTable[70]);
 
+					pServerItem[num] = new SListBoxServerItem(6, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nUserCount2[num], 0, 0, 0);
+
+					if (nUserCount2[num] < 0)
+						pServerItem[num]->m_cConnected = 0;
+
 					// TODO : review code					
-					pServerList->AddItem(new SListBoxServerItem(6, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nUserCount2[num], 0, 0, 0));
+					pServerList->AddItem(pServerItem[num - 1]);
 				}
 			}
 		}
-
-		SwapLauncher();
 	}
+
+	SwapLauncher();
+
 	break;
 	}
 	return 0;

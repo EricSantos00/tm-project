@@ -1719,7 +1719,7 @@ void SProgressBar::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int 
 	float fWidthRatio = (float)g_pDevice->m_dwScreenWidth / 800.0f;
 	float fHeightRatio = (float)g_pDevice->m_dwScreenHeight / 600.0f;
 
-	FrameMove2(pDrawList, ivParentPos, inParentLayer, nFlag);
+	SPanel::FrameMove2(pDrawList, ivParentPos, inParentLayer, nFlag);
 
 	if (m_dwStyle == 1)
 	{
