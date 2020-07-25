@@ -1829,7 +1829,8 @@ int RenderDevice::SetViewVector(TMVector3 ivCamera, TMVector3 ivLookat)
 
 HRESULT RenderDevice::SetProjectionMatrix()
 {
-	D3DXMatrixPerspectiveFovLH(&m_matProj, RenderDevice::m_fFOVY * D3DXToRadian(180),
+	D3DXMatrixPerspectiveFovLH(&m_matProj, 
+		RenderDevice::m_fFOVY * D3DXToRadian(180),
 		(float)((float)(m_dwScreenWidth - m_nWidthShift) / (float)(m_dwScreenHeight - m_nHeightShift)) * 1.0f,
 		g_ClipNear * 1.4f,
 		g_ClipFar);

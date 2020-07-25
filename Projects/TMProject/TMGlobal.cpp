@@ -68,3 +68,15 @@ HINSTANCE g_hInstance;
 char g_szOS[3] = "??";
 
 int g_hLogFile; //Language File WYD.log
+
+int g_objectnumber;
+int g_effectnumber;
+int g_totaleffect;
+
+int g_nUpdateGuildName;
+
+stCurse_num g_pCurseList;
+
+int Game_grade = 1;
+char g_AccountLock;
+int g_nBattleMaster;

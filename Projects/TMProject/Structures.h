@@ -343,3 +343,15 @@ struct stDemoHuman2
 	int nAngle;
 	int nSpeed;
 };
+
+struct stCurse
+{
+	char szOriginal[16];
+	char szTrans[16];
+};
+
+struct stCurse_num
+{
+	stCurse* pCurseList;
+	unsigned int dnum;
+};

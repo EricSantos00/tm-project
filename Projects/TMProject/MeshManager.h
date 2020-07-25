@@ -91,3 +91,19 @@ static unsigned char ObjectMaskEncKeys[172] =
 };
 
 extern int g_nMaxSizeOffset[MAX_BONE_ANIMATION_LIST];
+
+struct stAniSoundTable
+{
+	unsigned int dwSpeed[56];
+	unsigned int dwAniTable[56];
+	unsigned int dwSoundTable[56];
+};
+
+struct stAniSoundTable2
+{
+	unsigned int dwSpeed[56];
+	unsigned int dwAniTable[56];
+};
+
+extern stAniSoundTable2 g_MobAniTableEx[4][2];
+extern stAniSoundTable g_MobAniTable[MAX_ANI_TYPE];

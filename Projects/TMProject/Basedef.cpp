@@ -4,6 +4,13 @@
 
 HWND hWndMain;
 char EncodeByte[4];
+int g_nChannelWidth;
+int g_nServerGroupNum;
+char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
+int g_HeightPosX;
+int g_HeightPosY;
+int g_nSelServerWeather;
+char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
 
 float BASE_ScreenResize(float size)
 {
@@ -22,6 +29,11 @@ void BASE_ApplyAttribute(char* pHeight, int size)
 {
 }
 
+int	BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer)
+{
+	return 0;
+}
+
 int BASE_ReadMessageBin()
 {
 	return 0;
@@ -37,6 +49,10 @@ int BASE_InitializeBaseDef()
 }
 
 void BASE_ReadItemPrice()
+{
+}
+
+void BASE_UnderBarToSpace(const char* szStr)
 {
 }
 
