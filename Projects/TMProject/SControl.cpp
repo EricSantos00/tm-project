@@ -733,6 +733,12 @@ void SText::SetText(char* istrText, int bCheckZero)
 		}
 	}
 
+	if (strlen(istrText) > 255)
+		istrText[255] = 0;
+
+	strcpy(m_GCText.strString, istrText);
+	m_Font.SetText(m_GCText.strString, m_GCText.dwColor, bCheckZero);
+
 	if (m_cComma == 2)
 	{
 		int nStartPos = strlen(istrText);
