@@ -527,7 +527,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 					pServerItem[num] = new SListBoxServerItem(nTextureSet, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nCount, nCastle, 0, nServerAge);
 					
 					if (nUserCount2[num] < 0)
-						pServerItem[num - 1]->m_cConnected = 0;
+						pServerItem[num]->m_cConnected = 0;
 
 					pServerList->AddItem(pServerItem[num]);
 				}
@@ -535,10 +535,10 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 				{
 					sprintf_s(szStr, g_pMessageStringTable[70]);
 
-					pServerItem[num] = new SListBoxServerItem(6, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nUserCount2[num], 0, 0, 0);
+					pServerItem[num - 1] = new SListBoxServerItem(6, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nUserCount2[num], 0, 0, 0);
 
 					if (nUserCount2[num] < 0)
-						pServerItem[num]->m_cConnected = 0;
+						pServerItem[num - 1]->m_cConnected = 0;
 
 					// TODO : review code					
 					pServerList->AddItem(pServerItem[num - 1]);
@@ -566,8 +566,92 @@ int TMSelectServerScene::OnPacketEvent(unsigned int dwCode, char* buf)
 
 int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 {
-	g_pCursor->SetVisible(1);
-	return TMScene::FrameMove(dwServerTime);
+	TMScene::FrameMove(dwServerTime);
+
+	unsigned int dwServerTimea = g_pTimerManager->GetServerTime();
+
+	if (g_pDevice->m_bLoadMeshManager == 1)
+		g_pCursor->SetVisible(1);
+
+	if (Game_grade && !FrameMoveGameGrade(dwServerTimea))
+		return 0;
+
+	if (m_cLogin)
+	{
+		if (m_cLogin == 1)
+			SetAlphaLogin(m_dwLoginTime, dwServerTimea, 1000u, 0);
+		else if (m_cLogin == 2)
+			SetAlphaServer(m_dwLoginTime, dwServerTimea, 1000u, 0);
+	}
+	else
+		SetAlphaServer(m_dwStartCamTime, dwServerTimea, 12000u, 0);
+
+	for (int nPerson = 0; nPerson < 50; ++nPerson)
+		if(m_pCheckHumanList[nPerson])
+			m_pCheckHumanList[nPerson]->m_fWantHeight = -4.0f;
+
+	if (dwServerTimea - m_dwStartCamTime > 5000 && m_cStartRun)
+	{
+		if (!m_nDemoType)
+		{
+			MoveHuman(0);
+
+			m_cStartRun = 1;
+		}
+		else if (m_nDemoType == 1)
+		{
+			for (int i = 0; i < 50; ++i)
+				MoveHuman(i);
+
+			if (g_pSoundManager)
+			{
+				auto sound = g_pSoundManager->GetSoundData(15);
+				if (sound && !sound->IsSoundPlaying())
+					sound->Play();
+			}
+
+			m_cStartRun = 1;
+		}
+	}
+	else if (dwServerTimea - m_dwStartCamTime > 7000 && m_cStartRun == 1)
+	{
+		if (!m_nDemoType)
+		{
+			MoveHuman(1);
+			m_cStartRun = 2;
+		}
+		else if (m_nDemoType == 2)
+		{
+			if (g_pSoundManager)
+			{
+				auto sound = g_pSoundManager->GetSoundData(16);
+				if (sound && !sound->IsSoundPlaying())
+					sound->Play();
+			}
+
+			m_cStartRun = 2;
+		}
+	}
+
+	if (m_nDemoType == 1 && dwServerTimea - m_dwStartCamTime > 14000 && !m_bRemove)
+		RemoveHuman();
+
+	if (m_nDemoType == 3 && dwServerTimea - m_dwStartCamTime > 12000 && !m_cStartRun)
+	{
+		if (m_pCheckHumanList[0])
+			m_pCheckHumanList[0]->SetAnimation(ECHAR_MOTION::ECMOTION_LEVELUP, 0);
+
+		m_cStartRun = 2;
+	}
+
+	if (dwServerTimea - m_dwLastClickLoginBtnTime > 6000)
+	{
+		auto pEditPassword = m_pEditPW;
+		m_pLoginBtns[0]->SetEnable(1);
+		pEditPassword->SetEnable(1);
+	}
+
+	return 1;
 }
 
 void TMSelectServerScene::ResetDemoPlayer()
@@ -580,6 +664,33 @@ void TMSelectServerScene::AniDemoPlayer()
 
 void TMSelectServerScene::CamAction()
 {
+	auto pCamera = g_pObjectManager->GetCamera();
+	pCamera->m_bStandAlone = 1;
+
+	m_dwStartCamTime = g_pTimerManager->GetServerTime();
+
+	if (m_nDemoType)
+	{
+		switch (m_nDemoType)
+		{
+		case 1:
+			ReadCameraPos("UI\\DemoCamAction2");
+			break;
+		case 2:
+			ReadCameraPos("UI\\DemoCamAction3");
+			break;
+		case 3:
+			ReadCameraPos("UI\\DemoCamAction4");
+			break;
+		case 4:
+			ReadCameraPos("UI\\DemoCamAction5");
+			break;
+		}
+	}
+	else
+		ReadCameraPos("UI\\DemoCamAction");
+
+	m_sPlayDemo = 1;
 }
 
 void TMSelectServerScene::MoveHuman(int nIndex)
@@ -592,10 +703,95 @@ void TMSelectServerScene::RemoveHuman()
 
 void TMSelectServerScene::SetAlphaServer(unsigned int dwStartTime, unsigned int dwServerTime, unsigned int dwTerm, int bFade)
 {
+	int dwOff = 0;
+	int dwOn = -1;
+
+	if (bFade == 1)
+	{
+		dwOff = -1;
+		dwOn = 0;
+	}
+
+	if (!dwStartTime)
+	{
+		for (int i = 0; i < 2; ++i)
+			if (m_pLogoPanels[i])
+				m_pLogoPanels[i]->m_GCPanel.dwColor = dwOff;
+	}
+	else if (dwServerTime - dwStartTime >= dwTerm)
+	{
+		for (int i = 0; i < 2; ++i)
+		{
+			if (m_pLogoPanels[i])
+				m_pLogoPanels[i]->m_GCPanel.dwColor = 0x1010101;
+
+			if (m_pGroupPanel[i])
+				m_pGroupPanel[i]->m_GCPanel.dwColor = dwOn;
+		}
+
+		if (m_pLogoPanels[0])
+			m_pLogoPanels[0]->m_GCPanel.dwColor = dwOn;
+		if (m_pLogoPanels[1])
+			m_pLogoPanels[1]->m_GCPanel.dwColor = dwOn;
+	}
+	else
+	{
+		float fAlpha = (dwServerTime - dwStartTime) / static_cast<float>(dwTerm);
+
+		if (bFade == 1)
+			fAlpha = 1.0f - fAlpha;
+
+		unsigned int dwAlpha = static_cast<unsigned int>(fAlpha * 255.0f);
+		if (!g_nPlayDemo)
+			dwAlpha = 255;
+
+		unsigned int dwAlphaa = 2 * dwAlpha;
+		if (dwAlphaa > 255)
+			dwAlphaa = 255;
+
+		for (int i = 0; i < 2; ++i)
+		{
+			if (m_pGroupPanel[i])
+				m_pGroupPanel[i]->m_GCPanel.dwColor = (dwAlphaa << 24) | 0x0FFFFFF;
+		}
+
+		m_pNServerSelect->m_GCPanel.dwColor = (dwAlphaa << 24) | 0x0FFFFFF;
+		m_pLogoPanels[0]->m_GCPanel.dwColor = (dwAlphaa << 24) | 0x0FFFFFF;
+		m_pLogoPanels[1]->m_GCPanel.dwColor = (dwAlphaa << 24) | 0x0FFFFFF;
+	}
 }
 
 void TMSelectServerScene::SetAlphaLogin(unsigned int dwStartTime, unsigned int dwServerTime, unsigned int dwTerm, int bFade)
 {
+	int dwOff = 0;
+	if (bFade == 1)
+		dwOff = -1;
+
+	if (!dwStartTime)
+	{
+		for (int i = 0; i < 3; ++i)
+		{
+			if (m_pLoginBtns[i])
+				m_pLoginBtns[i]->m_GCPanel.dwColor = dwOff;
+		}
+
+		m_pLoginPanel->m_GCPanel.dwColor = dwOff;
+	}
+	else if (dwServerTime - dwStartTime < dwTerm)
+	{
+		float fAlpha = (dwServerTime - dwStartTime) / static_cast<float>(dwTerm);
+
+		if (bFade == 1)
+			fAlpha = 1.0f - fAlpha;
+
+		for (int i = 0; i < 3; ++i)
+		{
+			if (m_pLoginBtns[i])
+				m_pLoginBtns[i]->m_GCPanel.dwColor = 0x1010101;
+		}
+
+		m_pLoginPanel->m_GCPanel.dwColor = ((int)(fAlpha * 255.0f) << 24) | 0x0FFFFFF;
+	}
 }
 
 void TMSelectServerScene::SetAlphaVirtualkey(unsigned int dwStartTime, unsigned int dwServerTime, unsigned int dwTerm, int bFade)
@@ -606,7 +802,7 @@ void TMSelectServerScene::InitializeUI()
 {
 	SListBoxItem* pGroupItem[11];
 	m_pNServerSelect = (SPanel*)m_pControlContainer->FindControl(65537);
-	m_pNServerSelect->SetVisible(1);
+	m_pNServerSelect->SetVisible(0);
 
 	m_pNServerGroupList = (SListBox*)m_pControlContainer->FindControl(65542);
 	m_pNServerList = (SListBox*)m_pControlContainer->FindControl(65543u);
@@ -617,7 +813,6 @@ void TMSelectServerScene::InitializeUI()
 	m_pNServerSelect->SetPos(((float)g_pDevice->m_dwScreenWidth - m_pNServerSelect->m_nWidth) * 0.5f,
 		((float)g_pDevice->m_dwScreenHeight - m_pNServerSelect->m_nHeight) * 0.5f);
 	m_pNServerSelect->m_nPosY += 75.0f;
-
 
 	_SYSTEMTIME time{};
 	GetLocalTime(&time);
@@ -691,9 +886,66 @@ void TMSelectServerScene::InitializeUI()
 
 int TMSelectServerScene::FrameMoveGameGrade(unsigned int dwServerTime)
 {
+	if (dwServerTime >= m_dGameGradePrintSaveTime + 3500)
+	{
+		if (m_bGameGradePlay && !m_pNServerSelect->IsVisible() || dwServerTime > m_dGameGradePrintSaveTime * 3500)
+		{
+			ResetDemoPlayer();
+			CamAction();
+
+			m_bGameGradePlay = 0;
+			m_pNServerSelect->SetVisible(1);
+		}
+
+		m_GameGrade->SetVisible(0);
+		m_pLogoPanels[0]->SetVisible(1);
+		m_pLogoPanels[1]->SetVisible(1);
+		return 1;
+	}
+
+	m_pLogoPanels[0]->SetVisible(0);
+	m_pLogoPanels[1]->SetVisible(0);
+	m_pNServerSelect->SetVisible(0);
+	m_GameGrade->SetVisible(1);
 	return 0;
 }
 
 void TMSelectServerScene::GameGradeScene()
 {
+	float size = 1.0f;
+	if (g_pApp->m_dwScreenWidth <= 1024)
+	{
+		switch (g_pApp->m_dwScreenWidth)
+		{
+		case 1024u:
+			size = 0.79f;
+			break;
+		case 640u:
+			size = 1.25f;
+			break;
+		case 0x320u:
+			size = 1.0f;
+			break;
+		}
+	}
+	else if (g_pApp->m_dwScreenWidth == 1280)
+		size = 0.63f;
+	else if (g_pApp->m_dwScreenWidth == 1600)
+		size = 0.5f;
+
+	m_GameGrade = new SPanel(553, 0.0f, 0.0f, g_pApp->m_dwScreenWidth * size, g_pApp->m_dwScreenHeight * size, 0x77777777u, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+	m_GameGrade->SetControlID(4623u);
+	m_GameGrade->SetPos(0, 0);
+	
+	if (m_pControlContainer)
+	{
+		m_GameGrade->SetEventListener(m_pControlContainer);
+
+		m_pControlContainer->AddChild(m_GameGrade);
+	}
+
+	m_GameGrade->SetVisible(1);
+	m_dGameGradePrintTime = 3500;
+	m_bGameGradePlay = 1;
+	m_dGameGradePrintSaveTime = g_pTimerManager->GetServerTime();
 }
