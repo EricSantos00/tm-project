@@ -2,6 +2,7 @@
 #include "TMSea.h"
 #include "TMScene.h"
 #include "TMGlobal.h"
+#include "TMHuman.h"
 #include "TMLog.h"
 #include "TMGround.h"
 
@@ -2343,7 +2344,7 @@ void TMGround::SetPos(int nX, int nY)
     {
         if (nX >= 8 && nY <= 12 && nY >= 11 && nY <= 14)
         {
-            m_bDungeon - 3;
+            m_bDungeon = 3;
             RenderDevice::m_bDungeon = 3;
         }
         else if (nX > 1 && nX < 11 && nY < 5)
@@ -2432,7 +2433,7 @@ int TMGround::Attach(TMGround* pGround)
             pGround->m_TileMapData[i].cHeight = m_TileMapData[i + 4032].cHeight;
             pGround->m_TileMapData[i].dwColor = m_TileMapData[i + 4032].dwColor;
 
-            pGround->m_TileNormalVector[i] = m_TileNormalVector[k + 4032];
+            pGround->m_TileNormalVector[i] = m_TileNormalVector[i + 4032];
         }
 
         m_nMiniMapPos = 0;
@@ -2449,7 +2450,7 @@ int TMGround::Attach(TMGround* pGround)
             pGround->m_TileMapData[i].cHeight = m_TileMapData[i + 4032].cHeight;
             pGround->m_TileMapData[i].dwColor = m_TileMapData[i + 4032].dwColor;
 
-            pGround->m_TileNormalVector[i] = m_TileNormalVector[k + 4032];
+            pGround->m_TileNormalVector[i] = m_TileNormalVector[i + 4032];
         }
 
         m_nMiniMapPos = 2;
@@ -2472,7 +2473,30 @@ int TMGround::Render()
 
 int TMGround::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+    m_dwServertime = g_pTimerManager->GetServerTime();
+    TMObject* pFocusedObject = g_pCurrentScene->m_pMyHuman;
+
+    if (pFocusedObject)
+    {
+        if (g_pCurrentScene->m_pGround == this)
+        {
+            int nPosX = static_cast<int>(pFocusedObject->m_vecPosition.x - m_vecOffset.x + 128.0f) / 512 / TextureManager::DYNAMIC_TEXTURE_WIDTH;
+            int nPosY = static_cast<int>(pFocusedObject->m_vecPosition.y - m_vecOffset.y + 256.0f) / 512 / TextureManager::DYNAMIC_TEXTURE_WIDTH;
+
+            auto pUISet = g_pTextureManager->GetUITextureSet(11);
+            if (pUISet)
+            {
+                pUISet->pTextureCoord->nStartX = nPosX - ((static_cast<float>(TextureManager::DYNAMIC_TEXTURE_WIDTH) / 8.0f) * m_fMiniMapScale);
+                pUISet->pTextureCoord->nStartY = nPosY - ((static_cast<float>(TextureManager::DYNAMIC_TEXTURE_HEIGHT) / 8.0f) * m_fMiniMapScale);
+                pUISet->pTextureCoord->nWidth = (static_cast<float>(TextureManager::DYNAMIC_TEXTURE_WIDTH) / 4.0f) * m_fMiniMapScale;
+                pUISet->pTextureCoord->nHeight = (static_cast<float>(TextureManager::DYNAMIC_TEXTURE_HEIGHT) / 4.0f) * m_fMiniMapScale;
+
+                pUISet->pTextureCoord->nStartY -= 4;
+            }
+        }
+    }
+
+    return 1;
 }
 
 D3DXVECTOR3* TMGround::GetPickPos(D3DXVECTOR3* result)
