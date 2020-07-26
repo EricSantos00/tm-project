@@ -110,10 +110,31 @@ int TMObject::IsInTown()
 	{
 		g_pCurrentScene->m_bCriticalError = 0;
 	}
+	else
+	{
+		if (!g_pCurrentScene->m_bCriticalError)
+			g_pCurrentScene->LogMsgCriticalError(6, m_dwID, m_dwObjType, (int)m_vecPosition.x, (int)m_vecPosition.y);
+		
+		g_pCurrentScene->m_bCriticalError = 1;
+	}
+
+	return 0;
 }
 
 int TMObject::IsInPKZone()
 {
+	int nX4 = (int)m_vecPosition.x / 4;
+	int nY4 = (int)m_vecPosition.y / 4;
+
+	if (nY4 < 1024 && nX4 < 1024 && nY4 >= 0 && nX4 >= 0)
+		return (g_pAttribute[nY4][nX4] & 0x40) != 0;
+
+	LOG_WRITELOG("\nWrong Position [X:%d Y:%d]\n", nX4, nY4);
+
+	if (!g_pCurrentScene->m_bCriticalError)
+		g_pCurrentScene->LogMsgCriticalError(7, m_dwID, m_dwObjType, (int)m_vecPosition.x, (int)m_vecPosition.y);
+	
+	g_pCurrentScene->m_bCriticalError = 1;
 	return 0;
 }
 
@@ -124,6 +145,16 @@ int TMObject::IsInCastleZone()
 
 int TMObject::IsInCastleZone2()
 {
+	int nX = (int)m_vecPosition.x;
+	int nY = (int)m_vecPosition.y;
+
+	if (nX >> 7 == 8 && nY >> 7 == 13 || 
+		nX >> 7 == 8 && nY >> 7 == 15 || 
+		nX >> 7 == 8 && nY >> 7 == 16 || 
+		nX >> 7 == 9 && nY >> 7 == 15 || 
+		nX >> 7 == 9 && nY >> 7 == 16)
+		return 1;
+
 	return 0;
 }
 
@@ -134,6 +165,17 @@ int TMObject::IsChannelWarZone(int nPositionX, int nPositionY)
 
 int TMObject::IsInHouse()
 {
+	int nX4 = (int)m_vecPosition.x / 4;
+	int nY4 = (int)m_vecPosition.y / 4;
+	if (nY4 < 1024 && nX4 < 1024 && nY4 >= 0 && nX4 >= 0)
+		return (g_pAttribute[nY4][nX4] & 8) != 0;
+
+	LOG_WRITELOG("\nWrong Position [X:%d Y:%d]\n", nX4, nY4);
+
+	if (!g_pCurrentScene->m_bCriticalError)
+			g_pCurrentScene->LogMsgCriticalError(9, m_dwID, m_dwObjType, (int)m_vecPosition.x, (int)m_vecPosition.y);
+
+	g_pCurrentScene->m_bCriticalError = 1;
 	return 0;
 }
 
@@ -149,6 +191,12 @@ int TMObject::RegisterMask(TMGround* pGround, float fX, float fY)
 
 void TMObject::Save(FILE* fp)
 {
+	fwrite(&m_dwObjType, 4u, 1u, fp);
+	fwrite(&m_vecPosition, 8u, 1u, fp);
+	fwrite(&m_fHeight, 4u, 1u, fp);
+	fwrite(&m_fAngle, 4u, 1u, fp);
+	fwrite(&m_nTextureSetIndex, 4u, 1u, fp);
+	fwrite(&m_nMaskIndex, 4u, 1u, fp);
 }
 
 int TMObject::IsMouseOver()
@@ -158,7 +206,17 @@ int TMObject::IsMouseOver()
 
 int TMObject::isVisualKey()
 {
-	return 0;
+	return m_bCheckKey != 1 || 
+		m_dwKey == -1 ||
+		m_dwKey == TreeNode::m_VisualKey1 || 
+		m_dwKey == TreeNode::m_VisualKey2 || 
+		m_dwKey == TreeNode::m_VisualKey3 || 
+		m_dwKey == TreeNode::m_VisualKey4 || 
+		m_dwKey == TreeNode::m_VisualKey5 || 
+		m_dwKey == TreeNode::m_VisualKey6 || 
+		m_dwKey == TreeNode::m_VisualKey7 || 
+		m_dwKey == TreeNode::m_VisualKey8 || 
+		m_dwKey == TreeNode::m_VisualKey9;
 }
 
 int TMObject::isCamPos()
@@ -168,4 +226,31 @@ int TMObject::isCamPos()
 
 void TMObject::ResetObject()
 {
+	m_dwID = -1;
+	m_bCheckKey = 1;
+	m_dwObjType = -1;
+	m_pSkinMesh = 0;
+	m_bVisible = 0;
+	m_bNullObj = 0;
+	m_fAngle = 0.0;
+	m_fScale = 1.0f;
+	m_vecSkinPos = TMVector3(0.0f, 0.0, 0.0f);
+	m_nTextureSetIndex = -1;
+	m_nMaskIndex = -1;
+
+	for (int i = 0; i < 10; ++i)
+	{
+		m_vecTempPos[i] = TMVector3(0.0f, 0.0, 0.0f);
+	}
+
+	m_nAlpha = 0;
+	m_AlphaColor = 0.0;
+	m_bAlphaObj = 0;
+	m_cDeleted = 0;
+	m_dwKey = -1;
+
+	m_vecPosition = TMVector2(0.0f, 0.0f);
+
+	m_fHeight = 0.0;
+	m_nSkinMeshType = 0;
 }
