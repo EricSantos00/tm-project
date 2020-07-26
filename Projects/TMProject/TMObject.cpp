@@ -6,6 +6,7 @@
 #include "TMLog.h"
 #include "TMCamera.h"
 #include "TMMesh.h"
+#include "TMGround.h"
 
 TMObject::TMObject()
 	: TreeNode(0)
@@ -182,12 +183,200 @@ int TMObject::IsInHouse()
 
 int TMObject::IsInView()
 {
-	return 0;
+	TMCamera* pCamera = g_pObjectManager->m_pCamera;
+	TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 180000);
+	if (!pMesh)
+		return 0;
+
+	D3DXVECTOR3 vTemp{};
+	D3DXVECTOR3 vPosTransformed[9]{};
+	D3DXVECTOR3 vecPos[9]{};
+
+	D3DXVECTOR3 vecCenter = D3DXVECTOR3(m_vecPosition.x, 0.0f, m_vecPosition.y);
+
+	D3DXVECTOR3 vTemp = vecCenter - D3DXVECTOR3(pCamera->m_cameraPos.x, 0.0f, pCamera->m_cameraPos.z);
+	if (D3DXVec3Length(&vTemp) > g_pDevice->m_fFogEnd + pMesh->m_fRadius)
+		return 0;
+
+	for (int i = 0; i < 9; ++i)
+	{
+		vecPos[i].x = m_vecPosition.x;
+		vecPos[i].y = m_vecPosition.y;
+		vecPos[i].z = m_fHeight;
+	}
+
+	if (m_dwObjType == 3)
+	{
+		float fRadius = pMesh->m_fRadius;
+		vecPos[7].x = vecPos[7].x - ((fRadius * pMesh->m_fScaleH) * m_fScale);
+		vecPos[5].x = vecPos[7].x;
+		vecPos[3].x = vecPos[7].x;
+		vecPos[1].x = vecPos[7].x;
+		vecPos[6].z = vecPos[6].z + ((fRadius * pMesh->m_fScaleH) * m_fScale);
+		vecPos[5].z = vecPos[6].z;
+		vecPos[2].z = vecPos[6].z;
+		vecPos[1].z = vecPos[6].z;
+		vecPos[4].y = vecPos[4].y - ((fRadius * pMesh->m_fScaleV) * m_fScale);
+		vecPos[3].y = vecPos[4].y;
+		vecPos[2].y = vecPos[4].y;
+		vecPos[1].y = vecPos[4].y;
+		vecPos[8].x = vecPos[8].x + ((fRadius * pMesh->m_fScaleH) * m_fScale);
+		vecPos[6].x = vecPos[8].x;
+		vecPos[4].x = vecPos[8].x;
+		vecPos[2].x = vecPos[8].x;
+		vecPos[8].z = vecPos[8].z - ((fRadius * pMesh->m_fScaleH) * m_fScale);
+		vecPos[7].z = vecPos[8].z;
+		vecPos[4].z = vecPos[8].z;
+		vecPos[3].z = vecPos[8].z;
+		vecPos[8].y = vecPos[8].y + ((fRadius * pMesh->m_fScaleV) * m_fScale);
+		vecPos[7].y = vecPos[8].y;
+		vecPos[6].y = vecPos[8].y;
+		vecPos[5].y = vecPos[8].y;
+	}
+	else
+	{
+		vecPos[7].x = vecPos[7].x + pMesh->m_fMinX;
+		vecPos[5].x = vecPos[7].x;
+		vecPos[3].x = vecPos[7].x;
+		vecPos[1].x = vecPos[7].x;
+		vecPos[6].z = vecPos[6].z + pMesh->m_fMinY;
+		vecPos[5].z = vecPos[6].z;
+		vecPos[2].z = vecPos[6].z;
+		vecPos[1].z = vecPos[6].z;
+		vecPos[4].y = vecPos[4].y + pMesh->m_fMinZ;
+		vecPos[3].y = vecPos[4].y;
+		vecPos[2].y = vecPos[4].y;
+		vecPos[1].y = vecPos[4].y;
+		vecPos[8].x = vecPos[8].x + pMesh->m_fMaxX;
+		vecPos[6].x = vecPos[8].x;
+		vecPos[4].x = vecPos[8].x;
+		vecPos[2].x = vecPos[8].x;
+		vecPos[8].z = vecPos[8].z + pMesh->m_fMaxY;
+		vecPos[7].z = vecPos[8].z;
+		vecPos[4].z = vecPos[8].z;
+		vecPos[3].z = vecPos[8].z;
+		vecPos[8].y = vecPos[8].y + pMesh->m_fMaxZ;
+		vecPos[7].y = vecPos[8].y;
+		vecPos[6].y = vecPos[8].y;
+		vecPos[5].y = vecPos[8].y;
+
+		D3DXMATRIX matScale;
+		D3DXMATRIX matPosition;
+		D3DXMATRIX mat;
+		D3DXMATRIX mat2;
+		D3DXMatrixScaling(&matScale, pMesh->m_fScaleH * m_fScale, pMesh->m_fScaleV * m_fScale, pMesh->m_fScaleH * m_fScale);
+		D3DXMatrixRotationYawPitchRoll(&mat, m_fAngle, D3DXToRadian(90), 0);
+		D3DXMatrixMultiply(&mat, &g_pDevice->m_matWorld, &mat);
+		D3DXMatrixMultiply(&mat, &mat, &matScale);
+
+		for (int i = 0; i < 9; ++i)
+		{
+			D3DXMatrixTranslation(&matPosition,	vecPos[i].x, vecPos[i].y, vecPos[i].z);
+			D3DXMatrixMultiply(&mat2, &mat, &matPosition);
+			vecPos[i].x = mat2._41;
+			vecPos[i].y = mat2._42;
+			vecPos[i].z = mat2._43;
+		}
+	}
+	
+	int bFront = 0;
+	for (int i = 0; i < 9; ++i)
+	{
+		vTemp = vecPos[i] - D3DXVECTOR3(pCamera->m_cameraPos.x, pCamera->m_cameraPos.y, pCamera->m_cameraPos.z);
+		if (g_pDevice->m_fFogEnd + 3.0f > D3DXVec3Length(&vTemp))
+		{
+			D3DXVec3Project(&vPosTransformed[i], &vecPos[i], &g_pDevice->m_viewport, &g_pDevice->m_matProj, &g_pDevice->m_matView,	&g_pDevice->m_matWorld);
+
+			if (vPosTransformed[i].z >= -0.009f && vPosTransformed[i].z < 1.0f)
+			{
+				int vPosInX = (int)vPosTransformed[i].x;
+				int vPosInY = (int)vPosTransformed[i].y;
+				if (vPosInX > 0	&& vPosInX < (int)g_pDevice->m_viewport.Width && 
+					vPosInY > 0 && vPosInY < (int)g_pDevice->m_viewport.Height)
+				{
+					return 1;
+				}
+			}
+
+			if (i == 0 && vPosTransformed[i].z < 1.0f)
+				bFront = 1;
+		}
+	}
+
+	if (bFront != 1)
+		return 0;
+
+	RECT rcRect;
+	SetRect(&rcRect, (int)vPosTransformed[0].x, (int)vPosTransformed[0].y, (int)vPosTransformed[0].x, (int)vPosTransformed[0].y);
+	RECT WinRect;
+	SetRect(&WinRect, 0, 0, g_pDevice->m_viewport.Width, g_pDevice->m_viewport.Height);
+
+	for (int i = 1; i < 9; ++i)
+	{
+		if (rcRect.left > (int)vPosTransformed[i].x)
+			rcRect.left = (int)vPosTransformed[i].x;
+
+		if (rcRect.top > (int)vPosTransformed[i].y)
+			rcRect.top = (int)vPosTransformed[i].y;
+
+		if (rcRect.right < vPosTransformed[i].x)
+			rcRect.right = vPosTransformed[i].x;
+
+		if (rcRect.bottom < (int)vPosTransformed[i].y)
+			rcRect.bottom = (int)vPosTransformed[i].y;
+	}
+
+	RECT returnRect;
+	return IntersectRect(&returnRect, &rcRect, &WinRect) == 1;
 }
 
 int TMObject::RegisterMask(TMGround* pGround, float fX, float fY)
 {
-	return 0;
+	if (!pGround)
+		return 0;
+
+	char cTempMask[16][16];
+	memset(cTempMask, 0, sizeof(cTempMask));
+
+
+	float revAngle = D3DXToRadian(180) - m_fAngle * -1.0f;
+	for (int y = 0; y < 16; ++y)
+	{
+		for (int x = 0; x < 16; ++x)
+		{
+			float fx = (float)x + 0.5 - 7.5;
+			float fy = (float)y + 0.5 - 7.5;
+			float tx = (cos(revAngle) * fx) - (sin(revAngle) * fy);
+
+			int intx = (int)(tx + 7.5f);
+			int inty = (int)((sin(revAngle) * fx) + (cos(revAngle) * fy) + 0.75f);
+
+			if (intx >= 0 && inty >= 0 && intx < 16 && inty < 16)
+				cTempMask[y][x] = MeshManager::m_aObjectMask[m_nMaskIndex][inty][intx];
+		}
+	}
+
+	int nBaseX = (int)fX - 7;
+	int nBaseY = (int)fY - 7;
+
+	for (int y = 0; y < 16; ++y)
+	{
+		for (int i = 0; i < 16; ++i)
+		{
+			if (i + nBaseX >= 0 && i + nBaseX <= 128 && y + nBaseY >= 0 && y + nBaseY <= 128 && cTempMask[y][i])
+			{
+				int nTemp = (int)((m_fHeight / 0.1f) + (float)(3 * cTempMask[y][i]));
+				if (m_fHeight > 0.0f)
+					++nTemp;
+				if (nTemp > 127)
+					nTemp = 127;
+				if ((char)nTemp > pGround->m_pMaskData[y][128 * nBaseY + i + nBaseX])
+					pGround->m_pMaskData[y][128 * nBaseY + i + nBaseX] = nTemp;
+			}
+		}
+	}
+
+	return 1;
 }
 
 void TMObject::Save(FILE* fp)
