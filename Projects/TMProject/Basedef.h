@@ -704,6 +704,18 @@ struct MSG_Mission
 	char CarryPos[8];
 };
 
+constexpr auto MSG_CNFAccountLogin_Opcode = 0x10A;
+struct MSG_CNFAccountLogin
+{
+	MSG_STANDARD Header;
+	char SecretCode[16];
+	STRUCT_SELCHAR SelChar;
+	STRUCT_ITEM Cargo[128];
+	int Coin;
+	char AccountName[16];
+	int SSN1;
+	int SSN2;
+};
 struct MSG_UseItem
 {
 	MSG_STANDARD Header;
