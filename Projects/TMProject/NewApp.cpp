@@ -221,8 +221,8 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 	SCursor::m_nCursorType = nCursor;
 	if (nCursor == 2)
 	{
-		SCursor::m_hCursor1 = LoadCursorA(hInstance, (LPCSTR)0xA2);
-		SCursor::m_hCursor2 = LoadCursorA(hInstance, (LPCSTR)0xA4);
+		SCursor::m_hCursor1 = LoadCursorA(hInstance, (LPCSTR)IDC_CURSOR1);
+		SCursor::m_hCursor2 = LoadCursorA(hInstance, (LPCSTR)IDC_CURSOR2);
 		if (SCursor::m_hCursor1)
 			SetCursor(SCursor::m_hCursor1);
 	}

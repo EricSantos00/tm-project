@@ -775,4 +775,12 @@
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CursorGroup162.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\CursorGroup164.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

@@ -411,6 +411,10 @@
     <Image Include="small.ico" />
     <Image Include="TMProject.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CursorGroup162.cur" />
+    <None Include="Resources\CursorGroup164.cur" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
