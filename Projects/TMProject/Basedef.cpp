@@ -49,8 +49,15 @@ void BASE_ReadItemPrice()
 {
 }
 
-void BASE_UnderBarToSpace(const char* szStr)
+void BASE_UnderBarToSpace(char* szStr)
 {
+	while (*szStr)
+	{
+		if (*szStr == '_')
+			*szStr = ' ';
+
+		++szStr;
+	}
 }
 
 int BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer)

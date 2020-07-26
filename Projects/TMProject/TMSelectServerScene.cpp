@@ -41,7 +41,7 @@ TMSelectServerScene::TMSelectServerScene()
 	if (Game_grade)
 		GameGradeScene();
 
-	m_bAdmit = 0;
+	m_bAdmit = 1;
 	if (g_pApp->m_pBGMManager != nullptr)
 		g_pApp->m_pBGMManager->StopBGM();
 
@@ -348,7 +348,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 	}
 
 	SListBoxServerItem* pServerItem[11]{ nullptr };
-
+	
 	int nIndexN = g_nServerCountList[idwEvent];
 	switch (idwControlID)
 	{
@@ -357,17 +357,19 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 		char szStr[128] = { 0 };
 
 		int nUserCount[MAX_SERVERNUMBER] = { 0 };
+		int nUserCount2[MAX_SERVERNUMBER] = { 0 };
 		char szUserCount[1024] = { 0 };
 		for (int k = 0; k < MAX_SERVERNUMBER; ++k)
-			nUserCount[k] = -1;
-
+		{
+			nUserCount[k] = 750;
+			nUserCount2[k] = 750;
+		}
 		int nAspGetweek = -1;
 		int nAspGetday = -1;
 
 		m_pMessagePanel->SetMessage(g_pMessageStringTable[23], 0);
 		m_pMessagePanel->SetVisible(1, 0);
 
-		int nUserCount2[MAX_SERVERNUMBER] = { 0 };
 		if (m_bAdmit == 1 && nIndexN == m_nAdmitGroup)
 		{
 			for (int i = m_nAdmitGroup; i < 10; ++i)
@@ -395,22 +397,21 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 				&nUserCount[6], &nUserCount[7], &nUserCount[8], &nUserCount[9], &nAspGetweek, &nAspGetday);
 		}
 
+		_SYSTEMTIME time{};
+		GetLocalTime(&time);
 		if (nAspGetday == -1)
-		{
-			_SYSTEMTIME time{};
 			nAspGetday = time.wDay;
-		}
 
 		for (int i = 0; i < MAX_SERVERGROUP; ++i)
 		{
 			m_nDay[i] = 0;
-			for (int k = 0; k < MAX_SERVERNUMBER; ++k)
-				if (g_pServerList[i][k])
+			for (int k = 1; k < MAX_SERVERNUMBER; ++k)
+				if (g_pServerList[i][k][0] != 0)
 					++m_nDay[i];
 
 			if (m_nDay[i])
 			{
-				int nDay = nAspGetday % m_nDay[i];
+				int nDay = time.wDay % m_nDay[i];
 				if (!nDay)
 					nDay = m_nDay[i];
 
@@ -426,7 +427,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 		{
 			pServerList->Empty();
 
-			for (int num = 0;; ++num)
+			for (int num = 1;; ++num)
 			{
 				if (num >= MAX_SERVERNUMBER)
 				{
@@ -434,7 +435,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 					break;
 				}
 
-				if (g_pServerList[nIndexN][num])
+				if (g_pServerList[nIndexN][num][0])
 				{
 					int nCastle = 0;
 					if (nAspGetweek == -1 || nAspGetweek != 1)
@@ -493,7 +494,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 						{
 							sprintf_s(szStr, "%s-%d", g_szServerNameList[nIndexN], num);
 
-							if (nUserCount2[num] > 600)
+							if (nUserCount[num] > 600)
 							{
 								int len = strlen(szStr);
 
@@ -637,7 +638,7 @@ void TMSelectServerScene::InitializeUI()
 
 		for (int i = 0; i < 10; i++)
 		{
-			for (int j = 0; j < 11; ++j)
+			for (int j = 1; j < 11; ++j)
 			{
 				if (g_pServerList[i][j][0])
 					m_nDay[i] ++;
@@ -669,7 +670,7 @@ void TMSelectServerScene::InitializeUI()
 		if (g_pServerList[9][0][0])
 			m_nMaxGroup = 9;
 
-		for (int i = m_nMaxGroup; i > 0; --i)
+		for (int i = m_nMaxGroup; i >= 0; --i)
 		{
 			int count = g_nServerCountList[i] - 1;
 

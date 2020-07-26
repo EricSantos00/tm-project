@@ -1000,7 +1000,7 @@ SEditableText::SEditableText(int inTextureSetIndex, const char* istrText, int in
 
 	if (istrText != nullptr)
 	{
-		BASE_UnderBarToSpace(istrText);
+		BASE_UnderBarToSpace(const_cast<char*>(istrText));
 		if (!strcmp(istrText, " "))
 			istrText = nullptr;
 	}
