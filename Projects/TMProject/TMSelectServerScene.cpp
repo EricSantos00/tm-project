@@ -386,10 +386,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 		int nUserCount2[MAX_SERVERNUMBER] = { 0 };
 		char szUserCount[1024] = { 0 };
 		for (int k = 0; k < MAX_SERVERNUMBER; ++k)
-		{
-			nUserCount[k] = 750;
-			nUserCount2[k] = 750;
-		}
+			nUserCount[k] = -1;
 		int nAspGetweek = -1;
 		int nAspGetday = -1;
 
@@ -576,8 +573,203 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 	SwapLauncher();
 
 	break;
+	case 65538u:
+	{
+		int nServerGroupIndex = m_pNServerGroupList->GetSelectIndex();
+		int nServerIndex = m_pNServerList->GetSelectIndex() + 1;
+
+		SListBoxServerItem* pItem = static_cast<SListBoxServerItem*>(m_pNServerList->GetItem(m_pNServerList->GetSelectIndex()));
+		if (!pItem || nServerGroupIndex < 0 || nServerIndex < 1)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[24], 4000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+
+		if (pItem->m_nCurrent >= 600)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[25], 4000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+
+		g_pObjectManager->m_nServerGroupIndex = nServerGroupIndex;
+		g_pObjectManager->m_nServerIndex = nServerIndex;
+
+		sprintf_s(g_pApp->m_szServerIP, "%s", g_pServerList[nServerGroupIndex + 1][nServerIndex - 1]);
+
+		m_pNServerSelect->SetVisible(0);
+		for (int i = 0; i < 3; ++i)
+			m_pLoginBtns[i]->SetVisible(1);
+
+		m_pLoginPanel->SetVisible(1);
+		m_pControlContainer->SetFocusedControl(m_pEditID);
+		m_cLogin = 1;
+		m_dwLoginTime = g_pTimerManager->GetServerTime();
+		CheckPKNonePK(nServerIndex);
+
+		return 1;
 	}
-	return 0;
+	break;
+	case 4617u:
+		if (idwEvent)
+			m_pMessageBox->SetVisible(0);
+		else if (m_pMessageBox->m_dwMessage == 65874)
+		{
+			if (m_cLogin == 1)
+			{
+				m_pNServerSelect->SetVisible(1);
+				for (int i = 0; i < 3; ++i)
+					m_pLoginBtns[i]->SetVisible(0);
+
+				m_pLoginPanel->SetVisible(0);
+				m_pControlContainer->SetFocusedControl(nullptr);
+				m_cLogin = 2;
+				m_dwLoginTime = g_pTimerManager->GetServerTime();
+			}
+			else
+				PostMessage(g_pApp->m_hWnd, 0x10u, 0, 0);
+		}
+		else if(m_pMessageBox->m_dwMessage == 65875)
+			ShellExecute(0, 0, g_pMessageStringTable[263], 0, 0, 3);
+		break;
+	}
+
+	switch (idwControlID)
+	{
+		case 65873:
+		{
+			int LiveTime = g_pTimerManager->GetServerTime();
+			if (LastSendMsgTime + 1500 > LiveTime)
+				return 1;
+
+			auto pLoginOK = m_pLoginBtns[0];
+			auto pEditID = m_pEditID;
+			auto pEditPassword = m_pEditPW;
+
+			if (strlen(pEditID->GetText()) < 4)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[3], 4000);
+				m_pMessagePanel->SetVisible(1, 1);
+
+				return 1;
+			}
+
+
+			if (strlen(pEditID->GetText()) > 12)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[4], 4000);
+				m_pMessagePanel->SetVisible(1, 1);
+
+				return 1;
+			}
+
+			if (strlen(pEditPassword->GetText()) < 4)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[5], 4000);
+				m_pMessagePanel->SetVisible(1, 1);
+
+				return 1;
+			}
+
+			pLoginOK->SetEnable(0);
+			pEditPassword->SetEnable(0);
+			m_dwLastClickLoginBtnTime = g_pTimerManager->GetServerTime();
+
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[7], 4000);
+
+			if (!g_pSocketManager->ConnectServer(g_pApp->m_szServerIP, 8281, 0, 1124))
+			{
+				pLoginOK->SetEnable(1);
+
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[8], 4000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+
+			g_bMoveServer = 0;
+
+			MSG_AccountLogin stAccountLogin{};
+			stAccountLogin.Header.ID = 0;
+			stAccountLogin.Header.Type = MSG_AccountLogin_Opcode;
+			stAccountLogin.Force = 1;
+			stAccountLogin.Version = 1758;
+			
+			DWORD dwSize = 0;
+			IP_ADAPTER_INFO stInfo{};
+			GetAdaptersInfo(&stInfo, &dwSize);
+
+			if (dwSize)
+			{
+				IP_ADAPTER_INFO* pInfo = nullptr;
+				pInfo = (IP_ADAPTER_INFO*)malloc(dwSize);
+
+				GetAdaptersInfo(pInfo, &dwSize);
+				char* sour = pInfo->AdapterName;
+				int tpos = 0;
+				int grid = 0;
+				char temp[256] = { 0 };
+				int len = strlen(pInfo->AdapterName); // v18;
+				for (int i = 0; i < len; ++i)
+				{
+					if (sour[i] != 123 && sour[i] != 125 && sour[i] != 45)
+					{
+						temp[tpos++] = sour[i];
+
+						if (!(++grid % 8))
+							temp[tpos++] = 32;
+					}
+				}
+
+				temp[tpos] = '\0';
+
+				sscanf_s(temp, "%x %x %x %x", &stAccountLogin.Mac[0], &stAccountLogin.Mac[1], &stAccountLogin.Mac[2], &stAccountLogin.Mac[3]);
+
+				free(pInfo);
+			}
+
+			sprintf_s(stAccountLogin.AccountName, "%s", pEditID->GetText());
+			sprintf_s(stAccountLogin.AccountPass, "%s", pEditPassword->GetText());
+			sprintf_s(g_pObjectManager->m_szAccountName, "%s", stAccountLogin.AccountName);
+			g_pObjectManager->m_szAccountPass[0] = stAccountLogin.AccountPass[0];
+			g_pObjectManager->m_szAccountPass[1] = stAccountLogin.AccountPass[1];
+			for (int mm = 2; mm < 16; ++mm)
+				g_pObjectManager->m_szAccountPass[mm] = rand() % 10 + 48;
+
+			g_pObjectManager->m_szAccountPass[15] = '\0';
+			
+			sprintf_s(g_pObjectManager->m_szAccountName, "%s", _strupr(g_pObjectManager->m_szAccountName));
+			sprintf_s(g_pObjectManager->m_szAccountPass, "%s", _strupr(g_pObjectManager->m_szAccountPass));
+
+			int nLen1 = strlen(g_pObjectManager->m_szAccountName);
+			int nLen2 = strlen(g_pObjectManager->m_szAccountPass);
+
+			for (int i = 0; i < nLen1; ++i)
+				g_pObjectManager->m_szAccountName[i] += i;
+			
+			for (int i = 0; i < nLen1; ++i)
+				g_pObjectManager->m_szAccountPass[i] += i;
+
+			g_pSocketManager->SendOneMessage(reinterpret_cast<char*>(&stAccountLogin), sizeof MSG_AccountLogin);
+			LastSendMsgTime = g_pTimerManager->GetServerTime();
+		}
+		break;
+		case 65875:
+			m_pMessageBox->SetMessage(g_pMessageStringTable[9], 65875u, g_pMessageStringTable[10]);
+			m_pMessageBox->SetVisible(1);
+			break;
+		case 10152u:
+			m_pMessageBox->SetMessage(g_pMessageStringTable[11], 65875u, nullptr);
+			m_pMessageBox->SetVisible(1);
+			break;
+	}
+
+	if (idwControlID == 65539)
+	{
+		m_pMessageBox->SetMessage(g_pMessageStringTable[22], 65874u, nullptr);
+		m_pMessageBox->SetVisible(1);
+	}
+	return 1;
 }
 
 int TMSelectServerScene::OnCharEvent(char iCharCode, int lParam)

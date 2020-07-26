@@ -2390,6 +2390,16 @@ void SListBox::Empty()
 		m_pScrollBar->SetMaxValue(m_nNumItem);
 }
 
+int SListBox::GetSelectIndex()
+{
+	return m_nSelectedItem;
+}
+
+void SListBox::SetSelectedIndex(int nIndex)
+{
+	m_nSelectedItem = nIndex;
+}
+
 void SListBox::SetStartItemIndex(int nIndex)
 {
 	if (nIndex <= m_nNumItem - m_nVisibleCount)
@@ -2649,7 +2659,7 @@ SMessageBox::SMessageBox(const char* istrMessage, char ibyMessageBoxType, float 
 	}
 	else if (ibyMessageBoxType == TMC_MESSAGEBOX_OK)
 	{
-		m_pPanel1 = new SPanel(165, 70.0f, 76.0f, 88.0f, 23.0f, 0x77777777, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+		m_pPanelBtn1 = new SPanel(165, 70.0f, 76.0f, 88.0f, 23.0f, 0x77777777, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
 		m_pOKButton = new SButton(-2, 70.0f, 76.0f, 88.0f, 23.0f, 0, 1, g_pMessageStringTable[238]);
 
 		if (m_pOKButton != nullptr)
