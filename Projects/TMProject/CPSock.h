@@ -30,7 +30,6 @@ public:
 	void RefreshRecvBuffer();
 	void RefreshSendBuffer();
 
-private:
 	unsigned int Sock;
 	char* pSendBuffer;
 	char* pRecvBuffer;

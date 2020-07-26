@@ -50,7 +50,7 @@ int D3DDevice::Initialize(HWND hWnd)
 	HRESULT hr;
 
 	// Create the Direct3D object
-	m_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+	m_pD3D = Direct3DCreate9(D3D9b_SDK_VERSION);
 	if (m_pD3D == NULL)
 		return DisplayErrorMsg(D3DAPPERR_NODIRECT3D, MSGERR_APPMUSTEXIT);
 
@@ -58,7 +58,7 @@ int D3DDevice::Initialize(HWND hWnd)
 	// ConfirmDevice() callback is used to confirm that only devices that
 	// meet the app's requirements are considered.
 	m_d3dEnumeration.SetD3D(m_pD3D);
-	m_d3dEnumeration.ConfirmDeviceCallback = ConfirmDeviceHelper;
+	m_d3dEnumeration.ConfirmDeviceCallback = D3DDevice::ConfirmDeviceHelper;
 	if (FAILED(hr = m_d3dEnumeration.Enumerate()))
 	{
 		SAFE_RELEASE(m_pD3D);
@@ -73,11 +73,10 @@ int D3DDevice::Initialize(HWND hWnd)
 	m_dwWindowStyle = GetWindowLong(m_hWnd, GWL_STYLE);
 	GetWindowRect(m_hWnd, &m_rcWindowBounds);
 
-	m_rcWindowBounds.left = 0;
-	m_rcWindowBounds.top = 0;
-	m_rcWindowBounds.right = m_dwScreenWidth;
-	m_rcWindowBounds.bottom = m_dwScreenHeight;
-
+	m_rcWindowClient.left = 0;
+	m_rcWindowClient.top = 0;
+	m_rcWindowClient.right = m_dwScreenWidth;
+	m_rcWindowClient.bottom = m_dwScreenHeight;
 	if (FAILED(hr = ChooseInitialD3DSettings()))
 	{
 		SAFE_RELEASE(m_pD3D);

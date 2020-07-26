@@ -438,6 +438,9 @@
     <ClInclude Include="TMPaths.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TMObjectContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ItemEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -760,6 +763,9 @@
     </ClCompile>
     <ClCompile Include="SGrid.cpp">
       <Filter>Source Files\Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="TMObjectContainer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

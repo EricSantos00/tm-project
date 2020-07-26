@@ -54,7 +54,7 @@ public:
     virtual ~TMScene();
 
     virtual SControlContainer* GetCtrlContainer();
-    virtual int LoadRC(char* szFileName);
+    virtual int LoadRC(const char* szFileName);
     virtual int ParseRC(FILE* fp, FILE* fpBinary, char* szControlType);
     virtual int ReadRCBin(char* szBinFileName);
     virtual int FindID(char* szID);

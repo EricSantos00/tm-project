@@ -27,6 +27,8 @@ int g_nServerCountList[12];
 char g_szServerNameList[11][9];
 char g_szServerName[10][10][9];
 
+char g_UIString[500][64];
+
 int g_bActiveWB;
 int g_bHideEffect;
 int g_bHideSkillBuffEffect;
@@ -74,3 +76,11 @@ int g_totaleffect;
 int g_nUpdateGuildName;
 
 stCurse_num g_pCurseList;
+int Game_grade = 1;
+char g_AccountLock;
+int g_nBattleMaster;
+int g_pDebugMaxCount; 
+
+int g_bTestServer;
+int g_bMoveServer;
+char g_szEncryptedAcc[256];

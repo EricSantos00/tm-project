@@ -29,8 +29,10 @@ constexpr const char* TextureStateLog_Path = "TextureStageStateLog.txt";
 //UI Related
 constexpr const char* TextureListNList_Path = "UI\\UITextureListN.bin";
 constexpr const char* TextureSetList_Path = "UI\\UITextureSetList.txt";
-
+constexpr const char* SelServerScene_Path = "UI\\SelServerScene2.txt";
+constexpr const char* UIString_Path = "UI\\UIString.txt";
 constexpr const char* MiniMap_Path = "UI\\minimap.wyt";
+constexpr const char* Strdef_Path = "UI\\strdef.bin";
 
 //Effect Related
 constexpr const char* EffectTextureList_Path = "Effect\\EffectTextureList.bin";
