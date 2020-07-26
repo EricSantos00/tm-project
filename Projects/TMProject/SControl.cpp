@@ -664,10 +664,12 @@ void SText::SetText(char* istrText, int bCheckZero)
 
 	int count = 0;
 
-	if (istrText != nullptr)
+	if (istrText == nullptr)
 	{
 		sprintf(m_GCText.strString, "");
 		m_Font.SetText(m_GCText.strString, m_GCText.dwColor, bCheckZero);
+
+		return;
 	}
 	else if (!strcmp(m_GCText.strString, istrText) && !m_cComma)
 		return;
