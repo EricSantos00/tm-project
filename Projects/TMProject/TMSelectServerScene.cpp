@@ -18,11 +18,37 @@
 void SwapLauncher()
 {
 
+	char szNewFileName[MAX_PATH] = { 0 };
+	char szOldFileName[MAX_PATH] = { 0 };
+	struct _stat64i32 buf0 {};
+	struct _stat64i32 buf1 {};
+	struct _stat64i32 buf2 {};
+	if (_stat64i32("WYDLauncher.exe", &buf0))
+	{
+		g_bTestServer = 1;
+		sprintf_s(szOldFileName, "TWYDLauncher.exe");
+		sprintf_s(szNewFileName, "TMPTWYDLauncher.exe");
+	}
+	else
+	{
+		sprintf_s(szOldFileName, "WYDLauncher.exe");
+		sprintf_s(szNewFileName, "TMPWYDLauncher.exe");
+	}
+
+	if (!_stat64i32(szNewFileName, &buf1))
+	{
+		if (!_stat64i32(szOldFileName, &buf2))
+			SetFileAttributes(szOldFileName, FILE_ATTRIBUTE_NORMAL);
+
+		if (CopyFileA(szNewFileName, szOldFileName, 0) == 1)
+			DeleteFileA(szNewFileName);
+	}
 }
 
 int IsCastle(int nServerIndex)
 {
-	return 0;
+	int iweek = BASE_GetWeekNumber();
+	return !(iweek % 7) && (signed int)(iweek / 7) & 2 != nServerIndex % 2;
 }
 
 TMSelectServerScene::TMSelectServerScene()
@@ -127,7 +153,7 @@ int TMSelectServerScene::InitializeScene()
 
 	pText->SetPos(pText->m_nPosX, static_cast<float>(g_pDevice->m_dwScreenHeight) - 15.0f);
 	
-	float nHeight = static_cast<float>(g_pDevice->m_dwScreenHeight) * 0.05f - static_cast<float>(m_pLoginPanel->m_nHeight) * 0.5;
+	float nHeight = static_cast<float>(g_pDevice->m_dwScreenHeight) * 0.5f - static_cast<float>(m_pLoginPanel->m_nHeight) * 0.5f;
 	m_pLoginPanel->SetPos(static_cast<float>(g_pDevice->m_dwScreenWidth) * 0.5f - m_pLoginPanel->m_nWidth * 0.5f, nHeight);
 
 	if(g_pDevice->m_dwScreenWidth == 1600)

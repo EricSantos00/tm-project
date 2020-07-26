@@ -799,6 +799,20 @@ struct MSG_SendItem
 	STRUCT_ITEM Item;
 };
 
+
+constexpr auto MSG_AccountLogin_Opcode = 0x20D;
+struct MSG_AccountLogin
+{
+	MSG_STANDARD Header;
+	char AccountPass[16];
+	char AccountName[16];
+	char TID[52];
+	int Version;
+	int Force;
+	unsigned int Mac[4];
+};
+
+
 extern HWND hWndMain;
 extern char EncodeByte[4];
 extern int g_nChannelWidth;
