@@ -7,6 +7,7 @@
 #include "TMCamera.h"
 #include "TMMesh.h"
 #include "TMGround.h"
+#include "TMSky.h"
 
 TMObject::TMObject()
 	: TreeNode(0)
@@ -83,7 +84,232 @@ int TMObject::FrameMove(unsigned int dwServerTime)
 
 int TMObject::Render()
 {
-	return 0;
+	if (g_bHideBackground == 1)
+		return 0;
+	if (!isVisualKey())
+	{
+		if (m_dwObjType != 1562)
+			return 0;
+		if (g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_SELCHAR)
+			return 0;
+	}
+	if (m_dwObjType == -1)
+		return 1;
+	if (m_bNullObj == 1)
+		return 1;
+	if (!IsVisible())
+		return 1;
+
+	TMScene* pScene = (TMScene*)g_pCurrentScene;
+	D3DMATERIAL9 materials{};
+	D3DCOLORVALUE color;
+	if (!RenderDevice::m_bDungeon || RenderDevice::m_bDungeon == 3 || RenderDevice::m_bDungeon == 4)
+	{
+		color.r = 0.69f;
+		color.g = 0.69f;
+		color.b = 0.69f;
+		color.a = 1.0f;
+		materials.Emissive.r = 0.3f;
+		materials.Emissive.g = 0.3f;
+		materials.Emissive.b = 0.3f;
+		materials.Emissive.a = 1.0f;
+		materials.Diffuse.r = 0.69f;
+		materials.Diffuse.g = 0.69f;
+		materials.Diffuse.b = 0.69f;
+		materials.Diffuse.a = 1.0f;
+		materials.Specular.r = 0.69f;
+		materials.Specular.g = 0.69f;
+		materials.Specular.b = 0.69f;
+		materials.Specular.a = 1.0f;
+		materials.Power = 0.0;
+	}
+	else
+	{
+		D3DCOLORVALUE result;
+		g_pCurrentScene->GroundGetColor(&result, m_vecPosition);
+		result.r = (float)(result.r * 0.5) + (float)(g_pDevice->m_colorLight.r * 0.5);
+		result.g = (float)(result.g * 0.5) + (float)(g_pDevice->m_colorLight.g * 0.5);
+		result.b = (float)(result.b * 0.5) + (float)(g_pDevice->m_colorLight.b * 0.5);
+		result.a = 1.0f;
+		materials.Specular.a = 1.0f;
+		materials.Emissive.a = 1.0f;
+		materials.Diffuse.r = result.r;
+		materials.Diffuse.g = result.g;
+		materials.Diffuse.b = result.b;
+		materials.Diffuse.a = 1.0f;
+		materials.Specular.r = 1.0f;
+		materials.Specular.g = 1.0f;
+		materials.Specular.b = 1.0f;
+		materials.Emissive.r = (float)(g_pDevice->m_colorBackLight.r * 0.3f) + (float)(result.r * 0.4f);
+		materials.Emissive.g = (float)(g_pDevice->m_colorBackLight.g * 0.3f) + (float)(result.r * 0.4f);
+		materials.Emissive.b = (float)(g_pDevice->m_colorBackLight.b * 0.3f) + (float)(result.r * 0.4f);
+	}
+
+	g_pDevice->SetRenderState(D3DRS_FOGENABLE, g_pDevice->m_bFog);
+	int nAlpha = 0;
+
+	if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+	{
+		if (m_bAlphaObj == 1)
+		{
+			if (((int)m_vecPosition.x >> 7 == 31 && (int)m_vecPosition.y >> 7 == 31) ||
+				((int)m_vecPosition.x >> 7 > 16 && (int)m_vecPosition.x >> 7 < 20 && (int)m_vecPosition.y >> 7 > 29) ||
+				((int)m_vecPosition.x >> 7 == 13 || (int)m_vecPosition.x >> 7 == 14 && (int)m_vecPosition.y >> 7 == 28))
+			{
+				int nAlpha = isCamPos();
+				if (nAlpha)
+					m_nAlpha = nAlpha;
+			}
+		}
+	}
+
+	if (m_nAlpha != 0)
+	{
+		if (nAlpha != 0)
+		{
+			if (m_AlphaColor <= 0.75f)
+				m_AlphaColor = 0.69f;
+			else
+				m_AlphaColor = m_AlphaColor - 0.02f;
+		}
+		else if (m_AlphaColor >= 0.94f)
+		{
+			m_AlphaColor = 1.0f;
+			m_nAlpha = 0;
+		}
+		else
+		{
+			m_AlphaColor = m_AlphaColor + 0.05f;
+		}
+
+		color.b = 0.69f;
+		color.g = 0.69f;
+		color.r = 0.69f;
+		color.a = m_AlphaColor;
+		materials.Diffuse.r = 0.69f;
+		materials.Diffuse.g = 0.69f;
+		materials.Diffuse.b = 0.69f;
+		materials.Diffuse.a = color.a;
+
+		if (g_pDevice->m_iVGAID == 1)
+		{
+			if (g_pDevice->m_dwBitCount == 32)
+				g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xFF000000);
+			else
+				g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xF000u);
+		}
+		else if (g_pDevice->m_dwBitCount == 32)
+		{
+			g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xDDu);
+		}
+		else
+		{
+			g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xDu);
+		}
+
+		g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_SRCBLEND, 5u);
+		g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
+		g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 7u);
+		g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 4u);
+		g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, 2u);
+		g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, 0);
+
+		if (nAlpha == 2 && !m_bAlphaObj)
+			g_pDevice->SetRenderState(D3DRS_CULLMODE, 3u);
+	}
+	else
+	{
+		m_AlphaColor = 1.0f;
+	}
+
+	if (g_pDevice->m_bVoodoo == 1)
+	{
+		g_pDevice->m_pd3dDevice->SetMaterial(&materials);
+
+		TMObject* pFocused = g_pObjectManager->m_pCamera->GetFocusedObject();
+
+		if (pFocused != nullptr
+			&& pFocused->m_vecPosition.x > m_vecPosition.x
+			&& pFocused->m_vecPosition.y > m_vecPosition.y
+			&& (m_dwObjType < 251 || m_dwObjType > 254))
+		{
+			g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+			g_pDevice->SetRenderState(D3DRS_DESTBLEND, 9u);
+		}
+		else 
+			g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+
+		g_pDevice->SetTexture(1u, 0);
+		g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+		TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 180000);
+
+		if (pMesh == nullptr)
+			return 0;
+
+		pMesh->Render(m_vecPosition.x, m_fHeight, m_vecPosition.y, m_fAngle, 0, 0, 0, 0);
+		g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+		g_pDevice->SetTextureStageState(1u, D3DTSS_TEXCOORDINDEX, 1u);
+		return 1;
+	}
+
+	TMMesh *pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 180000);
+	if (pMesh == nullptr)
+		return 0;
+
+	g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 1u);
+	if (!m_nAlpha)
+		g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
+
+	if (g_pTextureManager->m_stModelTextureList[pMesh->m_nTextureIndex[0]].cAlpha != 'N' || m_dwObjType >= 156 && m_dwObjType <= 185)
+	{
+		if (g_pDevice->m_dwBitCount == 32)
+			g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xAAu);
+		else
+			g_pDevice->SetRenderState(D3DRS_ALPHAREF, 0xFFu);
+
+		g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_SRCBLEND, 5u);
+		g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
+		g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 7u);
+		g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+		g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+		g_pDevice->SetTextureStageState(1u, D3DTSS_TEXCOORDINDEX, 1u);
+	}
+	else
+	{
+		g_pDevice->SetTexture(1u, 0);
+		g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+	}
+
+	g_pDevice->m_pd3dDevice->SetMaterial(&materials);
+	if (m_dwObjType == 1934 || m_dwObjType == 1976 || m_dwObjType == 1977)
+	{
+		g_pDevice->SetTexture(1u, g_pTextureManager->GetEffectTexture(g_pCurrentScene->m_pSky->m_nTextureIndex, 5000));
+		g_pDevice->SetTextureStageState(1u, D3DTSS_TEXTURETRANSFORMFLAGS, 2u);
+		g_pDevice->SetTextureStageState(1u, D3DTSS_TEXCOORDINDEX, 0x30000u);
+	}
+
+	pMesh->Render(m_vecPosition.x, m_fHeight, m_vecPosition.y, m_fAngle, 0, 0, 0, 0);
+
+	if (m_dwObjType == 1934 || m_dwObjType == 1976 || m_dwObjType == 1977)
+		g_pDevice->SetTextureStageState(1u, D3DTSS_TEXTURETRANSFORMFLAGS, 0);
+
+	if (m_nAlpha)
+	{
+		g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
+		g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
+		g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+		g_pDevice->SetTextureStageState(1u, D3DTSS_ALPHAOP, 2u);
+		if (nAlpha == 2)
+			g_pDevice->SetRenderState(D3DRS_CULLMODE, 2u);
+	}
+
+	g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+	g_pDevice->SetTextureStageState(1u, D3DTSS_TEXCOORDINDEX, 1u);
+
+	return 1;
 }
 
 int TMObject::IsVisible()
