@@ -60,7 +60,7 @@ int TMObject::FrameMove(unsigned int dwServerTime)
 	if (!isVisualKey() && m_dwObjType != 3)
 		return 0;
 
-	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+	dwServerTime = g_pTimerManager->GetServerTime();
 
 	if (m_dwObjType == 443 && (int)m_vecPosition.x == 2540 && (int)m_vecPosition.y == 2086)
 	{
@@ -314,6 +314,56 @@ int TMObject::Render()
 
 int TMObject::IsVisible()
 {
+	if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELCHAR)
+	{
+		if (m_dwObjType == 1562)
+		{
+			m_bVisible = 1;
+			return 1;
+		}
+		if (m_dwObjType == 3)
+		{
+			m_bVisible = 1;
+			return 1;
+		}
+		if (m_dwObjType == 506)
+		{
+			m_bVisible = 1;
+			return 1;
+		}
+	}
+
+	if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_DEMO && !g_pCursor->m_bVisible && m_dwObjType == 3)
+	{
+		m_bVisible = 1;
+		return 1;
+	}
+
+	TMMesh * pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 180000);
+	if (pMesh == nullptr)
+	{
+		m_bVisible = 0;
+		return 0;
+	}
+
+	TMCamera* pCamera = g_pObjectManager->m_pCamera;
+	D3DXVECTOR3 VecCam = D3DXVECTOR3(pCamera->m_cameraPos.x, pCamera->m_cameraPos.z, pCamera->m_cameraPos.y);
+	D3DXVECTOR3 Vec = D3DXVECTOR3(m_vecPosition.x, m_vecPosition.y, m_fHeight) - VecCam;
+
+	if (pMesh->m_fRadius >= D3DXVec3Length(&Vec))
+	{
+		m_bVisible = 1;
+		return 1;
+	}
+
+	if (D3DXVec3Dot(&Vec, &D3DXVECTOR3(pCamera->m_vecCamDir.x, pCamera->m_vecCamDir.z, pCamera->m_vecCamDir.y)) <= 0.0f)
+	{
+		m_bVisible = 0;
+		return 0;
+	}
+
+	m_bVisible = IsInView();
+
 	return 0;
 }
 
@@ -414,7 +464,6 @@ int TMObject::IsInView()
 	if (!pMesh)
 		return 0;
 
-	D3DXVECTOR3 vTemp{};
 	D3DXVECTOR3 vPosTransformed[9]{};
 	D3DXVECTOR3 vecPos[9]{};
 
