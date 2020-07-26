@@ -74,3 +74,5 @@ int g_totaleffect;
 int g_nUpdateGuildName;
 
 stCurse_num g_pCurseList;
+
+char g_pAttribute[1024][1024];
