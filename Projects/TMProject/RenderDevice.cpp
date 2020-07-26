@@ -666,7 +666,7 @@ HRESULT RenderDevice::InvalidateDeviceObjects()
 
 void RenderDevice::SetRenderState(D3DRENDERSTATETYPE State, DWORD Value)
 {
-	if (State >= 0 && State < 256 && m_dwRenderStateList[State] != Value)
+	if ((int)State >= 0 && (int)State < 256 && m_dwRenderStateList[State] != Value)
 	{
 		m_dwRenderStateList[State] = Value;
 		m_pd3dDevice->SetRenderState(State, Value);
@@ -1971,7 +1971,9 @@ void RenderDevice::RenderRectNoTex(float iX, float iY, float iCX, float iCY, DWO
 	m_CtrlVertex[3].position.y = iY + iCY;
 
 	for (int j = 0; j < 4; ++j)
+	{
 		m_CtrlVertex[j].diffuse = dwColor;
+	}
 
 	if (g_pDevice->m_iVGAID == 1)
 	{
@@ -3148,8 +3150,10 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 			}
 
 			return;
-		}
-
+		}		
+	}
+	else
+	{
 		int nMarkIndex = ipControl->nMarkIndex;
 		if (nMarkIndex >= 0 && nMarkIndex <= 64)
 		{
@@ -3188,7 +3192,7 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 				}
 				if (ipControl->nMarkLayout == 1)
 				{
-					RenderRectNoTex(						
+					RenderRectNoTex(
 						iX - (float)((float)(16.0f * RenderDevice::m_fWidthRatio) - 16.0f),
 						iY - (float)((float)(12.0f * RenderDevice::m_fHeightRatio) - 12.0f),
 						iCX,
@@ -3198,7 +3202,7 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 				}
 				else if (ipControl->nMarkLayout == 2)
 				{
-					RenderRectNoTex(						
+					RenderRectNoTex(
 						iX - (float)((float)(16.0f * RenderDevice::m_fWidthRatio) - 16.0f),
 						iY - (float)((float)(12.0f * RenderDevice::m_fHeightRatio) - 12.0f),
 						iCX,

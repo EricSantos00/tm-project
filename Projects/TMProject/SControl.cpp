@@ -1618,7 +1618,7 @@ void SCheckBox::Update()
 SProgressBar::SProgressBar(int inTextureSetIndex, int inCurrent, int inMax, float inX, float inY, float inWidth, float inHeight, unsigned int idwProgressColor, unsigned int idwColor, unsigned int dwStyle)
 	: SPanel(inTextureSetIndex, inX, inY, inWidth, inHeight, idwColor, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH)
 {
-	m_nCurrent = 0;
+	m_nCurrent = inCurrent;
 	m_nMax = inMax;
 	m_GCProgress = GeomControl(RENDERCTRLTYPE::RENDER_IMAGE_STRETCH, inTextureSetIndex, inX, inY, 0.0f, inHeight, 0, idwProgressColor);
 	m_GCPanel.eRenderType = RENDERCTRLTYPE::RENDER_IMAGE_STRETCH;
@@ -2494,10 +2494,11 @@ void SListBox::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inPa
 	int bStr = 0;
 	for (int nIndex = 0; nIndex < nCurrentVisibleCount; ++nIndex)
 	{
+		int nFlag = nIndex + m_nStartItemIndex == m_nSelectedItem ? 1 : 0;
 		m_pItemList[nIndex + m_nStartItemIndex]->FrameMove2(pDrawList,
 			TMVector2(ivParentPos.x + m_nPosX, ((ivParentPos.y + m_nPosY) + (((float)nIndex * m_nHeight) / (float)m_nVisibleCount))),
 			inParentLayer,
-			nFlag);
+			m_bSelectEnable & nFlag);
 
 		if (!bStr)
 		{
