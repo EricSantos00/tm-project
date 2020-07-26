@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "TMSea.h"
+#include "TMScene.h"
+#include "TMGlobal.h"
+#include "TMLog.h"
 #include "TMGround.h"
 
 float TMGround::TileCoordList[8][4][2] =
@@ -2236,6 +2239,87 @@ float TMGround::m_fMiniMapScale = 0.60f;
 TMGround::TMGround()
     : TreeNode(0)
 {
+    m_vecOffsetIndex = IVector2{};
+    m_vecEffset = TMVector2{};
+
+    m_pLeftGround = 0;
+    m_pRightGround = 0;
+    m_pUpGround = 0;
+    m_pDownGround = 0;
+    m_nSeaIndex = 0;
+    m_bVisible = 1;
+    m_bDungeon = 0;
+    m_bWire = 0;
+    m_dwLastEffectTime = 0;
+    m_dwServertime = 0;
+    m_cLeftEnable = 0;
+    m_cRightEnable = 0;
+    m_cUpEnable = 0;
+    m_cDownEnable = 0;
+    m_fEffHeight = 2.0f;
+    m_dwEffStart = 0;
+
+    // this code is to supress warnings
+    memset(&m_MapName, 0, sizeof m_MapName);
+    memset(&m_TileMapData, 0, sizeof m_TileMapData);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        m_vertex[i].diffuse = 0x0FFFFFF;
+        m_vertexVoodoo[i].diffuse = 0x0FFFFFF;
+    }
+
+    for (int i = 0; i < 128; ++i)
+    {
+        memset(&m_pMaskData[i], 0, sizeof m_pMaskData[i]);
+        memset(&m_pVAttrData[i], 0, sizeof m_pVAttrData[i]);
+    }
+
+    for (int i = 0; i < 10; ++i)
+        m_pSeaList[i] = 0;
+
+    if (TMGround::m_bFirst == 1)
+    {
+        FILE* pFile = nullptr;
+        fopen_s(&pFile, "cdata.bin", "rb");
+
+        if (pFile)
+        {
+            fread(&TMGround::m_nCheckSum, sizeof m_nCheckSum, 1u, pFile);
+
+            int nCDataCheckSum = 0;
+            for (int k = 0; k < 64; ++k)
+                for (int j = 0; j < 32; ++j)
+                    nCDataCheckSum += 8 * k + 4 * m_nCheckSum[j][j] * 16 * j;
+
+            if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD && nCDataCheckSum != 5855606140)
+            {
+                fclose(pFile);
+
+                LOG_WRITELOG("DataFile Error\r\n");
+                MessageBoxA(g_pApp->m_hWnd, "DataFile Error.", "File Error", 0);
+                PostMessageA(g_pApp->m_hWnd, WM_CLOSE, 0, 0);
+
+                return;
+            }
+
+            fclose(pFile);
+            m_bFirst = 0;
+        }
+    }
+
+    if (m_bFirst != 1)
+    {
+        SetPos(0, 0);
+        return;
+    }
+
+    LOG_WRITELOG("DataFile NotFound");
+
+    if (!g_pCurrentScene->m_bCriticalError)
+        g_pCurrentScene->LogMsgCriticalError(4, 0, 0, 0, 0);
+
+    g_pCurrentScene->m_bCriticalError = 1;
 }
 
 TMGround::~TMGround()
