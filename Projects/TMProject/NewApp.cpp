@@ -437,6 +437,7 @@ HRESULT NewApp::InitDevice()
 		LOG_WRITELOG("Initialize Interface Failed");
 		return 0;
 	}
+
 	if (!m_pEventTranslator->InitializeIME())
 	{
 		LOG_WRITELOG("Initialize IME Failed");
@@ -462,7 +463,7 @@ HRESULT NewApp::InitDevice()
 		LOG_WRITELOG("Initialize Socket Failed");
 		return 0;
 	}
-
+	g_pSocketManager = m_pSocketManager;
 	g_LoginSocket = new CPSock();
 	g_pTimerManager->SetServerTime(0);
 
