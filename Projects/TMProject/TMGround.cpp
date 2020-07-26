@@ -2328,15 +2328,136 @@ TMGround::~TMGround()
 
 void TMGround::RestoreDeviceObjects()
 {
+    SetMiniMapData();
 }
 
 void TMGround::SetPos(int nX, int nY)
 {
+    m_vecOffsetIndex.x = nX;
+    m_vecOffsetIndex.y = nY;
+
+    m_vecOffset.x = m_vecOffsetIndex.x * 2.0f * 64.0f;
+    m_vecOffset.y = m_vecOffsetIndex.y * 2.0f * 64.0f;
+
+    if (nY <= 25)
+    {
+        if (nX >= 8 && nY <= 12 && nY >= 11 && nY <= 14)
+        {
+            m_bDungeon - 3;
+            RenderDevice::m_bDungeon = 3;
+        }
+        else if (nX > 1 && nX < 11 && nY < 5)
+        {
+            m_bDungeon = 4;
+            RenderDevice::m_bDungeon = 4;
+        }
+        else if (nX >= 26 && nX <= 30 && nY >= 8 && nY <= 12)
+        {
+            m_bDungeon = 5;
+            RenderDevice::m_bDungeon = 5;
+        }
+        else
+        {
+            m_bDungeon = 0;
+            RenderDevice::m_bDungeon = 0;
+        }
+    }
+    else
+    {
+        if (nX < 16 && nX > 8 && nY > 25)
+        {
+            m_bDungeon = 2;
+            RenderDevice::m_bDungeon = 2;
+        }
+        else
+        {
+            m_bDungeon = 1;
+            RenderDevice::m_bDungeon = 1;
+        }
+    }
 }
 
 int TMGround::Attach(TMGround* pGround)
 {
-	return 0;
+    if (!pGround)
+        return 0;
+
+    bool result = false;
+    m_pLeftGround = 0;
+    m_pRightGround = 0;
+    m_pUpGround = 0;
+    m_pDownGround = 0;
+
+    if (pGround->m_vecOffsetIndex.x == m_vecOffsetIndex.x + 1)
+    {
+        m_pRightGround = pGround;
+        m_pRightGround->m_pLeftGround = this;
+
+        for (int i = 0; i < 64; ++i)
+        {
+            pGround->m_TileMapData[i * 64].cHeight = m_TileMapData[(i << 6) + 63].cHeight;
+            pGround->m_TileMapData[i * 64].dwColor = m_TileMapData[(i << 6) + 63].dwColor;
+
+            pGround->m_TileNormalVector[64 * i] = m_TileNormalVector[64 * i + 63];
+        }
+
+        m_nMiniMapPos = 0;
+        m_pRightGround->m_nMiniMapPos = 1;
+        result = true;
+    }
+    else if (pGround->m_vecOffsetIndex.x == m_vecOffsetIndex.x - 1)
+    {
+        m_pLeftGround = pGround;
+        m_pLeftGround->m_pRightGround = this;
+
+        for (int i = 0; i < 64; ++i)
+        {
+            pGround->m_TileMapData[i * 64].cHeight = m_TileMapData[(i << 6) + 63].cHeight;
+            pGround->m_TileMapData[i * 64].dwColor = m_TileMapData[(i << 6) + 63].dwColor;
+
+            pGround->m_TileNormalVector[64 * i] = m_TileNormalVector[64 * i + 63];
+        }
+
+        m_nMiniMapPos = 1;
+        m_pLeftGround->m_nMiniMapPos = 0;
+        result = true;
+    }
+    else if (pGround->m_vecOffsetIndex.y == m_vecOffsetIndex.y + 1)
+    {
+        m_pDownGround = pGround;
+        m_pDownGround->m_pUpGround = this;
+
+        for (int i = 0; i < 64; ++i)
+        {
+            pGround->m_TileMapData[i].cHeight = m_TileMapData[i + 4032].cHeight;
+            pGround->m_TileMapData[i].dwColor = m_TileMapData[i + 4032].dwColor;
+
+            pGround->m_TileNormalVector[i] = m_TileNormalVector[k + 4032];
+        }
+
+        m_nMiniMapPos = 0;
+        m_pDownGround->m_nMiniMapPos = 2;
+        result = true;
+    }
+    else if (pGround->m_vecOffsetIndex.y == m_vecOffsetIndex.y - 1)
+    {
+        m_pUpGround = pGround;
+        m_pUpGround->m_pDownGround = this;
+
+        for (int i = 0; i < 64; ++i)
+        {
+            pGround->m_TileMapData[i].cHeight = m_TileMapData[i + 4032].cHeight;
+            pGround->m_TileMapData[i].dwColor = m_TileMapData[i + 4032].dwColor;
+
+            pGround->m_TileNormalVector[i] = m_TileNormalVector[k + 4032];
+        }
+
+        m_nMiniMapPos = 2;
+        m_pUpGround->m_nMiniMapPos = 0;
+        result = true;
+    }
+
+    return result;
 }
 
 int TMGround::LoadTileMap(char* szFileName)
