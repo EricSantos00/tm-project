@@ -598,7 +598,7 @@ void ObjectManager::RenderControl()
 		stGeomList* pList = g_pCurrentScene->m_pControlContainer->m_pDrawControl;
 
 		g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ZENABLE, 0);
-		for (int i = 0; i < 30; ++i)
+		for (int i = 0; i < MAX_DRAW_CONTROL; ++i)
 		{
 			if (pList[i].pHeadGeom == nullptr)
 				continue;

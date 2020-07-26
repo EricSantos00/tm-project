@@ -4,6 +4,8 @@
 #include "EventTranslator.h"
 #include "GeomObject.h"
 
+constexpr auto MAX_DRAW_CONTROL = 30;
+
 class SControl;
 class TMScene;
 class SCursor;
@@ -31,7 +33,7 @@ public:
     SCursor* m_pCursor;
     int m_bInvisibleUI;
     int m_bCleanUp;
-    stGeomList m_pDrawControl[30];
+    stGeomList m_pDrawControl[MAX_DRAW_CONTROL];
     SControl* m_pFocusControl;
     SControl* m_pPickedControl;
     SControl* m_pModalControl[8];

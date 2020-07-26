@@ -72,6 +72,16 @@ struct TMVector2
 
 		return ret;
 	}
+
+	TMVector2 operator+(const TMVector2& other)
+	{
+		TMVector2 ret;
+
+		ret.x = x + other.x;
+		ret.y = y + other.y;
+
+		return ret;
+	}
 };
 
 struct TMVector3
