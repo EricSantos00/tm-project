@@ -281,11 +281,11 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 		DWORD dwCreationFlags = 0;
 
 		if (m_bwFullScreen)
-			dwCreationFlags = WS_POPUP;
+			dwCreationFlags = 0x80000000;
 		else
 			dwCreationFlags = 0x0CA0000; // check what flag is this
 
-		m_dwWindowStyle = dwCreationFlags | WS_VISIBLE;
+		m_dwWindowStyle = dwCreationFlags | 0x10000000;
 
 		RECT rc;
 		SetRect(&rc, 0, 0, m_dwScreenWidth, m_dwScreenHeight);
@@ -293,8 +293,8 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 
 		m_hWnd = CreateWindowEx(
 			0,
-			(LPCSTR)m_strWindowTitle,
 			ClassName,
+			m_strWindowTitle,
 			m_dwWindowStyle,
 			0,
 			0,
