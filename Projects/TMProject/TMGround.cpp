@@ -2521,11 +2521,36 @@ D3DCOLORVALUE* TMGround::GetColor(D3DCOLORVALUE* result, TMVector2 vecPosition)
 
 int TMGround::GetTileType(TMVector2 vecPosition)
 {
-	return 0;
+    int nX = static_cast<int>(vecPosition.x - m_vecOffset.x);
+    int nY = static_cast<int>(vecPosition.y - m_vecOffset.y);
+
+    if (m_pVAttrData[nY][nX] == 1)
+        return 1;
+
+    int nIndex = m_TileMapData[nX / 2 + (nY / 2 << 6)].byTileIndex + 10;
+
+    if (nIndex >= 14 && nIndex <= 17 && nIndex >= 38 && nIndex <= 77 && nIndex >= 86 && nIndex <= 101 && nIndex >= 130 && nIndex <= 149)
+        return 0;
+
+    if (nIndex >= 186 && nIndex <= 193)
+        return 11;
+
+    if (nIndex >= 202 && nIndex <= 205)
+        return 8;
+
+    if (nIndex < 230 || nIndex > 231)
+        return 3;
+
+    return 9;
 }
 
 void TMGround::SetColor(TMVector2 vecPosition, unsigned int dwColor)
 {
+    int nX = static_cast<int>(vecPosition.x - m_vecOffset.x) / 2;
+    int nY = static_cast<int>(vecPosition.y - m_vecOffset.y) / 2;
+
+    if (nX >= 0 && nX <= 63 && nY >= 0 && nY <= 63)
+        m_TileMapData[nX + (nY << 6)].dwColor = dwColor;
 }
 
 TMVector3* TMGround::GetNormalInGround(TMVector3* result, int nX, int nY)
@@ -2535,7 +2560,25 @@ TMVector3* TMGround::GetNormalInGround(TMVector3* result, int nX, int nY)
 
 int TMGround::SetMiniMapData()
 {
-	return 0;
+    for (int nY = 0; nY < 3; ++nY)
+    {
+        for (int nX = 0; nX < 3; ++nX)
+        {
+            char szMapName[32] = { 0 };
+
+            sprintf_s(szMapName, "UI\\m%02d%02d.wyt",
+                m_vecOffsetIndex.x + nX - 1,
+                m_vecOffsetIndex.y + nY - 1);
+
+            int nSrcIndex = g_pTextureManager->GetUITextureIndex(szMapName);
+            if (nSrcIndex < 0)
+                nSrcIndex = 13;
+
+            g_pTextureManager->GenerateTexture(4, nSrcIndex, nX << 7, (2 - nY) << 7, 0, 0, 128, 128);
+        }
+    }
+
+    return 1;
 }
 
 void TMGround::SetAttatchEnable(int nX, int nY)
