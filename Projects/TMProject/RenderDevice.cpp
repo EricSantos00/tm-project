@@ -293,9 +293,9 @@ void RenderDevice::Finalize()
 
 	for (int i = 0; i < 256; i++)
 	{
-		WORD nVal = (WORD)((float)(((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f);
-		if (nVal > -1)
-			nVal = -1;
+		int nVal = ((((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f);
+		if (nVal > 0xFFFF)
+			nVal = 0xFFFF;
 
 		gamma.red[i] = nVal;
 		gamma.green[i] = nVal;
@@ -720,9 +720,9 @@ void RenderDevice::SetGamma()
 
 		for (int i = 0; i < 256; i++)
 		{
-			WORD nVal = (WORD)((float)(((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f);
-			if (nVal > -1)
-				nVal = -1;
+			int nVal = ((((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f);
+			if (nVal > 0xFFFF)
+				nVal = 0xFFFF;
 
 			gamma.red[i] = nVal;
 			gamma.green[i] = nVal;
