@@ -122,7 +122,8 @@ int TMFont2::SetText(const char* szString, unsigned int dwColor, int bCheckZero)
 		FillRect(g_pDevice->m_hDC, &rect, 0);
 		for (int nLine = 0; nLine < m_nLineNumber; ++nLine)
 		{
-			char szTemp[45] = { 32, };
+			char szTemp[45];
+			memset(szTemp, ' ', sizeof(szTemp));
 
 			TextOut(g_pDevice->m_hDC, 0, nLine * (RenderDevice::m_nFontSize + 1), szTemp,
 				strlen(szTemp));
