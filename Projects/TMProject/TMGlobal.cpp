@@ -76,6 +76,11 @@ int g_totaleffect;
 int g_nUpdateGuildName;
 
 stCurse_num g_pCurseList;
+
+char g_pAttribute[1024][1024];
+
+int g_bHideBackground;
+
 int Game_grade = 1;
 char g_AccountLock;
 int g_nBattleMaster;
