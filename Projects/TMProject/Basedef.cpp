@@ -29,9 +29,55 @@ void BASE_ApplyAttribute(char* pHeight, int size)
 {
 }
 
+int BASE_GetSum(char* p, int size)
+{
+	int sum = 0;
+	for (int i = 0; i < size; ++i)
+	{
+		int mod = i % 7;
+		if (!(i % 7))
+			sum += p[i] / 2;
+		if (mod == 1)
+			sum += p[i] ^ 0xFF;
+		if (mod == 2)
+			sum += 3 * p[i];
+		if (mod == 3)
+			sum += 2 * p[i];
+		if (mod == 4)
+			sum -= p[i] / 7;
+		if (mod == 5)
+			sum -= p[i];
+		else
+			sum += p[i] / 3;
+	}
+
+	return sum;
+}
+
 int BASE_ReadMessageBin()
 {
-	return 0;
+	memset(g_pMessageStringTable, 0, sizeof g_pMessageStringTable);
+
+	int size = 256000;
+	FILE* pFile = nullptr;
+	fopen_s(&pFile, Strdef_Path, "rb");
+
+	int checksum = 0;	
+	if (pFile)
+	{
+		fread(g_pMessageStringTable, size, 1u, pFile);
+		fread(&checksum, 4, 1, pFile);
+		fclose(pFile);
+	}
+
+	if (checksum != BASE_GetSum((char*)g_pMessageStringTable, size))
+		return 0;
+
+	for (int i = 0; i < 2000; ++i)
+		for (int k = 0; k < 128; ++k)
+			g_pMessageStringTable[i][k] ^= 0x5A;
+
+	return 1;
 }
 
 void BASE_InitEffectString()
@@ -65,6 +111,15 @@ int BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer)
 	return 0;
 }
 
+int BASE_GetWeekNumber()
+{
+	time_t now;
+	time(&now);
+
+	unsigned int week = 86400;
+	return (int)(now / week - 3);
+
+}
 int ReadItemicon()
 {
 	return 0;

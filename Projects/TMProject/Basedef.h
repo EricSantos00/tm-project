@@ -820,7 +820,8 @@ void BASE_ReadItemPrice();
 void BASE_UnderBarToSpace(char* szStr);
 int BASE_InitializeServerList();
 int	BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer);
-
+int BASE_GetSum(char* p, int size);
+int BASE_GetWeekNumber();
 /* Read Functions */
 int ReadItemicon();
 void ReadItemName();

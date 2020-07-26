@@ -80,3 +80,7 @@ int Game_grade = 1;
 char g_AccountLock;
 int g_nBattleMaster;
 int g_pDebugMaxCount; 
+
+int g_bTestServer;
+int g_bMoveServer;
+char g_szEncryptedAcc[256];
