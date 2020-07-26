@@ -3229,10 +3229,43 @@ void TMGround::SetAttatchEnable(int nX, int nY)
 
 int TMGround::IsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight)
 {
-	return 0;
+    int i = 0;
+    for (; i < 10; ++i)
+    {
+        if (m_pSeaList[i])
+        {
+            POINT ptPos{};
+            ptPos.x = vecPosition.x;
+            ptPos.y = vecPosition.y;
+
+            if (PtInRect(&m_pSeaList[i]->m_rectRange, ptPos) == 1)
+                break;
+        }
+    }
+
+    if (m_pSeaList[i]->m_fHeight <= fHeight)
+        return 0;
+
+    *pfWaterHeight = m_pSeaList[i]->m_fHeight;
+	return 1;
 }
 
 float TMGround::GetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight)
 {
-	return 0.0f;
+    for (int i = 0; i < 10; ++i)
+    {
+        if (m_pSeaList[i])
+        {
+            float fHeight = m_pSeaList[i]->GetHeight(vecPosition.x, vecPosition.y);
+
+            if (fHeight > -100.0f)
+            {
+                *pfWaterHeight = fHeight + m_pSeaList[i]->m_fHeight;
+
+                return *pfWaterHeight;
+            }
+        }
+    }
+
+    return -100.0f;
 }
