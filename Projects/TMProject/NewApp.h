@@ -41,7 +41,7 @@ public:
     int BASE_Initialize_NewServerList();
     void InitServerNameMR();
     HRESULT MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam);
-    HRESULT CheckResolution(DWORD x, DWORD y, DWORD bpp);
+    bool CheckResolution(DWORD x, DWORD y, DWORD bpp);
 
     char base_chinaTid(char* TID, char* Id);
 

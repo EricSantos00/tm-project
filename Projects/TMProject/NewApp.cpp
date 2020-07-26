@@ -97,19 +97,19 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 	BASE_InitEffectString();
 	stResList[0].dwWidth = 640;
 	stResList[0].dwHeight = 480;
-	stResList[0].dwBit = 16;
+	stResList[0].dwBit = 32;
 	stResList[1].dwWidth = 800;
 	stResList[1].dwHeight = 600;
-	stResList[1].dwBit = 16;
+	stResList[1].dwBit = 32;
 	stResList[2].dwWidth = 1024;
 	stResList[2].dwHeight = 768;
-	stResList[2].dwBit = 16;
+	stResList[2].dwBit = 32;
 	stResList[3].dwWidth = 1280;
 	stResList[3].dwHeight = 1024;
-	stResList[3].dwBit = 16;
+	stResList[3].dwBit = 32;
 	stResList[4].dwWidth = 1600;
 	stResList[4].dwHeight = 1200;
-	stResList[4].dwBit = 16;
+	stResList[4].dwBit = 32;
 	stResList[5].dwWidth = 640;
 	stResList[5].dwHeight = 480;
 	stResList[5].dwBit = 32;
@@ -1313,19 +1313,19 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-HRESULT NewApp::CheckResolution(DWORD x, DWORD y, DWORD bpp)
+bool NewApp::CheckResolution(DWORD x, DWORD y, DWORD bpp)
 {
 	int iModeNum = 0;
 	DEVMODE devMode;
-	for (int bResult = EnumDisplaySettingsA(0, 0, &devMode); bResult; bResult = EnumDisplaySettingsA(0, iModeNum, &devMode))
+	for (int bResult = EnumDisplaySettings(0, 0, &devMode); bResult; bResult = EnumDisplaySettings(0, iModeNum, &devMode))
 	{
 		if (devMode.dmPelsWidth == x && devMode.dmPelsHeight == y && devMode.dmBitsPerPel == bpp)
-			return 1;
+			return true;
 
 		++iModeNum;
 	}
 
-	return 0;
+	return false;
 }
 
 char NewApp::base_chinaTid(char* TID, char* Id)
