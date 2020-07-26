@@ -782,10 +782,10 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\..\Users\Eric\Desktop\WYD Resources\Cursor\Cursor2.cur">
+    <None Include="Resources\CursorGroup162.cur">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\..\..\..\..\Users\Eric\Desktop\WYD Resources\Cursor\Cursor3.cur">
+    <None Include="Resources\CursorGroup164.cur">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
