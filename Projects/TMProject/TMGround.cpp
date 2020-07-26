@@ -2540,6 +2540,691 @@ int TMGround::SetMiniMapData()
 
 void TMGround::SetAttatchEnable(int nX, int nY)
 {
+    if (nX == 1 && nY == 1)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 16 && nY == 15)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 16 && nY == 16)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 17 && nY == 16)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 18 && nY == 16)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 18 && nY == 17)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 19 && nY == 16)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 19 && nY == 15)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 20 && nY == 16)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 20 && nY == 15)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 19 && nY == 14)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 19 && nY == 13)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 19 && nY == 12)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 20 && nY == 13)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 18 && nY == 13)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 18 && nY == 12)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 17 && nY == 13)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 17 && nY == 12)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 17 && nY == 11)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 17 && nY == 10)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 17 && nY == 9)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 15 && nY == 13)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 16 && nY == 12)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 15 && nY == 12)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 14 && nY == 13)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 6 && nY == 28)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 13 && nY == 31)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 14 && nY == 30)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 15 && nY == 31)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 13 && nY == 13)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 12 && nY == 13)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 11 && nY == 13)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 10 && nY == 13)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 9 && nY == 13)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 8 && nY == 13)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 10 && nY == 14)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 13 && nY == 14)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 13 && nY == 12)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 1 && nY == 31)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 1 && nY == 29)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 2 && nY == 29)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 3 && nY == 29)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 4 && nY == 29)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 5 && nY == 29)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 3 && nY == 30)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 3 && nY == 31)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 5 && nY == 31)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 6 && nY == 31)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 7 && nY == 31)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 6 && nY == 30)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 7 && nY == 29)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 8 && nY == 29)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 10 && nY == 11)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 9 && nY == 31)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 10 && nY == 31)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 11 && nY == 31)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 10 && nY == 29)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 11 && nY == 29)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 9 && nY == 28)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 8 && nY == 27)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 10 && nY == 27)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 8 && nY == 2)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 9 && nY == 1)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 10 && nY == 2)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 13 && nY == 28)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 14 && nY == 28)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 17 && nY == 31)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 18 && nY == 31)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 19 && nY == 31)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 17 && nY == 30)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 18 && nY == 30)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 19 && nY == 30)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 17 && nY == 28)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 31 && nY == 31)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 25 && nY == 13)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 26 && nY == 8)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 26 && nY == 9)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 26 && nY == 10)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 26 && nY == 11)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 26 && nY == 12)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 27 && nY == 11)
+    {
+        m_cLeftEnable = 2;
+        m_cRightEnable = 2;
+        m_cUpEnable = 2;
+        m_cDownEnable = 2;
+    }
+    else if (nX < 26)
+    {
+        if (nX == 8 && nY == 16)
+        {
+            m_cLeftEnable = 0;
+            m_cRightEnable = 1;
+            m_cUpEnable = 1;
+            m_cDownEnable = 0;
+        }
+        else if (nX == 9 && nY == 16)
+        {
+            m_cLeftEnable = 1;
+            m_cRightEnable = 0;
+            m_cUpEnable = 1;
+            m_cDownEnable = 0;
+        }
+        else if (nX == 8 && nY == 15)
+        {
+            m_cLeftEnable = 0;
+            m_cRightEnable = 1;
+            m_cUpEnable = 0;
+            m_cDownEnable = 1;
+        }
+        else if (nX == 9 && nY == 15)
+        {
+            m_cLeftEnable = 1;
+            m_cRightEnable = 0;
+            m_cUpEnable = 0;
+            m_cDownEnable = 1;
+        }
+    }
+    else if (nX == 28 && nY == 24)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 28 && nY == 23)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 27 && nY == 23)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 0;
+    }
+    else if (nX == 29 && nY == 23)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 2;
+        m_cUpEnable = 1;
+        m_cDownEnable = 2;
+    }
+    else if (nX == 27 && nY == 22)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 28 && nY == 22)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 1;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 28 && nY == 21)
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 29 && nY == 22)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 1;
+        m_cUpEnable = 0;
+        m_cDownEnable = 1;
+    }
+    else if (nX == 30 && nY == 22)
+    {
+        m_cLeftEnable = 1;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
+    else if (nX != 29 || nY != 27)
+    {
+        if (nX == 28 && nY == 28)
+        {
+            m_cLeftEnable = 0;
+            m_cRightEnable = 0;
+            m_cUpEnable = 0;
+            m_cDownEnable = 0;
+        }
+        else if (nX == 30 && nY == 28)
+        {
+            m_cLeftEnable = 0;
+            m_cRightEnable = 0;
+            m_cUpEnable = 0;
+            m_cDownEnable = 0;
+        }
+    }
+    else
+    {
+        m_cLeftEnable = 0;
+        m_cRightEnable = 0;
+        m_cUpEnable = 0;
+        m_cDownEnable = 0;
+    }
 }
 
 int TMGround::IsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight)
