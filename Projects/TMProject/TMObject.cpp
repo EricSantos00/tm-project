@@ -146,8 +146,8 @@ int TMObject::Render()
 	}
 
 	g_pDevice->SetRenderState(D3DRS_FOGENABLE, g_pDevice->m_bFog);
-	int nAlpha = 0;
 
+	int nAlpha = 0;
 	if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
 	{
 		if (m_bAlphaObj == 1)
@@ -156,7 +156,7 @@ int TMObject::Render()
 				((int)m_vecPosition.x >> 7 > 16 && (int)m_vecPosition.x >> 7 < 20 && (int)m_vecPosition.y >> 7 > 29) ||
 				((int)m_vecPosition.x >> 7 == 13 || (int)m_vecPosition.x >> 7 == 14 && (int)m_vecPosition.y >> 7 == 28))
 			{
-				int nAlpha = isCamPos();
+				nAlpha = isCamPos();
 				if (nAlpha)
 					m_nAlpha = nAlpha;
 			}
