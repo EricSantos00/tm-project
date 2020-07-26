@@ -556,11 +556,98 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 
 int TMSelectServerScene::OnCharEvent(char iCharCode, int lParam)
 {
-	return 0;
+	auto pEditID = m_pEditID;
+	auto pEditPassword = m_pEditPW;
+	
+	switch (iCharCode)
+	{
+	case VK_TAB:
+		if (pEditID->IsFocused())
+			m_pControlContainer->SetFocusedControl(pEditPassword);
+		else if(pEditPassword->IsFocused())
+			m_pControlContainer->SetFocusedControl(pEditPassword);
+
+		break;
+	case VK_RETURN:
+		if (pEditPassword->IsFocused() && m_pLoginBtns[0]->m_bEnable == 1)
+			OnControlEvent(65873u, 0);
+		break;
+	case VK_ESCAPE:
+		if (m_cLogin && m_cLogin != 2)
+			m_pMessageBox->SetMessage(g_pMessageStringTable[2], 65874u, nullptr);
+		else
+			m_pMessageBox->SetMessage(g_pMessageStringTable[22], 65874u, nullptr);
+
+		m_pMessageBox->SetVisible(1);
+		break;
+	}
+
+	return TMScene::OnCharEvent(iCharCode, lParam);
 }
 
 int TMSelectServerScene::OnPacketEvent(unsigned int dwCode, char* buf)
 {
+	if (!buf)
+		return 0;
+
+	auto packet = reinterpret_cast<MSG_STANDARD*>(buf);
+	if (TMScene::OnPacketEvent(dwCode, buf))
+	{
+		if (packet->Type != MSG_CNFAccountLogin_Opcode)
+		{
+			if (packet->Type == 0x11D || packet->Type == 0x11C)
+			{
+				if (packet->Type == 0x101)
+					m_pLoginPanel->SetVisible(1);
+
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[12], 4000);
+				m_pMessagePanel->SetVisible(1, 1);
+				m_pLoginBtns[0]->SetEnable(1);
+				m_pLoginPanel->SetVisible(1);
+				return 1;
+			}
+			else
+			{
+				if (packet->Type == 0xADA)
+					g_pObjectManager->m_bPlayTime = *(DWORD*)&buf[12];
+
+				return 0;
+			}
+		}
+		else
+		{
+			m_pMessagePanel->SetVisible(0, 1);
+			g_pTimerManager->SetServerTime(packet->Tick);
+
+			auto selChar = reinterpret_cast<MSG_CNFAccountLogin*>(buf);
+			memcpy(&g_pObjectManager->m_stSelCharData, &selChar->SelChar, sizeof STRUCT_SELCHAR);
+			memcpy(g_pObjectManager->m_stItemCargo, selChar->Cargo, sizeof (STRUCT_ITEM) * MAX_CARGO);
+
+			g_pObjectManager->m_nCargoCoin = selChar->Coin;
+			memset(g_pObjectManager->m_stMemo, 0, sizeof g_pObjectManager->m_stMemo);
+
+			for (int i = 0; i < 16; ++i)
+				g_pSocketManager->SendQueue[i] = selChar->SecretCode[i];
+
+			g_pSocketManager->SendCount = 0;
+			g_pSocketManager->RecvCount = 0;
+
+			g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTCHAR_STATE);
+			return 1;
+		}
+	}
+	else
+	{
+		if (packet->Type == 0x101)
+			m_pLoginPanel->SetVisible(1);
+
+		if (!m_pLoginBtns[0]->m_bEnable)
+			m_pLoginBtns[0]->SetEnable(1);
+
+		if (!m_pEditPW->m_bEnable)
+			m_pEditPW->SetEnable(1);
+	}
+
 	return 0;
 }
 
@@ -695,10 +782,21 @@ void TMSelectServerScene::CamAction()
 
 void TMSelectServerScene::MoveHuman(int nIndex)
 {
+	if (nIndex < 0)
+	{
+		for (int nPerson = 0; nPerson < 50; ++nPerson)
+			if (m_pCheckHumanList[nPerson])
+				m_pCheckHumanList[nPerson]->GetRoute(m_vecMoveToPos[nPerson], 32, 0);
+	}
+	else if (m_pCheckHumanList[nIndex])
+		m_pCheckHumanList[nIndex]->GetRoute(m_vecMoveToPos[nIndex], 32, 0);
 }
 
 void TMSelectServerScene::RemoveHuman()
 {
+	for (int nPerson = 0; nPerson < 50; ++nPerson)
+		if (m_pCheckHumanList[nPerson])
+			g_pObjectManager->DeleteObject(m_pCheckHumanList[nPerson]);
 }
 
 void TMSelectServerScene::SetAlphaServer(unsigned int dwStartTime, unsigned int dwServerTime, unsigned int dwTerm, int bFade)
