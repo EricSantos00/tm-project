@@ -1,14 +1,18 @@
 #include "pch.h"
 #include "SControlContainer.h"
 #include "SControl.h"
+#include "SGrid.h"
+#include "UIBinary.h"
 #include "TMGround.h"
 #include "TMSky.h"
 #include "TMSun.h"
 #include "TMLight.h"
 #include "TMHuman.h"
 #include "TMObject.h"
+#include "TMCamera.h"
 #include "TMItem.h"
 #include "TMGlobal.h"
+#include "TMLog.h"
 #include "TMScene.h"
 
 TMScene::TMScene() : TreeNode(0)
@@ -80,7 +84,7 @@ TMScene::TMScene() : TreeNode(0)
 
 	AddChild(m_pHumanContainer);
 
-	m_pTextBillMsg = new SText(-2, "ºô", 0xFFFFFFFF, 120.0f, 70.0f, 540.0f, 20.0f, 1, 0xAAFF0000, 1, 1);
+	m_pTextBillMsg = new SText(-2, "ÂºÃ´", 0xFFFFFFFF, 120.0f, 70.0f, 540.0f, 20.0f, 1, 0xAAFF0000, 1, 1);
 	m_pTextBillMsg->m_bSelectEnable = 0;
 	m_pTextBillMsg->SetVisible(0);
 
@@ -277,9 +281,23 @@ SControlContainer* TMScene::GetCtrlContainer()
 	return m_pControlContainer;
 }
 
-int TMScene::LoadRC(char* szFileName)
+int TMScene::LoadRC(const char* szFileName)
 {
-	return 0;
+	if (!m_pControlContainer)
+		m_pControlContainer = new SControlContainer(this);
+
+	char szBinFileName[128]{};
+
+	sprintf_s(szBinFileName, "%s", szFileName);
+	
+	int nLength = strlen(szBinFileName);
+
+	if (strchr(szBinFileName, '_'))
+		sprintf_s(&szBinFileName[nLength - 7], sizeof(szBinFileName) - nLength - 7, ".bin");
+	else
+		sprintf_s(&szBinFileName[nLength - 3], sizeof(szBinFileName) - nLength - 3, "bin");
+
+	return ReadRCBin(szBinFileName);
 }
 
 int TMScene::ParseRC(FILE* fp, FILE* fpBinary, char* szControlType)
@@ -289,16 +307,533 @@ int TMScene::ParseRC(FILE* fp, FILE* fpBinary, char* szControlType)
 
 int TMScene::ReadRCBin(char* szBinFileName)
 {
-	return 0;
+	FILE* fpBinary = nullptr;
+	
+	fopen_s(&fpBinary, szBinFileName, "rb");
+
+	if (!fpBinary)
+		return 0;
+
+	CONTROL_TYPE nControlType{};
+
+	while (fread(&nControlType, 4, 1, fpBinary))
+	{
+		switch (nControlType)
+		{
+		case CONTROL_TYPE::CTRL_TYPE_PANEL:
+		{
+			BinPanel binPanelData;
+
+			if (!fread(&binPanelData, sizeof(binPanelData), 1, fpBinary))
+			{
+				LOG_WRITELOG("Can't Read Resource Data[%d] in [%s]\r\n", nControlType, szBinFileName);
+				fclose(fpBinary);
+				return 0;
+			}
+
+			auto pPanel = new SPanel(
+				binPanelData.nTextureSetIndex,
+				(float)binPanelData.nStartX,
+				(float)binPanelData.nStartY,
+				(float)binPanelData.nWidth,
+				(float)binPanelData.nHeight,
+				binPanelData.nColor,
+				static_cast<RENDERCTRLTYPE>(binPanelData.nFillType));
+
+			if (!pPanel)
+			{
+				LOG_WRITELOG("Can't Create [%d] in Scene [%d]\r\n", binPanelData.nID, GetSceneType());
+				return 0;
+			}
+
+			pPanel->SetControlID(binPanelData.nID);
+			pPanel->SetCenterPos(binPanelData.nID,
+				(float)binPanelData.nStartX,
+				(float)binPanelData.nStartY,
+				(float)binPanelData.nWidth,
+				(float)binPanelData.nHeight);
+
+			if (binPanelData.nParentID)
+			{
+				auto pParent = m_pControlContainer->FindControl(binPanelData.nParentID);
+
+				if (pParent)
+					pParent->AddChild(static_cast<TreeNode*>(pPanel));
+			}
+			else
+			{
+				m_pControlContainer->AddItem(static_cast<SControl*>(pPanel));
+			}
+
+			pPanel->m_bPickable = binPanelData.nPickable;
+		}
+		break;
+		case CONTROL_TYPE::CTRL_TYPE_GRID:
+		{
+			BinGrid binGridData;
+
+			if (!fread(&binGridData, sizeof(binGridData), 1, fpBinary))
+			{
+				LOG_WRITELOG("Can't Read Resource Data[%d] in [%s]\r\n", nControlType, szBinFileName);
+				fclose(fpBinary);
+				return 0;
+			}
+
+			auto pGrid = new SGridControl(
+				binGridData.nTextureSetIndex,
+				binGridData.nRowCount,
+				binGridData.nColumnCount,
+				(float)binGridData.nStartX,
+				(float)binGridData.nStartY,
+				(float)binGridData.nWidth,
+				(float)binGridData.nHeight,
+				static_cast<TMEITEMTYPE>(binGridData.nType));
+
+			if (!pGrid)
+			{
+				LOG_WRITELOG("Can't Create [%d] in Scene [%d]\r\n", binGridData.nID, GetSceneType());
+				return 0;
+			}
+
+			pGrid->SetControlID(binGridData.nID);
+
+			pGrid->SetCenterPos(binGridData.nID,
+				(float)binGridData.nStartX,
+				(float)binGridData.nStartY,
+				(float)binGridData.nWidth,
+				(float)binGridData.nHeight);
+
+			if (m_pControlContainer)
+				pGrid->SetEventListener(static_cast<IEventListener*>(m_pControlContainer));
+			else
+				pGrid->SetEventListener(nullptr);
+
+			if (binGridData.nParentID)
+			{
+				auto pParent = m_pControlContainer->FindControl(binGridData.nParentID);
+
+				if (pParent)
+					pParent->AddChild(static_cast<TreeNode*>(pGrid));
+			}
+			else
+			{
+				m_pControlContainer->AddItem(static_cast<SControl*>(pGrid));
+			}
+		}
+		break;
+		case CONTROL_TYPE::CTRL_TYPE_3DOBJ:
+		{
+			Bin3DObj bin3DObjData;
+
+			if (!fread(&bin3DObjData, sizeof(bin3DObjData), 1, fpBinary))
+			{
+				LOG_WRITELOG("Can't Read Resource Data[%d] in [%s]\r\n", nControlType, szBinFileName);
+				fclose(fpBinary);
+				return 0;
+			}
+
+			auto p3DObj = new S3DObj(bin3DObjData.n3DObjIndex,
+				(float)bin3DObjData.nStartX,
+				(float)bin3DObjData.nStartY,
+				(float)bin3DObjData.nWidth,
+				(float)bin3DObjData.nHeight);
+
+			if (!p3DObj)
+			{
+				LOG_WRITELOG("Can't Create [%d] in Scene [%d]\r\n", bin3DObjData.nID, GetSceneType());
+				return 0;
+			}
+
+			p3DObj->SetControlID(bin3DObjData.nID);
+			p3DObj->SetCenterPos(bin3DObjData.nID,
+				(float)bin3DObjData.nStartX,
+				(float)bin3DObjData.nStartY,
+				(float)bin3DObjData.nWidth,
+				(float)bin3DObjData.nHeight);
+
+			if (bin3DObjData.nParentID)
+			{
+				auto pParent = m_pControlContainer->FindControl(bin3DObjData.nParentID);
+
+				if (pParent)
+					pParent->AddChild(static_cast<TreeNode*>(p3DObj));
+			}
+			else
+			{
+				m_pControlContainer->AddItem(static_cast<SControl*>(p3DObj));
+			}
+		}
+		break;
+		case CONTROL_TYPE::CTRL_TYPE_BUTTON:
+		{
+			BinButton binButtonData;
+
+			if (!fread(&binButtonData, sizeof(binButtonData), 1, fpBinary))
+			{
+				LOG_WRITELOG("Can't Read Resource Data[%d] in [%s]\r\n", nControlType, szBinFileName);
+				fclose(fpBinary);
+				return 0;
+			}
+
+			char strbuf[128]{};
+
+			sprintf_s(strbuf, "%s", g_UIString[binButtonData.nStringIndex]);
+
+			auto pButton = new SButton(
+				binButtonData.nTextureSetIndex,
+				(float)binButtonData.nStartX,
+				(float)binButtonData.nStartY,
+				(float)binButtonData.nWidth,
+				(float)binButtonData.nHeight,
+				binButtonData.nColor,
+				binButtonData.nSound,
+				strbuf);
+
+			if (!pButton)
+			{
+				LOG_WRITELOG("Can't Create [%d] in Scene [%d]\r\n", binButtonData.nID, GetSceneType());
+				return 0;
+			}
+
+			pButton->SetControlID(binButtonData.nID);
+
+			pButton->SetCenterPos(binButtonData.nID,
+				(float)binButtonData.nStartX,
+				(float)binButtonData.nStartY,
+				(float)binButtonData.nWidth,
+				(float)binButtonData.nHeight);
+
+			if (binButtonData.nParentID)
+			{
+				auto pParent = m_pControlContainer->FindControl(binButtonData.nParentID);
+
+				if (pParent)
+					pParent->AddChild(static_cast<TreeNode*>(pButton));
+			}
+			else
+			{
+				m_pControlContainer->AddItem(static_cast<SControl*>(pButton));
+			}
+
+			if (m_pControlContainer)
+				pButton->SetEventListener(static_cast<IEventListener*>(m_pControlContainer));
+			else
+				pButton->SetEventListener(nullptr);
+		}
+		break;
+		case CONTROL_TYPE::CTRL_TYPE_TEXT:
+		{
+			BinText binTextData;
+
+			if (!fread(&binTextData, sizeof(binTextData), 1, fpBinary))
+			{
+				LOG_WRITELOG("Can't Read Resource Data[%d] in [%s]\r\n", nControlType, szBinFileName);
+				fclose(fpBinary);
+				return 0;
+			}
+
+			char strbuf[128]{};
+
+			sprintf_s(strbuf, "%s", g_UIString[binTextData.nStringIndex]);
+
+			auto pText = new SText(
+				binTextData.nTextureSetIndex,
+				strbuf,
+				binTextData.nFontColor,
+				(float)binTextData.nStartX,
+				(float)binTextData.nStartY,
+				(float)binTextData.nWidth,
+				(float)binTextData.nHeight,
+				binTextData.nBorder,
+				binTextData.nBorderColor,
+				binTextData.nTextType,
+				binTextData.nAlignType);
+
+			if (!pText)
+			{
+				LOG_WRITELOG("Can't Create [%d] in Scene [%d]\r\n", binTextData.nID, GetSceneType());
+				return 0;
+			}
+
+			pText->SetControlID(binTextData.nID);
+
+			pText->SetCenterPos(binTextData.nID,
+				(float)binTextData.nStartX,
+				(float)binTextData.nStartY,
+				(float)binTextData.nWidth,
+				(float)binTextData.nHeight);
+
+			if (binTextData.nParentID)
+			{
+				auto pParent = m_pControlContainer->FindControl(binTextData.nParentID);
+
+				if (pParent)
+					pParent->AddChild(static_cast<TreeNode*>(pText));
+			}
+			else
+			{
+				m_pControlContainer->AddItem(static_cast<SControl*>(pText));
+			}
+		}
+		break;
+		case CONTROL_TYPE::CTRL_TYPE_EDITABLETEXT:
+		{
+			BinEdit binEditData;
+
+			if (!fread(&binEditData, sizeof(binEditData), 1, fpBinary))
+			{
+				LOG_WRITELOG("Can't Read Resource Data[%d] in [%s]\r\n", nControlType, szBinFileName);
+				fclose(fpBinary);
+				return 0;
+			}
+
+			auto pEdit = new SEditableText(
+				binEditData.nTextureSetIndex,
+				binEditData.szString,
+				binEditData.nMaxStringLength,
+				binEditData.nPassword,
+				binEditData.nFontColor,
+				(float)binEditData.nStartX,
+				(float)binEditData.nStartY,
+				(float)binEditData.nWidth,
+				(float)binEditData.nHeight,
+				binEditData.nBorder,
+				binEditData.nBorderColor,
+				binEditData.nTextType,
+				binEditData.nAlignType);
+
+			if (!pEdit)
+			{
+				LOG_WRITELOG("Can't Create [%d] in Scene [%d]\r\n", binEditData.nID, GetSceneType());
+				return 0;
+			}
+
+			pEdit->SetControlID(binEditData.nID);
+
+			pEdit->SetCenterPos(binEditData.nID,
+				(float)binEditData.nStartX,
+				(float)binEditData.nStartY,
+				(float)binEditData.nWidth,
+				(float)binEditData.nHeight);
+
+			if (binEditData.nParentID)
+			{
+				auto pParent = m_pControlContainer->FindControl(binEditData.nParentID);
+
+				if (pParent)
+					pParent->AddChild(static_cast<TreeNode*>(pEdit));
+			}
+			else
+			{
+				m_pControlContainer->AddItem(static_cast<SControl*>(pEdit));
+			}
+
+			if (m_pControlContainer)
+				pEdit->SetEventListener(static_cast<IEventListener*>(m_pControlContainer));
+			else
+				pEdit->SetEventListener(nullptr);
+		}
+		break;
+		case CONTROL_TYPE::CTRL_TYPE_PROGRESSBAR:
+		{
+			BinProgress binProgressData;
+
+			if (!fread(&binProgressData, sizeof(binProgressData), 1, fpBinary))
+			{
+				LOG_WRITELOG("Can't Read Resource Data[%d] in [%s]\r\n", nControlType, szBinFileName);
+				fclose(fpBinary);
+				return 0;
+			}
+
+			auto pProgress = new SProgressBar(
+				binProgressData.nTextureSetIndex,
+				binProgressData.nCurrent,
+				binProgressData.nMaxValue,
+				(float)binProgressData.nStartX,
+				(float)binProgressData.nStartY,
+				(float)binProgressData.nWidth,
+				(float)binProgressData.nHeight,
+				binProgressData.nProgressColor,
+				binProgressData.nColor,
+				binProgressData.nStyle);
+
+			if (!pProgress)
+			{
+				LOG_WRITELOG("Can't Create [%d] in Scene [%d]\r\n", binProgressData.nID, GetSceneType());
+				return 0;
+			}
+
+			pProgress->SetControlID(binProgressData.nID);
+
+			pProgress->SetCenterPos(binProgressData.nID,
+				(float)binProgressData.nStartX,
+				(float)binProgressData.nStartY,
+				(float)binProgressData.nWidth,
+				(float)binProgressData.nHeight);
+
+			if (binProgressData.nParentID)
+			{
+				auto pParent = m_pControlContainer->FindControl(binProgressData.nParentID);
+
+				if (pParent)
+					pParent->AddChild(static_cast<TreeNode*>(pProgress));
+			}
+			else
+			{
+				m_pControlContainer->AddItem(static_cast<SControl*>(pProgress));
+			}
+
+			if (m_pControlContainer)
+				pProgress->SetEventListener(static_cast<IEventListener*>(m_pControlContainer));
+			else
+				pProgress->SetEventListener(nullptr);
+		}
+		break;
+		case CONTROL_TYPE::CTRL_TYPE_CHECKBOX:
+		{
+			BinCheckBox binCheckBoxData;
+
+			if (!fread(&binCheckBoxData, sizeof(binCheckBoxData), 1, fpBinary))
+			{
+				LOG_WRITELOG("Can't Read Resource Data[%d] in [%s]\r\n", nControlType, szBinFileName);
+				fclose(fpBinary);
+				return 0;
+			}
+
+			auto pCheckBox = new SCheckBox(
+				binCheckBoxData.nTextureSetIndex,
+				(float)binCheckBoxData.nStartX,
+				(float)binCheckBoxData.nStartY,
+				(float)binCheckBoxData.nWidth,
+				(float)binCheckBoxData.nHeight,
+				binCheckBoxData.nColor);
+
+			if (!pCheckBox)
+			{
+				LOG_WRITELOG("Can't Create [%d] in Scene [%d]\r\n", binCheckBoxData.nID, GetSceneType());
+				return 0;
+			}
+
+			pCheckBox->SetControlID(binCheckBoxData.nID);
+
+			pCheckBox->SetCenterPos(binCheckBoxData.nID,
+				(float)binCheckBoxData.nStartX,
+				(float)binCheckBoxData.nStartY,
+				(float)binCheckBoxData.nWidth,
+				(float)binCheckBoxData.nHeight);
+
+			if (binCheckBoxData.nParentID)
+			{
+				auto pParent = m_pControlContainer->FindControl(binCheckBoxData.nParentID);
+
+				if (pParent)
+					pParent->AddChild(static_cast<TreeNode*>(pCheckBox));
+			}
+			else
+			{
+				m_pControlContainer->AddItem(static_cast<SControl*>(pCheckBox));
+			}
+
+			if (m_pControlContainer)
+				pCheckBox->SetEventListener(static_cast<IEventListener*>(m_pControlContainer));
+			else
+				pCheckBox->SetEventListener(nullptr);
+		}
+		break;
+		case CONTROL_TYPE::CTRL_TYPE_LISTBOX:
+		{
+			BinListBox binListBoxData;
+
+			if (!fread(&binListBoxData, sizeof(binListBoxData), 1, fpBinary))
+			{
+				LOG_WRITELOG("Can't Read Resource Data[%d] in [%s]\r\n", nControlType, szBinFileName);
+				fclose(fpBinary);
+				return 0;
+			}
+
+			auto pListBox = new SListBox(
+				binListBoxData.nTextureSetIndex,
+				binListBoxData.nMaxCount,
+				binListBoxData.nVisibleCount,
+				(float)binListBoxData.nStartX,
+				(float)binListBoxData.nStartY,
+				(float)binListBoxData.nWidth,
+				(float)binListBoxData.nHeight,
+				binListBoxData.nColor,
+				static_cast<RENDERCTRLTYPE>(binListBoxData.nFillType),
+				binListBoxData.nSelect,
+				binListBoxData.nScroll,
+				0);
+
+			if (!pListBox)
+			{
+				LOG_WRITELOG("Can't Create [%d] in Scene [%d]\r\n", binListBoxData.nID, GetSceneType());
+				return 0;
+			}
+
+			pListBox->SetControlID(binListBoxData.nID);
+
+			pListBox->SetCenterPos(binListBoxData.nID,
+				(float)binListBoxData.nStartX,
+				(float)binListBoxData.nStartY,
+				(float)binListBoxData.nWidth,
+				(float)binListBoxData.nHeight);
+
+			if (binListBoxData.nParentID)
+			{
+				auto pParent = m_pControlContainer->FindControl(binListBoxData.nParentID);
+
+				if (pParent)
+					pParent->AddChild(static_cast<TreeNode*>(pListBox));
+			}
+			else
+			{
+				m_pControlContainer->AddItem(static_cast<SControl*>(pListBox));
+			}
+
+			if (m_pControlContainer)
+				pListBox->SetEventListener(static_cast<IEventListener*>(m_pControlContainer));
+			else
+				pListBox->SetEventListener(nullptr);
+		}
+		break;
+		default:
+			LOG_WRITELOG("Not Support Control Type [%d]\r\n", nControlType);
+			return 0;
+		}
+	}
+
+	fclose(fpBinary);
+	return 1;
 }
 
 int TMScene::FindID(char* szID)
 {
-	return 0;
+	int nID = 0;
+	int bFindID = 0;
+
+	if (!strcmp(szID, "NONE"))
+		return 0;
+
+	for (int i = 0; i < 2560; ++i)
+	{
+		if (!strcmp(szID, g_pObjectManager->m_ResourceList[i].szString))
+		{
+			nID = g_pObjectManager->m_ResourceList[i].nNumber;
+			bFindID = 1;
+			break;
+		}
+	}
+
+	if (!bFindID)
+		LOG_WRITELOG("Cannot Match Resource ID [%s] in [%s].\r\n", szID, "UI\\TMResource.h");
+
+	return nID;
 }
 
 int TMScene::InitializeScene()
 {
+	SetFocus(g_pApp->m_hWnd);
 	return 1;
 }
 
@@ -309,32 +844,65 @@ int TMScene::OnPacketEvent(unsigned int dwCode, char* pSBuffer)
 
 int TMScene::OnKeyDownEvent(unsigned int iKeyCode)
 {
+	if (g_pCurrentScene != this)
+		return 0;
+
+	if (m_pControlContainer && m_pControlContainer->OnKeyDownEvent(iKeyCode) == 1)
+		return 1;
+	
+	TreeNode::OnKeyDownEvent(iKeyCode);
 	return 0;
 }
 
 int TMScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
 {
+	if (g_pCurrentScene != this)
+		return 0;
+
+	if (m_pControlContainer && m_pControlContainer->OnMouseEvent(dwFlags, wParam, nX, nY) == 1)
+		return 1;
+
+	TreeNode::OnMouseEvent(dwFlags, wParam, nX, nY);
 	return 0;
 }
 
 int TMScene::OnKeyUpEvent(unsigned int iKeyCode)
 {
+	if (g_pCurrentScene != this)
+		return 0;
+
+	if (m_pControlContainer && m_pControlContainer->OnKeyUpEvent(iKeyCode) == 1)
+		return 1;
+
+	TreeNode::OnKeyUpEvent(iKeyCode);
 	return 0;
 }
 
 int TMScene::OnCharEvent(char iCharCode, int lParam)
 {
-	return 0;
+	if (g_pCurrentScene != this)
+		return 0;
+
+	if (m_pControlContainer && m_pControlContainer->OnCharEvent(iCharCode, lParam) == 1)
+		return 1;
+	
+	return TreeNode::OnCharEvent(iCharCode, lParam);
 }
 
 int TMScene::OnIMEEvent(char* ipComposeString)
 {
+	if (g_pCurrentScene != this)
+		return 0;
+
+	if (m_pControlContainer && m_pControlContainer->OnIMEEvent(ipComposeString) == 1)
+		return 1;
+	
 	return 0;
 }
 
 int TMScene::OnChangeIME()
 {
-	return 0;
+	return m_pControlContainer && m_pControlContainer->OnChangeIME() == 1;
 }
 
 int TMScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEvent)
@@ -349,17 +917,120 @@ int TMScene::OnAccel(int nMsg)
 
 int TMScene::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	if (g_pCurrentScene != this)
+		return 1;
+
+	if (m_pControlContainer)
+		m_pControlContainer->FrameMove(dwServerTime);
+
+	if (m_sPlayDemo >= 0)
+		CameraAction();
+
+	if (m_bCriticalError == 1)
+		return 1;
+
+	m_pMouseOverHuman = nullptr;
+	m_pMouseOverItem = nullptr;
+
+	auto pFocusedObject = static_cast<TMObject*>(m_pMyHuman);
+
+	if (pFocusedObject && m_pGround)
+	{
+		float dX = pFocusedObject->m_vecPosition.x - m_pGround->m_vecOffset.x;
+		float dY = pFocusedObject->m_vecPosition.y - m_pGround->m_vecOffset.y;
+
+		int nShold = 14;
+
+		if (((int)pFocusedObject->m_vecPosition.x >> 7) > 26 &&
+			((int)pFocusedObject->m_vecPosition.x >> 7) < 31 &&
+			((int)pFocusedObject->m_vecPosition.y >> 7) > 20 &&
+			((int)pFocusedObject->m_vecPosition.y >> 7) < 25)
+		{
+			nShold = 20;
+		}
+
+		if (m_pGround->m_vecOffsetIndex.x == 17 && m_pGround->m_vecOffsetIndex.y == 10)
+			nShold = 20;
+
+		if (dX >= 0.0f && (float)nShold > dX)
+		{
+			if (!m_pGround->m_pLeftGround)
+				GroundNewAttach(EDirection::EDIR_LEFT);
+		}
+		else if (dX < 0.0f && dX > (float)-nShold)
+		{
+			if (m_pGround->m_pLeftGround)
+			{
+				m_pGround = m_pGround->m_pLeftGround;
+
+				m_nCurrentGroundIndex = (m_nCurrentGroundIndex + 1) % 2;
+				
+				m_pGround->SetMiniMapData();
+			}
+		}
+		else if (dX > (float)(128 - nShold) && dX < 128.0f)
+		{
+			if (!m_pGround->m_pRightGround)
+				GroundNewAttach(EDirection::EDIR_RIGHT);
+		}
+		else if (dX >= 128.0f && (float)(nShold + 128) > dX && m_pGround->m_pRightGround)
+		{
+			m_pGround = m_pGround->m_pRightGround;
+
+			m_nCurrentGroundIndex = (m_nCurrentGroundIndex + 1) % 2;
+
+			m_pGround->SetMiniMapData();
+		}
+
+		if (dY >= 0.0f && (float)nShold > dY)
+		{
+			if (!m_pGround->m_pUpGround)
+				GroundNewAttach(EDirection::EDIR_UP);
+		}
+		else if (dY < 0.0f && dY > (float)-nShold)
+		{
+			if (m_pGround->m_pUpGround)
+			{
+				m_pGround = m_pGround->m_pUpGround;
+
+				m_nCurrentGroundIndex = (m_nCurrentGroundIndex + 1) % 2;
+
+				m_pGround->SetMiniMapData();
+			}
+		}
+		else if (dY > (float)(128 - nShold) && (float)128 > dY)
+		{
+			if (!m_pGround->m_pDownGround)
+				GroundNewAttach(EDirection::EDIR_DOWN);
+		}
+		else if (dY >= (float)128 && (float)(nShold + 128) > dY && m_pGround->m_pDownGround)
+		{
+			m_pGround = m_pGround->m_pDownGround;
+
+			m_nCurrentGroundIndex = (m_nCurrentGroundIndex + 1) % 2;
+
+			m_pGround->SetMiniMapData();
+		}
+	}
+
+	return 1;
 }
 
 int TMScene::ReloadScene()
 {
-	return 0;
+	if (m_pControlContainer != nullptr)
+	{
+		delete m_pControlContainer;
+
+		m_pControlContainer = nullptr;
+	}
+
+	return InitializeScene();
 }
 
 ESCENE_TYPE TMScene::GetSceneType()
 {
-	return ESCENE_TYPE();
+	return m_eSceneType;
 }
 
 void TMScene::Cleanup()
@@ -403,6 +1074,46 @@ D3DCOLORVALUE* TMScene::GroundGetColor(D3DCOLORVALUE* result, TMVector2 vecPosit
 
 void TMScene::GroundSetColor(TMVector2 vecPosition, unsigned int dwColor)
 {
+	if (!m_pGround)
+		return;
+
+	if (vecPosition.x >= m_pGround->m_vecOffset.x && vecPosition.x < (m_pGround->m_vecOffset.x + 128.0f) &&
+		vecPosition.y >= m_pGround->m_vecOffset.y && vecPosition.y < (m_pGround->m_vecOffset.y + 128.0f))
+	{
+		m_pGround->SetColor(vecPosition, dwColor);
+	}
+	else if (m_pGround->m_pLeftGround 
+		&& vecPosition.x >= m_pGround->m_pLeftGround->m_vecOffset.x
+		&& vecPosition.x < (m_pGround->m_pLeftGround->m_vecOffset.x + 128.0f)
+		&& vecPosition.y >= m_pGround->m_pLeftGround->m_vecOffset.y
+		&& vecPosition.y < (m_pGround->m_pLeftGround->m_vecOffset.y + 128.0f))
+	{
+		m_pGround->m_pLeftGround->SetColor(vecPosition, dwColor);
+	}
+	else if (m_pGround->m_pRightGround
+		&& vecPosition.x >= m_pGround->m_pRightGround->m_vecOffset.x
+		&& vecPosition.x < (m_pGround->m_pRightGround->m_vecOffset.x + 128.0f)
+		&& vecPosition.y >= m_pGround->m_pRightGround->m_vecOffset.y
+		&& vecPosition.y < (m_pGround->m_pRightGround->m_vecOffset.y + 128.0f))
+	{
+		m_pGround->m_pRightGround->SetColor(vecPosition, dwColor);
+	}
+	else if (m_pGround->m_pUpGround
+		&& vecPosition.x >= m_pGround->m_pUpGround->m_vecOffset.x
+		&& vecPosition.x < (m_pGround->m_pUpGround->m_vecOffset.x + 128.0f)
+		&& vecPosition.y >= m_pGround->m_pUpGround->m_vecOffset.y
+		&& vecPosition.y < (m_pGround->m_pUpGround->m_vecOffset.y + 128.0f))
+	{
+		m_pGround->m_pUpGround->SetColor(vecPosition, dwColor);
+	}
+	else if (m_pGround->m_pDownGround
+		&& vecPosition.x >= m_pGround->m_pDownGround->m_vecOffset.x
+		&& vecPosition.x < (m_pGround->m_pDownGround->m_vecOffset.x + 128.0f)
+		&& vecPosition.y >= m_pGround->m_pDownGround->m_vecOffset.y
+		&& vecPosition.y < (m_pGround->m_pDownGround->m_vecOffset.y + 128.0f))
+	{
+		m_pGround->m_pDownGround->SetColor(vecPosition, dwColor);
+	}
 }
 
 int TMScene::GroundIsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight)
@@ -439,10 +1150,109 @@ void TMScene::SaveHeightMap(char* szFileName)
 
 void TMScene::CameraAction()
 {
+	if (m_dwStartCamTime == 0)
+		return;
+
+	DWORD dwTick = (g_pTimerManager->GetServerTime() - m_dwStartCamTime) + 100;
+
+	TMCamera* pCamera = g_pObjectManager->m_pCamera;
+
+	pCamera->m_fSightLength = 11.0f;
+
+	for (int i = 0; i < (m_nCameraLoop - 1); ++i)
+	{
+		if (m_stCameraTick[i].dwTick >= dwTick || m_stCameraTick[i + 1].dwTick <= dwTick)
+			continue;
+
+		float fRatio =
+			(float)(dwTick - m_stCameraTick[i].dwTick) /
+			(float)(m_stCameraTick[i + 1].dwTick - m_stCameraTick[i].dwTick);
+
+		auto fHorizonAngle = (m_stCameraTick[i].fHorizonAngle * (1.0f - fRatio))
+			+ (m_stCameraTick[i + 1].fHorizonAngle * fRatio);
+
+		pCamera->m_fHorizonAngle = fHorizonAngle;
+		pCamera->m_fBackHorizonAngle = fHorizonAngle;
+
+		auto fVerticalAngle = (m_stCameraTick[i].fVerticalAngle * (1.0f - fRatio))
+			+ (m_stCameraTick[i + 1].fVerticalAngle * fRatio);
+
+		pCamera->m_fVerticalAngle = fVerticalAngle;
+		pCamera->m_fBackVerticalAngle = fVerticalAngle;
+
+		TMVector3 vecLoc1{ 0.0f, 0.0f, 0.0f };
+		TMVector3 vecLoc2{ 0.0f, 0.0f, 0.0f };
+
+		if (m_stCameraTick[i].sLocal == 1 && m_pMyHuman != nullptr)
+		{
+			vecLoc1.x = m_pMyHuman->m_vecPosition.x;
+			vecLoc1.y = m_pMyHuman->m_fHeight;
+			vecLoc1.z = m_pMyHuman->m_vecPosition.y;
+		}
+
+		if (m_stCameraTick[i + 1].sLocal == 1 && m_pMyHuman != nullptr)
+		{
+			vecLoc2.x = m_pMyHuman->m_vecPosition.x;
+			vecLoc2.y = m_pMyHuman->m_fHeight;
+			vecLoc2.z = m_pMyHuman->m_vecPosition.y;
+		}
+
+		pCamera->m_cameraPos.x = ((vecLoc1.x + m_stCameraTick[i].fX) * (1.0f - fRatio))
+			+ ((vecLoc2.x + m_stCameraTick[i + 1].fX) * fRatio);
+
+		pCamera->m_cameraPos.y = ((vecLoc1.y + m_stCameraTick[i].fY) * (1.0f - fRatio))
+			+ ((vecLoc2.y + m_stCameraTick[i + 1].fY) * fRatio);
+
+		pCamera->m_cameraPos.z = ((vecLoc1.z + m_stCameraTick[i].fZ) * (1.0f - fRatio))
+			+ ((vecLoc2.z + m_stCameraTick[i + 1].fZ) * fRatio);
+
+		return;
+	}
+
+	if (m_stCameraTick[m_nCameraLoop - 1].dwTick < dwTick)
+	{
+		pCamera->m_fHorizonAngle = m_stCameraTick[m_nCameraLoop - 1].fHorizonAngle;
+		pCamera->m_fVerticalAngle = m_stCameraTick[m_nCameraLoop - 1].fVerticalAngle;
+
+		TMVector3 vecLoc3{ 0.0f, 0.0f, 0.0f };
+
+		if (m_pMyHuman && m_stCameraTick[m_nCameraLoop - 1].sLocal == 1)
+		{
+			vecLoc3.x = m_pMyHuman->m_vecPosition.x;
+			vecLoc3.y = m_pMyHuman->m_fHeight;
+			vecLoc3.z = m_pMyHuman->m_vecPosition.y;
+		}
+
+		pCamera->m_cameraPos.x = m_stCameraTick[m_nCameraLoop - 1].fX + vecLoc3.x;
+		pCamera->m_cameraPos.y = m_stCameraTick[m_nCameraLoop - 1].fY + vecLoc3.y;
+		pCamera->m_cameraPos.z = m_stCameraTick[m_nCameraLoop - 1].fZ + vecLoc3.z;
+	}
 }
 
 void TMScene::ReadCameraPos(char* szFileName)
 {
+	m_nCameraLoop = 0;
+
+	memset(&m_stCameraTick, 0, sizeof(m_stCameraTick));
+
+	char szBinFileName[128]{};
+
+	sprintf_s(szBinFileName, "%s.bin", szFileName);
+
+	FILE* fpBin = nullptr;
+
+	fopen_s(&fpBin, szBinFileName, "rb");
+
+	fread(&m_nCameraLoop, 1, 4, fpBin);
+
+	if (m_nCameraLoop > 1000)
+		m_nCameraLoop = 1000;
+
+	else if (m_nCameraLoop < 0)
+		m_nCameraLoop = 0;
+
+	fread(&m_stCameraTick, 1, 28 * m_nCameraLoop, fpBin);
+	fclose(fpBin);
 }
 
 int TMScene::LoadMsgText(SListBox* pListBox, char* szFileName)
@@ -480,4 +1290,9 @@ void TMScene::LogMsgCriticalError(int Type, int ID, int nMesh, int X, int Y)
 
 void TMScene::DeleteOwnerAllContainer()
 {
+	m_pEffectContainer->DeleteOwner(nullptr);
+	m_pShadeContainer->DeleteOwner(nullptr);
+	m_pHumanContainer->DeleteOwner(nullptr);
+	m_pItemContainer->DeleteOwner(nullptr);
+	m_pExtraContainer->DeleteOwner(nullptr);
 }

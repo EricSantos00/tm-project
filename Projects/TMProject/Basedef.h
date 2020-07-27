@@ -1,5 +1,13 @@
 #pragma once
 
+constexpr int MAX_CARGO = 128;
+constexpr int MAX_STRING = 2000;
+constexpr int MAX_STRING_LENGTH = 128;
+
+constexpr int MAX_SERVER = 10; // Max number of game servers that can connect to DB server
+constexpr int MAX_SERVERGROUP = 10;	// Max number of servers that can exist
+constexpr int MAX_SERVERNUMBER = (MAX_SERVER + 1); // DB + TMSrvs + BISrv
+
 struct MSG_STANDARD
 {
 	unsigned short Size;
@@ -366,7 +374,7 @@ struct STRUCT_ACCOUNTFILE
 {
 	STRUCT_ACCOUNT Account;
 	STRUCT_MOB Char[4];
-	STRUCT_ITEM Cargo[128];
+	STRUCT_ITEM Cargo[MAX_CARGO];
 	int Coin;
 	char ShortSkill[4][16];
 	STRUCT_EXT1 Ext1[4];
@@ -493,7 +501,7 @@ struct STRUCT_ACCOUNTFILE_OLD
 {
 	STRUCT_ACCOUNT Account;
 	STRUCT_MOB_OLD Char[4];
-	STRUCT_ITEM Cargo[128];
+	STRUCT_ITEM Cargo[MAX_CARGO];
 	int Coin;
 	char ShortSkill[4][16];
 	STRUCT_EXT Ext[4];
@@ -519,7 +527,7 @@ struct STRUCT_ACCOUNTFILE_OLD2
 {
 	STRUCT_ACCOUNT Account;
 	STRUCT_MOB_OLD Char[4];
-	STRUCT_ITEM Cargo[128];
+	STRUCT_ITEM Cargo[MAX_CARGO];
 	int Coin;
 	char ShortSkill[4][16];
 	STRUCT_EXT1_OLD Ext1[4];
@@ -582,7 +590,7 @@ struct STRUCT_ACCOUNTFILE_OLD_NEW
 {
 	STRUCT_ACCOUNT_NEW Account;
 	STRUCT_MOB_OLD Char[4];
-	STRUCT_ITEM Cargo[128];
+	STRUCT_ITEM Cargo[MAX_CARGO];
 	int Coin;
 	char ShortSkill[4][16];
 	STRUCT_EXT Ext[4];
@@ -613,7 +621,7 @@ struct STRUCT_ACCOUNTFILE_NEW
 {
 	STRUCT_ACCOUNT_NEW Account;
 	STRUCT_MOB Char[4];
-	STRUCT_ITEM Cargo[128];
+	STRUCT_ITEM Cargo[MAX_CARGO];
 	int Coin;
 	char ShortSkill[4][16];
 	STRUCT_EXT1 Ext1[4];
@@ -624,7 +632,7 @@ struct STRUCT_ACCOUNTFILE_OLD2_NEW
 {
 	STRUCT_ACCOUNT_NEW Account;
 	STRUCT_MOB_OLD Char[4];
-	STRUCT_ITEM Cargo[128];
+	STRUCT_ITEM Cargo[MAX_CARGO];
 	int Coin;
 	char ShortSkill[4][16];
 	STRUCT_EXT1_OLD Ext1[4];
@@ -696,6 +704,18 @@ struct MSG_Mission
 	char CarryPos[8];
 };
 
+constexpr auto MSG_CNFAccountLogin_Opcode = 0x10A;
+struct MSG_CNFAccountLogin
+{
+	MSG_STANDARD Header;
+	char SecretCode[16];
+	STRUCT_SELCHAR SelChar;
+	STRUCT_ITEM Cargo[128];
+	int Coin;
+	char AccountName[16];
+	int SSN1;
+	int SSN2;
+};
 struct MSG_UseItem
 {
 	MSG_STANDARD Header;
@@ -779,8 +799,29 @@ struct MSG_SendItem
 	STRUCT_ITEM Item;
 };
 
+
+constexpr auto MSG_AccountLogin_Opcode = 0x20D;
+struct MSG_AccountLogin
+{
+	MSG_STANDARD Header;
+	char AccountPass[16];
+	char AccountName[16];
+	char TID[52];
+	int Version;
+	int Force;
+	unsigned int Mac[4];
+};
+
+
 extern HWND hWndMain;
 extern char EncodeByte[4];
+extern int g_nChannelWidth;
+extern int g_nServerGroupNum;
+extern char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
+extern char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
+extern int g_HeightPosX;
+extern int g_HeightPosY;
+extern int g_nSelServerWeather;
 
 float BASE_ScreenResize(float size);
 void BASE_InitModuleDir();
@@ -790,8 +831,11 @@ int	BASE_ReadMessageBin();
 void BASE_InitEffectString();
 int BASE_InitializeBaseDef();
 void BASE_ReadItemPrice();
-void BASE_UnderBarToSpace(const char* szStr);
-
+void BASE_UnderBarToSpace(char* szStr);
+int BASE_InitializeServerList();
+int	BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer);
+int BASE_GetSum(char* p, int size);
+int BASE_GetWeekNumber();
 /* Read Functions */
 int ReadItemicon();
 void ReadItemName();
@@ -801,6 +845,7 @@ char ReadChatFiltraDataBase();
 
 /* String Related functions */
 int IsClearString(char* str, int target);
+int IsClearString2(char* str, int nTarget);
 
 /* System functions */
 void EnableSysKey();

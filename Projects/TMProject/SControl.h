@@ -62,7 +62,7 @@ public:
     int IsVisible();
     int IsFocused();
     int IsOver();
-    TMVector2* GetPos(TMVector2* result);
+    TMVector2 GetPos();
    
     virtual int ChildCount();
     virtual void SetPos(float nPosX, float nPosY);
@@ -78,7 +78,7 @@ public:
     void SetStickBottom();
     int PtInControl(int inPosX, int inPosY);
 
-    virtual int GetControlType();
+    virtual CONTROL_TYPE GetControlType();
     virtual void SetCenterPos(unsigned int dwControlID, float inPosX, float inPosY, float inWidth, float inHeight);
 
 public:
@@ -155,7 +155,7 @@ public:
     SCursor(int inTextureSetIndex, float inX, float inY, float inWidth, float inHeight);
     ~SCursor();
 
-    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int Y) override;
+    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY) override;
     void FrameMove2(stGeomList* pDrawList, TMVector2 ivParenPos, int inParentLayer, int nFlag) override;
     virtual void SetPosition(int iX, int iY);
     void SetVisible(int bVisible) override;
@@ -196,7 +196,7 @@ public:
     SText(int inTextureSetIndex, const char* istrText, unsigned int idwFontColor, float inX, float inY, 
         float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SText();
-    virtual void SetText(const char* istrText, int bCheckZero);
+    virtual void SetText(char* istrText, int bCheckZero);
     virtual void SetTextColor(unsigned int dwFontColor);
     virtual char* GetText();
     virtual void SetType(unsigned int dwType);
@@ -235,7 +235,7 @@ public:
     };
 
 public:
-    SEditableText(int inTextureSetIndex, char* istrText, int inMaxStringLen, int ibPasswd, 
+    SEditableText(int inTextureSetIndex, const char* istrText, int inMaxStringLen, int ibPasswd, 
         unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, 
         unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SEditableText();
@@ -531,6 +531,8 @@ public:
     SListBoxItem* GetItem(int inItemIndex);
     void Empty();
     void SetStartItemIndex(int nIndex);
+    int GetSelectIndex();
+    void SetSelectedIndex(int nIndex);
     void SetSize(float nWidth, float nHeight) override;
     void SetPickSize(float nWidth, float nHeight);
     void SetEditable();
@@ -566,11 +568,11 @@ public:
         TMC_CANCELBUTTON_ID = 0x2,
     };
     enum {
-        TMC_MESSAGEBOX_MESSAGE = 0x0,
-        TMC_MESSAGEBOX_ASK = 0x1,
-        TMC_MESSAGEBOX_SLIDE = 0x2,
-        TMC_MESSAGEBOX_COMPLEX = 0x3,
-        TMC_MESSAGEBOX_OK = 0x4,
+        TMC_MESSAGEBOX_MESSAGE = 0,
+        TMC_MESSAGEBOX_ASK = 1,
+        TMC_MESSAGEBOX_SLIDE = 2,
+        TMC_MESSAGEBOX_COMPLEX = 3,
+        TMC_MESSAGEBOX_OK = 4,
     };
     enum {
         TMC_MESSAGE_OK = 0x0,
@@ -659,3 +661,7 @@ public:
     int m_nPitch;
     unsigned int m_dwBatCoin;
 };
+
+int PointInRect(int inPosX, int inPosY, float ifX, float ifY, float ifWidth, float ifHeight);
+void RemoveRenderControlItem(stGeomList* pDrawList, GeomControl* pGeomControl, int nLayer);
+int AddRenderControlItem(stGeomList* pDrawList, GeomControl* pGeomControl, int nLayer);

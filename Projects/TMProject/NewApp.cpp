@@ -97,19 +97,19 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 	BASE_InitEffectString();
 	stResList[0].dwWidth = 640;
 	stResList[0].dwHeight = 480;
-	stResList[0].dwBit = 16;
+	stResList[0].dwBit = 32;
 	stResList[1].dwWidth = 800;
 	stResList[1].dwHeight = 600;
-	stResList[1].dwBit = 16;
+	stResList[1].dwBit = 32;
 	stResList[2].dwWidth = 1024;
 	stResList[2].dwHeight = 768;
-	stResList[2].dwBit = 16;
+	stResList[2].dwBit = 32;
 	stResList[3].dwWidth = 1280;
 	stResList[3].dwHeight = 1024;
-	stResList[3].dwBit = 16;
+	stResList[3].dwBit = 32;
 	stResList[4].dwWidth = 1600;
 	stResList[4].dwHeight = 1200;
-	stResList[4].dwBit = 16;
+	stResList[4].dwBit = 32;
 	stResList[5].dwWidth = 640;
 	stResList[5].dwHeight = 480;
 	stResList[5].dwBit = 32;
@@ -221,8 +221,8 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 	SCursor::m_nCursorType = nCursor;
 	if (nCursor == 2)
 	{
-		SCursor::m_hCursor1 = LoadCursorA(hInstance, (LPCSTR)IDC_CURSOR1);
-		SCursor::m_hCursor2 = LoadCursorA(hInstance, (LPCSTR)IDC_CURSOR2);
+		SCursor::m_hCursor1 = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_CURSOR1));
+		SCursor::m_hCursor2 = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_CURSOR2));
 		if (SCursor::m_hCursor1)
 			SetCursor(SCursor::m_hCursor1);
 	}
@@ -281,20 +281,20 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 		DWORD dwCreationFlags = 0;
 
 		if (m_bwFullScreen)
-			dwCreationFlags = WS_POPUP;
+			dwCreationFlags = 0x80000000;
 		else
 			dwCreationFlags = 0x0CA0000; // check what flag is this
 
-		m_dwWindowStyle = dwCreationFlags | WS_VISIBLE;
+		m_dwWindowStyle = dwCreationFlags | 0x10000000;
 
 		RECT rc;
 		SetRect(&rc, 0, 0, m_dwScreenWidth, m_dwScreenHeight);
 		AdjustWindowRect(&rc, m_dwWindowStyle, 0);
 
-		m_hWnd = CreateWindowExA(
+		m_hWnd = CreateWindowEx(
 			0,
-			(LPCSTR)m_strWindowTitle,
 			ClassName,
+			m_strWindowTitle,
 			m_dwWindowStyle,
 			0,
 			0,
@@ -437,6 +437,7 @@ HRESULT NewApp::InitDevice()
 		LOG_WRITELOG("Initialize Interface Failed");
 		return 0;
 	}
+
 	if (!m_pEventTranslator->InitializeIME())
 	{
 		LOG_WRITELOG("Initialize IME Failed");
@@ -462,7 +463,7 @@ HRESULT NewApp::InitDevice()
 		LOG_WRITELOG("Initialize Socket Failed");
 		return 0;
 	}
-
+	g_pSocketManager = m_pSocketManager;
 	g_LoginSocket = new CPSock();
 	g_pTimerManager->SetServerTime(0);
 
@@ -798,7 +799,9 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 {
 	switch (uMsg)
 	{
-	case WM_MOUSEFIRST:
+	case WM_MOUSEMOVE:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
 	{
 		if (SCursor::m_nCursorType == 0)
 		{
@@ -850,7 +853,7 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 		{
 			if (g_pCurrentScene != nullptr)
 			{
-				static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText("EN", 0);
+				static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText((char*)"EN", 0);
 				static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextIMEDesc->SetVisible(0);
 			}
 		}
@@ -866,7 +869,7 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 				{
 					if (bNative != 0)
 					{
-						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText("Ch", 0);
+						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText((char*)"Ch", 0);
 						HKL hkl = GetKeyboardLayout(0);
 
 						char dst[256]{};
@@ -878,7 +881,7 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 					}
 					else
 					{
-						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText("EN", 0);
+						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pAlphaNative->SetText((char*)"EN", 0);
 						static_cast<TMFieldScene*>(g_pCurrentScene)->m_pTextIMEDesc->SetVisible(0);
 					}
 				}
@@ -1311,19 +1314,19 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-HRESULT NewApp::CheckResolution(DWORD x, DWORD y, DWORD bpp)
+bool NewApp::CheckResolution(DWORD x, DWORD y, DWORD bpp)
 {
 	int iModeNum = 0;
 	DEVMODE devMode;
-	for (int bResult = EnumDisplaySettingsA(0, 0, &devMode); bResult; bResult = EnumDisplaySettingsA(0, iModeNum, &devMode))
+	for (int bResult = EnumDisplaySettings(0, 0, &devMode); bResult; bResult = EnumDisplaySettings(0, iModeNum, &devMode))
 	{
 		if (devMode.dmPelsWidth == x && devMode.dmPelsHeight == y && devMode.dmBitsPerPel == bpp)
-			return 1;
+			return true;
 
 		++iModeNum;
 	}
 
-	return 0;
+	return false;
 }
 
 char NewApp::base_chinaTid(char* TID, char* Id)

@@ -245,6 +245,7 @@
     <ClInclude Include="TMLog.h" />
     <ClInclude Include="TMMesh.h" />
     <ClInclude Include="TMObject.h" />
+    <ClInclude Include="TMObjectContainer.h" />
     <ClInclude Include="TMPaths.h" />
     <ClInclude Include="TMProject.h" />
     <ClInclude Include="TMRain.h" />
@@ -364,6 +365,7 @@
     <ClCompile Include="TMLog.cpp" />
     <ClCompile Include="TMMesh.cpp" />
     <ClCompile Include="TMObject.cpp" />
+    <ClCompile Include="TMObjectContainer.cpp" />
     <ClCompile Include="TMProject.cpp" />
     <ClCompile Include="TMRain.cpp" />
     <ClCompile Include="TMScene.cpp" />
