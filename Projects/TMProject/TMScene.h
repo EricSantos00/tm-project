@@ -73,7 +73,7 @@ public:
     ESCENE_TYPE GetSceneType();
     virtual void Cleanup();
     int GroundNewAttach(EDirection eDir);
-    D3DXVECTOR3* GroundGetPickPos(D3DXVECTOR3* result);
+    D3DXVECTOR3 GroundGetPickPos();
     int GroundGetTileType(TMVector2 vecPosition);
     int GroundGetMask(TMVector2 vecPosition);
     int GroundGetMask(IVector2 vecPosition);
