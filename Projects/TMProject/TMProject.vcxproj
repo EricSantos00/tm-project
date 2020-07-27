@@ -284,6 +284,7 @@
     <ClInclude Include="TMSnow.h" />
     <ClInclude Include="TMSun.h" />
     <ClInclude Include="TMTree.h" />
+    <ClInclude Include="TMUtil.h" />
     <ClInclude Include="TMVideoWnd.h" />
     <ClInclude Include="TreeNode.h" />
     <ClInclude Include="UIBinary.h" />
@@ -403,6 +404,7 @@
     <ClCompile Include="TMSnow.cpp" />
     <ClCompile Include="TMSun.cpp" />
     <ClCompile Include="TMTree.cpp" />
+    <ClCompile Include="TMUtil.cpp" />
     <ClCompile Include="TMVideoWnd.cpp" />
     <ClCompile Include="TreeNode.cpp" />
   </ItemGroup>
