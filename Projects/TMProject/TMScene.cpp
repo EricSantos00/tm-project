@@ -1244,7 +1244,52 @@ D3DXVECTOR3* TMScene::GroundGetPickPos(D3DXVECTOR3* result)
 
 int TMScene::GroundGetTileType(TMVector2 vecPosition)
 {
-	return 0;
+	int nTileType{};
+
+	if (m_pGround)
+	{
+		if (vecPosition.x >= m_pGround->m_vecOffset.x &&
+			vecPosition.x < (m_pGround->m_vecOffset.x + 128.0f) && 
+			vecPosition.y >= m_pGround->m_vecOffset.y &&
+			vecPosition.y < (m_pGround->m_vecOffset.y + 128.0f))
+		{
+			nTileType = m_pGround->GetTileType(vecPosition);
+		}
+		else if (m_pGround->m_pLeftGround
+			&& vecPosition.x >= m_pGround->m_pLeftGround->m_vecOffset.x
+			&& vecPosition.x < (m_pGround->m_pLeftGround->m_vecOffset.x + 128.0f)
+			&& vecPosition.y >= m_pGround->m_pLeftGround->m_vecOffset.y
+			&& vecPosition.y < (m_pGround->m_pLeftGround->m_vecOffset.y + 128.0f))
+		{
+			nTileType = m_pGround->m_pLeftGround->GetTileType(vecPosition);
+		}
+		else if (m_pGround->m_pRightGround
+			&& vecPosition.x >= m_pGround->m_pRightGround->m_vecOffset.x
+			&& vecPosition.x < (m_pGround->m_pRightGround->m_vecOffset.x + 128.0f)
+			&& vecPosition.y >= m_pGround->m_pRightGround->m_vecOffset.y
+			&& vecPosition.y < (m_pGround->m_pRightGround->m_vecOffset.y + 128.0f))
+		{
+			nTileType = m_pGround->m_pRightGround->GetTileType(vecPosition);
+		}
+		else if (m_pGround->m_pUpGround
+			&& vecPosition.x >= m_pGround->m_pUpGround->m_vecOffset.x
+			&& vecPosition.x < (m_pGround->m_pUpGround->m_vecOffset.x + 128.0f)
+			&& vecPosition.y >= m_pGround->m_pUpGround->m_vecOffset.y
+			&& vecPosition.y < (m_pGround->m_pUpGround->m_vecOffset.y + 128.0f))
+		{
+			nTileType = m_pGround->m_pUpGround->GetTileType(vecPosition);
+		}
+		else if (m_pGround->m_pDownGround
+			&& vecPosition.x >= m_pGround->m_pDownGround->m_vecOffset.x
+			&& vecPosition.x < (m_pGround->m_pDownGround->m_vecOffset.x + 128.0f)
+			&& vecPosition.y >= m_pGround->m_pDownGround->m_vecOffset.y
+			&& vecPosition.y < (m_pGround->m_pDownGround->m_vecOffset.y + 128.0f))
+		{
+			nTileType = m_pGround->m_pDownGround->GetTileType(vecPosition);
+		}
+	}
+
+	return nTileType;
 }
 
 int TMScene::GroundGetMask(TMVector2 vecPosition)

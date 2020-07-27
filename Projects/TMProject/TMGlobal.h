@@ -57,6 +57,11 @@ extern int g_nPlayDemo;
 extern int g_UIVer;
 extern int g_nKeyType;
 
+extern int g_HeightWidth;
+extern int g_HeightHeight;
+extern int g_HeightPosX;
+extern int g_HeightPosY;
+
 extern HINSTANCE g_hInstance;
 extern STRUCT_MIXHELP g_pItemMixHelp[11500];
 extern STRUCT_ITEMHELP g_pItemHelp[6500];

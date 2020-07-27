@@ -793,8 +793,6 @@ extern int g_nChannelWidth;
 extern int g_nServerGroupNum;
 extern char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
 extern char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
-extern int g_HeightPosX;
-extern int g_HeightPosY;
 extern int g_nSelServerWeather;
 
 float BASE_ScreenResize(float size);
