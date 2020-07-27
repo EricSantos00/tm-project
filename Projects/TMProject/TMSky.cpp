@@ -548,7 +548,6 @@ int TMSky::FrameMove(unsigned int dwServerTime)
 
     pMesh->m_pVB->Unlock();
 
-
     // NOTE: m_nTextIndex maybe [0]?
     if (m_nState == 3 ||m_nState == 13 || m_nState == 10 && pMesh->m_nTextureIndex[1] != 0)
     {

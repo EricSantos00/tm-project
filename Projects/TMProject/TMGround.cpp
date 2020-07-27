@@ -2686,31 +2686,31 @@ int TMGround::LoadTileMap(const char* szFileName)
 }
 
 int TMGround::Render()
-{
+{  
+    if (g_bHideBackground)
+        return 0;
+
+    auto pCamera = g_pObjectManager->m_pCamera;
+
+    if (pCamera->m_fVerticalAngle > 0.4f)
+        return 1;
+
+    if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELCHAR)
+        return 1;
+
     int nXList[3] = { 0, };
     int nYList[3] = { 0, };
     unsigned int dwColor[4] = { 0, };
     float fX[4] = { 0.0f, };
     float fY[4] = { 0.0f, };
 
-    if (g_bHideBackground == TRUE)
-        return FALSE;
-
-    auto pCamera = g_pObjectManager->m_pCamera;
-
-    if (pCamera->m_fVerticalAngle > 0.40000001f)
-        return TRUE;
-
-    if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELCHAR)
-        return TRUE;
-
-    auto vTemp = D3DXVECTOR3();
-    auto vPosTransformed = D3DXVECTOR3();
-    auto matScale = D3DXMATRIX();
-    auto matPos = D3DXMATRIX();
+    D3DXVECTOR3 vTemp;
+    D3DXVECTOR3 vPosTransformed;
+    D3DXMATRIX matScale;
+    D3DXMATRIX matPos;
 
     D3DXMatrixScaling(&matScale, 2.0f, 0.1f, 2.0f);
-    D3DXMatrixTranslation(&matScale, m_vecOffset.x, 0, m_vecOffset.y);
+    D3DXMatrixTranslation(&matPos, m_vecOffset.x, 0, m_vecOffset.y);
     D3DXMatrixMultiply(&matScale, &g_pDevice->m_matWorld, &matScale);
     D3DXMatrixMultiply(&matScale, &matScale, &matPos);
 
@@ -2792,11 +2792,17 @@ int TMGround::Render()
             && (int)vecCam.z >> 7 < 25)
         {
             if (g_pObjectManager->m_pCamera->m_fVerticalAngle > -0.60000002f)
+            {
                 nLen += 10;
-            else if (g_pObjectManager->m_pCamera->m_fVerticalAngle > -0.68000001f && g_pObjectManager->m_pCamera->m_fVerticalAngle <= -0.66000003f)
-                nLen += 3;
-            else
+            }
+            else if (g_pObjectManager->m_pCamera->m_fVerticalAngle > -0.66000003f)
+            {
                 nLen += 4;
+            }
+            else if (g_pObjectManager->m_pCamera->m_fVerticalAngle > -0.68000001f)
+            {
+                nLen += 3;
+            }
 
             //else if need to be between -0.68000001f <-> -0.66000003f
         }
@@ -3019,7 +3025,7 @@ int TMGround::Render()
                                 m_vertex[k].tu2 = TMGround::BackTileCoordList[bCoordBackIndex][k][0];
                                 m_vertex[k].tv2 = TMGround::BackTileCoordList[bCoordBackIndex][k][1];
                             }
-                            else if (m_bDungeon || m_bDungeon != 3 || m_bDungeon != 4)
+                            if (m_bDungeon || m_bDungeon != 3 || m_bDungeon != 4)
                             {
                                 if (!(m_vecOffsetIndex.x < 26
                                     || m_vecOffsetIndex.x > 30
@@ -3278,7 +3284,7 @@ int TMGround::Render()
     if (m_bWire == 1)
         g_pDevice->SetRenderState(D3DRS_FILLMODE, 3);
 
-    return TRUE;
+    return 1;
 }
 
 int TMGround::FrameMove(unsigned int dwServerTime)

@@ -580,11 +580,14 @@ int TextureManager::LoadEffectTexture(int nIndex)
 		_read(handle, szHeader, 1);
 		_read(handle, pBuffer, nLength);
 		memcpy(pBuffer, m_szDDSHeader, 3);
+
+		char szDDSHeader[5]{};
 		if (pBuffer[84] == '2')
-			sprintf(m_szDDSHeader, "DXT1");
+			sprintf(szDDSHeader, "DXT1");
 		else
-			sprintf(m_szDDSHeader, "DXT3");
-		memcpy(&pBuffer[84], m_szDDSHeader, 4);
+			sprintf(szDDSHeader, "DXT3");
+
+		memcpy(&pBuffer[84], szDDSHeader, 4);
 		_close(handle);
 
 		if (g_pDevice->m_bDXT1 == 1 && g_pDevice->m_bDXT3 == 1 && D3DDevice::m_bDxt == 1)
@@ -1008,17 +1011,18 @@ int TextureManager::LoadEnvTexture(int nIndex)
 			}
 		}
 	}
+
 	int handle = _open(m_stEnvTextureList[nIndex].szFileName, _O_BINARY, 0);
 	if (handle == -1)
 		return 0;
+
 	int nLength = _filelength(handle);
 	D3DFORMAT texFormat = g_pDevice->m_eFormat;
 	int PlusLength = 18;
 	int ColorKey = 0xFF000000;
 
 	char* pBuffer;
-	char szHeader[5]; {}
-	char szDDSHeader[5]; {}
+	char szHeader[5]{};
 
 	if (bDDsType == 0)
 	{
@@ -1026,7 +1030,7 @@ int TextureManager::LoadEnvTexture(int nIndex)
 		pBuffer = new char[nLength + PlusLength];
 		_read(handle, szHeader, 4u);
 		_read(handle, pBuffer, nLength);
-		memcpy(&pBuffer[nLength], m_szTGAHeader, sizeof(m_szTGAHeader));
+		memcpy(&pBuffer[nLength], m_szTGAHeader, 18);
 		_close(handle);
 		if (m_stEnvTextureList[nIndex].cAlpha == 'A')
 		{
@@ -1048,14 +1052,18 @@ int TextureManager::LoadEnvTexture(int nIndex)
 		nLength = nLength - 1;
 		PlusLength = 0;
 		pBuffer = new char[nLength];
+
+		char szDDSHeader[5]{};
 		_read(handle, szHeader, 1);
-		_read(handle, &pBuffer, nLength);
-		memcpy(pBuffer, m_szDDSHeader, 3u);
+		_read(handle, pBuffer, nLength);
+		memcpy(pBuffer, m_szDDSHeader, 3);
+
 		if (pBuffer[84] == '2')
 			sprintf(szDDSHeader, "DXT1");
 		else
 			sprintf(szDDSHeader, "DXT3");
-		memcpy(&pBuffer[84], szDDSHeader, 4u);
+
+		memcpy(&pBuffer[84], szDDSHeader, 4);
 		_close(handle);
 		if (g_pDevice->m_bDXT1 != 1 || g_pDevice->m_bDXT3 != 1 || D3DDevice::m_bDxt != 1)
 		{
@@ -1099,7 +1107,7 @@ int TextureManager::LoadEnvTexture(int nIndex)
 		if (FAILED(D3DXCreateTextureFromFileInMemoryEx(
 			g_pDevice->m_pd3dDevice,
 			pBuffer,
-			PlusLength + nLength,
+			nLength + PlusLength,
 			-1,
 			-1,
 			4,
