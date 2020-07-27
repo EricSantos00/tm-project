@@ -125,8 +125,7 @@ int TMObject::Render()
 	}
 	else
 	{
-		D3DCOLORVALUE result;
-		g_pCurrentScene->GroundGetColor(&result, m_vecPosition);
+		D3DCOLORVALUE result = g_pCurrentScene->GroundGetColor(m_vecPosition);
 		result.r = (float)(result.r * 0.5) + (float)(g_pDevice->m_colorLight.r * 0.5);
 		result.g = (float)(result.g * 0.5) + (float)(g_pDevice->m_colorLight.g * 0.5);
 		result.b = (float)(result.b * 0.5) + (float)(g_pDevice->m_colorLight.b * 0.5);

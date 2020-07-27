@@ -475,8 +475,7 @@ int TMObjectContainer::Load(const char* szFileName)
 				col[2][0] = 0x00AA00FF;
 				col[2][1] = 0x11033;
 
-				D3DCOLORVALUE GCol;
-				g_pCurrentScene->GroundGetColor(&GCol, TMVector2(m_fOffsetX + vecPosition.x, m_fOffsetY + vecPosition.y));
+				D3DCOLORVALUE GCol = g_pCurrentScene->GroundGetColor(TMVector2(m_fOffsetX + vecPosition.x, m_fOffsetY + vecPosition.y));
 
 				unsigned int dwGA = (unsigned int)(float)(GCol.a * 256.0) & 0xFF;
 				unsigned int dwGR = (unsigned int)(float)(GCol.r * 256.0) & 0xFF;
