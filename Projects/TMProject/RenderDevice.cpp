@@ -3090,22 +3090,21 @@ void RenderDevice::RenderGeomRectImage(GeomControl* ipControl)
 						pEfTexture,
 						fScaleX,
 						fScaleY);
-				}
-
-				RenderDevice::RenderRectRot(
-					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartX,
-					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartY,
-					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nWidth,
-					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nHeight,
-					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
-					(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY,
-					ipControl->nWidth / 2.0f,
-					ipControl->nHeight / 2.0f,
-					ipControl->fAngle,
-					pTexture,
-					fScaleX,
-					fScaleY);
+				}				
 			}
+			RenderDevice::RenderRectRot(
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartX,
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nStartY,
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nWidth,
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nHeight,
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestX + ipControl->nPosX,
+				(float)pUISet->pTextureCoord[ipControl->nTextureIndex].nDestY + ipControl->nPosY,
+				ipControl->nWidth / 2.0f,
+				ipControl->nHeight / 2.0f,
+				ipControl->fAngle,
+				pTexture,
+				fScaleX,
+				fScaleY);
 		}	
 		else if (ipControl->eRenderType == RENDERCTRLTYPE::RENDER_IMAGE_TILE)
 		{
