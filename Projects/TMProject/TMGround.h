@@ -26,7 +26,7 @@ public:
     int LoadTileMap(const char* szFileName);
     int Render() override;
     int FrameMove(unsigned int dwServerTime) override;
-    D3DXVECTOR3* GetPickPos(D3DXVECTOR3* result);
+    D3DXVECTOR3 GetPickPos();
     float GetHeight(TMVector2 vecPosition);
     int GetMask(TMVector2 vecPosition);
     D3DCOLORVALUE* GetColor(D3DCOLORVALUE* result, TMVector2 vecPosition);

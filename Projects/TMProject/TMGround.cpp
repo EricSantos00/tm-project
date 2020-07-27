@@ -3309,9 +3309,222 @@ int TMGround::FrameMove(unsigned int dwServerTime)
     return 1;
 }
 
-D3DXVECTOR3* TMGround::GetPickPos(D3DXVECTOR3* result)
+D3DXVECTOR3 TMGround::GetPickPos()
 {
-	return nullptr;
+    static D3DXVECTOR3 vPickPos(0.0f, -10000.0f, 0.0f);
+
+    D3DXVECTOR3 vPickRayDir;
+    D3DXVECTOR3 vPickRayOrig;
+    g_pDevice->GetPickRayVector(&vPickRayOrig, &vPickRayDir);
+    D3DXVec3Normalize(&vPickRayDir, &vPickRayDir);
+
+    D3DXVec3Normalize(&vPickRayDir, &vPickRayDir);
+    float fU = 0.0f;
+    float  fV = 0.0f;
+    float fDistance = 0.0f;
+    TMCamera* pCamera = g_pObjectManager->m_pCamera;
+
+    TMVector2 vecCam;
+
+    if (pCamera->m_pFocusedObject)
+    {
+        vecCam = pCamera->m_pFocusedObject->m_vecPosition;
+    }
+    else
+    {
+        vecCam.x = g_pObjectManager->m_pCamera->m_cameraPos.x;
+        vecCam.y = g_pObjectManager->m_pCamera->m_cameraPos.z;
+    }
+
+    int nCamPosX = (int)(vecCam.x - m_vecOffset.x);
+    int nCamPosY = (int)(vecCam.y - m_vecOffset.y);
+    int nClipIndex = 25;
+    int nMinClipIndex = 0;
+
+    if(g_pObjectManager->m_pCamera->m_fVerticalAngle > 1.0f)
+        nClipIndex = (int)((pCamera->m_fSightLength * 1.5f) + 8.0f);
+
+    nMinClipIndex = nClipIndex / 2;
+
+    for (int nY = nCamPosY - nClipIndex / 2; nY < nClipIndex + nCamPosY; ++nY)
+    {
+        if (nY >= 0 && nY <= 127)
+        {
+            for (int nX = nCamPosX - nClipIndex / 2; nX < nClipIndex + nCamPosX; ++nX)
+            {
+                if (nX >= 0 && nX <= 127)
+                {
+                    int nMaskHeight = m_pMaskData[nY][nX];
+                    if (nMaskHeight > 127)
+                        nMaskHeight = 0;
+                    if (nMaskHeight == 127)
+                        nMaskHeight = 400;
+
+                    D3DXVECTOR3 vertex[4]{};
+                    vertex[0] = D3DXVECTOR3((float)nX + m_vecOffset.x, (float)nMaskHeight * 0.1f, (float)nY + m_vecOffset.y);
+                    vertex[1] = D3DXVECTOR3((float)nX + m_vecOffset.x, (float)nMaskHeight * 0.1f, ((float)nY + m_vecOffset.y) + 1.0f);
+                    vertex[2] = D3DXVECTOR3(((float)nX + m_vecOffset.x) + 1.0f, (float)nMaskHeight * 0.1f, (float)nY + m_vecOffset.y);
+                    vertex[3] = D3DXVECTOR3(((float)nX + m_vecOffset.x) + 1.0f, (float)nMaskHeight * 0.1f, ((float)nY + m_vecOffset.y) + 1.0f);
+                    if (D3DXIntersectTri(vertex, &vertex[1], &vertex[2], &vPickRayOrig, &vPickRayDir, &fU, &fV, &fDistance) == 1)
+                    {
+                        vPickPos.y = vertex[0].y;
+                        vPickPos.x = vertex[0].x + fV;
+                        vPickPos.z = vertex[0].z + fU;
+                        return vPickPos;
+                    }
+                    if (D3DXIntersectTri(&vertex[3], &vertex[2], &vertex[1], &vPickRayOrig, &vPickRayDir, &fU, &fV, &fDistance) == 1)
+                    {
+                        vPickPos.y = vertex[3].y;
+                        vPickPos.x = vertex[3].x - fV;
+                        vPickPos.z = vertex[3].z - fU;
+                        return vPickPos;
+                    }
+                }
+            }
+        }
+    }
+
+    if (pCamera->m_fVerticalAngle <= 0.2f && g_pCurrentScene->m_bAutoRun != 1)
+    {
+        int vPosInX = 0;
+        int vPosInY = 0;
+        D3DXVECTOR3 vTemp;
+        D3DXVECTOR3 vPosTransformed;
+
+        int nPY = (int)((float)nCamPosY / 2.0f);
+        int nMinX = (int)((float)nCamPosX / 2.0f) - 12;
+        int nMinY = nPY - 12;
+        int nMaxX = (int)((float)nCamPosX / 2.0f) + 12;
+        int nMaxY = nPY + 12;
+
+        if (nMinX < 0)
+            nMinX = 0;
+        if (nMinY < 0)
+            nMinY = 0;
+        if (nMaxX > 64)
+            nMaxX = 63;
+        if (nMaxY > 64)
+            nMaxY = 63;
+        nCamPosX /= 2;
+        nCamPosY /= 2;
+
+        for (int j = nMinY; j < nMaxY; ++j)
+        {
+            if (j >= 0 && j <= 64)
+            {
+                for (int k = nMinX; k < nMaxX; ++k)
+                {
+                    if (k >= 0 && k <= 64)
+                    {
+                        D3DXVECTOR3 vec[4]{};
+                        if (k < 64 && j < 64)
+                        {
+                            vec[0] = D3DXVECTOR3((float)((float)k * 2.0f) + m_vecOffset.x, 
+                                (float)m_TileMapData[k + (j << 6)].cHeight * 0.1f,
+                                (float)((float)j * 2.0f) + m_vecOffset.y);
+                            vec[1] = D3DXVECTOR3((float)((float)k * 2.0f) + m_vecOffset.x,
+                                (float)m_TileMapData[k + ((j + 1) << 6)].cHeight * 0.1f,
+                                (float)((float)(j + 1) * 2.0f) + m_vecOffset.y);
+                            vec[2] = D3DXVECTOR3((float)((float)(k + 1) * 2.0) + m_vecOffset.x,
+                                (float)m_TileMapData[k + (j << 6) + 1].cHeight * 0.1,
+                                (float)((float)j * 2.0) + m_vecOffset.y);
+                            vec[3] = D3DXVECTOR3((float)((float)(k + 1) * 2.0) + m_vecOffset.x,
+                                (float)m_TileMapData[k + ((j + 1) << 6) + 1].cHeight * 0.1,
+                                (float)((float)(j + 1) * 2.0) + m_vecOffset.y);
+
+                            if ((float)m_pMaskData[j][k] * 0.1f - ((((vec[0].y + vec[1].y) + vec[2].y) + vec[3].y) / 4.0f) > 1.0f)
+                                continue;
+                        }
+
+                        if (D3DXIntersectTri(vec, &vec[1], &vec[2], &vPickRayOrig, &vPickRayDir, &fU, &fV, &fDistance) == 1)
+                        {
+                            int bVisible = 0;
+                            for (int i = 0; i < 3; ++i)
+                            {
+                                D3DXVECTOR3 vecPos;
+                                vecPos = vec[i];
+
+                                D3DXVec3TransformCoord(&vTemp, &vecPos, &g_pDevice->m_matView);
+                                D3DXVec3TransformCoord(&vPosTransformed, &vTemp, &g_pDevice->m_matProj);
+                                if (vPosTransformed.z >= 0.0f && vPosTransformed.z < 1.0f)
+                                {
+                                    int vPosInX = g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift;
+                                    vPosInX = (int)(((vPosTransformed.x + 1.0f) * vPosInX) / 2.0f);
+                                    int vPosInY = g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift;
+                                    vPosInY = (int)(((vPosTransformed.y + 1.0f) * vPosInY) / 2.0f);
+
+                                    if ((float)vPosInX > (float)(-100.0f * RenderDevice::m_fWidthRatio)
+                                        && (float)((float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)
+                                            + (float)(100.0f * RenderDevice::m_fWidthRatio)) > (float)vPosInX
+                                        && (float)vPosInY > (float)(-100.0f * RenderDevice::m_fHeightRatio)
+                                        && (float)((float)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift)
+                                            + (float)(100.0 * RenderDevice::m_fHeightRatio)) > (float)vPosInY)
+                                    {
+                                        bVisible = 1;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (bVisible)
+                            {
+                                vPickPos.y = vec[0].y;
+                                vPickPos.x = (fV * 2.0f) + vec[0].x;
+                                vPickPos.z = (fU * 2.0f) + vec[0].z;
+                                return vPickPos;
+                            }
+                        }
+                        if (D3DXIntersectTri(&vec[3], &vec[2], &vec[1], &vPickRayOrig, &vPickRayDir, &fU, &fV, &fDistance) == 1)
+                        {
+                            int bVisible = 0;
+                            for (int l = 1; l < 4; ++l)
+                            {
+                                D3DXVECTOR3 vecPos;
+                                vecPos = vec[l];
+                                D3DXVec3TransformCoord(&vTemp, &vecPos, &g_pDevice->m_matView);
+                                D3DXVec3TransformCoord(&vPosTransformed, &vTemp, &g_pDevice->m_matProj);
+
+                                if (vPosTransformed.z >= 0.0f && vPosTransformed.z < 1.0f)
+                                {
+                                    int vPosInX = g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift;
+                                    vPosInX = (int)(((vPosTransformed.x + 1.0f) * vPosInX) / 2.0f);
+                                    int vPosInY = g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift;
+                                    vPosInY = (int)(((vPosTransformed.y + 1.0f) * vPosInY) / 2.0f);
+
+
+                                    if ((float)vPosInX > (float)(-100.0f * RenderDevice::m_fWidthRatio)
+                                        && (float)((float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)
+                                            + (float)(100.0f * RenderDevice::m_fWidthRatio)) > (float)vPosInX
+                                        && (float)vPosInY > (float)(-100.0f * RenderDevice::m_fHeightRatio)
+                                        && (float)((float)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift)
+                                            + (float)(100.0f * RenderDevice::m_fHeightRatio)) > (float)vPosInY)
+                                    {
+                                        bVisible = 1;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (bVisible)
+                            {
+                                vPickPos.y = vec[3].y;
+                                vPickPos.x = vec[3].x - (fV * 2.0f);
+                                vPickPos.z = vec[3].z - (fU * 2.0f);
+                                return vPickPos;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return D3DXVECTOR3(0.0f, -10000.0f, 0.0f);
+    }
+    else
+    {
+        return vPickPos;
+    }
+
+    return D3DXVECTOR3();
 }
 
 float TMGround::GetHeight(TMVector2 vecPosition)
