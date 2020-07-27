@@ -103,6 +103,8 @@ extern char g_AccountLock;
 extern int g_nBattleMaster;
 extern int g_pDebugMaxCount;
 
+extern int g_bHideBackground;
+
 static unsigned int g_dwHandIndex[101][2] =
 {
     {19,25},{18,24},{15,21},{15,21},{12,18},{22,28},{23,29},
