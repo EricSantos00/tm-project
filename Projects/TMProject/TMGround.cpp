@@ -2848,7 +2848,48 @@ int TMGround::GetMask(TMVector2 vecPosition)
 
 D3DCOLORVALUE* TMGround::GetColor(D3DCOLORVALUE* result, TMVector2 vecPosition)
 {
-	return nullptr;
+    int nX = (vecPosition.x - m_vecOffset.x) / 2;
+    int nY = (vecPosition.y - m_vecOffset.y) / 2;
+
+    int dwColor[4]{ 0 };
+    if (nX >= 0 && nX < 63 && nY >= 0 && nY < 63)
+    {
+        dwColor[0] = m_TileMapData[nX + (nY << 6)].dwColor;
+        dwColor[1] = m_TileMapData[nX + (nY << 6) + 1].dwColor;
+        dwColor[2] = m_TileMapData[nX + ((nY + 1) << 6)].dwColor;
+        dwColor[3] = m_TileMapData[nX + ((nY + 1) << 6) + 1].dwColor;
+    }
+    else if (nX == 63)
+    {
+        dwColor[0] = m_TileMapData[(nY << 6) + 63].dwColor;
+        dwColor[1] = m_TileMapData[(nY << 6) + 63].dwColor;
+        dwColor[2] = m_TileMapData[((nY + 1) << 6) + 63].dwColor;
+        dwColor[3] = m_TileMapData[((nY + 1) << 6) + 63].dwColor;
+    }
+    else if (nX == 63)
+    {
+        dwColor[0] = m_TileMapData[nX + 4032].dwColor;
+        dwColor[1] = m_TileMapData[nX + 4033].dwColor;
+        dwColor[2] = m_TileMapData[nX + 4032].dwColor;
+        dwColor[3] = m_TileMapData[nX + 4033].dwColor;
+    }
+
+    _D3DCOLORVALUE color[4]{};
+    for (int i = 0; i < 4; ++i)
+    {
+        color[i].r = ((0xFF0000 & dwColor[i]) >> 16) / 256.0f;
+        color[i].g = ((dwColor[i] & 0xFF00) >> 8) / 256.0f;
+        color[i].b = (dwColor[i] & 0xFF) / 256.0f;
+    }
+
+    float fDX = (nX * 2.0f) - (vecPosition.x - m_vecOffset.x);
+    float fDY = (nY * 2.0f) - (vecPosition.y - m_vecOffset.y);
+    result->g = (((((fDX + fDY) * color[3].g) + (((4.0f - fDX) - fDY) * color[0].g)) + (((fDX + 2.0f) - fDY) * color[1].g)) + (((2.0f - fDX) + fDY) * color[2].g)) / 12.0f;
+    result->b = (((((fDX + fDY) * color[3].b) + (((4.0f - fDX) - fDY) * color[0].b)) + (((fDX + 2.0f) - fDY) * color[1].b)) + (((2.0f - fDX) + fDY) * color[2].b)) / 12.0f;
+    result->r = (((((fDX + fDY) * color[3].r) + (((4.0f - fDX) - fDY) * color[0].r)) + (((fDX + 2.0f) - fDY) * color[1].r)) + (((2.0f - fDX) + fDY) * color[2].r)) / 12.0f;
+    result->a = 1.0f;
+
+	return result;
 }
 
 int TMGround::GetTileType(TMVector2 vecPosition)
