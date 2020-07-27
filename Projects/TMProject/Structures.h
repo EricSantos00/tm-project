@@ -142,6 +142,17 @@ struct TMVector3
 		return ret;
 	}
 
+	TMVector3 operator*(const float value)
+	{
+		TMVector3 ret;
+
+		ret.x = this->x * value;
+		ret.y = this->y * value;
+		ret.z = this->z * value;
+
+		return ret;
+	}
+
 	TMVector3 operator/(const float value)
 	{
 		TMVector3 ret;
