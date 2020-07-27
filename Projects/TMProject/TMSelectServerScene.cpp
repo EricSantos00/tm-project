@@ -876,29 +876,32 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 {
 	TMScene::FrameMove(dwServerTime);
 
-	unsigned int dwServerTimea = g_pTimerManager->GetServerTime();
+	dwServerTime = g_pTimerManager->GetServerTime();
 
 	if (g_pDevice->m_bLoadMeshManager == 1)
 		g_pCursor->SetVisible(1);
 
-	if (Game_grade && !FrameMoveGameGrade(dwServerTimea))
+	if (Game_grade && !FrameMoveGameGrade(dwServerTime))
 		return 0;
 
-	if (m_cLogin)
+	if (m_cLogin == 0)
 	{
-		if (m_cLogin == 1)
-			SetAlphaLogin(m_dwLoginTime, dwServerTimea, 1000u, 0);
-		else if (m_cLogin == 2)
-			SetAlphaServer(m_dwLoginTime, dwServerTimea, 1000u, 0);
+		SetAlphaServer(m_dwStartCamTime, dwServerTime, 12000, 0);
 	}
-	else
-		SetAlphaServer(m_dwStartCamTime, dwServerTimea, 12000u, 0);
+	else if (m_cLogin == 1)
+	{
+		SetAlphaLogin(m_dwLoginTime, dwServerTime, 1000, 0);
+	}
+	else if (m_cLogin == 2)
+	{
+		SetAlphaServer(m_dwLoginTime, dwServerTime, 1000, 0);
+	}
 
 	for (int nPerson = 0; nPerson < 50; ++nPerson)
 		if(m_pCheckHumanList[nPerson])
 			m_pCheckHumanList[nPerson]->m_fWantHeight = -4.0f;
 
-	if (dwServerTimea - m_dwStartCamTime > 5000 && m_cStartRun)
+	if (dwServerTime - m_dwStartCamTime > 5000 && !m_cStartRun)
 	{
 		if (!m_nDemoType)
 		{
@@ -921,7 +924,7 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 			m_cStartRun = 1;
 		}
 	}
-	else if (dwServerTimea - m_dwStartCamTime > 7000 && m_cStartRun == 1)
+	if (dwServerTime - m_dwStartCamTime > 7000 && m_cStartRun == 1)
 	{
 		if (!m_nDemoType)
 		{
@@ -941,10 +944,20 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 		}
 	}
 
-	if (m_nDemoType == 1 && dwServerTimea - m_dwStartCamTime > 14000 && !m_bRemove)
+	if (m_nDemoType == 1 && dwServerTime - m_dwStartCamTime > 14000 && !m_bRemove)
+	{
 		RemoveHuman();
+		m_bRemove = 1;
+	}
 
-	if (m_nDemoType == 3 && dwServerTimea - m_dwStartCamTime > 12000 && !m_cStartRun)
+	if (m_nDemoType == 3 && dwServerTime - m_dwStartCamTime > 12000 && !m_cStartRun)
+	{
+		if (m_pCheckHumanList[0])
+			m_pCheckHumanList[0]->SetAnimation(ECHAR_MOTION::ECMOTION_LEVELUP, 0);
+
+		m_cStartRun = 1;
+	}
+	if (m_nDemoType == 3 && dwServerTime - m_dwStartCamTime > 20000 && m_cStartRun == 1)
 	{
 		if (m_pCheckHumanList[0])
 			m_pCheckHumanList[0]->SetAnimation(ECHAR_MOTION::ECMOTION_LEVELUP, 0);
@@ -952,7 +965,7 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 		m_cStartRun = 2;
 	}
 
-	if (dwServerTimea - m_dwLastClickLoginBtnTime > 6000)
+	if (dwServerTime - m_dwLastClickLoginBtnTime > 6000)
 	{
 		auto pEditPassword = m_pEditPW;
 		m_pLoginBtns[0]->SetEnable(1);
@@ -1055,7 +1068,7 @@ void TMSelectServerScene::SetAlphaServer(unsigned int dwStartTime, unsigned int 
 	}
 	else
 	{
-		float fAlpha = (dwServerTime - dwStartTime) / static_cast<float>(dwTerm);
+		float fAlpha = (float)(dwServerTime - dwStartTime) / static_cast<float>(dwTerm);
 
 		if (bFade == 1)
 			fAlpha = 1.0f - fAlpha;
@@ -1071,7 +1084,12 @@ void TMSelectServerScene::SetAlphaServer(unsigned int dwStartTime, unsigned int 
 		for (int i = 0; i < 2; ++i)
 		{
 			if (m_pGroupPanel[i])
-				m_pGroupPanel[i]->m_GCPanel.dwColor = (dwAlphaa << 24) | 0x0FFFFFF;
+				m_pGroupPanel[i]->m_GCPanel.dwColor = 0x01010101;
+		}
+		for (int l = 0; l < 10; ++l)
+		{
+			if (m_pGroupPanel[l])
+				m_pGroupPanel[l]->m_GCPanel.dwColor = (dwAlphaa << 24) | 0x0FFFFFF;
 		}
 
 		m_pNServerSelect->m_GCPanel.dwColor = (dwAlphaa << 24) | 0x0FFFFFF;
@@ -1207,7 +1225,7 @@ int TMSelectServerScene::FrameMoveGameGrade(unsigned int dwServerTime)
 {
 	if (dwServerTime >= m_dGameGradePrintSaveTime + 3500)
 	{
-		if (m_bGameGradePlay && !m_pNServerSelect->IsVisible() || dwServerTime > m_dGameGradePrintSaveTime * 3500)
+		if (m_bGameGradePlay && (!m_pNServerSelect->IsVisible() || dwServerTime > m_dGameGradePrintSaveTime + 3500))
 		{
 			ResetDemoPlayer();
 			CamAction();
@@ -1252,16 +1270,16 @@ void TMSelectServerScene::GameGradeScene()
 	else if (g_pApp->m_dwScreenWidth == 1600)
 		size = 0.5f;
 
-	m_GameGrade = new SPanel(553, 0.0f, 0.0f, g_pApp->m_dwScreenWidth * size, g_pApp->m_dwScreenHeight * size, 0x77777777u, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+	m_GameGrade = new SPanel(553, 0.0f, 0.0f, (float)g_pApp->m_dwScreenWidth * size, (float)g_pApp->m_dwScreenHeight * size, 0x77777777u, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
 	m_GameGrade->SetControlID(4623u);
 	m_GameGrade->SetPos(0, 0);
 	
 	if (m_pControlContainer)
-	{
 		m_GameGrade->SetEventListener(m_pControlContainer);
+	else
+		m_GameGrade->SetEventListener(nullptr);
 
-		m_pControlContainer->AddChild(m_GameGrade);
-	}
+	m_pControlContainer->AddItem(m_GameGrade);
 
 	m_GameGrade->SetVisible(1);
 	m_dGameGradePrintTime = 3500;
