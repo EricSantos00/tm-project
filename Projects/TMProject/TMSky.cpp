@@ -124,7 +124,7 @@ TMSky::~TMSky()
 
 int TMSky::Render()
 {
-    if (g_bHideBackground == 1)
+    if (g_bHideBackground)
         return 0;
 
     if ((RenderDevice::m_bDungeon == 0 || RenderDevice::m_bDungeon == 3 || RenderDevice::m_bDungeon == 4) && 
@@ -132,7 +132,7 @@ int TMSky::Render()
     {
        TMCamera* pCam = g_pObjectManager->m_pCamera;
        D3DMATERIAL9 materials{};
-       D3DCOLORVALUE color;
+       D3DCOLORVALUE color{};
 
        color.r = 0.69f;
        color.g = 0.69f;
@@ -140,25 +140,25 @@ int TMSky::Render()
        materials.Emissive.r = 0.3f;
        materials.Emissive.g = 0.3f;
        materials.Emissive.b = 0.3f;
-       materials.Diffuse.r = 0.69f;
-       materials.Diffuse.g = 0.69f;
-       materials.Diffuse.b = 0.69f;
+       materials.Diffuse.r = color.r;
+       materials.Diffuse.g = color.g;
+       materials.Diffuse.b = color.b;
        materials.Diffuse.a = color.a;
-       materials.Specular.r = 0.69f;
-       materials.Specular.g = 0.69f;
-       materials.Specular.b = 0.69f;
-       materials.Specular.a = color.a;
+       materials.Specular.r = materials.Diffuse.r;
+       materials.Specular.g = materials.Diffuse.g;
+       materials.Specular.b = materials.Diffuse.b;
+       materials.Specular.a = materials.Diffuse.a;
        materials.Power = 0.0;
 
        g_pDevice->m_pd3dDevice->SetMaterial(&materials);
-       TMVector3 vecCam = pCam->m_cameraPos;
-        
+
+       TMVector3 vecCam = pCam->m_cameraPos;        
        TMScene* pScene = g_pCurrentScene;
        D3DXMATRIX mat;
        D3DXMATRIX matPosition;
        D3DXMATRIX matScale;
 
-       D3DXMatrixTranslation(&matPosition, vecCam.x, m_fHeight + 1.0f,vecCam.z);
+       D3DXMatrixTranslation(&matPosition, vecCam.x, m_fHeight + 1.0f, vecCam.z);
        D3DXMatrixRotationYawPitchRoll(&mat, m_fAngle, D3DXToRadian(90), 0);
        D3DXMatrixScaling(&matScale, m_fScale, m_fScale * 0.5f, m_fScale);
        D3DXMatrixMultiply(&mat, &g_pDevice->m_matWorld, &mat);
@@ -213,6 +213,12 @@ int TMSky::Render()
            return 1;
        }
     }
+    else
+    {
+        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+        g_pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, 3u);
+        return 0;
+    }
 
     return 1;
 }
@@ -221,11 +227,11 @@ int TMSky::FrameMove(unsigned int dwServerTime)
 {
     if (g_bHideBackground)
     {
-        g_pDevice->m_dwClearColor = 0;
+       g_pDevice->m_dwClearColor = 0;
         return 0;
     }
 
-   TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 1, 180000);
+    TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 1, 180000);
     if (g_pCurrentScene->m_pSun != nullptr)
     {
         g_pCurrentScene->m_pSun->m_bHide = m_nState && m_nState < 10 ? 1 : 0;
@@ -465,12 +471,12 @@ int TMSky::FrameMove(unsigned int dwServerTime)
                     g_pCurrentScene->m_pSun->m_fDefSize = 1.0f - fProgress;
                 
                 // TODO: this code maybe crash. The -264 maybe is - 67.
-                unsigned int dwR = (unsigned char)((float)m_dwR[pMesh->m_nTextureIndex[0] - 264] * (float)(1.0f - fProgress)) +
-                    (float)((float)m_dwR[m_nTextureIndex - 264] * fProgress);
-                unsigned int dwG = (unsigned char)((float)m_dwG[pMesh->m_nTextureIndex[0] - 264] * (float)(1.0f - fProgress)) +
-                    (float)((float)m_dwG[m_nTextureIndex - 264] * fProgress);
-                unsigned int dwB = (unsigned char)((float)m_dwB[pMesh->m_nTextureIndex[0] - 264] * (float)(1.0f - fProgress)) +
-                    (float)((float)m_dwB[m_nTextureIndex - 264] * fProgress);
+                unsigned int dwR = (unsigned char)((float)m_dwR[pMesh->m_nTextureIndex[0] - 67] * (float)(1.0f - fProgress)) +
+                    (float)((float)m_dwR[m_nTextureIndex - 67] * fProgress);
+                unsigned int dwG = (unsigned char)((float)m_dwG[pMesh->m_nTextureIndex[0] - 67] * (float)(1.0f - fProgress)) +
+                    (float)((float)m_dwG[m_nTextureIndex - 67] * fProgress);
+                unsigned int dwB = (unsigned char)((float)m_dwB[pMesh->m_nTextureIndex[0] - 67] * (float)(1.0f - fProgress)) +
+                    (float)((float)m_dwB[m_nTextureIndex - 67] * fProgress);
 
                 g_pDevice->m_dwClearColor = dwB | (dwG << 8) | (dwR << 16);
 
@@ -589,15 +595,15 @@ void TMSky::RestoreDeviceObjects()
 void TMSky::SetWeatherState(int nState)
 {
     TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 1, 180000);
-    if (pMesh)
+    if (pMesh != nullptr)
     {
         if (!(nState / 10))
         {
-            // This code is extrem confuse, the compiler did some optimization that make the code weird
+            //This code is extrem confuse, the compiler did some optimization that make the code weird
             pMesh->m_nTextureIndex[0] = nState + 67;
-            unsigned int dwR = static_cast<unsigned char>(m_dwR[pMesh->m_nTextureIndex[0] - 264]);
-            unsigned int dwG = static_cast<unsigned char>(m_dwG[pMesh->m_nTextureIndex[0] - 264]);
-            unsigned int dwB = static_cast<unsigned char>(m_dwB[pMesh->m_nTextureIndex[0] - 264]);
+            unsigned int dwR = static_cast<unsigned char>(m_dwR[pMesh->m_nTextureIndex[0] - 67]);
+            unsigned int dwG = static_cast<unsigned char>(m_dwG[pMesh->m_nTextureIndex[0] - 67]);
+            unsigned int dwB = static_cast<unsigned char>(m_dwB[pMesh->m_nTextureIndex[0] - 67]);
             g_pDevice->m_dwClearColor = dwB | (dwG << 8) | (dwR << 16);
         }
         else if (nState / 10 == 1)
