@@ -97,13 +97,18 @@ extern int g_objectnumber;
 extern int g_effectnumber;
 extern int g_totaleffect;
 extern int g_nUpdateGuildName;
+extern char g_szEncryptedAcc[256];
+extern int g_bMoveServer;
 
 extern stCurse_num g_pCurseList;
+extern int g_bTestServer;
 
 extern int Game_grade;
 extern char g_AccountLock;
 extern int g_nBattleMaster;
 extern int g_pDebugMaxCount;
+
+extern int g_bHideBackground;
 
 static unsigned int g_dwHandIndex[101][2] =
 {

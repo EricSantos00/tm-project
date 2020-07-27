@@ -140,6 +140,17 @@ struct TMVector3
 		ret.z = this->z - other.z;
 
 		return ret;
+	}	
+	
+	TMVector3 operator+(const TMVector3& other)
+	{
+		TMVector3 ret;
+
+		ret.x = this->x + other.x;
+		ret.y = this->y + other.y;
+		ret.z = this->z + other.z;
+
+		return ret;
 	}
 
 	TMVector3 operator/(const float value)

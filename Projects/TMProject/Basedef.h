@@ -704,6 +704,18 @@ struct MSG_Mission
 	char CarryPos[8];
 };
 
+constexpr auto MSG_CNFAccountLogin_Opcode = 0x10A;
+struct MSG_CNFAccountLogin
+{
+	MSG_STANDARD Header;
+	char SecretCode[16];
+	STRUCT_SELCHAR SelChar;
+	STRUCT_ITEM Cargo[128];
+	int Coin;
+	char AccountName[16];
+	int SSN1;
+	int SSN2;
+};
 struct MSG_UseItem
 {
 	MSG_STANDARD Header;
@@ -787,6 +799,20 @@ struct MSG_SendItem
 	STRUCT_ITEM Item;
 };
 
+
+constexpr auto MSG_AccountLogin_Opcode = 0x20D;
+struct MSG_AccountLogin
+{
+	MSG_STANDARD Header;
+	char AccountPass[16];
+	char AccountName[16];
+	char TID[52];
+	int Version;
+	int Force;
+	unsigned int Mac[4];
+};
+
+
 extern HWND hWndMain;
 extern char EncodeByte[4];
 extern int g_nChannelWidth;
@@ -803,10 +829,11 @@ int	BASE_ReadMessageBin();
 void BASE_InitEffectString();
 int BASE_InitializeBaseDef();
 void BASE_ReadItemPrice();
-void BASE_UnderBarToSpace(const char* szStr);
-
+void BASE_UnderBarToSpace(char* szStr);
+int BASE_InitializeServerList();
 int	BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer);
-
+int BASE_GetSum(char* p, int size);
+int BASE_GetWeekNumber();
 /* Read Functions */
 int ReadItemicon();
 void ReadItemName();
@@ -816,6 +843,7 @@ char ReadChatFiltraDataBase();
 
 /* String Related functions */
 int IsClearString(char* str, int target);
+int IsClearString2(char* str, int nTarget);
 
 /* System functions */
 void EnableSysKey();

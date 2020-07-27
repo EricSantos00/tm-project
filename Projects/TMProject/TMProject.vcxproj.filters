@@ -444,6 +444,9 @@
     <ClInclude Include="ItemEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TMUtil.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TMProject.cpp">
@@ -767,6 +770,9 @@
     <ClCompile Include="TMObjectContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TMUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TMProject.rc">
@@ -780,5 +786,13 @@
     <Image Include="TMProject.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CursorGroup162.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\CursorGroup164.cur">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
