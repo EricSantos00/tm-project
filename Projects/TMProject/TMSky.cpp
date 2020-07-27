@@ -6,6 +6,8 @@
 #include "MeshManager.h"
 #include "TMSun.h"
 #include "TMObject.h"
+#include "TMObjectContainer.h"
+#include "TMLight.h"
 
 // NOTE: this is cleary not float values.
 D3DCOLORVALUE TMSky::m_LightVal[4] =
@@ -242,7 +244,7 @@ int TMSky::FrameMove(unsigned int dwServerTime)
 
     pMesh->m_pVB->GetDesc(&vDesc);
     pMesh->m_pVB->Lock(0, 0, (void**)&pVertex, 0);
-
+    int nCount = vDesc.Size / 24;
     g_ClipFar = 70.0f;
     unsigned int dwAlpha = 0x00808080;
 
@@ -507,20 +509,76 @@ int TMSky::FrameMove(unsigned int dwServerTime)
 
     if (m_nState != 0 && m_nState != 2 && m_nState != 12)
     {
-        for (int k = 0; k < 2; ++k)
+        for (int i = 0; i < 2; ++i)
         {
-            TMObjectContainer* pContainer = g_pCurrentScene->m_pObjectContainerList[k];
+            TMObjectContainer* pContainer = g_pCurrentScene->m_pObjectContainerList[i];
             if (pContainer != nullptr)
             {
-                for (int l = 0; l < pContainer->m_nLightIndex; ++l)
-                    pContainer->m_pLightContainer[l]->m_bEnable = 1;
+                int nLightIndex = pContainer->m_nLightIndex;
+                for (int j = 0; j < nLightIndex; ++j)
+                    pContainer->m_pLightContainer[j]->m_bEnable = 1;
             }
         }
     }
     else
     {
-
+        for (int i = 0; i < 2; ++i)
+        {
+            TMObjectContainer* pContainer = g_pCurrentScene->m_pObjectContainerList[i];
+            if (pContainer != nullptr)
+            {
+                int nLightIndex = pContainer->m_nLightIndex;
+                for (int j = 0; j < nLightIndex; ++j)
+                    pContainer->m_pLightContainer[j]->m_bEnable = 0;
+            }
+        }
     }
+
+    if (g_pDevice->m_bVoodoo == 1)
+        dwAlpha = 0xFFFFFFFF;
+
+    for (int m = 0; m < nCount; ++m)
+        pVertex[m].diffuse = dwAlpha;
+
+    pMesh->m_pVB->Unlock();
+
+
+    // NOTE: m_nTextIndex maybe [0]?
+    if (m_nState == 3 ||m_nState == 13 || m_nState == 10 && pMesh->m_nTextureIndex[1] != 0)
+    {
+        TMVector3 vecTemp; 
+        TMVector3 vecCam = g_pObjectManager->m_pCamera->GetCameraPos();
+        for (int m = 0; m < 20; ++m)
+        {
+            vecTemp = m_ebStars[m].m_vecPosition;
+            m_ebStars[m].m_vecPosition.x = m_ebStars[m].m_vecPosition.x + vecCam.x;
+            m_ebStars[m].m_vecPosition.y = m_ebStars[m].m_vecPosition.y + vecCam.y;
+            m_ebStars[m].m_vecPosition.z = m_ebStars[m].m_vecPosition.z + vecCam.z;
+            m_ebStars[m].FrameMove(dwServerTime);
+            m_ebStars[m].m_vecPosition = vecTemp;
+        }
+
+        vecTemp = m_ebMoon[0].m_vecPosition;
+        m_ebMoon[0].m_vecPosition.x = m_ebMoon[0].m_vecPosition.x + vecCam.x;
+        m_ebMoon[0].m_vecPosition.y = m_ebMoon[0].m_vecPosition.y + vecCam.y;
+        m_ebMoon[0].m_vecPosition.z = m_ebMoon[0].m_vecPosition.z + vecCam.z;
+        m_ebMoon[0].FrameMove(dwServerTime);
+        m_ebMoon[0].m_vecPosition = vecTemp;
+
+        vecTemp = m_ebMoon[1].m_vecPosition;
+        m_ebMoon[1].m_vecPosition.x = m_ebMoon[1].m_vecPosition.x + vecCam.x;
+        m_ebMoon[1].m_vecPosition.y = m_ebMoon[1].m_vecPosition.y + vecCam.y;
+        m_ebMoon[1].m_vecPosition.z = m_ebMoon[1].m_vecPosition.z + vecCam.z;
+        m_ebMoon[1].FrameMove(dwServerTime);
+        m_ebMoon[1].m_vecPosition = vecTemp;
+    }
+    if (g_pObjectManager->m_pCamera->m_fSightLength > 10.0f)
+    {
+        g_pDevice->m_fFogEnd = (float)(g_pObjectManager->m_pCamera->m_fSightLength - 10.0f)
+            + g_pDevice->m_fFogEnd;
+    }
+        
+    return 1;
 }
 
 void TMSky::RestoreDeviceObjects()
