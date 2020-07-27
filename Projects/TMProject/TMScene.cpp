@@ -1249,12 +1249,42 @@ int TMScene::GroundGetTileType(TMVector2 vecPosition)
 
 int TMScene::GroundGetMask(TMVector2 vecPosition)
 {
-	return 0;
+	int nXIndex = (int)vecPosition.x - g_HeightPosX;
+	int nYIndex = (int)vecPosition.y - g_HeightPosY;
+
+	if (nXIndex < 0)
+		nXIndex = 0;
+
+	if (nYIndex < 0)
+		nYIndex = 0;
+
+	if (nXIndex > 256)
+		nXIndex = 255;
+
+	if (nYIndex > 256)
+		nYIndex = 255;
+
+	return m_HeightMapData[nXIndex + g_HeightWidth * nYIndex];
 }
 
 int TMScene::GroundGetMask(IVector2 vecPosition)
 {
-	return 0;
+	int nXIndex = vecPosition.x - g_HeightPosX;
+	int nYIndex = vecPosition.y - g_HeightPosY;
+
+	if (nXIndex < 0)
+		nXIndex = 0;
+
+	if (nYIndex < 0)
+		nYIndex = 0;
+
+	if (nXIndex > 256)
+		nXIndex = 255;
+
+	if (nYIndex > 256)
+		nYIndex = 255;
+
+	return m_HeightMapData[nXIndex + g_HeightWidth * nYIndex];
 }
 
 float TMScene::GroundGetHeight(TMVector2 vecPosition)
