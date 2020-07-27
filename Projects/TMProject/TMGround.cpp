@@ -2475,7 +2475,7 @@ int TMGround::LoadTileMap(const char* szFileName)
         int byNameLen = 0;
         fread(&byNameLen, 1u, 1u, fp);
 
-        // added to supress warning
+       //  added to supress warning
         if (byNameLen > 128)
             byNameLen = 128;
 

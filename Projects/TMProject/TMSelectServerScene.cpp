@@ -248,23 +248,23 @@ int TMSelectServerScene::InitializeScene()
 		switch (m_nDemoType)
 		{
 		case 1:
-			sprintf_s(szMapPath, "Character.trn");
-			sprintf_s(szMapPath, "Character.dat");
+			sprintf_s(szMapPath, "env\\Character.trn");
+			sprintf_s(szDataPath, "env\\Character.dat");
 
 			g_HeightPosX = 2048;
 			g_HeightPosY = 2048;
 			break;
 		case 2:
 		case 3:
-			sprintf_s(szMapPath, "Field0813.trn");
-			sprintf_s(szMapPath, "Field0813.dat");
+			sprintf_s(szMapPath, "env\\Field0813.trn");
+			sprintf_s(szDataPath, "env\\Field0813.dat");
 
 			g_HeightPosX = 896;
 			g_HeightPosY = 1536;
 			break;
 		case 4:
-			sprintf_s(szMapPath, "Field2922.trn");
-			sprintf_s(szMapPath, "Field2922.dat");
+			sprintf_s(szMapPath, "env\\Field2922.trn");
+			sprintf_s(szDataPath, "env\\Field2922.dat");
 
 			g_HeightPosX = 3584;
 			g_HeightPosY = 2684;
@@ -273,8 +273,8 @@ int TMSelectServerScene::InitializeScene()
 	}
 	else
 	{
-		sprintf_s(szMapPath, "Field2723.trn");
-		sprintf_s(szMapPath, "Field2723.dat");
+		sprintf_s(szMapPath, "env\\Field2723.trn");
+		sprintf_s(szDataPath, "env\\Field2723.dat");
 
 		g_HeightPosX = 3328;
 		g_HeightPosY = 2816;
@@ -326,7 +326,10 @@ int TMSelectServerScene::InitializeScene()
 		g_nSelServerWeather %= 4;
 
 		m_pSnow = new TMSnow(1.0f);
-		m_pEffectContainer->AddChild(m_pSnow);
+
+		if(m_pEffectContainer)
+			m_pEffectContainer->AddChild(m_pSnow);
+
 		m_pSnow->m_bVisible = g_nSelServerWeather == 2;
 
 		memset(m_pCheckHumanList, 0, sizeof m_pCheckHumanList);

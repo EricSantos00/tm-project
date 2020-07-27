@@ -85,7 +85,7 @@ int CFrame::Render()
 				if (m_pParentSkin->m_Look.Mesh7 > 1700
 					&& m_pParentSkin->m_Look.Mesh7 <= 1800)
 				{
-					fShield = 0.05f;
+					fShield = -0.05f;
 				}
 
 				D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, fShield + 0.009f, 0);
@@ -123,7 +123,7 @@ int CFrame::Render()
 			{
 				if (m_pParentSkin->m_nBoneAniIndex == 6)
 				{
-					D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail * 0.5f, 0.009f, 0.0f);
+					D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail * 0.5f, -0.009f, 0.0f);
 				}
 				else if (m_pParentSkin->m_nBoneAniIndex == 9)
 				{
@@ -131,15 +131,15 @@ int CFrame::Render()
 				}
 				else
 				{
-					D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, 0.009f, 0.0f);
+					D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, -0.009f, 0.0f);
 				}
 				if (m_pParentSkin->m_nBoneAniIndex == 1)
 				{
-					D3DXMatrixRotationYawPitchRoll(&mat, D3DXToRadian(15), D3DXToRadian(10), D3DXToRadian(180));
+					D3DXMatrixRotationYawPitchRoll(&mat, -D3DXToRadian(15), -D3DXToRadian(10), D3DXToRadian(180));
 				}
 				else if (m_pParentSkin->m_nBoneAniIndex == 6)
 				{				
-					D3DXMatrixRotationYawPitchRoll(&mat, D3DXToRadian(20), D3DXToRadian(0), D3DXToRadian(180));
+					D3DXMatrixRotationYawPitchRoll(&mat, -D3DXToRadian(20), D3DXToRadian(0), D3DXToRadian(180));
 				}
 				else
 				{

@@ -669,7 +669,7 @@ HRESULT NewApp::RenderScene()
 	m_pRenderDevice->SetViewPort(0, 0, m_dwScreenWidth, m_dwScreenHeight);
 
 	m_pRenderDevice->Lock(1);
-	
+
 	TMCamera* pCamera = m_pObjectManager->m_pCamera;
 	TMVector3 vecLookAt = pCamera->GetCameraLookatPos();
 

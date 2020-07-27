@@ -42,7 +42,7 @@ TMSky::TMSky()
 {
     n_pMeshMilkyway = 0;
     m_dwObjType = 1;
-    m_fHeight = 5.0f;
+    m_fHeight = -5.0f;
     m_nTextureIndex = 0;
     m_fScale = 0.5f;
     m_fAngle = D3DXToRadian(180);
@@ -159,7 +159,7 @@ int TMSky::Render()
        D3DXMATRIX matScale;
 
        D3DXMatrixTranslation(&matPosition, vecCam.x, m_fHeight + 1.0f, vecCam.z);
-       D3DXMatrixRotationYawPitchRoll(&mat, m_fAngle, D3DXToRadian(90), 0);
+       D3DXMatrixRotationYawPitchRoll(&mat, m_fAngle, -D3DXToRadian(90), 0);
        D3DXMatrixScaling(&matScale, m_fScale, m_fScale * 0.5f, m_fScale);
        D3DXMatrixMultiply(&mat, &g_pDevice->m_matWorld, &mat);
        D3DXMatrixMultiply(&mat, &mat, &matScale);

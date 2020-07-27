@@ -217,7 +217,7 @@ int TMObjectContainer::Load(const char* szFileName)
 				if (pFly[nFly] != nullptr)
 				{
 					pFly[nFly]->InitObject();
-					pFly[nFly]->InitAngle(0.0f, ((float)(rand() % 4) * D3DXToRadian(180) / 12.0f), 0.0f);
+					pFly[nFly]->InitAngle(0.0f, -D3DXToRadian(90), 0.0f);
 					pFly[nFly]->InitPosition(
 						(m_fOffsetX + vecPosition.x) + (((float)(rand() % 5)) * 0.1f),
 						((rand() % 10) * 0.2f) + fHeight,

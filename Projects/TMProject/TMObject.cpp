@@ -540,7 +540,7 @@ int TMObject::IsInView()
 		D3DXMATRIX mat;
 		D3DXMATRIX mat2;
 		D3DXMatrixScaling(&matScale, pMesh->m_fScaleH * m_fScale, pMesh->m_fScaleV * m_fScale, pMesh->m_fScaleH * m_fScale);
-		D3DXMatrixRotationYawPitchRoll(&mat, m_fAngle, D3DXToRadian(90), 0);
+		D3DXMatrixRotationYawPitchRoll(&mat, m_fAngle, -D3DXToRadian(90), 0);
 		D3DXMatrixMultiply(&mat, &g_pDevice->m_matWorld, &mat);
 		D3DXMatrixMultiply(&mat, &mat, &matScale);
 
@@ -726,7 +726,7 @@ int TMObject::isCamPos()
 	D3DXMATRIX mat;
 	D3DXMATRIX mat2;
 	D3DXMatrixScaling(&matScale,pMesh->m_fScaleH, pMesh->m_fScaleV, pMesh->m_fScaleH);
-	D3DXMatrixRotationYawPitchRoll(&mat, m_fAngle, D3DXToRadian(90), 0);
+	D3DXMatrixRotationYawPitchRoll(&mat, m_fAngle, -D3DXToRadian(90), 0);
 	D3DXMatrixMultiply(&mat, &g_pDevice->m_matWorld, &mat);
 	D3DXMatrixMultiply(&mat, &mat, &matScale);
 

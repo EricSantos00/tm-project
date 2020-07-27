@@ -276,7 +276,7 @@ int EventTranslator::CameraEventData()
             {
                 pCamera->m_fVerticalAngle = pCamera->m_fVerticalAngle - (float)((float)dy * 0.002f);
                 if (pCamera->m_fVerticalAngle < -0.98539817f)
-                    pCamera->m_fVerticalAngle = 0.98539817f;
+                    pCamera->m_fVerticalAngle = -0.98539817f;
                 if (pCamera->m_fVerticalAngle > 0.75f)
                     pCamera->m_fVerticalAngle = 0.75f;
 

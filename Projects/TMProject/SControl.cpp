@@ -477,8 +477,8 @@ void SCursor::FrameMove2(stGeomList* pDrawList, TMVector2 ivParenPos, int inPare
 
 	if (SCursor::m_nCursorType == 2)
 	{
-		m_GCPanel.nPosX = 100.0f;
-		m_GCPanel.nPosY = 100.0f;
+		m_GCPanel.nPosX = -100.0f;
+		m_GCPanel.nPosY = -100.0f;
 	}
 
 	m_GCPanel.nWidth = m_nWidth;

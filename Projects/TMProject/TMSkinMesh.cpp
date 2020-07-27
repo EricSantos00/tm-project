@@ -648,7 +648,7 @@ int TMSkinMesh::Render(float fLen, float fScale, float fLen2)
 				{
 					D3DXMATRIX matFlip;
 					D3DXMatrixIdentity(&matFlip);
-					matFlip._33 = 1.0f;
+					matFlip._33 = -1.0f;
 					D3DXMatrixMultiply(&matScale, &matScale, &matFlip);
 				}
 			}
@@ -855,10 +855,10 @@ void TMSkinMesh::SetVecMantua(int nType, int nSkinIndex)
 	switch (nType)
 	{
 	case 1:
-		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), fMantuaUp + -D3DXToRadian(180), 0);
+		D3DXMatrixRotationYawPitchRoll(&m_matMantua, -D3DXToRadian(90), fMantuaUp + -D3DXToRadian(180), 0);
 		break;
 	case 2:
-		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), fMantuaUp + D3DXToRadian(180), 0);
+		D3DXMatrixRotationYawPitchRoll(&m_matMantua, -D3DXToRadian(90), fMantuaUp + D3DXToRadian(180), 0);
 		break;
 	case 3:
 		D3DXMatrixRotationYawPitchRoll(
@@ -868,10 +868,10 @@ void TMSkinMesh::SetVecMantua(int nType, int nSkinIndex)
 			0);
 		break;
 	case 4:
-		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), 1.3707963f, 0);
+		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), -1.3707963f, 0);
 		break;
 	case 5:
-		D3DXMatrixRotationYawPitchRoll(&m_matMantua, D3DXToRadian(90), 1.9707963f, 0);
+		D3DXMatrixRotationYawPitchRoll(&m_matMantua, -D3DXToRadian(90), 1.9707963f, 0);
 		break;
 	}
 }
