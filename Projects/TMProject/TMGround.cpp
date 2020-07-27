@@ -3653,7 +3653,7 @@ int TMGround::GetMask(TMVector2 vecPosition)
     return -10000;
 }
 
-D3DCOLORVALUE* TMGround::GetColor(D3DCOLORVALUE* result, TMVector2 vecPosition)
+D3DCOLORVALUE TMGround::GetColor(TMVector2 vecPosition)
 {
     int nX = (vecPosition.x - m_vecOffset.x) / 2;
     int nY = (vecPosition.y - m_vecOffset.y) / 2;
@@ -3691,10 +3691,13 @@ D3DCOLORVALUE* TMGround::GetColor(D3DCOLORVALUE* result, TMVector2 vecPosition)
 
     float fDX = (nX * 2.0f) - (vecPosition.x - m_vecOffset.x);
     float fDY = (nY * 2.0f) - (vecPosition.y - m_vecOffset.y);
-    result->g = (((((fDX + fDY) * color[3].g) + (((4.0f - fDX) - fDY) * color[0].g)) + (((fDX + 2.0f) - fDY) * color[1].g)) + (((2.0f - fDX) + fDY) * color[2].g)) / 12.0f;
-    result->b = (((((fDX + fDY) * color[3].b) + (((4.0f - fDX) - fDY) * color[0].b)) + (((fDX + 2.0f) - fDY) * color[1].b)) + (((2.0f - fDX) + fDY) * color[2].b)) / 12.0f;
-    result->r = (((((fDX + fDY) * color[3].r) + (((4.0f - fDX) - fDY) * color[0].r)) + (((fDX + 2.0f) - fDY) * color[1].r)) + (((2.0f - fDX) + fDY) * color[2].r)) / 12.0f;
-    result->a = 1.0f;
+
+    D3DCOLORVALUE result{};
+
+    result.g = (((((fDX + fDY) * color[3].g) + (((4.0f - fDX) - fDY) * color[0].g)) + (((fDX + 2.0f) - fDY) * color[1].g)) + (((2.0f - fDX) + fDY) * color[2].g)) / 12.0f;
+    result.b = (((((fDX + fDY) * color[3].b) + (((4.0f - fDX) - fDY) * color[0].b)) + (((fDX + 2.0f) - fDY) * color[1].b)) + (((2.0f - fDX) + fDY) * color[2].b)) / 12.0f;
+    result.r = (((((fDX + fDY) * color[3].r) + (((4.0f - fDX) - fDY) * color[0].r)) + (((fDX + 2.0f) - fDY) * color[1].r)) + (((2.0f - fDX) + fDY) * color[2].r)) / 12.0f;
+    result.a = 1.0f;
 
 	return result;
 }
