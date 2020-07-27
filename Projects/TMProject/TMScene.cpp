@@ -10,6 +10,7 @@
 #include "TMHuman.h"
 #include "TMObject.h"
 #include "TMCamera.h"
+#include "TMObjectContainer.h"
 #include "TMItem.h"
 #include "TMGlobal.h"
 #include "TMLog.h"
@@ -1039,7 +1040,201 @@ void TMScene::Cleanup()
 
 int TMScene::GroundNewAttach(EDirection eDir)
 {
-	return 0;
+	if (!m_pGround)
+		return 0;
+
+	int x{};
+	int y{};
+
+	if (eDir == EDirection::EDIR_LEFT)
+	{
+		if (m_pGround->m_pLeftGround || m_pGround->m_cLeftEnable != 1)
+			return 0;
+
+		x = m_pGround->m_vecOffsetIndex.x - 1;
+		y = m_pGround->m_vecOffsetIndex.y;
+	}
+	else if (eDir == EDirection::EDIR_RIGHT)
+	{
+		if (m_pGround->m_pRightGround || m_pGround->m_cRightEnable != 1)
+			return 0;
+
+		x = m_pGround->m_vecOffsetIndex.x + 1;
+		y = m_pGround->m_vecOffsetIndex.y;
+	}
+	else if (eDir == EDirection::EDIR_UP)
+	{
+		if (m_pGround->m_pUpGround || m_pGround->m_cUpEnable != 1)
+			return 0;
+
+		x = m_pGround->m_vecOffsetIndex.x;
+		y = m_pGround->m_vecOffsetIndex.y - 1;
+	}
+	else if (eDir == EDirection::EDIR_DOWN)
+	{
+		if (m_pGround->m_pDownGround || m_pGround->m_cDownEnable != 1)
+			return 0;
+
+		x = m_pGround->m_vecOffsetIndex.x;
+		y = m_pGround->m_vecOffsetIndex.y + 1;
+	}
+
+	char fileNameTrn[128]{};
+	char fileNameDat[128]{};
+
+	sprintf_s(fileNameTrn, "Env\\Field%02d%02d.trn", x, y);
+	sprintf_s(fileNameDat, "Env\\Field%02d%02d.dat", x, y);
+
+	char heightMapData[128][128]{};
+
+	int gId = (m_nCurrentGroundIndex + 1) % 2;
+
+	if (m_pGroundList[gId])
+	{
+		if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x + 1 &&
+			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y)
+		{
+			for (int i = 0; i < 128; ++i)
+				memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+		}
+		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x &&
+			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y + 1)
+		{
+			for (int i = 0; i < 128; ++i)
+				memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+		}
+		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x - 1 &&
+			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y)
+		{
+			for (int i = 0; i < 128; ++i)
+				memcpy(&heightMapData[i], &m_HeightMapData[256 * i + 128], 128);
+		}
+		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x &&
+			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y - 1)
+		{
+			for (int i = 0; i < 128; ++i)
+				memcpy(&heightMapData[i], &m_HeightMapData[256 * (i + 128)], 128);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 128; ++i)
+			memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+	}
+	
+	auto pGround = new TMGround();
+
+	if (!pGround->LoadTileMap(fileNameTrn))
+	{
+		delete pGround;
+		return 0;
+	}
+
+	if (m_pGroundList[gId])
+	{
+		delete m_pGroundList[gId];
+
+		m_pGroundList[gId] = nullptr;
+	}
+
+	if (m_pObjectContainerList[gId])
+	{
+		delete m_pObjectContainerList[gId];
+
+		m_pObjectContainerList[gId] = nullptr;
+	}
+
+	m_pGroundList[gId] = pGround;
+
+	m_pGroundObjectContainer->AddChild(m_pGroundList[gId]);
+
+	if (m_pGroundList[m_nCurrentGroundIndex])
+		m_pGroundList[m_nCurrentGroundIndex]->Attach(m_pGroundList[gId]);
+
+	m_pObjectContainerList[gId] = new TMObjectContainer(m_pGroundList[gId]);
+
+	if (!m_pObjectContainerList[gId]->Load(fileNameDat))
+	{
+		if (m_pObjectContainerList[gId])
+		{
+			delete m_pObjectContainerList[gId];
+			
+			m_pObjectContainerList[gId] = nullptr;
+		}
+		
+		LOG_WRITELOG("DataFile Not Found : %s\r\n", fileNameDat);
+		
+		if (!m_bCriticalError)
+			LogMsgCriticalError(12, 0, 0, 0, 0);
+
+		m_bCriticalError = 1;
+		return 0;
+	}
+
+	if (m_pObjectContainerList[m_nCurrentGroundIndex])
+	{
+		if (eDir == EDirection::EDIR_DOWN)
+			m_pObjectContainerList[m_nCurrentGroundIndex]->SetPrevNode(m_pObjectContainerList[gId]);
+		else
+			m_pObjectContainerList[m_nCurrentGroundIndex]->SetNextNode(m_pObjectContainerList[gId]);
+	}
+
+	g_pTextureManager->ReleaseNotUsingTexture();
+	
+	memset(m_HeightMapData, 0, 4);
+
+	switch (eDir)
+	{
+	case EDirection::EDIR_LEFT:
+		for (int i = 0; i < 128; ++i)
+		{
+			memcpy(&m_HeightMapData[256 * i], m_pGround->m_pLeftGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[256 * i + 128], &heightMapData[i], 128);
+		}
+		g_HeightPosX = (int)m_pGround->m_pLeftGround->m_vecOffset.x;
+		g_HeightPosY = (int)m_pGround->m_pLeftGround->m_vecOffset.y;
+		break;
+	case EDirection::EDIR_RIGHT:
+		for (int i = 0; i < 128; ++i)
+		{
+			memcpy(&m_HeightMapData[256 * i + 128], m_pGround->m_pRightGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[256 * i], &heightMapData[i], 128);
+		}
+		g_HeightPosX = (int)m_pGround->m_vecOffset.x;
+		g_HeightPosY = (int)m_pGround->m_vecOffset.y;
+		break;
+	case EDirection::EDIR_UP:
+		for (int i = 0; i < 128; ++i)
+		{
+			memcpy(&m_HeightMapData[256 * i], m_pGround->m_pUpGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[256 * i + 128], &heightMapData[i], 128);
+		}
+		g_HeightPosX = (int)m_pGround->m_pUpGround->m_vecOffset.x;
+		g_HeightPosY = (int)m_pGround->m_pUpGround->m_vecOffset.y;
+		break;
+	case EDirection::EDIR_DOWN:
+		for (int i = 0; i < 128; ++i)
+		{
+			memcpy(&m_HeightMapData[256 * i + 128], m_pGround->m_pDownGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[256 * i], &heightMapData[i], 128);
+		}
+		g_HeightPosX = (int)m_pGround->m_vecOffset.x;
+		g_HeightPosY = (int)m_pGround->m_vecOffset.y;
+		break;
+	}
+
+	BASE_ApplyAttribute(m_HeightMapData, 256);
+
+	memcpy(m_GateMapData, m_HeightMapData, sizeof(m_HeightMapData));
+
+	SaveHeightMap(fileNameTrn);
+
+	m_pGround->SetMiniMapData();
+
+	m_nAdjustTime = 0;
+	m_dwInitTime = g_pTimerManager->GetServerTime();
+
+	return 1;
 }
 
 D3DXVECTOR3* TMScene::GroundGetPickPos(D3DXVECTOR3* result)
