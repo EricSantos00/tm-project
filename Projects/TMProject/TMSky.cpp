@@ -2,6 +2,7 @@
 #include "TMMesh.h"
 #include "TMSky.h"
 #include "TMGlobal.h"
+#include "TMCamera.h"
 
 // NOTE: this is cleary not float values.
 D3DCOLORVALUE TMSky::m_LightVal[4] =
@@ -118,7 +119,97 @@ TMSky::~TMSky()
 
 int TMSky::Render()
 {
-	return 0;
+    if (g_bHideBackground == 1)
+        return 0;
+
+    if ((RenderDevice::m_bDungeon == 0 || RenderDevice::m_bDungeon == 3 || RenderDevice::m_bDungeon == 4) && 
+        g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_SELCHAR)
+    {
+       TMCamera* pCam = g_pObjectManager->m_pCamera;
+       D3DMATERIAL9 materials{};
+       D3DCOLORVALUE color;
+
+       color.r = 0.69f;
+       color.g = 0.69f;
+       color.b = 0.69f;
+       materials.Emissive.r = 0.3f;
+       materials.Emissive.g = 0.3f;
+       materials.Emissive.b = 0.3f;
+       materials.Diffuse.r = 0.69f;
+       materials.Diffuse.g = 0.69f;
+       materials.Diffuse.b = 0.69f;
+       materials.Diffuse.a = color.a;
+       materials.Specular.r = 0.69f;
+       materials.Specular.g = 0.69f;
+       materials.Specular.b = 0.69f;
+       materials.Specular.a = color.a;
+       materials.Power = 0.0;
+
+       g_pDevice->m_pd3dDevice->SetMaterial(&materials);
+       TMVector3 vecCam = pCam->m_cameraPos;
+        
+       TMScene* pScene = g_pCurrentScene;
+       D3DXMATRIX mat;
+       D3DXMATRIX matPosition;
+       D3DXMATRIX matScale;
+
+       D3DXMatrixTranslation(&matPosition, vecCam.x, m_fHeight + 1.0f,vecCam.z);
+       D3DXMatrixRotationYawPitchRoll(&mat, m_fAngle, D3DXToRadian(90), 0);
+       D3DXMatrixScaling(&matScale, m_fScale, m_fScale * 0.5f, m_fScale);
+       D3DXMatrixMultiply(&mat, &g_pDevice->m_matWorld, &mat);
+       D3DXMatrixMultiply(&mat, &mat, &matScale);
+       D3DXMatrixMultiply(&mat, &mat, &matPosition);
+
+       g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLD, &mat);
+       g_pDevice->SetRenderState(D3DRS_LIGHTING, 0);
+       g_pDevice->SetRenderState(D3DRS_FOGENABLE, 0);
+
+       if (g_pDevice->m_bVoodoo == 1)
+       {
+           g_pDevice->SetTextureStageState(1u, D3DTSS_TEXCOORDINDEX, 1u);
+           g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+       }
+       else
+       {
+           g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 8u);
+           g_pDevice->SetTextureStageState(1u, D3DTSS_TEXCOORDINDEX, 0);
+           if (m_nState / 10)
+               g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 0xCu);
+           else
+               g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+
+           g_pDevice->SetTexture(1u, g_pTextureManager->GetEffectTexture(m_nTextureIndex, 5000));
+       }
+
+       g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
+       TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 1, 180000);
+       if (pMesh == nullptr)
+           return 0;
+
+       pMesh->Render(0, 0);
+
+       g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+       g_pDevice->SetTextureStageState(1u, D3DTSS_TEXCOORDINDEX, 1u);
+       g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+       g_pDevice->SetRenderState(D3DRS_FOGENABLE, g_pDevice->m_bFog);
+       g_pDevice->SetRenderState(D3DRS_LIGHTING, 1u);
+
+       if (m_nTextureIndex != 68 && pMesh->m_nTextureIndex[0] != 68)
+       {
+           if ((m_nState == 3 || m_nState == 13 ||m_nState == 10) && m_nTextureIndex == 67)
+           {
+               for (int i = 0; i < 20; ++i)
+               {
+                   m_ebStars[i].Render();
+                   m_ebMoon[0].Render();
+                   m_ebMoon[1].Render();
+               }
+           }
+           return 1;
+       }
+    }
+
+    return 1;
 }
 
 int TMSky::FrameMove(unsigned int dwServerTime)
@@ -128,8 +219,30 @@ int TMSky::FrameMove(unsigned int dwServerTime)
 
 void TMSky::RestoreDeviceObjects()
 {
+    ;
 }
 
 void TMSky::SetWeatherState(int nState)
 {
+    TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 1, 180000);
+    if (pMesh)
+    {
+        if (!(nState / 10))
+        {
+            // This code is extrem confuse, the compiler did some optimization that make the code weird
+            pMesh->m_nTextureIndex[0] = nState + 67;
+            unsigned int dwR = static_cast<unsigned char>(m_dwR[pMesh->m_nTextureIndex[0] - 264]);
+            unsigned int dwG = static_cast<unsigned char>(m_dwG[pMesh->m_nTextureIndex[0] - 264]);
+            unsigned int dwB = static_cast<unsigned char>(m_dwB[pMesh->m_nTextureIndex[0] - 264]);
+            g_pDevice->m_dwClearColor = dwB | (dwG << 8) | (dwR << 16);
+        }
+        else if (nState / 10 == 1)
+        {
+            pMesh->m_nTextureIndex[0] = m_nState % 10 + 67;
+            m_nTextureIndex = nState % 10 + 67;
+        }
+
+        m_nState = nState;
+        m_dwStartTime = g_pTimerManager->GetServerTime();
+    }
 }
