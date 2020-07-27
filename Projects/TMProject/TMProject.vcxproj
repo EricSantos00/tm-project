@@ -404,6 +404,7 @@
     <ClCompile Include="TMSnow.cpp" />
     <ClCompile Include="TMSun.cpp" />
     <ClCompile Include="TMTree.cpp" />
+    <ClCompile Include="TMUtil.cpp" />
     <ClCompile Include="TMVideoWnd.cpp" />
     <ClCompile Include="TreeNode.cpp" />
   </ItemGroup>

@@ -2520,8 +2520,7 @@ int TMGround::LoadTileMap(const char* szFileName)
         {
             for (int nX = 1; nX < 63; ++nX)
             {
-                TMVector3 result{};
-                m_TileNormalVector[nX + (nY << 6)] = GetNormalInGround(&result, nX, nY);
+                m_TileNormalVector[nX + (nY << 6)] = GetNormalInGround(nX, nY);
             }
         }
 
