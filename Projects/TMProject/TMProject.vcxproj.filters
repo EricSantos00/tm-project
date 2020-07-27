@@ -444,6 +444,9 @@
     <ClInclude Include="ItemEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TMUtil.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TMProject.cpp">

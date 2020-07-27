@@ -32,7 +32,7 @@ public:
     D3DCOLORVALUE* GetColor(D3DCOLORVALUE* result, TMVector2 vecPosition);
     int GetTileType(TMVector2 vecPosition);
     void SetColor(TMVector2 vecPosition, unsigned int dwColor);
-    TMVector3* GetNormalInGround(TMVector3* result, int nX, int nY);
+    TMVector3 GetNormalInGround(int nX, int nY);
     int SetMiniMapData();
     void SetAttatchEnable(int nX, int nY);
     int IsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight);

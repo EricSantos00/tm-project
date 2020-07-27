@@ -8,6 +8,7 @@
 #include "TMCamera.h"
 #include "TMEffectBillBoard.h"
 #include "TMSkillFire.h"
+#include "TMUtil.h"
 
 float TMGround::TileCoordList[8][4][2] =
 {
@@ -3733,9 +3734,30 @@ void TMGround::SetColor(TMVector2 vecPosition, unsigned int dwColor)
         m_TileMapData[nX + (nY << 6)].dwColor = dwColor;
 }
 
-TMVector3* TMGround::GetNormalInGround(TMVector3* result, int nX, int nY)
+TMVector3 TMGround::GetNormalInGround(int nX, int nY)
 {
-	return nullptr;
+    TMVector3 vRetNormal(0.0f, 1.0f, 0.0f);
+    TMVector3 vNormal[4]{};
+    TMVector3 vAround[4]{};
+
+    float fCurHeight = (float)m_TileMapData[nX + (nY << 6)].cHeight;
+
+    if (nX > 0 && nX < 64 && nY > 0 && nY < 64)
+    {
+        vAround[0] = TMVector3(-1.0f, (float)m_TileMapData[nX + (nY << 6) - 1].cHeight, 0.0f);
+        vAround[1] = TMVector3(0.0f, (float)m_TileMapData[nX + ((nY + 1) << 6)].cHeight, 1.0f);
+        vAround[2] = TMVector3(1.0f, (float)m_TileMapData[nX + (nY << 6) + 1].cHeight, 0.0f);
+        vAround[3] = TMVector3(0.0f, (float)m_TileMapData[nX + ((nY - 1) << 6)].cHeight, -1.0f);
+
+        vNormal[0] = ComputeNormalVector(TMVector3(0.0f, fCurHeight, 0.0f), vAround[0], vAround[1]);
+        vNormal[1] = ComputeNormalVector(TMVector3(0.0f, fCurHeight, 0.0f), vAround[1], vAround[2]);
+        vNormal[2] = ComputeNormalVector(TMVector3(0.0f, fCurHeight, 0.0f), vAround[2], vAround[3]);
+        vNormal[3] = ComputeNormalVector(TMVector3(0.0f, fCurHeight, 0.0f), vAround[3], vAround[0]);
+
+        vRetNormal = (vNormal[0] + vNormal[1] + vNormal[2] + vNormal[3]) / 4.0f;
+    }
+
+    return vRetNormal;
 }
 
 int TMGround::SetMiniMapData()
