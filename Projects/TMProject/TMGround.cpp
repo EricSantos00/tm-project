@@ -2722,12 +2722,128 @@ D3DXVECTOR3* TMGround::GetPickPos(D3DXVECTOR3* result)
 
 float TMGround::GetHeight(TMVector2 vecPosition)
 {
-	return 0.0f;
+    float fHeight = 1.0f;
+    float xmm1_4_1 = vecPosition.y - m_vecOffset.y;
+
+    int nX = static_cast<int>((vecPosition.x - m_vecOffset.x) / 2.0f);
+    int nY = static_cast<int>((vecPosition.y - m_vecOffset.y) / 2.0f);
+
+    if (nX < 0 || nY < 0 || nX > 64 || nY > 64)
+        return -10000.0f;
+
+    D3DXVECTOR3 vPickPos{ 0.0, -10000.0f, 0.0f };
+    D3DXVECTOR3 vPickRayDir{ 0.0f, -1.0f, 0.0f };
+    D3DXVECTOR3 vPickRayOrig{ vecPosition.x, 100.0f, vecPosition.y };
+    D3DXVECTOR3 v0{};
+    D3DXVECTOR3 v2{};
+    D3DXVECTOR3 v6{};
+    D3DXVECTOR3 v8{};
+
+    if (nX >= 63 || nY >= 63 || nX < 0 || nY < 0)
+    {
+        if (nX == 63)
+        {
+            v0.x = 63.0f * 2.0f + m_vecOffset.x;
+            v0.y = m_TileMapData[(nY << 6) + 63].cHeight * 0.1;
+            v0.z = nY * 2.0f + m_vecOffset.y;
+
+            v2.x = 64.0f * 2.0f + m_vecOffset.x;
+            v2.y = m_TileMapData[(nY << 6) + 63].cHeight * 0.1;
+            v2.z = nY * 2.0f + m_vecOffset.y;
+
+            v6.x = 63.0f * 2.0f + m_vecOffset.x;
+            v6.y = m_TileMapData[((nY + 1) << 6) + 63].cHeight * 0.1;
+            v6.z = (nY + 1) * 2.0f + m_vecOffset.y;
+
+            v6.x = 64.0f * 2.0f + m_vecOffset.x;
+            v6.y = m_TileMapData[((nY + 1) << 6) + 63].cHeight * 0.1;
+            v6.z = (nY + 1) * 2.0f + m_vecOffset.y;
+        }
+        else if (nY == 63)
+        {
+            v0.x = nX * 2.0f + m_vecOffset.x;
+            v0.y = m_TileMapData[nX + 4032].cHeight * 0.1;
+            v0.z = 63.0f * 2.0f + m_vecOffset.y;
+
+            v2.x = (nX + 1) * 2.0f + m_vecOffset.x;
+            v2.y = m_TileMapData[nX + 4033].cHeight * 0.1;
+            v2.z = 63.0f * 2.0f + m_vecOffset.y;
+
+            v6.x = nX * 2.0f + m_vecOffset.x;
+            v6.y = m_TileMapData[nX + 4032].cHeight * 0.1;
+            v6.z = 64.0f * 2.0f + m_vecOffset.y;
+
+            v8.x = (nX + 1) * 2.0f + m_vecOffset.x;
+            v8.y = m_TileMapData[nX + 4033].cHeight * 0.1;
+            v8.z = 64.0f * 2.0f + m_vecOffset.y;
+        }
+    }
+    else
+    {
+        v0.x = nX * 2.0f + m_vecOffset.x;
+        v0.y = m_TileMapData[nX + (nY << 6) + 1].cHeight * 0.1;
+        v0.z = nY * 2.0f + m_vecOffset.y;
+
+        v2.x = (nX + 1) * 2.0f + m_vecOffset.x;
+        v2.y = m_TileMapData[nX + (nY << 6) + 1].cHeight * 0.1;
+        v2.z = nY * 2.0f + m_vecOffset.y;
+
+        v6.x = nX * 2.0f + m_vecOffset.x;
+        v6.y = m_TileMapData[nX + ((nY + 1) << 6)].cHeight * 0.1;
+        v6.z = (nY + 1) * 2.0f + m_vecOffset.y;
+
+        v8.x = (nX + 1) * 2.0f + m_vecOffset.x;
+        v8.y = m_TileMapData[nX + ((nY + 1) << 6) + 1].cHeight * 0.1;
+        v8.z = (nY + 1) * 2.0f + m_vecOffset.y;
+    }
+
+    float fU = 0.0;
+    float fV = 0.0;
+    float fDis = 0.0f;
+
+    if (D3DXIntersectTri(&v0, &v2, &v6, &vPickRayOrig, &vPickRayDir, &fU, &fV, &fDis) == 1)
+        return (100.0f - fDis);
+    
+    if (D3DXIntersectTri(&v8, &v6, &v2, &vPickRayOrig, &vPickRayDir, &fU, &fV, &fDis) == 1)
+        return (100.0f - fDis);
+
+    if (nX < 0 || nY < 0 || nX > 63 || nY > 63)
+        return -10000.0f;
+
+    if (nX >= 0 && nX < 63 && nY >= 0 && nY < 63)
+    {
+        fHeight += m_TileMapData[nX + (nY << 6)].cHeight;
+        fHeight += m_TileMapData[nX + (nY << 6) + 1].cHeight;
+        fHeight += m_TileMapData[nX + ((nY + 1) << 6)].cHeight;
+        fHeight += m_TileMapData[nX + ((nY + 1) << 6) + 1].cHeight;
+    }
+    else if (nX == 63)
+    {
+        fHeight += m_TileMapData[(nY << 6) + 63].cHeight;
+        fHeight += m_TileMapData[(nY << 6) + 63].cHeight;
+        fHeight += m_TileMapData[((nY + 1) << 6) + 63].cHeight;
+        fHeight += m_TileMapData[((nY + 1) << 6) + 63].cHeight;
+    }
+    else if (nY == 63)
+    {
+        fHeight += m_TileMapData[nX + 4032].cHeight;
+        fHeight += m_TileMapData[nX + 4033].cHeight;
+        fHeight += m_TileMapData[nX + 4032].cHeight;
+        fHeight += m_TileMapData[nX + 4033].cHeight;
+    }
+	
+    return (fHeight * 0.1f) / 4.0f;
 }
 
 int TMGround::GetMask(TMVector2 vecPosition)
 {
-	return 0;
+    int nMaskX = (vecPosition.x - m_vecOffset.x);
+    int nMaskY = (vecPosition.y - m_vecOffset.y);
+
+    if (nMaskX >= 0 && nMaskY >= 0 && nMaskX < 128 && nMaskY < 128)
+        return m_pMaskData[nMaskY][nMaskX];
+
+    return -10000;
 }
 
 D3DCOLORVALUE* TMGround::GetColor(D3DCOLORVALUE* result, TMVector2 vecPosition)
