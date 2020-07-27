@@ -37,6 +37,11 @@ int g_nPlayDemo = 1;
 int g_UIVer = 2;
 int g_nKeyType;
 
+int g_HeightWidth = 256;
+int g_HeightHeight = 256;
+int g_HeightPosX = 2048;
+int g_HeightPosY = 2048;
+
 STRUCT_MIXHELP g_pItemMixHelp[11500];
 STRUCT_ITEMHELP g_pItemHelp[6500];
 

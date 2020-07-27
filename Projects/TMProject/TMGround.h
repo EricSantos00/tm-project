@@ -29,7 +29,7 @@ public:
     D3DXVECTOR3 GetPickPos();
     float GetHeight(TMVector2 vecPosition);
     int GetMask(TMVector2 vecPosition);
-    D3DCOLORVALUE* GetColor(D3DCOLORVALUE* result, TMVector2 vecPosition);
+    D3DCOLORVALUE GetColor(TMVector2 vecPosition);
     int GetTileType(TMVector2 vecPosition);
     void SetColor(TMVector2 vecPosition, unsigned int dwColor);
     TMVector3 GetNormalInGround(int nX, int nY);
