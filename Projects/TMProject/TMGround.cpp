@@ -2461,9 +2461,225 @@ int TMGround::Attach(TMGround* pGround)
     return result;
 }
 
-int TMGround::LoadTileMap(char* szFileName)
+int TMGround::LoadTileMap(const char* szFileName)
 {
-	return 0;
+    FILE* fp = nullptr;
+    fopen_s(&fp, szFileName, "rb");
+
+    if (fp)
+    {
+        int byNameLen = 0;
+        fread(&byNameLen, 1u, 1u, fp);
+
+        // added to supress warning
+        if (byNameLen > 128)
+            byNameLen = 128;
+
+        fread(m_MapName, 1u, byNameLen, fp);
+
+        m_MapName[byNameLen] = '\0';
+
+        int bPosX = 0;
+        int bPosY = 0;
+        fread(&bPosX, 1, 1, fp);
+        fread(&bPosY, 1, 1, fp);
+
+        SetPos(bPosX, bPosY);
+        SetAttatchEnable(bPosX, bPosY);
+
+        fread(m_TileMapData, 12, 4096, fp);
+        fclose(fp);
+
+        if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        {
+            int nCheckSum = 0;
+            int nCheckSize = 49152;
+            auto pCheck = (char*)m_TileMapData;
+
+            for (int i = 0; i < nCheckSize; nCheckSum += pCheck[i++])
+                ;
+
+            if (m_nCheckSum[bPosY][bPosX] != nCheckSum + bPosX * bPosY)
+            {
+                LOG_WRITELOG("CheckSum Error: %d,%d m_nCheckSum=%d nCheckSum= %d\r\n",
+                    bPosX, bPosY, m_nCheckSum[bPosY][bPosX], nCheckSum + bPosX * bPosY);
+
+                if (!g_pCurrentScene->m_bCriticalError)
+                    g_pCurrentScene->LogMsgCriticalError(5, 0, 0, 0, 0);
+
+                g_pCurrentScene->m_bCriticalError = 1;
+                return 0;
+            }
+        }
+
+        for (int nY = 1; nY < 63; ++nY)
+        {
+            for (int nX = 1; nX < 63; ++nX)
+            {
+                TMVector3 result{};
+                m_TileNormalVector[nX + (nY << 6)] = GetNormalInGround(&result, nX, nY);
+            }
+        }
+
+        for (int nNoIndex = 0; nNoIndex < 64; ++nNoIndex)
+        {
+            m_TileNormalVector[64 * nNoIndex] = m_TileNormalVector[64 * nNoIndex + 1];
+            m_TileNormalVector[(nNoIndex << 6) + 63] = m_TileNormalVector[64 * nNoIndex + 62];
+        }
+
+        for (int nNoIndex = 0; nNoIndex < 64; ++nNoIndex)
+        {
+            m_TileNormalVector[nNoIndex] = m_TileNormalVector[nNoIndex + 64];
+            m_TileNormalVector[nNoIndex + 4032] = m_TileNormalVector[nNoIndex + 3968];
+        }
+
+        memset(&m_materials, 0, sizeof m_materials);
+        m_materials.Diffuse.r = 1.0f;
+        m_materials.Diffuse.g = 1.0f;
+        m_materials.Diffuse.b = 1.0f;
+
+        m_materials.Specular.r = m_materials.Diffuse.r;
+        m_materials.Specular.g = m_materials.Diffuse.g;
+        m_materials.Specular.b = m_materials.Diffuse.b;
+
+        m_materials.Power = 0.0f;
+        m_materials.Emissive.r = 0.3f;
+        m_materials.Emissive.g = 0.3f;
+        m_materials.Emissive.b = 0.3f;
+
+        if (g_pDevice->m_bVoodoo == 1)
+        {
+            m_materials.Emissive.r = 0.2f;
+            m_materials.Emissive.g = 0.2f;
+            m_materials.Emissive.b = 0.2f;
+        }
+
+        for (int nY = 0; nY < 64; ++nY)
+            m_TileMapData[64 * nY].cHeight = m_TileMapData[(nY << 6) + 1].cHeight;
+
+        for (int j = 0; j < 64; ++j)
+            m_TileMapData[j].cHeight = m_TileMapData[j + 64].cHeight;
+
+        for (int nY = 0; nY < 64; ++nY)
+        {
+            for (int j = 0; j < 64; ++j)
+            {
+                float f1 = 0.0f;
+                float f2 = 0.0f;
+                float f3 = 0.0f;
+                float f4 = 0.0f;
+
+                f1 = m_TileMapData[j + (nY << 6)].cHeight;
+                if (nY < 62)
+                    f3 = m_TileMapData[j + ((nY + 1) << 6)].cHeight;
+                else
+                    f3 = m_TileMapData[j + (nY << 6)].cHeight;
+
+                if (j < 62)
+                {
+                    f2 = m_TileMapData[j + (nY << 6) + 1].cHeight;
+
+                    if (nY >= 62)
+                        f4 = m_TileMapData[j + (nY << 6) + 1].cHeight;
+                    else
+                        f4 = m_TileMapData[j + ((nY + 1) << 6) + 1].cHeight;
+                }
+                else
+                {
+                    f2 = m_TileMapData[j + (nY << 6)].cHeight;
+
+                    if (nY >= 62)
+                        f4 = m_TileMapData[j + (nY << 6)].cHeight;
+                    else
+                        f4 = m_TileMapData[j + ((nY + 1) << 6) + 1].cHeight;
+                }
+
+                float fCenter = (((f1 + f2) + f3) + f4) / 4.0f;
+                m_pMaskData[2 * nY][2 * j] = (f1 + fCenter) / 2.0f;
+                m_pMaskData[2 * nY][2 * j + 1] = (f2 + fCenter) / 2.0f;
+                m_pMaskData[2 * nY + 1][2 * j] = (f3 + fCenter) / 2.0f;
+                m_pMaskData[2 * nY + 1][2 * j + 1] = (f4 + fCenter) / 2.0f;
+            }
+        }
+
+        if (!m_cUpEnable)
+        {
+            for (int X = 0; X < 128; ++X)
+            {
+                for (int Y = 0; Y < 15; ++Y)
+                    m_pMaskData[Y][X] = 127;
+            }
+        }
+
+        if (!m_cDownEnable)
+        {
+            for (int k = 0; k < 128; ++k)
+            {
+                for (int l = 114; l < 128; ++l)
+                    m_pMaskData[l][k] = 127;
+            }
+        }
+        
+        if (!m_cLeftEnable)
+        {
+            for (int m = 0; m < 128; ++m)
+            {
+                for (int n = 0; n < 15; ++n)
+                    m_pMaskData[n][m] = 127;
+            }
+        }
+
+        if (!m_cRightEnable)
+        {
+            for (int ii = 0; ii < 128; ++ii)
+            {
+                for (int jj = 114; jj < 128; ++jj)
+                    m_pMaskData[jj][ii] = 127;
+            }
+        }
+
+        if (m_cLeftEnable == 1 && m_cDownEnable == 1)
+        {
+            for (int kk = 0; kk < 16; ++kk)
+            {
+                for (int ll = 113; ll < 128; ++ll)
+                    m_pMaskData[ll][kk] = 127;
+            }
+        }
+        
+        if (m_cLeftEnable == 1 && m_cUpEnable == 1)
+        {
+            for (int mm = 0; mm < 16; ++mm)
+            {
+                for (int nn = 0; nn < 16; ++nn)
+                    m_pMaskData[nn][mm] = 127;
+            }
+        }
+        
+        if (m_cRightEnable == 1 && m_cDownEnable == 1)
+        {
+            for (int i1 = 113; i1 < 128; ++i1)
+            {
+                for (int i2 = 113; i2 < 128; ++i2)
+                    m_pMaskData[i2][i1] = 127;
+            }
+        }
+        
+        if (m_cRightEnable == 1 && m_cUpEnable == 1)
+        {
+            for (int i3 = 113; i3 < 128; ++i3)
+            {
+                for (int i4 = 0; i4 < 128; ++i4)
+                    m_pMaskData[i4][i3] = 127;
+            }
+        }
+
+        return true;
+    }
+    else
+        LOG_WRITELOG(">> Fail to Load TileMap : %s\r\n", szFileName);
+
+    return 0;
 }
 
 int TMGround::Render()

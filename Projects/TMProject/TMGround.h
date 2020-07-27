@@ -23,7 +23,7 @@ public:
     void RestoreDeviceObjects() override;
     void SetPos(int nX, int nY);
     int Attach(TMGround* pGround);
-    int LoadTileMap(char* szFileName);
+    int LoadTileMap(const char* szFileName);
     int Render() override;
     int FrameMove(unsigned int dwServerTime) override;
     D3DXVECTOR3* GetPickPos(D3DXVECTOR3* result);
