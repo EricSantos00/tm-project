@@ -1497,11 +1497,27 @@ float TMScene::GroundGetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight)
 
 int TMScene::GetMask2(TMVector2 vecPosition)
 {
-	return 0;
+	int nMaskX = (int)(vecPosition.x - (float)g_HeightPosX);
+	int nMaskY = (int)(vecPosition.y - (float)g_HeightPosY);
+
+	if (nMaskX >= 0 && nMaskY >= 0 && nMaskX < 256 && nMaskY < 256)
+		return m_GateMapData[256 * nMaskY + nMaskX];
+
+	return -10000;
 }
 
 void TMScene::Warp()
 {
+	if (m_bCriticalError == 1)
+		return;
+
+	auto pFocusedObject = static_cast<TMObject*>(m_pMyHuman);
+
+	if (pFocusedObject)
+	{
+		if (m_pGround)
+			Warp2((int)(pFocusedObject->m_vecPosition.x / 128.0f), (int)(pFocusedObject->m_vecPosition.y / 128.0f));
+	}
 }
 
 void TMScene::Warp2(int nZoneX, int nZoneY)
