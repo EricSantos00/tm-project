@@ -387,3 +387,15 @@ struct stCurse_num
 	stCurse* pCurseList;
 	unsigned int dnum;
 };
+
+struct ObjectFileItem
+{
+	unsigned int dwObjType;
+	TMVector2 vecPosition;
+	float fHeight;
+	float fAngle;
+	int nTextureSetIndex;
+	int nMaskIndex;
+	float fScaleH;
+	float fScaleV;
+};
