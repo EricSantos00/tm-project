@@ -979,21 +979,21 @@ void TMSelectServerScene::CamAction()
 		switch (m_nDemoType)
 		{
 		case 1:
-			ReadCameraPos("UI\\DemoCamAction2");
+			ReadCameraPos((char*)"UI\\DemoCamAction2");
 			break;
 		case 2:
-			ReadCameraPos("UI\\DemoCamAction3");
+			ReadCameraPos((char*)"UI\\DemoCamAction3");
 			break;
 		case 3:
-			ReadCameraPos("UI\\DemoCamAction4");
+			ReadCameraPos((char*)"UI\\DemoCamAction4");
 			break;
 		case 4:
-			ReadCameraPos("UI\\DemoCamAction5");
+			ReadCameraPos((char*)"UI\\DemoCamAction5");
 			break;
 		}
 	}
 	else
-		ReadCameraPos("UI\\DemoCamAction");
+		ReadCameraPos((char*)"UI\\DemoCamAction");
 
 	m_sPlayDemo = 1;
 }

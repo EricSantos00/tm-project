@@ -79,8 +79,6 @@ stCurse_num g_pCurseList;
 
 char g_pAttribute[1024][1024];
 
-int g_bHideBackground;
-
 int Game_grade = 1;
 char g_AccountLock;
 int g_nBattleMaster;
@@ -90,4 +88,4 @@ int g_bTestServer;
 int g_bMoveServer;
 char g_szEncryptedAcc[256];
 
-int g_bHideBackground = FALSE; //default?
+int g_bHideBackground = FALSE;
