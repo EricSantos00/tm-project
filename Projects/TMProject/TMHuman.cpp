@@ -643,6 +643,16 @@ void TMHuman::Init()
 
 void TMHuman::SetRace(short sIndex)
 {
+    if (m_dwDelayDel != 0)
+        return;
+
+    STRUCT_ITEM item{};
+    item.sIndex = sIndex;
+    m_nClass = BASE_GetItemAbility(&item, 18);
+    m_nSkinMeshType = BASE_DefineSkinMeshType(m_nClass);
+
+    if(sIndex == 25)
+        m_fScale = (((float)m_stScore.Special[3] * 0.003f) + 1.0f) * m_fScale;
 }
 
 void TMHuman::UpdateScore(int nGuildLevel)
