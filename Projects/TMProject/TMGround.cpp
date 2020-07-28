@@ -2311,20 +2311,20 @@ TMGround::TMGround()
             fclose(pFile);
             m_bFirst = 0;
         }
+        else
+        {
+            LOG_WRITELOG("DataFile NotFound");
+
+            if (!g_pCurrentScene->m_bCriticalError)
+                g_pCurrentScene->LogMsgCriticalError(4, 0, 0, 0, 0);
+
+            g_pCurrentScene->m_bCriticalError = 1;
+            return;
+        }
     }
 
-    if (m_bFirst != 1)
-    {
-        SetPos(0, 0);
-        return;
-    }
-
-    LOG_WRITELOG("DataFile NotFound");
-
-    if (!g_pCurrentScene->m_bCriticalError)
-        g_pCurrentScene->LogMsgCriticalError(4, 0, 0, 0, 0);
-
-    g_pCurrentScene->m_bCriticalError = 1;
+    SetPos(0, 0);
+    return;
 }
 
 TMGround::~TMGround()
