@@ -14,6 +14,7 @@
 #include "TMLog.h"
 #include "TMObjectContainer.h"
 #include "NewApp.h"
+#include "Basedef.h"
 
 void SwapLauncher()
 {
@@ -978,6 +979,180 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 
 void TMSelectServerScene::ResetDemoPlayer()
 {
+	for (int nPerson = 0; nPerson < 50; ++nPerson)
+	{
+		if (m_pCheckHumanList[nPerson])
+		{
+			g_pObjectManager->DeleteObject(m_pCheckHumanList[nPerson]);
+			m_pCheckHumanList[nPerson] = nullptr;
+		}
+	}
+
+	memset(&m_stDemoHuman, 0, sizeof(m_stDemoHuman));
+
+	FILE* fp = nullptr;
+	if (m_nDemoType)
+	{
+		switch (m_nDemoType)
+		{
+		case 1:
+			fopen_s(&fp, "UI\\demo2.bin", "rb");
+			break;
+		case 2:
+			fopen_s(&fp, "UI\\demo3.bin", "rb");
+			break;
+		case 3:
+			fopen_s(&fp, "UI\\demo4.bin", "rb");
+			break;
+		}
+	}
+	else
+	{
+		fopen_s(&fp, "UI\\demo.bin", "rb");
+	}
+
+	if (fp != nullptr)
+	{
+		for (int i = 0; i < 50; ++i)
+		{
+			m_stDemoHuman[i].Mantua = 0;
+			int ret = fread(&m_stDemoHuman[i], 1, sizeof(m_stDemoHuman[i]), fp);
+			if (!ret)
+				break;
+
+			HUMAN_LOOKINFO stHumanLook{};
+			SANC_INFO stSancInfo{};
+
+			short sFace = m_stDemoHuman[i].nFace;
+			stHumanLook.FaceMesh = g_pItemList[m_stDemoHuman[i].nFace].nIndexMesh;
+			stHumanLook.FaceSkin = g_pItemList[m_stDemoHuman[i].nFace].nIndexTexture;
+			stHumanLook.HelmMesh = g_pItemList[m_stDemoHuman[i].Helm].nIndexMesh;
+			stHumanLook.HelmSkin = g_pItemList[m_stDemoHuman[i].Helm].nIndexTexture;
+			stHumanLook.CoatMesh = g_pItemList[m_stDemoHuman[i].Body].nIndexMesh;
+			stHumanLook.CoatSkin = g_pItemList[m_stDemoHuman[i].Body].nIndexTexture;
+			stHumanLook.PantsMesh = g_pItemList[m_stDemoHuman[i].Body].nIndexMesh;
+			stHumanLook.PantsSkin = g_pItemList[m_stDemoHuman[i].Body].nIndexTexture;
+			stHumanLook.GlovesMesh = g_pItemList[m_stDemoHuman[i].Body].nIndexMesh;
+			stHumanLook.GlovesSkin = g_pItemList[m_stDemoHuman[i].Body].nIndexTexture;
+			stHumanLook.BootsMesh = g_pItemList[m_stDemoHuman[i].Body].nIndexMesh;
+			stHumanLook.BootsSkin = g_pItemList[m_stDemoHuman[i].Body].nIndexTexture;
+			stHumanLook.RightMesh = g_pItemList[m_stDemoHuman[i].Right].nIndexMesh;
+			stHumanLook.RightSkin = g_pItemList[m_stDemoHuman[i].Right].nIndexTexture;
+			stHumanLook.LeftMesh = g_pItemList[m_stDemoHuman[i].Left].nIndexMesh;
+			stHumanLook.LeftSkin = g_pItemList[m_stDemoHuman[i].Left].nIndexTexture;
+			stSancInfo.Sanc7 = m_stDemoHuman[i].nSanc;
+			stSancInfo.Sanc6 = stSancInfo.Sanc7;
+			stSancInfo.Sanc5 = stSancInfo.Sanc7;
+			stSancInfo.Sanc4 = stSancInfo.Sanc7;
+			stSancInfo.Sanc3 = stSancInfo.Sanc7;
+			stSancInfo.Sanc2 = stSancInfo.Sanc7;
+			stSancInfo.Legend7 = g_pItemList[m_stDemoHuman[i].Body].nGrade;
+			stSancInfo.Legend6 = stSancInfo.Legend7;
+			stSancInfo.Legend5 = stSancInfo.Legend7;
+			stSancInfo.Legend4 = stSancInfo.Legend7;
+			stSancInfo.Legend3 = stSancInfo.Legend7;
+			stSancInfo.Legend2 = stSancInfo.Legend7;
+
+			if (m_stDemoHuman[i].Body == m_stDemoHuman[i].Helm)
+			{
+				stSancInfo.Sanc1 = stSancInfo.Sanc2;
+				stSancInfo.Legend1 = stSancInfo.Legend2;
+			}
+
+			if (ret == -1)
+				break;
+
+			m_pCheckHumanList[i] = new TMHuman(this);
+			m_pCheckHumanList[i]->m_stScore.Hp = 1;
+			m_pCheckHumanList[i]->m_dwID = 10000;
+
+			sprintf(m_pCheckHumanList[i]->m_szName, "person%d", i);
+
+			if (m_stDemoHuman[i].nMount >= 2360 && m_stDemoHuman[i].nMount < 2390
+			 || m_stDemoHuman[i].nMount >= 2960 && m_stDemoHuman[i].nMount < 3000)
+			{
+				m_pCheckHumanList[i]->m_cMount = 1;
+				int sIndex = m_stDemoHuman[i].nMount - 2045;
+
+				STRUCT_ITEM item{};
+				item.sIndex = sIndex;
+				m_pCheckHumanList[i]->m_sMountIndex = sIndex - 315;
+				int nClass = BASE_GetItemAbility(&item, 18);
+				m_pCheckHumanList[i]->m_nMountSkinMeshType = BASE_DefineSkinMeshType(nClass);
+				m_pCheckHumanList[i]->m_stMountLook.Mesh0 = g_pItemList[sIndex].nIndexMesh;
+				m_pCheckHumanList[i]->m_stMountLook.Mesh1 = m_pCheckHumanList[i]->m_stMountLook.Mesh0;
+				m_pCheckHumanList[i]->m_stMountLook.Skin0 = g_pItemList[sIndex].nIndexTexture;
+				m_pCheckHumanList[i]->m_stMountLook.Skin1 = m_pCheckHumanList[i]->m_stMountLook.Skin0;
+
+				if (sIndex >= 321 && sIndex <= 325)
+				{
+					m_pCheckHumanList[i]->m_stMountLook.Mesh2 = sIndex - 320;
+					m_pCheckHumanList[i]->m_stMountSanc.Sanc0 = 0;
+					m_pCheckHumanList[i]->m_stMountSanc.Sanc1 = 0;
+					m_pCheckHumanList[i]->m_stMountSanc.Sanc2 = 0;
+				}
+				else if (sIndex >= 326 && sIndex <= 330)
+				{
+					m_pCheckHumanList[i]->m_stMountLook.Mesh2 = sIndex - 325;
+					m_pCheckHumanList[i]->m_stMountSanc.Sanc0 = 0;
+					m_pCheckHumanList[i]->m_stMountSanc.Sanc1 = 0;
+					m_pCheckHumanList[i]->m_stMountSanc.Sanc2 = 0;
+				}
+				else
+				{
+					m_pCheckHumanList[i]->m_stMountLook.Mesh2 = 0;
+					m_pCheckHumanList[i]->m_stMountSanc.Sanc2 = 0;
+					m_pCheckHumanList[i]->m_stMountSanc.Sanc0 = 0;
+					m_pCheckHumanList[i]->m_stMountSanc.Sanc1 = 0;
+				}
+
+				m_pCheckHumanList[i]->m_fMountScale = BASE_GetMountScale(
+					m_pCheckHumanList[i]->m_nMountSkinMeshType,
+					m_pCheckHumanList[i]->m_stMountLook.Mesh0);
+
+				if (sIndex == 333)
+					m_pCheckHumanList[i]->m_fMountScale = 1.1f;
+			}
+
+			memcpy(&m_pCheckHumanList[i]->m_stLookInfo, &stHumanLook, sizeof(m_pCheckHumanList[i]->m_stLookInfo));
+			memcpy(&m_pCheckHumanList[i]->m_stSancInfo, &stSancInfo, sizeof(m_pCheckHumanList[i]->m_stSancInfo));
+
+			if (m_stDemoHuman[i].Mantua > 0)
+			{
+				m_pCheckHumanList[i]->m_cMantua = 1;
+				m_pCheckHumanList[i]->m_wMantuaSkin = g_pItemList[m_stDemoHuman[i].Mantua].nIndexTexture;
+				m_pCheckHumanList[i]->m_ucMantuaSanc = m_stDemoHuman[i].nSanc;
+				m_pCheckHumanList[i]->m_ucMantuaLegend = g_pItemList[m_stDemoHuman[i].Mantua].nGrade;
+			}
+
+			m_vecMoveToPos[i].x = (int)m_stDemoHuman[i].fTX;
+			m_vecMoveToPos[i].y = (int)m_stDemoHuman[i].fTY;
+			m_pCheckHumanList[i]->m_cClone = 1;
+
+			m_pCheckHumanList[i]->SetRace(sFace);
+			m_pCheckHumanList[i]->InitObject();
+			m_pCheckHumanList[i]->CheckWeapon(m_stDemoHuman[i].Left, m_stDemoHuman[i].Right);
+			m_pCheckHumanList[i]->InitAngle(0.0f, ((float)m_stDemoHuman[i].nAngle * 6.2831855f) / 360.0f, 0.0f);
+			m_pCheckHumanList[i]->InitPosition(m_stDemoHuman[i].fX, 0.0f, m_stDemoHuman[i].fY);
+
+			m_pCheckHumanList[i]->m_fMaxSpeed = (float)m_stDemoHuman[i].nSpeed;
+			m_pCheckHumanList[i]->m_bParty = 1;
+
+			m_pHumanContainer->AddChild(m_pCheckHumanList[i]);
+		}
+
+		fclose(fp);
+	}
+
+	for (int nPerson = 0; nPerson < 50; ++nPerson)
+	{
+		if (m_pCheckHumanList[nPerson])
+		{
+			m_pCheckHumanList[nPerson]->m_bVisible = 1;
+			m_pCheckHumanList[nPerson]->FrameMove(0);
+			m_pCheckHumanList[nPerson]->Render();
+		}
+	}
 }
 
 void TMSelectServerScene::AniDemoPlayer()

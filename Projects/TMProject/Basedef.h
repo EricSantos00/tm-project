@@ -8,6 +8,8 @@ constexpr int MAX_SERVER = 10; // Max number of game servers that can connect to
 constexpr int MAX_SERVERGROUP = 10;	// Max number of servers that can exist
 constexpr int MAX_SERVERNUMBER = (MAX_SERVER + 1); // DB + TMSrvs + BISrv
 
+constexpr int MAX_ITEMLIST = 6500;
+
 struct MSG_STANDARD
 {
 	unsigned short Size;
@@ -820,6 +822,7 @@ extern int g_nServerGroupNum;
 extern char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
 extern char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
 extern int g_nSelServerWeather;
+extern STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
 
 float BASE_ScreenResize(float size);
 void BASE_InitModuleDir();
@@ -834,6 +837,10 @@ int BASE_InitializeServerList();
 int	BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer);
 int BASE_GetSum(char* p, int size);
 int BASE_GetWeekNumber();
+int BASE_GetItemAbility(STRUCT_ITEM* item, char Type);
+int BASE_DefineSkinMeshType(int nClass);
+float BASE_GetMountScale(int nSkinMeshType, int nMeshIndex);
+
 /* Read Functions */
 int ReadItemicon();
 void ReadItemName();
