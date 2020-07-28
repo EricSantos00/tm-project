@@ -3317,7 +3317,7 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 				SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
 				SetRenderState(D3DRS_ALPHATESTENABLE, 0);
 
-				TMMesh *pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 0, 180000);
+				TMMesh *pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 0, 3_min);
 				float fScale = 1.0f / RenderDevice::m_fWidthRatio;
 				if (ipControl->dwBGColor == -1)
 					fScale = fScale * 0.80000001f;
@@ -3369,7 +3369,7 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 				SetRenderState(D3DRS_FOGENABLE, 0);
 
 				float fScale = 1.0f / RenderDevice::m_fWidthRatio;
-				TMMesh* pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 1, 180000);
+				TMMesh* pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 1, 3_min);
 
 				if (pMesh)
 				{

@@ -96,7 +96,7 @@ int CMesh::Render(int nBright)
     {
         g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 0);
 
-        TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 1200000);
+        TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 20_min);
         if (g_pDevice->m_pd3dDevice->SetStreamSource(0, pMesh->m_pVB, 0, pMesh->m_sizeVertex) < 0)
             return 1;
         if (g_pDevice->m_pd3dDevice->SetIndices(pMesh->m_pIB) < 0)
@@ -183,7 +183,7 @@ int CMesh::Render(int nBright)
     if (nPartIndex >= 2912 && nPartIndex <= 2923)
     {
         g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 0);
-        TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 1200000);
+        TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 20_min);
         if (g_pDevice->m_pd3dDevice->SetStreamSource(0, pMesh->m_pVB, 0, pMesh->m_sizeVertex) < 0)
             return 1;
         if (g_pDevice->m_pd3dDevice->SetIndices(pMesh->m_pIB) < 0)
@@ -578,7 +578,7 @@ int CMesh::RenderMesh(char cAlpha)
 
             g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, D3DCULL::D3DCULL_CW);
 
-            TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 1200000);
+            TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 20_min);
             if (pMesh)
                 pMesh->Render(bMulti, 0);
 

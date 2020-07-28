@@ -241,7 +241,7 @@ int TMObject::Render()
 
 		g_pDevice->SetTexture(1u, 0);
 		g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
-		TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 180000);
+		TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 3_min);
 
 		if (pMesh == nullptr)
 			return 0;
@@ -252,7 +252,7 @@ int TMObject::Render()
 		return 1;
 	}
 
-	TMMesh *pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 180000);
+	TMMesh *pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 3_min);
 	if (pMesh == nullptr)
 		return 0;
 
@@ -339,7 +339,7 @@ int TMObject::IsVisible()
 		return 1;
 	}
 
-	TMMesh * pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 180000);
+	TMMesh * pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 3_min);
 	if (pMesh == nullptr)
 	{
 		m_bVisible = 0;
@@ -460,7 +460,7 @@ int TMObject::IsInHouse()
 int TMObject::IsInView()
 {
 	TMCamera* pCamera = g_pObjectManager->m_pCamera;
-	TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 180000);
+	TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 3_min);
 	if (!pMesh)
 		return 0;
 
@@ -686,7 +686,7 @@ int TMObject::isVisualKey()
 
 int TMObject::isCamPos()
 {
-	TMMesh *pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 180000);
+	TMMesh *pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 3_min);
 	if (!pMesh)
 		return 0;
 

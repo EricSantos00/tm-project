@@ -21,6 +21,16 @@ constexpr unsigned int WYD_RGBA(unsigned int r, unsigned int  g, unsigned int  b
     return ((DWORD)((a | 0xFF000000) | (b & 0xFF) | ((g << 8) & 0xFF00) | ((r << 16) & 0xFF0000))); 
 }
 
+constexpr DWORD operator""_min(unsigned long long min)
+{
+    return static_cast<DWORD>(min) * 60000;
+}
+
+constexpr DWORD operator""_sec(unsigned long long sec)
+{
+    return static_cast<DWORD>(sec) * 1000;
+}
+
 extern NewApp* g_pApp;
 extern CPSock* g_pSocketManager;
 extern CPSock* g_LoginSocket;
