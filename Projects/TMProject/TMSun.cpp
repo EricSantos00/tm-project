@@ -115,8 +115,8 @@ int TMSun::Render()
 		&g_pDevice->m_matView,
 		&g_pDevice->m_matWorld);
 
-	//if (vFlarePos.z > 1.0f)
-		//return 1;
+	if (vFlarePos.z > 1.0f)
+		return 1;
 
 	D3DXVECTOR3 vCenterPosFromFlare{};
 
