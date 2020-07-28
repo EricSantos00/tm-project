@@ -492,8 +492,8 @@ int TextureManager::GetUITextureIndex(char* szTextureName)
 	for (int i = 0; i < MAX_UI_TEXTURE; i++)
 	{
 		int nStrLen2 = strlen(m_stUITextureList[i].szFileName);
-		sprintf((char*)szTextureName[nStrLen - 3], 
-			(char*)m_stUITextureList[i].szFileName[nStrLen2 - 3]);
+		sprintf((char*)&szTextureName[nStrLen - 3], 
+			(char*)&m_stUITextureList[i].szFileName[nStrLen2 - 3]);
 
 		if (!strcmp(szTextureName, m_stUITextureList[i].szFileName))
 			return i;
@@ -1216,7 +1216,7 @@ int TextureManager::GenerateTexture(int nDestUIIndex, int nSrcUIIndex, int nDest
 	lpSrcSurface->GetDesc(&SrcDesc);
 	lpSrcSurface->LockRect(&srcRect3d, 0, 0);
 
-	if (m_ppUITexture[nDestUIIndex] != nullptr)
+	if (m_ppUITexture[nDestUIIndex] == nullptr)
 	{
 		D3DFORMAT texFormat = SrcDesc.Format;
 		if (FAILED(D3DXCreateTexture(
