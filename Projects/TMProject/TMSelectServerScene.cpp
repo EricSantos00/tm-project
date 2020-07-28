@@ -1243,7 +1243,7 @@ int TMSelectServerScene::FrameMoveGameGrade(unsigned int dwServerTime)
 	m_pLogoPanels[0]->SetVisible(0);
 	m_pLogoPanels[1]->SetVisible(0);
 	m_pNServerSelect->SetVisible(0);
-	m_GameGrade->SetVisible(1);
+	m_GameGrade->SetVisible(0);
 	return 0;
 }
 

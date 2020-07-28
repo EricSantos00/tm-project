@@ -285,6 +285,7 @@ int TMObject::Render()
 	g_pDevice->m_pd3dDevice->SetMaterial(&materials);
 	if (m_dwObjType == 1934 || m_dwObjType == 1976 || m_dwObjType == 1977)
 	{
+		g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 0xBu);
 		g_pDevice->SetTexture(1u, g_pTextureManager->GetEffectTexture(g_pCurrentScene->m_pSky->m_nTextureIndex, 5000));
 		g_pDevice->SetTextureStageState(1u, D3DTSS_TEXTURETRANSFORMFLAGS, 2u);
 		g_pDevice->SetTextureStageState(1u, D3DTSS_TEXCOORDINDEX, 0x30000u);
@@ -363,7 +364,7 @@ int TMObject::IsVisible()
 
 	m_bVisible = IsInView();
 
-	return 0;
+	return m_bVisible;
 }
 
 int TMObject::IsInTown()
@@ -475,8 +476,8 @@ int TMObject::IsInView()
 	for (int i = 0; i < 9; ++i)
 	{
 		vecPos[i].x = m_vecPosition.x;
-		vecPos[i].y = m_vecPosition.y;
-		vecPos[i].z = m_fHeight;
+		vecPos[i].z = m_vecPosition.y;
+		vecPos[i].y = m_fHeight;
 	}
 
 	if (m_dwObjType == 3)
@@ -704,12 +705,12 @@ int TMObject::isCamPos()
 	D3DXVECTOR3 CamPos(pCamera->m_cameraPos.x, pCamera->m_cameraPos.y, pCamera->m_cameraPos.z);
 	D3DXVECTOR3 CamDir(pCamera->m_vecCamDir.x, pCamera->m_vecCamDir.y, pCamera->m_vecCamDir.z);
 
-	D3DXVECTOR3 vecPos[9];
+	D3DXVECTOR3 vecPos[9]{};
 	for (int i = 0; i < 9; ++i)
 	{
 		vecPos[i].x = m_vecPosition.x;
-		vecPos[i].y = m_vecPosition.y;
-		vecPos[i].z = m_fHeight;
+		vecPos[i].z = m_vecPosition.y;
+		vecPos[i].y = m_fHeight;
 	}
 
 	vecPos[1].x = vecPos[3].x = vecPos[5].x = vecPos[7].x = vecPos[7].x + pMesh->m_fMinX;

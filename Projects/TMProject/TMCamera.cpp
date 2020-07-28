@@ -89,7 +89,7 @@ TMVector3 TMCamera::GetCameraPos()
 
     float fSightLength = m_fSightLength;
 
-    TMVector3 vecCenterPos{ m_cameraPos.x, m_cameraPos.y, m_cameraPos.z };
+    TMVector3 vecCenterPos(m_cameraPos.x, m_cameraPos.y, m_cameraPos.z);
 
     if (m_pFocusedObject && !m_bStandAlone)
     {
@@ -98,7 +98,7 @@ TMVector3 TMCamera::GetCameraPos()
         vecCenterPos.z = (vecCenterPos.z * 0.40000001f) + (m_pFocusedObject->m_vecPosition.y * 0.60000002f);
     }
 
-    if (m_fVerticalAngle > -0.39269909)
+    if (m_fVerticalAngle > -0.39269909f)
         fSightLength = 11.0f;
 
     int nIndex = (int)(m_fHorizonAngle / 0.39269909f);
@@ -258,7 +258,7 @@ TMVector3 TMCamera::GetCameraPos()
     TreeNode::m_VisualKey8 = tempX3 + (tempY2 << 16);
     TreeNode::m_VisualKey9 = tempX3 + (tempY3 << 16);
 
-    TMVector2 vec{ m_cameraPos.x, m_cameraPos.z };
+    TMVector2 vec(m_cameraPos.x, m_cameraPos.z);
 
     float fWaterHeight = 0.0f;
 
@@ -313,11 +313,9 @@ TMVector3 TMCamera::GetCameraPos()
 
 TMVector3 TMCamera::GetCameraLookatPos()
 {
-    GetCameraLookatDir();
+    TMVector3 cameraLookatPos = GetCameraPos() + GetCameraLookatDir();
 
-    TMVector3 cameraLookatPos = GetCameraPos();
-
-    TMVector2 vec{ m_cameraPos.x, m_cameraPos.z };
+    TMVector2 vec(m_cameraPos.x, m_cameraPos.z);
 
     if (g_pCurrentScene != nullptr)
     {
@@ -344,9 +342,7 @@ TMVector3 TMCamera::GetCameraLookatPos()
 
             m_AutoSumLen = fSumLen;
 
-            GetCameraLookatDir();
-
-            cameraLookatPos = GetCameraPos();
+            cameraLookatPos = GetCameraPos() + GetCameraLookatDir();
 
             m_fLastSightLength = 0.0f;
         }

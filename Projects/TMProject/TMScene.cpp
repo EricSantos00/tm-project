@@ -1624,14 +1624,12 @@ void TMScene::CameraAction()
 			(float)(dwTick - m_stCameraTick[i].dwTick) /
 			(float)(m_stCameraTick[i + 1].dwTick - m_stCameraTick[i].dwTick);
 
-		auto fHorizonAngle = (m_stCameraTick[i].fHorizonAngle * (1.0f - fRatio))
-			+ (m_stCameraTick[i + 1].fHorizonAngle * fRatio);
+		auto fHorizonAngle = ((1.0f - fRatio) * m_stCameraTick[i].fHorizonAngle) + (m_stCameraTick[i + 1].fHorizonAngle * fRatio);
 
 		pCamera->m_fHorizonAngle = fHorizonAngle;
 		pCamera->m_fBackHorizonAngle = fHorizonAngle;
 
-		auto fVerticalAngle = (m_stCameraTick[i].fVerticalAngle * (1.0f - fRatio))
-			+ (m_stCameraTick[i + 1].fVerticalAngle * fRatio);
+		auto fVerticalAngle = ((1.0f - fRatio) * m_stCameraTick[i].fVerticalAngle) + (m_stCameraTick[i + 1].fVerticalAngle * fRatio);
 
 		pCamera->m_fVerticalAngle = fVerticalAngle;
 		pCamera->m_fBackVerticalAngle = fVerticalAngle;
@@ -1689,7 +1687,7 @@ void TMScene::ReadCameraPos(char* szFileName)
 {
 	m_nCameraLoop = 0;
 
-	memset(&m_stCameraTick, 0, sizeof(m_stCameraTick));
+	memset(m_stCameraTick, 0, sizeof(m_stCameraTick));
 
 	char szBinFileName[128]{};
 
@@ -1707,7 +1705,7 @@ void TMScene::ReadCameraPos(char* szFileName)
 	else if (m_nCameraLoop < 0)
 		m_nCameraLoop = 0;
 
-	fread(&m_stCameraTick, 1, 28 * m_nCameraLoop, fpBin);
+	fread(m_stCameraTick, 1, 28 * m_nCameraLoop, fpBin);
 	fclose(fpBin);
 }
 
