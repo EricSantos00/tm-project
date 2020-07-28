@@ -244,6 +244,24 @@ TMHuman::TMHuman(TMScene* pParentScene)
 
 TMHuman::~TMHuman()
 {
+    TMScene* pScene = m_pParentScene;
+    --g_nMobCount;
+    if (m_sDelayDel == 0)
+        ++g_nUnDelMobCount;
+
+    SAFE_DELETE(m_pChatMsg);
+    SAFE_DELETE(m_pNameLabel);
+    SAFE_DELETE(m_stGuildMark.pGuildMark);
+    SAFE_DELETE(m_pAutoTradeDesc);
+    SAFE_DELETE(m_pAutoTradePanel);
+    SAFE_DELETE(m_pNickNameLabel);
+    SAFE_DELETE(m_pProgressBar);
+    SAFE_DELETE(m_pMountHPBar);
+    SAFE_DELETE(m_pInMiniMap);
+    SAFE_DELETE(m_pTitleProgressBar);
+    SAFE_DELETE(m_pSkinMesh);
+    SAFE_DELETE(m_pMantua);
+    SAFE_DELETE(m_pMount);
 }
 
 int TMHuman::InitObject()
