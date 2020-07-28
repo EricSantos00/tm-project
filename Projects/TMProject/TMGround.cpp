@@ -2697,11 +2697,11 @@ int TMGround::Render()
     if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELCHAR)
         return 1;
 
-    int nXList[3] = { 0, };
-    int nYList[3] = { 0, };
-    unsigned int dwColor[4] = { 0, };
-    float fX[4] = { 0.0f, };
-    float fY[4] = { 0.0f, };
+    int nXList[3]{};
+    int nYList[3]{};
+    unsigned int dwColor[4]{};
+    float fX[4]{};
+    float fY[4]{};
 
     D3DXVECTOR3 vTemp;
     D3DXVECTOR3 vPosTransformed;
@@ -3711,7 +3711,7 @@ D3DCOLORVALUE TMGround::GetColor(TMVector2 vecPosition)
         dwColor[3] = m_TileMapData[nX + 4033].dwColor;
     }
 
-    _D3DCOLORVALUE color[4]{};
+    D3DCOLORVALUE color[4]{};
     for (int i = 0; i < 4; ++i)
     {
         color[i].r = ((0xFF0000 & dwColor[i]) >> 16) / 256.0f;
@@ -3719,8 +3719,8 @@ D3DCOLORVALUE TMGround::GetColor(TMVector2 vecPosition)
         color[i].b = (dwColor[i] & 0xFF) / 256.0f;
     }
 
-    float fDX = (nX * 2.0f) - (vecPosition.x - m_vecOffset.x);
-    float fDY = (nY * 2.0f) - (vecPosition.y - m_vecOffset.y);
+    float fDX = ((float)nX * 2.0f) - (vecPosition.x - m_vecOffset.x);
+    float fDY = ((float)nY * 2.0f) - (vecPosition.y - m_vecOffset.y);
 
     D3DCOLORVALUE result{};
 

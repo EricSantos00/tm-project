@@ -1720,8 +1720,8 @@ int RenderDevice::SetRenderStateBlock(int nIndex)
 
 		SetRenderState(D3DRS_FOGCOLOR, m_dwClearColor);
 		SetRenderState(D3DRS_FOGVERTEXMODE, 3);
-		SetRenderState(D3DRS_FOGSTART, (DWORD)fstart);
-		SetRenderState(D3DRS_FOGEND, (DWORD)fend);
+		SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&fstart));
+		SetRenderState(D3DRS_FOGEND, *(DWORD*)(&fend));
 		SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, 1);
 		SetRenderState(D3DRS_SPECULARMATERIALSOURCE, 2);
 		SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, 1);

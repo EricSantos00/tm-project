@@ -16,7 +16,7 @@ int CSoundManager::LoadSoundData()
 
 HRESULT CSoundManager::Initialize(HWND hWnd, DWORD dwCoopLevel, DWORD dwPrimaryChannels, DWORD dwPrimaryFreq, DWORD dwPrimaryBitRate)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 HRESULT CSoundManager::SetPrimaryBufferFormat(DWORD dwPrimaryChannels, DWORD dwPrimaryFreq, DWORD dwPrimaryBitRate)
