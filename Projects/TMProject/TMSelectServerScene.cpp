@@ -243,7 +243,7 @@ int TMSelectServerScene::InitializeScene()
 	sprintf_s(szMapPath, "env\\Field1616.trn");
 	sprintf_s(szDataPath, "env\\Field1616.dat");
 
-	m_nDemoType = 2;
+	m_nDemoType = rand() % 4;
 	if (m_nDemoType)
 	{
 		switch (m_nDemoType)
@@ -1224,9 +1224,9 @@ void TMSelectServerScene::InitializeUI()
 
 int TMSelectServerScene::FrameMoveGameGrade(unsigned int dwServerTime)
 {
-	if (dwServerTime >= m_dGameGradePrintSaveTime + 3500)
+	if (dwServerTime >= m_dGameGradePrintSaveTime + m_dGameGradePrintTime)
 	{
-		if (m_bGameGradePlay && (!m_pNServerSelect->IsVisible() || dwServerTime > m_dGameGradePrintSaveTime + 3500))
+		if (m_bGameGradePlay && (!m_pNServerSelect->IsVisible() || dwServerTime > m_dGameGradePrintSaveTime + m_dGameGradePrintTime))
 		{
 			ResetDemoPlayer();
 			CamAction();
@@ -1244,7 +1244,7 @@ int TMSelectServerScene::FrameMoveGameGrade(unsigned int dwServerTime)
 	m_pLogoPanels[0]->SetVisible(0);
 	m_pLogoPanels[1]->SetVisible(0);
 	m_pNServerSelect->SetVisible(0);
-	m_GameGrade->SetVisible(0);
+	m_GameGrade->SetVisible(1);
 	return 0;
 }
 
@@ -1283,7 +1283,7 @@ void TMSelectServerScene::GameGradeScene()
 	m_pControlContainer->AddItem(m_GameGrade);
 
 	m_GameGrade->SetVisible(1);
-	m_dGameGradePrintTime = 3500;
+	m_dGameGradePrintTime = 100;
 	m_bGameGradePlay = 1;
 	m_dGameGradePrintSaveTime = g_pTimerManager->GetServerTime();
 }

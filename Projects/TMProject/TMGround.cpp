@@ -2270,8 +2270,8 @@ TMGround::TMGround()
 
     for (int i = 0; i < 4; ++i)
     {
-        m_vertex[i].diffuse = 0x0FFFFFF;
-        m_vertexVoodoo[i].diffuse = 0x0FFFFFF;
+        m_vertex[i].diffuse = 0x00FFFFFF;
+        m_vertexVoodoo[i].diffuse = 0x00FFFFFF;
     }
 
     for (int i = 0; i < 128; ++i)
@@ -2341,8 +2341,8 @@ void TMGround::SetPos(int nX, int nY)
     m_vecOffsetIndex.x = nX;
     m_vecOffsetIndex.y = nY;
 
-    m_vecOffset.x = m_vecOffsetIndex.x * 2.0f * 64.0f;
-    m_vecOffset.y = m_vecOffsetIndex.y * 2.0f * 64.0f;
+    m_vecOffset.x = (m_vecOffsetIndex.x * 2.0f) * 64.0f;
+    m_vecOffset.y = (m_vecOffsetIndex.y * 2.0f) * 64.0f;
 
     if (nY <= 25)
     {
@@ -2387,7 +2387,6 @@ int TMGround::Attach(TMGround* pGround)
     if (!pGround)
         return 0;
 
-    bool result = false;
     m_pLeftGround = 0;
     m_pRightGround = 0;
     m_pUpGround = 0;
@@ -2408,7 +2407,7 @@ int TMGround::Attach(TMGround* pGround)
 
         m_nMiniMapPos = 0;
         m_pRightGround->m_nMiniMapPos = 1;
-        result = true;
+        return 1;
     }
     else if (pGround->m_vecOffsetIndex.x == m_vecOffsetIndex.x - 1)
     {
@@ -2425,7 +2424,7 @@ int TMGround::Attach(TMGround* pGround)
 
         m_nMiniMapPos = 1;
         m_pLeftGround->m_nMiniMapPos = 0;
-        result = true;
+        return 1;
     }
     else if (pGround->m_vecOffsetIndex.y == m_vecOffsetIndex.y + 1)
     {
@@ -2442,7 +2441,7 @@ int TMGround::Attach(TMGround* pGround)
 
         m_nMiniMapPos = 0;
         m_pDownGround->m_nMiniMapPos = 2;
-        result = true;
+        return 1;
     }
     else if (pGround->m_vecOffsetIndex.y == m_vecOffsetIndex.y - 1)
     {
@@ -2459,10 +2458,10 @@ int TMGround::Attach(TMGround* pGround)
 
         m_nMiniMapPos = 2;
         m_pUpGround->m_nMiniMapPos = 0;
-        result = true;
+        return 1;
     }
 
-    return result;
+    return 0;
 }
 
 int TMGround::LoadTileMap(const char* szFileName)
@@ -2541,11 +2540,9 @@ int TMGround::LoadTileMap(const char* szFileName)
         m_materials.Diffuse.g = 1.0f;
         m_materials.Diffuse.b = 1.0f;
 
-        m_materials.Specular.r = m_materials.Diffuse.r;
-        m_materials.Specular.g = m_materials.Diffuse.g;
-        m_materials.Specular.b = m_materials.Diffuse.b;
-
+        m_materials.Specular = m_materials.Diffuse;
         m_materials.Power = 0.0f;
+
         m_materials.Emissive.r = 0.3f;
         m_materials.Emissive.g = 0.3f;
         m_materials.Emissive.b = 0.3f;
@@ -2690,19 +2687,21 @@ int TMGround::Render()
     if (g_bHideBackground)
         return 0;
 
-    auto pCamera = g_pObjectManager->m_pCamera;
+    if (!m_bVisible)
+        return 1;
 
+    TMCamera* pCamera = g_pObjectManager->m_pCamera;
     if (pCamera->m_fVerticalAngle > 0.4f)
         return 1;
 
     if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELCHAR)
         return 1;
 
-    int nXList[3] = { 0, };
-    int nYList[3] = { 0, };
-    unsigned int dwColor[4] = { 0, };
-    float fX[4] = { 0.0f, };
-    float fY[4] = { 0.0f, };
+    int nXList[3]{};
+    int nYList[3]{};
+    unsigned int dwColor[4]{};
+    float fX[4]{};
+    float fY[4]{};
 
     D3DXVECTOR3 vTemp;
     D3DXVECTOR3 vPosTransformed;
@@ -2719,10 +2718,10 @@ int TMGround::Render()
     if (m_bWire == 1)
         g_pDevice->SetRenderState(D3DRS_FILLMODE, 2);
 
-    auto vecCam = pCamera->m_cameraPos;
+    TMVector3 vecCam = pCamera->m_cameraPos;
 
-    auto nCamPosX = (int)((vecCam.x - m_vecOffset.x) / 2);
-    auto nCamPosY = (int)((vecCam.z - m_vecOffset.y) / 2);
+    int nCamPosX = (int)((vecCam.x - m_vecOffset.x) / 2);
+    int nCamPosY = (int)((vecCam.z - m_vecOffset.y) / 2);
 
     g_pDevice->SetRenderState(D3DRS_RANGEFOGENABLE, 0);
     g_pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, 3);
@@ -2750,26 +2749,25 @@ int TMGround::Render()
 
     g_pDevice->m_pd3dDevice->SetMaterial(&m_materials);
 
-    auto nClipIndex = 15;
-    auto nMinClipIndex = 0;
-
+    int nClipIndex = 15;
     if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_DEMO)
         nClipIndex = 18;
 
+    int nMinClipIndex = 0;
     //NOTE: IDA has a strange decompilation on this part
     if (g_pObjectManager->m_pCamera->m_fVerticalAngle > 1.0f)
         nClipIndex = (int)(pCamera->m_fSightLength * 1.5f) + 8.0f;
 
     nMinClipIndex = nClipIndex / 3;
     
-    auto nMinX = nCamPosX - nMinClipIndex;
-    auto nMinY = nCamPosY - nMinClipIndex;
-    auto nMaxX = nClipIndex + nCamPosX;
-    auto nMaxY = nClipIndex + nCamPosY;
+    int nMinX = nCamPosX - nMinClipIndex;
+    int nMinY = nCamPosY - nMinClipIndex;
+    int nMaxX = nClipIndex + nCamPosX;
+    int nMaxY = nClipIndex + nCamPosY;
 
     if (RenderDevice::m_bDungeon >= 0 || g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELECT_SERVER || g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_DEMO)
     {
-        auto nLen = (int)(pCamera->m_fSightLength + 1.0f);
+        int nLen = (int)(pCamera->m_fSightLength + 1.0f);
 
         if ((RenderDevice::m_bDungeon == 2
             || RenderDevice::m_bDungeon == 3
@@ -2809,8 +2807,8 @@ int TMGround::Render()
         else if (g_pObjectManager->m_pCamera->m_fVerticalAngle > -0.60000002f)
             nLen += 3;
 
-        auto fcos = cosf(pCamera->m_fHorizonAngle);
-        auto fsin = sinf(pCamera->m_fHorizonAngle);
+        float fcos = cosf(pCamera->m_fHorizonAngle);
+        float fsin = sinf(pCamera->m_fHorizonAngle);
         nXList[0] = nCamPosX;
         nYList[0] = nCamPosY;
         nXList[1] = nCamPosX + (int)(nLen * fcos);
@@ -2823,8 +2821,7 @@ int TMGround::Render()
         nMaxY = nLen + nYList[2];
     }
 
-    auto nTickX = 1, nTickY = 1;
-
+    int nTickX = 1, nTickY = 1;
     for (int nY = nMinY; nY < nMaxY; ++nY)
     {
         if (nY >= 0 && nY <= 63)
@@ -2845,13 +2842,15 @@ int TMGround::Render()
                     {
                         if (nX - nCamPosX <= 0)
                             tempVal = nCamPosX - nX;
-                        else tempVal = nX - nCamPosX;
+                        else 
+                            tempVal = nX - nCamPosX;
 
                         if (tempVal > 17)
                         {
                             if (nX - nCamPosX <= 0)
                                 tempVal = nCamPosX - nX;
-                            else tempVal = nX - nCamPosX;
+                            else 
+                                tempVal = nX - nCamPosX;
 
                             if (tempVal % 2)
                                 continue;
@@ -2863,13 +2862,15 @@ int TMGround::Render()
                     {
                         if (nX - nCamPosX <= 0)
                             tempVal = nCamPosX - nX;
-                        else tempVal = nX - nCamPosX;
+                        else 
+                            tempVal = nX - nCamPosX;
 
                         if (tempVal > 16)
                         {
                             if (nX - nCamPosX <= 0)
                                 tempVal = nCamPosX - nX;
-                            else tempVal = nX - nCamPosX;
+                            else 
+                                tempVal = nX - nCamPosX;
 
                             if (!(tempVal % 2))
                                 continue;
@@ -2919,9 +2920,9 @@ int TMGround::Render()
                         }
                     }
 
-                    auto bCoordIndex = m_TileMapData[nX + (nY << 6)].byTileCoord;
-                    auto bCoordBackIndex = m_TileMapData[nX + (nY << 6)].byBackTileCoord;
-                    auto nTexIndex = (unsigned char)m_TileMapData[nX + (nY << 6)].byTileIndex + 10;
+                    char bCoordIndex = m_TileMapData[nX + (nY << 6)].byTileCoord;
+                    char bCoordBackIndex = m_TileMapData[nX + (nY << 6)].byBackTileCoord;
+                    int nTexIndex = (unsigned char)m_TileMapData[nX + (nY << 6)].byTileIndex + 10;
 
                     if (g_pDevice->m_bVoodoo == 1)
                     {
@@ -2938,9 +2939,9 @@ int TMGround::Render()
 
                         for (int i = 0; i < 4; i++)
                         {
-                            auto fR = WYDCOLOR_RED(dwColor[i]) / 256;
-                            auto fG = WYDCOLOR_GREEN(dwColor[i]) / 256;
-                            auto fB = WYDCOLOR_BLUE(dwColor[i]) / 256;
+                            auto fR = WYDCOLOR_RED(dwColor[i]) / 256.0f;
+                            auto fG = WYDCOLOR_GREEN(dwColor[i]) / 256.0f;
+                            auto fB = WYDCOLOR_BLUE(dwColor[i]) / 256.0f;
 
                             D3DXCOLOR color1 = D3DXCOLOR();
                             color1.r = fR;
@@ -3013,8 +3014,7 @@ int TMGround::Render()
                     }
                     else
                     {
-                        auto nIndex = m_TileMapData[nX + (nY << 6)].byTileIndex + 10;
-
+                        int nIndex = m_TileMapData[nX + (nY << 6)].byTileIndex + 10;
                         for (int k = 0; k < 4; k++)
                         {
                             m_vertex[k].tu1 = TMGround::TileCoordList[bCoordIndex][k][0];
@@ -3027,29 +3027,26 @@ int TMGround::Render()
                             }
                             if (m_bDungeon || m_bDungeon != 3 || m_bDungeon != 4)
                             {
-                                if (!(m_vecOffsetIndex.x < 26
-                                    || m_vecOffsetIndex.x > 30
-                                    || m_vecOffsetIndex.y < 8
-                                    || m_vecOffsetIndex.y > 12 ? 0 : 1))
+                                if (m_vecOffsetIndex.x < 26 || m_vecOffsetIndex.x > 30 || m_vecOffsetIndex.y < 8 || m_vecOffsetIndex.y > 12)
                                 {
                                     if (nIndex == 170 || nIndex == 171)
                                     {
-                                        m_vertex[k].tu1 = (float)((m_dwServertime % 10000) / 10000) + m_vertex[k].tu1;
+                                        m_vertex[k].tu1 = (float)((float)(m_dwServertime % 10000) / 10000.0f) + m_vertex[k].tu1;
 
                                         if (!g_bHideEffect)
                                         {
-                                            auto nRandV = rand() % 200;
+                                            int nRandV = rand();
 
-                                            auto vecPos = TMVector3((float)((float)((float)nX * 2.0f) + m_vecOffset.x) + 0.5f,
+                                            TMVector3 vecPos = TMVector3((float)((float)((float)nX * 2.0f) + m_vecOffset.x) + 0.5f,
                                                 (float)((float)m_TileMapData[nX + (nY << 6)].cHeight * 0.1f) + 1.5f,
                                                 (float)((float)((float)nY * 2.0f) + m_vecOffset.y) + 0.5f);
 
 
-                                            if (nRandV < 2)
+                                            if (nRandV % 200 < 2)
                                             {
-                                                auto nRand = rand() % 10;
+                                                int nRand = rand() % 10;
 
-                                                auto mpBill = new TMEffectBillBoard(0, 1000,
+                                                TMEffectBillBoard* mpBill = new TMEffectBillBoard(0, 1000,
                                                     (float)((float)nRand * 0.19f) + 0.02f,
                                                     (float)((float)nRand * 0.60000002f) + 0.02f,
                                                     (float)((float)nRand * 0.19f) + 0.02f,
@@ -3076,9 +3073,9 @@ int TMGround::Render()
                                             if (m_dwServertime - m_dwLastEffectTime > 2000
                                                 && !(nX % 2)
                                                 && !(nY % 3)
-                                                && (rand() % 100 < 1))
+                                                && (nRandV % 100 < 1))
                                             {
-                                                auto glowRand = (rand() % 7);
+                                                int glowRand = (rand() % 7);
 
                                                 auto pGlow = new TMEffectBillBoard(56, 20000, 0.2f, 0.2f, 0.2f, 0.0f, 1, 80);
 
@@ -3132,25 +3129,7 @@ int TMGround::Render()
                                             }
                                         }
                                     }
-                                    else if (nIndex != 38 && nIndex != 39)
-                                    {
-                                        if (nIndex < 62 || nIndex > 65)
-                                        {
-                                            g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 1);
-                                        }
-                                        else
-                                        {
-                                            g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 5);
-
-                                            g_pDevice->SetTexture(1, g_pTextureManager->GetEnvTexture(nIndex + 286, 5000));
-                                            
-                                            m_vertex[k].tu2 = m_vertex[k].tu1;
-                                            m_vertex[k].tv2 = m_vertex[k].tv1;
-
-                                            nTexIndex = nIndex % 2 + 130;
-                                        }
-                                    }
-                                    else
+                                    else if (nIndex == 38 || nIndex == 39)
                                     {
                                         fX[0] = 0.0f;
                                         fX[1] = 0.0f;
@@ -3160,17 +3139,31 @@ int TMGround::Render()
                                         fY[1] = 1.0f;
                                         fY[2] = 0.0f;
                                         fY[3] = 1.0f;
-                                        
+
                                         g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 5);
 
                                         g_pDevice->SetTexture(1, g_pTextureManager->GetEnvTexture(344, 5000));
 
-                                        auto fAngle = (m_dwServertime % 10000) / 10000;
+                                        float fAngle = (float)(m_dwServertime % 10000) / 10000.0f;
 
                                         m_vertex[k].tu2 = fX[k];
                                         m_vertex[k].tv2 = fY[k] + fAngle;
-                                        
+
                                         nTexIndex = nIndex + 92;
+                                    }
+                                    else if (nIndex >= 62 && nIndex <= 65)
+                                    {
+                                        g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 1);
+                                        g_pDevice->SetTexture(1, g_pTextureManager->GetEnvTexture(nIndex + 286, 5000));
+
+                                        m_vertex[k].tu2 = m_vertex[k].tu1;
+                                        m_vertex[k].tv2 = m_vertex[k].tv1;
+
+                                        nTexIndex = nIndex % 2 + 130;
+                                    }
+                                    else
+                                    {
+                                        g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 1);
                                     }
                                 }
                             }
@@ -3181,12 +3174,23 @@ int TMGround::Render()
                             m_vertex[0].diffuse = m_TileMapData[nX + (nY << 6)].dwColor;
                             m_vertex[1].diffuse = m_TileMapData[nX + ((nTickY + nY) << 6)].dwColor;
                             m_vertex[2].diffuse = m_TileMapData[(nY << 6) + nTickX + nX].dwColor;
-                            m_vertex[3].diffuse = m_TileMapData[(nY << 6) + nTickX + nX].dwColor;
+                            m_vertex[3].diffuse = m_TileMapData[((nTickY + nY) << 6) + nTickX + nX].dwColor;
 
-                            m_vertexVoodoo[0].position = TMVector3(nX, m_TileMapData[nX + (nY << 6)].cHeight, nY);
-                            m_vertexVoodoo[1].position = TMVector3(nX, m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight, nY);
-                            m_vertexVoodoo[2].position = TMVector3(nX, m_TileMapData[(nY << 6) + nTickX + nX].cHeight, nY);
-                            m_vertexVoodoo[3].position = TMVector3(nX, m_TileMapData[(nY << 6) + nTickX + nX].cHeight, nY);
+                            m_vertex[0].normal = m_TileNormalVector[64 * nY + nX];
+                            m_vertex[1].normal = m_TileNormalVector[64 * (nTickY + nY) + nX];
+                            m_vertex[2].normal = m_TileNormalVector[64 * nY + nTickX + nX];
+                            m_vertex[3].normal = m_TileNormalVector[64 * (nTickY + nY) + nTickX + nX];
+
+                            m_vertex[0].position = TMVector3((float)nX, (float)m_TileMapData[nX + (nY << 6)].cHeight, (float)nY);
+                            m_vertex[1].position = TMVector3((float)nX,
+                                (float)m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight,
+                                (float)(nTickY + nY));
+                            m_vertex[2].position = TMVector3((float)(nTickX + nX),
+                                (float)m_TileMapData[(nY << 6) + nTickX + nX].cHeight,
+                                (float)nY);
+                            m_vertex[3].position = TMVector3((float)(nTickX + nX),
+                                (float)m_TileMapData[((nTickY + nY) << 6) + nTickX + nX].cHeight,
+                                (float)(nTickY + nY));
                         }
                         else if (nX == 63 && nY < 63)
                         {
@@ -3195,10 +3199,21 @@ int TMGround::Render()
                             m_vertex[2].diffuse = m_TileMapData[nX + (nY << 6)].dwColor;
                             m_vertex[3].diffuse = m_TileMapData[nX + ((nTickY + nY) << 6)].dwColor;
 
-                            m_vertexVoodoo[0].position = TMVector3(nX, m_TileMapData[nX + (nY << 6)].cHeight, nY);
-                            m_vertexVoodoo[1].position = TMVector3(nX, m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight, nY);
-                            m_vertexVoodoo[2].position = TMVector3(nX, m_TileMapData[nX + (nY << 6)].cHeight, nY);
-                            m_vertexVoodoo[3].position = TMVector3(nX, m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight, nY);
+                            m_vertex[0].normal = m_TileNormalVector[64 * nY + nX];
+                            m_vertex[1].normal = m_TileNormalVector[64 * (nTickY + nY) + nX];
+                            m_vertex[2].normal = m_TileNormalVector[64 * nY + nX];
+                            m_vertex[3].normal = m_TileNormalVector[64 * (nTickY + nY) + nX];
+
+                            m_vertex[0].position = TMVector3((float)nX, (float)m_TileMapData[nX + (nY << 6)].cHeight, (float)nY);
+                            m_vertex[1].position = TMVector3((float)nX,
+                                (float)m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight,
+                                (float)(nTickY + nY));
+                            m_vertex[2].position = TMVector3((float)(nTickX + nX),
+                                (float)m_TileMapData[nX + (nY << 6)].cHeight,
+                                (float)nY);
+                            m_vertex[3].position = TMVector3((float)(nTickX + nX),
+                                (float)m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight,
+                                (float)(nTickY + nY));
                         }
                         else if (nY == 63 && nX < 63)
                         {
@@ -3207,21 +3222,32 @@ int TMGround::Render()
                             m_vertex[2].diffuse = m_TileMapData[(nY << 6) + nTickX + nX].dwColor;
                             m_vertex[3].diffuse = m_TileMapData[(nY << 6) + nTickX + nX].dwColor;
 
-                            m_vertexVoodoo[0].position = TMVector3(nX, m_TileMapData[nX + (nY << 6)].cHeight, nY);
-                            m_vertexVoodoo[1].position = TMVector3(nX, m_TileMapData[nX + (nY << 6)].cHeight, nY);
-                            m_vertexVoodoo[2].position = TMVector3(nX, m_TileMapData[(nY << 6) + nTickX + nX].cHeight, nY);
-                            m_vertexVoodoo[3].position = TMVector3(nX, m_TileMapData[(nY << 6) + nTickX + nX].cHeight, nY);
+                            m_vertex[0].normal = m_TileNormalVector[64 * nY + nX];
+                            m_vertex[1].normal = m_TileNormalVector[64 * nY + nX];
+                            m_vertex[2].normal = m_TileNormalVector[64 * nY + nTickX + nX];
+                            m_vertex[3].normal = m_TileNormalVector[64 * nY + nTickX + nX];
+
+                            m_vertex[0].position = TMVector3((float)nX, (float)m_TileMapData[nX + (nY << 6)].cHeight, (float)nY);
+                            m_vertex[1].position = TMVector3((float)nX,
+                                (float)m_TileMapData[nX + (nY << 6)].cHeight,
+                                (float)(nTickY + nY));
+                            m_vertex[2].position = TMVector3((float)(nTickX + nX),
+                                (float)m_TileMapData[(nY << 6) + nTickX + nX].cHeight,
+                                (float)nY);
+                            m_vertex[3].position = TMVector3((float)(nTickX + nX),
+                                (float)m_TileMapData[(nY << 6) + nTickX + nX].cHeight,
+                                (float)(nTickY + nY));
                         }
 
                         if (m_dwEffStart && m_dwServertime < (m_dwEffStart + 2000))
                         {
-                            auto Height = (float)((4.0f * m_fEffHeight) * (m_dwServertime - m_dwEffStart - 2000) / 2000);
+                            float Height = (float)((4.0f * m_fEffHeight) * (float)(m_dwServertime - m_dwEffStart - 2000) / 2000.0f);
 
                             for (int j = 0; j < 4; j++)
                             {
-                                auto vecCalc = (float)((float)(m_vecEffset.x - m_vertexVoodoo[j].position.x) * (float)(m_vecEffset.y - m_vertexVoodoo[j].position.z)) / 10.0;
+                                auto vecCalc = (float)((float)(m_vecEffset.x - m_vertex[j].position.x) * (float)(m_vecEffset.y - m_vertex[j].position.z)) / 10.0f;
 
-                                m_vertexVoodoo[j].position.y = (float)(cosf(vecCalc + (float)(m_dwServertime / 300.0)) * Height) + m_vertexVoodoo[j].position.y;
+                                m_vertex[j].position.y = (float)(cosf(vecCalc + (float)(m_dwServertime / 300.0f)) * Height) + m_vertex[j].position.y;
                             }
                         }
 
@@ -3236,7 +3262,7 @@ int TMGround::Render()
 
                         for (int m = 0; m < 4; ++m)
                         {
-                            auto tempVec = D3DXVECTOR3();
+                            D3DXVECTOR3 tempVec;
                             tempVec.x = (m_vertex[m].position.x * 2.0f) + m_vecOffset.x;
                             tempVec.y = m_vertex[m].position.y * 0.1f;
                             tempVec.z = (m_vertex[m].position.z * 2.0f) + m_vecOffset.y;
@@ -3246,15 +3272,15 @@ int TMGround::Render()
 
                             if (vPosTransformed.z >= 0.0f && vPosTransformed.z < 1.0f)
                             {
-                                auto vPosInX = (((vPosTransformed.x + 1.0f) * (g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)) / 2.0f);
-                                auto vPosInY = (((vPosTransformed.y + 1.0f) * (g_pDevice->m_dwScreenHeight - g_pDevice->m_nWidthShift)) / 2.0f);
+                                int vPosInX = (int)((((vPosTransformed.x + 1.0f) * ((float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift) / 2.0f))));
+                                int vPosInY = (int)((((vPosTransformed.y + 1.0f) * ((float)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nWidthShift) / 2.0f))));
 
-                                if (vPosInX > (-50.0f * RenderDevice::m_fWidthRatio)
-                                    && ((g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)
-                                        + (50.0f * RenderDevice::m_fWidthRatio)) > vPosInX
-                                    && vPosInY > (-50.0f * RenderDevice::m_fHeightRatio)
-                                    && ((g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift)
-                                        + (50.0f * RenderDevice::m_fHeightRatio)) > vPosInY)
+                                if ((float)vPosInX > (float)(-50.0f * RenderDevice::m_fWidthRatio)
+                                    && ((float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)
+                                        + (50.0f * RenderDevice::m_fWidthRatio)) > (float)vPosInX
+                                    && (float)vPosInY > (float)(-50.0f * RenderDevice::m_fHeightRatio)
+                                    && ((float)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift)
+                                        + (50.0f * RenderDevice::m_fHeightRatio)) > (float)vPosInY)
                                 {
                                     bVisible = 1;
                                     break;
@@ -3296,16 +3322,16 @@ int TMGround::FrameMove(unsigned int dwServerTime)
     {
         if (g_pCurrentScene->m_pGround == this)
         {
-            int nPosX = static_cast<int>(pFocusedObject->m_vecPosition.x - m_vecOffset.x + 128.0f) / 512 / TextureManager::DYNAMIC_TEXTURE_WIDTH;
-            int nPosY = static_cast<int>(pFocusedObject->m_vecPosition.y - m_vecOffset.y + 256.0f) / 512 / TextureManager::DYNAMIC_TEXTURE_WIDTH;
+            int nPosX = static_cast<int>((pFocusedObject->m_vecPosition.x - m_vecOffset.x) + 128.0f) / (512 / TextureManager::DYNAMIC_TEXTURE_WIDTH);
+            int nPosY = static_cast<int>((pFocusedObject->m_vecPosition.y - m_vecOffset.y) + 256.0f) / (512 / TextureManager::DYNAMIC_TEXTURE_WIDTH);
 
             auto pUISet = g_pTextureManager->GetUITextureSet(11);
             if (pUISet)
             {
-                pUISet->pTextureCoord->nStartX = nPosX - ((static_cast<float>(TextureManager::DYNAMIC_TEXTURE_WIDTH) / 8.0f) * m_fMiniMapScale);
-                pUISet->pTextureCoord->nStartY = nPosY - ((static_cast<float>(TextureManager::DYNAMIC_TEXTURE_HEIGHT) / 8.0f) * m_fMiniMapScale);
-                pUISet->pTextureCoord->nWidth = (static_cast<float>(TextureManager::DYNAMIC_TEXTURE_WIDTH) / 4.0f) * m_fMiniMapScale;
-                pUISet->pTextureCoord->nHeight = (static_cast<float>(TextureManager::DYNAMIC_TEXTURE_HEIGHT) / 4.0f) * m_fMiniMapScale;
+                pUISet->pTextureCoord->nStartX = nPosX - static_cast<int>(((static_cast<float>(TextureManager::DYNAMIC_TEXTURE_WIDTH) / 8.0f) * m_fMiniMapScale));
+                pUISet->pTextureCoord->nStartY = nPosY - static_cast<int>(((static_cast<float>(TextureManager::DYNAMIC_TEXTURE_HEIGHT) / 8.0f) * m_fMiniMapScale));
+                pUISet->pTextureCoord->nWidth = static_cast<int>((static_cast<float>(TextureManager::DYNAMIC_TEXTURE_WIDTH) / 4.0f) * m_fMiniMapScale);
+                pUISet->pTextureCoord->nHeight = static_cast<int>((static_cast<float>(TextureManager::DYNAMIC_TEXTURE_HEIGHT) / 4.0f) * m_fMiniMapScale);
 
                 pUISet->pTextureCoord->nStartY -= 4;
             }
@@ -3324,9 +3350,8 @@ D3DXVECTOR3 TMGround::GetPickPos()
     g_pDevice->GetPickRayVector(&vPickRayOrig, &vPickRayDir);
     D3DXVec3Normalize(&vPickRayDir, &vPickRayDir);
 
-    D3DXVec3Normalize(&vPickRayDir, &vPickRayDir);
     float fU = 0.0f;
-    float  fV = 0.0f;
+    float fV = 0.0f;
     float fDistance = 0.0f;
     TMCamera* pCamera = g_pObjectManager->m_pCamera;
 
@@ -3432,10 +3457,10 @@ D3DXVECTOR3 TMGround::GetPickPos()
                                 (float)m_TileMapData[k + ((j + 1) << 6)].cHeight * 0.1f,
                                 (float)((float)(j + 1) * 2.0f) + m_vecOffset.y);
                             vec[2] = D3DXVECTOR3((float)((float)(k + 1) * 2.0) + m_vecOffset.x,
-                                (float)m_TileMapData[k + (j << 6) + 1].cHeight * 0.1,
+                                (float)m_TileMapData[k + (j << 6) + 1].cHeight * 0.1f,
                                 (float)((float)j * 2.0) + m_vecOffset.y);
                             vec[3] = D3DXVECTOR3((float)((float)(k + 1) * 2.0) + m_vecOffset.x,
-                                (float)m_TileMapData[k + ((j + 1) << 6) + 1].cHeight * 0.1,
+                                (float)m_TileMapData[k + ((j + 1) << 6) + 1].cHeight * 0.1f,
                                 (float)((float)(j + 1) * 2.0) + m_vecOffset.y);
 
                             if ((float)m_pMaskData[j][k] * 0.1f - ((((vec[0].y + vec[1].y) + vec[2].y) + vec[3].y) / 4.0f) > 1.0f)
@@ -3536,7 +3561,6 @@ D3DXVECTOR3 TMGround::GetPickPos()
 float TMGround::GetHeight(TMVector2 vecPosition)
 {
     float fHeight = 1.0f;
-    float xmm1_4_1 = vecPosition.y - m_vecOffset.y;
 
     int nX = static_cast<int>((vecPosition.x - m_vecOffset.x) / 2.0f);
     int nY = static_cast<int>((vecPosition.y - m_vecOffset.y) / 2.0f);
@@ -3556,58 +3580,58 @@ float TMGround::GetHeight(TMVector2 vecPosition)
     {
         if (nX == 63)
         {
-            v0.x = 63.0f * 2.0f + m_vecOffset.x;
-            v0.y = m_TileMapData[(nY << 6) + 63].cHeight * 0.1;
-            v0.z = nY * 2.0f + m_vecOffset.y;
+            v0 = D3DXVECTOR3((float)((float)63 * 2.0f) + m_vecOffset.x,
+                (float)m_TileMapData[(nY << 6) + 63].cHeight * 0.1f,
+                (float)((float)nY * 2.0f) + m_vecOffset.y);
 
-            v2.x = 64.0f * 2.0f + m_vecOffset.x;
-            v2.y = m_TileMapData[(nY << 6) + 63].cHeight * 0.1;
-            v2.z = nY * 2.0f + m_vecOffset.y;
+            v2 = D3DXVECTOR3((float)((float)64 * 2.0f) + m_vecOffset.x,
+                (float)m_TileMapData[(nY << 6) + 63].cHeight * 0.1f,
+                (float)((float)nY * 2.0f) + m_vecOffset.y);
 
-            v6.x = 63.0f * 2.0f + m_vecOffset.x;
-            v6.y = m_TileMapData[((nY + 1) << 6) + 63].cHeight * 0.1;
-            v6.z = (nY + 1) * 2.0f + m_vecOffset.y;
+            v6 = D3DXVECTOR3((float)((float)63 * 2.0f) + m_vecOffset.x,
+                (float)m_TileMapData[((nY + 1) << 6) + 63].cHeight * 0.1f,
+                (float)((float)(nY + 1) * 2.0f) + m_vecOffset.y);
 
-            v6.x = 64.0f * 2.0f + m_vecOffset.x;
-            v6.y = m_TileMapData[((nY + 1) << 6) + 63].cHeight * 0.1;
-            v6.z = (nY + 1) * 2.0f + m_vecOffset.y;
+            v8 = D3DXVECTOR3((float)((float)64 * 2.0f) + m_vecOffset.x,
+                (float)m_TileMapData[((nY + 1) << 6) + 63].cHeight * 0.1f,
+                (float)((float)(nY + 1) * 2.0f) + m_vecOffset.y);
         }
         else if (nY == 63)
         {
-            v0.x = nX * 2.0f + m_vecOffset.x;
-            v0.y = m_TileMapData[nX + 4032].cHeight * 0.1;
-            v0.z = 63.0f * 2.0f + m_vecOffset.y;
+            v0 = D3DXVECTOR3((float)((float)nX * 2.0f) + m_vecOffset.x,
+                (float)m_TileMapData[nX + 4032].cHeight * 0.1f,
+                (float)((float)63 * 2.0f) + m_vecOffset.y);
 
-            v2.x = (nX + 1) * 2.0f + m_vecOffset.x;
-            v2.y = m_TileMapData[nX + 4033].cHeight * 0.1;
-            v2.z = 63.0f * 2.0f + m_vecOffset.y;
+            v2 = D3DXVECTOR3((float)((float)(nX + 1) * 2.0f) + m_vecOffset.x,
+                (float)m_TileMapData[nX + 4033].cHeight * 0.1f,
+                (float)((float)63 * 2.0f) + m_vecOffset.y);
 
-            v6.x = nX * 2.0f + m_vecOffset.x;
-            v6.y = m_TileMapData[nX + 4032].cHeight * 0.1;
-            v6.z = 64.0f * 2.0f + m_vecOffset.y;
+            v6 = D3DXVECTOR3((float)((float)nX * 2.0f) + m_vecOffset.x,
+                (float)m_TileMapData[nX + 4032].cHeight * 0.1f,
+                (float)((float)64 * 2.0f) + m_vecOffset.y);
 
-            v8.x = (nX + 1) * 2.0f + m_vecOffset.x;
-            v8.y = m_TileMapData[nX + 4033].cHeight * 0.1;
-            v8.z = 64.0f * 2.0f + m_vecOffset.y;
+            v8 = D3DXVECTOR3((float)((float)(nX + 1) * 2.0f) + m_vecOffset.x,
+                (float)m_TileMapData[nX + 4033].cHeight * 0.1f,
+                (float)((float)64 * 2.0f) + m_vecOffset.y);
         }
     }
     else
     {
-        v0.x = nX * 2.0f + m_vecOffset.x;
-        v0.y = m_TileMapData[nX + (nY << 6) + 1].cHeight * 0.1;
-        v0.z = nY * 2.0f + m_vecOffset.y;
+        v0 = D3DXVECTOR3((float)((float)nX * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[nX + (nY << 6)].cHeight * 0.1f,
+            (float)((float)nY * 2.0f) + m_vecOffset.y);
 
-        v2.x = (nX + 1) * 2.0f + m_vecOffset.x;
-        v2.y = m_TileMapData[nX + (nY << 6) + 1].cHeight * 0.1;
-        v2.z = nY * 2.0f + m_vecOffset.y;
+        v2 = D3DXVECTOR3((float)((float)(nX + 1) * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[nX + (nY << 6) + 1].cHeight * 0.1f,
+            (float)((float)nY * 2.0f) + m_vecOffset.y);
 
-        v6.x = nX * 2.0f + m_vecOffset.x;
-        v6.y = m_TileMapData[nX + ((nY + 1) << 6)].cHeight * 0.1;
-        v6.z = (nY + 1) * 2.0f + m_vecOffset.y;
+        v6 = D3DXVECTOR3((float)((float)nX * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[nX + ((nY + 1) << 6)].cHeight * 0.1f,
+            (float)((float)(nY + 1) * 2.0f) + m_vecOffset.y);
 
-        v8.x = (nX + 1) * 2.0f + m_vecOffset.x;
-        v8.y = m_TileMapData[nX + ((nY + 1) << 6) + 1].cHeight * 0.1;
-        v8.z = (nY + 1) * 2.0f + m_vecOffset.y;
+        v8 = D3DXVECTOR3((float)((float)(nX + 1) * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[nX + ((nY + 1) << 6) + 1].cHeight * 0.1f,
+            (float)((float)(nY + 1) * 2.0f) + m_vecOffset.y);
     }
 
     float fU = 0.0;
@@ -3650,8 +3674,8 @@ float TMGround::GetHeight(TMVector2 vecPosition)
 
 int TMGround::GetMask(TMVector2 vecPosition)
 {
-    int nMaskX = (vecPosition.x - m_vecOffset.x);
-    int nMaskY = (vecPosition.y - m_vecOffset.y);
+    int nMaskX = (int)(vecPosition.x - m_vecOffset.x);
+    int nMaskY = (int)(vecPosition.y - m_vecOffset.y);
 
     if (nMaskX >= 0 && nMaskY >= 0 && nMaskX < 128 && nMaskY < 128)
         return m_pMaskData[nMaskY][nMaskX];
@@ -3661,8 +3685,8 @@ int TMGround::GetMask(TMVector2 vecPosition)
 
 D3DCOLORVALUE TMGround::GetColor(TMVector2 vecPosition)
 {
-    int nX = (vecPosition.x - m_vecOffset.x) / 2;
-    int nY = (vecPosition.y - m_vecOffset.y) / 2;
+    int nX = static_cast<int>((vecPosition.x - m_vecOffset.x) / 2);
+    int nY = static_cast<int>((vecPosition.y - m_vecOffset.y) / 2);
 
     int dwColor[4]{ 0 };
     if (nX >= 0 && nX < 63 && nY >= 0 && nY < 63)
@@ -3687,7 +3711,7 @@ D3DCOLORVALUE TMGround::GetColor(TMVector2 vecPosition)
         dwColor[3] = m_TileMapData[nX + 4033].dwColor;
     }
 
-    _D3DCOLORVALUE color[4]{};
+    D3DCOLORVALUE color[4]{};
     for (int i = 0; i < 4; ++i)
     {
         color[i].r = ((0xFF0000 & dwColor[i]) >> 16) / 256.0f;
@@ -3695,8 +3719,8 @@ D3DCOLORVALUE TMGround::GetColor(TMVector2 vecPosition)
         color[i].b = (dwColor[i] & 0xFF) / 256.0f;
     }
 
-    float fDX = (nX * 2.0f) - (vecPosition.x - m_vecOffset.x);
-    float fDY = (nY * 2.0f) - (vecPosition.y - m_vecOffset.y);
+    float fDX = ((float)nX * 2.0f) - (vecPosition.x - m_vecOffset.x);
+    float fDY = ((float)nY * 2.0f) - (vecPosition.y - m_vecOffset.y);
 
     D3DCOLORVALUE result{};
 

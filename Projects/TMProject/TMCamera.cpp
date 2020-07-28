@@ -435,7 +435,6 @@ void TMCamera::SetViewMode(int nMode)
     m_nQuaterView = nMode;
 
     g_pDevice->m_bFog = 1;
-
     if (m_nQuaterView == 0)
     {
         m_fVerticalAngle = -0.31415927f;

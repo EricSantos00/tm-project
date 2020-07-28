@@ -105,30 +105,30 @@ int TMObject::Render()
 	D3DCOLORVALUE color;
 	if (!RenderDevice::m_bDungeon || RenderDevice::m_bDungeon == 3 || RenderDevice::m_bDungeon == 4)
 	{
-		color.r = 0.69f;
-		color.g = 0.69f;
-		color.b = 0.69f;
+		color.r = 0.69999999f;
+		color.g = 0.69999999f;
+		color.b = 0.69999999f;
 		color.a = 1.0f;
-		materials.Emissive.r = 0.3f;
-		materials.Emissive.g = 0.3f;
-		materials.Emissive.b = 0.3f;
+		materials.Emissive.r = 0.30000001f;
+		materials.Emissive.g = 0.30000001f;
+		materials.Emissive.b = 0.30000001f;
 		materials.Emissive.a = 1.0f;
-		materials.Diffuse.r = 0.69f;
-		materials.Diffuse.g = 0.69f;
-		materials.Diffuse.b = 0.69f;
+		materials.Diffuse.r = 0.69999999f;
+		materials.Diffuse.g = 0.69999999f;
+		materials.Diffuse.b = 0.69999999f;
 		materials.Diffuse.a = 1.0f;
-		materials.Specular.r = 0.69f;
-		materials.Specular.g = 0.69f;
-		materials.Specular.b = 0.69f;
+		materials.Specular.r = 0.69999999f;
+		materials.Specular.g = 0.69999999f;
+		materials.Specular.b = 0.69999999f;
 		materials.Specular.a = 1.0f;
 		materials.Power = 0.0;
 	}
 	else
 	{
 		D3DCOLORVALUE result = g_pCurrentScene->GroundGetColor(m_vecPosition);
-		result.r = (float)(result.r * 0.5) + (float)(g_pDevice->m_colorLight.r * 0.5);
-		result.g = (float)(result.g * 0.5) + (float)(g_pDevice->m_colorLight.g * 0.5);
-		result.b = (float)(result.b * 0.5) + (float)(g_pDevice->m_colorLight.b * 0.5);
+		result.r = (float)(result.r * 0.5f) + (float)(g_pDevice->m_colorLight.r * 0.5f);
+		result.g = (float)(result.g * 0.5f) + (float)(g_pDevice->m_colorLight.g * 0.5f);
+		result.b = (float)(result.b * 0.5f) + (float)(g_pDevice->m_colorLight.b * 0.5f);
 		result.a = 1.0f;
 		materials.Specular.a = 1.0f;
 		materials.Emissive.a = 1.0f;
@@ -594,8 +594,8 @@ int TMObject::IsInView()
 		if (rcRect.top > (int)vPosTransformed[i].y)
 			rcRect.top = (int)vPosTransformed[i].y;
 
-		if (rcRect.right < vPosTransformed[i].x)
-			rcRect.right = vPosTransformed[i].x;
+		if (rcRect.right < (int)vPosTransformed[i].x)
+			rcRect.right = (int)vPosTransformed[i].x;
 
 		if (rcRect.bottom < (int)vPosTransformed[i].y)
 			rcRect.bottom = (int)vPosTransformed[i].y;
@@ -619,8 +619,8 @@ int TMObject::RegisterMask(TMGround* pGround, float fX, float fY)
 	{
 		for (int x = 0; x < 16; ++x)
 		{
-			float fx = (float)x + 0.5 - 7.5;
-			float fy = (float)y + 0.5 - 7.5;
+			float fx = (float)x + 0.5f - 7.5f;
+			float fy = (float)y + 0.5f - 7.5f;
 			float tx = (cos(revAngle) * fx) - (sin(revAngle) * fy);
 
 			int intx = (int)(tx + 7.5f);

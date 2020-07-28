@@ -1874,8 +1874,8 @@ void SScrollBar::SetSize(float nWidth, float nHeight)
 	SControl::SetSize(nWidth, nHeight);
 	if (m_dwStyle == 0)
 	{
-		m_pDownPanel->SetPos(m_pDownPanel->m_nPosX, (float)(m_nHeight - m_nBtnSize) / 1.0);
-		m_nScrollLength = (int)(nHeight - (m_nBtnSize * 2.0));
+		m_pDownPanel->SetPos(m_pDownPanel->m_nPosX, (float)(m_nHeight - m_nBtnSize) / 1.0f);
+		m_nScrollLength = (int)(nHeight - (m_nBtnSize * 2.0f));
 		Update();
 	}
 }
@@ -1955,9 +1955,9 @@ int SScrollBar::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, 
 	if (bInBar && dwFlags == WM_MOUSEMOVE && wParam & 1)
 	{
 		if (m_dwStyle != 0)
-			m_nScrollPos = (float)nX - (float)(m_nPosX + m_nBtnSize);
+			m_nScrollPos = static_cast<int>((float)nX - (float)(m_nPosX + m_nBtnSize));
 		else
-			m_nScrollPos = (float)nY - (float)(m_nPosY + m_nBtnSize);
+			m_nScrollPos = static_cast<int>((float)nY - (float)(m_nPosY + m_nBtnSize));
 
 		m_nCurrent = (int)((float)(m_nScrollPos * m_nMax) / (float)((float)m_nScrollLength - m_nBarSize));
 		if (m_nCurrent > 0 && m_nCurrent < m_nMax)
@@ -2340,6 +2340,8 @@ int SListBox::DeleteItem(int inItemIndex)
 
 	if (m_cScrollBar != 0)
 		m_pScrollBar->SetMaxValue(m_nNumItem);
+
+	return 1;
 }
 
 int SListBox::DeleteItem(SListBoxItem* ipItem)

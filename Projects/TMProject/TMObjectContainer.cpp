@@ -53,7 +53,7 @@ TMObjectContainer::~TMObjectContainer()
 
 int TMObjectContainer::Load(const char* szFileName)
 {
-	TMVector2 vecPosition();	
+	TMVector2 vecPosition;	
 	float m_fOffsetX = 0.0;
 	float m_fOffsetY = 0.0;
 	int pos = 0;
@@ -364,7 +364,7 @@ int TMObjectContainer::Load(const char* szFileName)
 			switch (dwObjType)
 			{
 			case 501:
-				pEffect = new TMEffectBillBoard(11, 0, fScaleH, fScaleV, fScaleH, 0.0, 8, 80);
+				pEffect = new TMEffectBillBoard(11, 0, fScaleH, fScaleV, fScaleH, 0.0f, 8, 80);
 				if (pEffect)
 				{
 					pEffect->SetColor(0xEEEECC00);
@@ -384,13 +384,13 @@ int TMObjectContainer::Load(const char* szFileName)
 				}
 				break;
 			case 502:
-				pEffect = new TMEffectBillBoard(61, 0, fScaleH, fScaleV, fScaleH, 0.0, 6, 80);
+				pEffect = new TMEffectBillBoard(61, 0, fScaleH, fScaleV, fScaleH, 0.0f, 6, 80);
 				if (pEffect)
 				{
 					pEffect->m_nFade = 0;
 				}
 
-				pEffect2 = new TMEffectBillBoard(2, 0, fScaleH * 2.8, fScaleV * 2.8, fScaleH * 2.8, 0.0, 1, 80);
+				pEffect2 = new TMEffectBillBoard(2, 0, fScaleH * 2.8f, fScaleV * 2.8f, fScaleH * 2.8f, 0.0f, 1, 80);
 
 				if (pEffect2)
 				{
@@ -766,7 +766,7 @@ int TMObjectContainer::Load(const char* szFileName)
 					pChild2->m_cUScroll = 1;
 					pChild2->m_dwCycleTime = 5000;
 					pChild2->m_fScaleH = 0.98f;
-					pChild2->m_fScaleV = (float)(fHeight / 15.4) + 0.72000003;
+					pChild2->m_fScaleV = (float)(fHeight / 15.4f) + 0.72000003f;
 
 					pChild2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
 
@@ -791,6 +791,7 @@ int TMObjectContainer::Load(const char* szFileName)
 					m_pGroundEffectContainer->AddChildWithKey(pChild3, Key);
 				}
 			}
+			continue;
 		}
 		else if (dwObjType == 1846)
 		{
@@ -815,8 +816,8 @@ int TMObjectContainer::Load(const char* szFileName)
 					pEffect->SetColor(0x55553300);
 					pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_ALPHA;
 
-					pEffect->m_vecPosition = TMVector3((float)(m_fOffsetX + vecPosition.x) + 0.5 + (float)(cosf((float)((float)((float)i * 3.1415927) * 2.0) / 12.0) * 3.0),
-						fHeight + 2.9000001f, m_fOffsetY + vecPosition.y + +(float)(sinf((float)((float)((float)i * 3.1415927) * 2.0) / 12.0) * 3.0));
+					pEffect->m_vecPosition = TMVector3((float)(m_fOffsetX + vecPosition.x) + 0.5f + (float)(cosf((float)((float)((float)i * 3.1415927f) * 2.0f) / 12.0f) * 3.0f),
+						fHeight + 2.9000001f, m_fOffsetY + vecPosition.y + +(float)(sinf((float)((float)((float)i * 3.1415927f) * 2.0f) / 12.0f) * 3.0f));
 
 					m_pGroundEffectContainer->AddChildWithKey(pEffect, Key);
 				}
@@ -829,8 +830,8 @@ int TMObjectContainer::Load(const char* szFileName)
 					pEffect2->m_nFade = 0;
 					pEffect2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_ALPHA;
 
-					pEffect2->m_vecPosition = TMVector3((float)(m_fOffsetX + vecPosition.x) + 0.5 + (float)(cosf((float)((float)((float)i * 3.1415927) * 2.0) / 12.0) * 3.0),
-						fHeight + 2.9000001f, m_fOffsetY + vecPosition.y + (float)(sinf((float)((float)((float)i * 3.1415927) * 2.0) / 12.0) * 3.0));
+					pEffect2->m_vecPosition = TMVector3((float)(m_fOffsetX + vecPosition.x) + 0.5f + (float)(cosf((float)((float)((float)i * 3.1415927f) * 2.0f) / 12.0f) * 3.0f),
+						fHeight + 2.9000001f, m_fOffsetY + vecPosition.y + (float)(sinf((float)((float)((float)i * 3.1415927f) * 2.0f) / 12.0f) * 3.0f));
 
 					m_pGroundEffectContainer->AddChildWithKey(pEffect2, Key);
 				}
@@ -838,7 +839,7 @@ int TMObjectContainer::Load(const char* szFileName)
 
 			for (int i = 0; i < 8; ++i)
 			{
-				TMEffectBillBoard* pEffect = new TMEffectBillBoard(2, 0, 2.8, 2.8, 2.8, 0.0, 1, 80);
+				TMEffectBillBoard* pEffect = new TMEffectBillBoard(2, 0, 2.8f, 2.8f, 2.8f, 0.0f, 1, 80);
 
 				if (pEffect)
 				{
@@ -846,12 +847,13 @@ int TMObjectContainer::Load(const char* szFileName)
 					pEffect->SetColor(0x55553300);
 					pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_ALPHA;
 
-					pEffect->m_vecPosition = TMVector3((float)(m_fOffsetX + vecPosition.x) + 0.5 + (float)(cosf((float)((float)((float)i * 3.1415927) * 2.0) / 8.0) * 2.25),
-						fHeight + 4.6500001f, m_fOffsetY + vecPosition.y + (float)(sinf((float)((float)((float)i * 3.1415927) * 2.0) / 8.0) * 2.25));
+					pEffect->m_vecPosition = TMVector3((float)(m_fOffsetX + vecPosition.x) + 0.5f + (float)(cosf((float)((float)((float)i * 3.1415927f) * 2.0f) / 8.0f) * 2.25f),
+						fHeight + 4.6500001f, m_fOffsetY + vecPosition.y + (float)(sinf((float)((float)((float)i * 3.1415927f) * 2.0f) / 8.0f) * 2.25f));
 
 					m_pGroundEffectContainer->AddChildWithKey(pEffect, Key);
 				}
 			}
+			continue;
 		}
 		else
 		{
