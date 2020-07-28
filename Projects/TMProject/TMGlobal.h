@@ -113,7 +113,6 @@ extern char g_pAttribute[1024][1024];
 extern int g_bHideBackground;
 
 extern int g_nMobCount;
-extern int g_nUnDelMobCount;
 
 static unsigned int g_dwHandIndex[101][2] =
 {

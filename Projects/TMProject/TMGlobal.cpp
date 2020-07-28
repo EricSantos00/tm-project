@@ -96,4 +96,3 @@ char g_szEncryptedAcc[256];
 int g_bHideBackground = FALSE;
 
 int g_nMobCount;
-int g_nUnDelMobCount;

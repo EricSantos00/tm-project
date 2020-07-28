@@ -900,8 +900,12 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 	}
 
 	for (int nPerson = 0; nPerson < 50; ++nPerson)
-		if(m_pCheckHumanList[nPerson])
+	{
+		if (m_pCheckHumanList[nPerson])
+		{
 			m_pCheckHumanList[nPerson]->m_fWantHeight = -4.0f;
+		}
+	}	
 
 	if (dwServerTime - m_dwStartCamTime > 5000 && !m_cStartRun)
 	{
@@ -1212,8 +1216,14 @@ void TMSelectServerScene::MoveHuman(int nIndex)
 void TMSelectServerScene::RemoveHuman()
 {
 	for (int nPerson = 0; nPerson < 50; ++nPerson)
+	{
 		if (m_pCheckHumanList[nPerson])
+		{
 			g_pObjectManager->DeleteObject(m_pCheckHumanList[nPerson]);
+			m_pCheckHumanList[nPerson] = nullptr;
+		}
+	}
+	
 }
 
 void TMSelectServerScene::SetAlphaServer(unsigned int dwStartTime, unsigned int dwServerTime, unsigned int dwTerm, int bFade)
