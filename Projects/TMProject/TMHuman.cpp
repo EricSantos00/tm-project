@@ -1661,6 +1661,133 @@ int TMHuman::IsMerchant()
 
 void TMHuman::Init()
 {
+    SAFE_DELETE(m_pInMiniMap);
+
+    m_nWillDie = -1;
+    m_bCNFMobKill = 0;
+    m_cDie = 0;
+    m_bMouseOver = 0;
+    m_bParty = 0;
+    m_nHandEffect = 0;
+    m_nSkillIndex = -1;
+    m_bDoubleAttack = 0;
+    m_bSkill = 0;
+    m_cPoison = 0;
+    m_cHaste = 0;
+    m_cAssert = 0;
+    m_cFreeze = 0;
+    m_cPunish = 0;
+    m_cSlowSlash = 0;
+    m_cSpeedUp = 0;
+    m_cSpeedDown = 0;
+    m_cShield = 0;
+    m_cCancel = 0;
+    m_cAurora = 0;
+    m_cWeapon = 0;
+    m_cSKillAmp = 0;
+    m_cLighten = 0;
+    m_cWaste = 0;
+    m_cProtector = 0;
+    m_cShadow = 0;
+    m_cElimental = 0;
+    m_cDodge = 0;
+    m_cHuntersVision = 0;
+    m_bSkillBlack = 0;
+    m_cOverExp = 0;
+    m_DilpunchJewel = 0;
+    m_MoonlightJewel = 0;
+    m_JewelGlasses = 0;
+    m_BloodJewel = 0;
+    m_RedJewel = 0;
+    m_cGodCos = 0;
+    m_cLifeDrain = 0;
+    m_cEnchant = 0;
+    m_cManaControl = 0;
+    m_cArmorClass = 0;
+    m_cImmunity = 0;
+    m_cCoinArmor = 0;
+    m_cCriticalArmor = 0;
+    m_cSoul = 0;
+    SetAvatar(0);
+
+    m_dwObjType = 3;
+    m_eMotion = ECHAR_MOTION::ECMOTION_NONE;
+    m_SendeMotion = ECHAR_MOTION::ECMOTION_NONE;
+
+    for (int i = 0; i < 4; ++i)
+        m_eMotionBuffer[i] = ECHAR_MOTION::ECMOTION_NONE;
+
+    m_nMotionIndex = -1;
+    m_fMaxSpeed = 2.0f;
+    m_nWeaponTypeIndex = 0;
+
+    m_vecPosition = TMVector2(0.0f, 0.0f);
+    m_vecAttTargetPos = TMVector2(0.0f, 0.0f);
+    m_vecOldFire = TMVector3(0.0f, 0.0f, 0.0f);
+    m_LastSendTargetPos = IVector2(0.0f, 0.0f);
+
+    m_bSelected = 0;
+    m_vecTargetPos.x = -1;
+    m_vecTargetPos.y = -1;
+    m_dwOldMovePacketTime = 0;
+    m_dwLastMagicShield = 0;
+    m_dwLastCancelTime = 0;
+    m_dwLastSpeedUp = 0;
+    m_dwMoveToTime = 0;
+    m_dwStartMoveTime = 0;
+    m_dwDeadTime = 0;
+    m_dwStartDie = 0;
+    m_dwLastWaste = 0;
+    m_dwLastbomb = 0;
+    m_dwLastbombCheck = 0;
+    m_dwLastDFire = 0;
+    m_dwLastDustTime = 0;
+    m_dwFootMastTime = 0;
+    m_dwDodgeTime = 0;
+    m_dwStartAnimationTime = 0;
+    m_dwLastDummyTime = 0;
+    m_dwWaterTime = 0;
+    m_dwLastHaste = 0;
+    m_dwElimental = 0;
+    m_dwStartChatMsgTime = 0;
+    m_dwLastPlayPunchedTime = 0;
+    m_dwChatDelayTime = 3000;
+    m_dwGolemDustTime = 0;
+    m_nLoop = 1;
+    m_nMaxRouteIndex = 1;
+    m_fProgressRate = 0.0f;
+    m_nLastRouteIndex = 47;
+    m_sLeftIndex = 0;
+    m_sRightIndex = 0;
+    m_bSwordShadow[0] = 0;
+    m_bSwordShadow[1] = 0;
+    m_fSowrdLength[0] = 0.0;
+    m_fSowrdLength[1] = 0.0;
+    m_sAttackLR = -1;
+    m_sPunchLR = -1;
+    m_nDoubleCount = 0;
+
+    memset(&m_usAffect, 0, sizeof(m_usAffect));
+    memset(&m_stAffect, 0, sizeof(m_stAffect));
+    memset(&m_cRouteBuffer, 0, sizeof(m_cRouteBuffer));
+    memset(&m_stLookInfo, 0, sizeof(m_stLookInfo));
+    memset(&m_stSancInfo, 0, sizeof(m_stSancInfo));
+    memset(&m_stColorInfo, 0, sizeof(m_stColorInfo));
+    memset(m_szName, 0, sizeof(m_szName));
+    memset(m_szNickName, 0, sizeof(m_szNickName));
+    memset(&m_stScore, 0, sizeof(m_stScore));
+    memset(&m_stPunchEvent, 0, sizeof(m_stPunchEvent));
+    memset(&m_stEffectEvent, 0, sizeof(m_stEffectEvent));
+    memset(&m_dsBufferParams, 0, sizeof(m_dsBufferParams));
+
+    m_dsBufferParams.dwSize = 64;
+    m_dsBufferParams.flMinDistance = 0.05f;
+    m_dsBufferParams.flMaxDistance = 14.0f;
+    m_dsBufferParams.vConeOrientation.x = 1.0f;
+    m_dsBufferParams.vConeOrientation.z = 1.0f;
+
+    if (m_pChatMsg)
+        m_pChatMsg->SetVisible(0);
 }
 
 void TMHuman::SetRace(short sIndex)
