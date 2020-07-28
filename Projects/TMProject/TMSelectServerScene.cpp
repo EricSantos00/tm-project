@@ -243,7 +243,7 @@ int TMSelectServerScene::InitializeScene()
 	sprintf_s(szMapPath, "env\\Field1616.trn");
 	sprintf_s(szDataPath, "env\\Field1616.dat");
 
-	m_nDemoType = 1;
+	m_nDemoType = rand() % 4;
 	if (m_nDemoType)
 	{
 		switch (m_nDemoType)
