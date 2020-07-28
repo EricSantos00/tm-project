@@ -282,22 +282,22 @@ struct SANC_INFO
 
 struct HUMAN_LOOKINFO
 {
-	unsigned short FaceMesh;
-	unsigned short FaceSkin;
-	unsigned short HelmMesh;
-	unsigned short HelmSkin;
-	unsigned short CoatMesh;
-	unsigned short CoatSkin;
-	unsigned short PantsMesh;
-	unsigned short PantsSkin;
-	unsigned short GlovesMesh;
-	unsigned short GlovesSkin;
-	unsigned short BootsMesh;
-	unsigned short BootsSkin;
-	unsigned short RightMesh;
-	unsigned short RightSkin;
-	unsigned short LeftMesh;
-	unsigned short LeftSkin;
+	short FaceMesh;
+	short FaceSkin;
+	short HelmMesh;
+	short HelmSkin;
+	short CoatMesh;
+	short CoatSkin;
+	short PantsMesh;
+	short PantsSkin;
+	short GlovesMesh;
+	short GlovesSkin;
+	short BootsMesh;
+	short BootsSkin;
+	short RightMesh;
+	short RightSkin;
+	short LeftMesh;
+	short LeftSkin;
 };
 
 struct ResourceDef
