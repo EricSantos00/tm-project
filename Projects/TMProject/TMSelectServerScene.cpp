@@ -979,7 +979,6 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 
 void TMSelectServerScene::ResetDemoPlayer()
 {
-	return;
 	for (int nPerson = 0; nPerson < 50; ++nPerson)
 	{
 		if (m_pCheckHumanList[nPerson])
@@ -1158,7 +1157,6 @@ void TMSelectServerScene::ResetDemoPlayer()
 
 void TMSelectServerScene::AniDemoPlayer()
 {
-	return;
 	for (int nPerson = 0; nPerson < 50; ++nPerson)
 	{
 		if (m_pCheckHumanList[nPerson])
