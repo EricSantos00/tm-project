@@ -4512,8 +4512,8 @@ int TMGround::IsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeig
         if (m_pSeaList[i])
         {
             POINT ptPos{};
-            ptPos.x = vecPosition.x;
-            ptPos.y = vecPosition.y;
+            ptPos.x = static_cast<LONG>(vecPosition.x);
+            ptPos.y = static_cast<LONG>(vecPosition.y);
 
             if (PtInRect(&m_pSeaList[i]->m_rectRange, ptPos) == 1)
                 break;

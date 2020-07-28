@@ -746,7 +746,7 @@ int TMObjectContainer::Load(const char* szFileName)
 		{
 			if (g_pCurrentScene != nullptr)
 			{
-				float fGroundHeight = g_pCurrentScene->GroundGetMask(TMVector2(m_fOffsetX + vecPosition.x, m_fOffsetY + vecPosition.y));
+				float fGroundHeight = static_cast<float>(g_pCurrentScene->GroundGetMask(TMVector2(m_fOffsetX + vecPosition.x, m_fOffsetY + vecPosition.y)));
 
 				TMEffectMesh* pChild = new TMEffectMesh(dwObjType, 0xAAAAAAAA, fAngle - 1.5707964f, 0);
 				if (pChild)

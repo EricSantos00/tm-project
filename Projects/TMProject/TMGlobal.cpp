@@ -16,7 +16,7 @@ CSoundManager* g_pSoundManager;
 
 int g_nUseBlur;
 int g_nAntialias;
-int g_bDebugMsg;
+int g_bDebugMsg = 1;
 int g_nReflection;
 char g_szFontName[128] = { "Tahoma" };
 int g_nFontBold = 500;

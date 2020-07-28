@@ -413,6 +413,7 @@ int RenderDevice::Unlock(int bEnd)
 
 		static DWORD dwFrames = 0;
 		++dwFrames;
+		static char szString[256];
 
 		static float fLastTime = 0.0f;
 		if ((fTime - fLastTime) > 2.0f)
@@ -421,14 +422,15 @@ int RenderDevice::Unlock(int bEnd)
 			fLastTime = fTime;
 			dwFrames = 0;
 			
-			static char szString[256];
-			sprintf_s(szString, "Ver:%1.3f  FPS : %4.3f", 1.758f, m_fFPS);
+			sprintf(szString, "Ver:%1.3f  FPS : %4.3f", 1.758f, m_fFPS);
 		}
 
-		int rect_4 = 0;
 		m_bShowEffects = 1;
 		if (g_bDebugMsg == 1)
-			rect_4 = m_dwScreenHeight - 12;
+		{
+			m_pFont->SetText(szString, 0xFFFFFFFF, 0);
+			m_pFont->Render(10, m_dwScreenHeight - 15, 0);
+		}
 	}
 
 	if (FAILED(m_pd3dDevice->EndScene()))

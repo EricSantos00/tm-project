@@ -906,11 +906,6 @@ int TMScene::OnChangeIME()
 	return m_pControlContainer && m_pControlContainer->OnChangeIME() == 1;
 }
 
-int TMScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEvent)
-{
-	return 0;
-}
-
 int TMScene::OnAccel(int nMsg)
 {
 	return 0;
@@ -1038,6 +1033,7 @@ void TMScene::Cleanup()
 {
 }
 
+char heightMapData[128][128]{};
 int TMScene::GroundNewAttach(EDirection eDir)
 {
 	if (!m_pGround)
@@ -1084,8 +1080,6 @@ int TMScene::GroundNewAttach(EDirection eDir)
 
 	sprintf_s(fileNameTrn, "Env\\Field%02d%02d.trn", x, y);
 	sprintf_s(fileNameDat, "Env\\Field%02d%02d.dat", x, y);
-
-	char heightMapData[128][128]{};
 
 	int gId = (m_nCurrentGroundIndex + 1) % 2;
 
