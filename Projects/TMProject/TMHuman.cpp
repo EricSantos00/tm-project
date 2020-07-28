@@ -15,7 +15,109 @@
 #include "TMGlobal.h"
 #include "SControlContainer.h"
 
-TMVector2 TMHuman::m_vecPickSize[100]{};
+TMVector2 TMHuman::m_vecPickSize[100]{
+  { 0.40000001f, 2.0f },
+  { 0.40000001f, 2.0f },
+  { 0.5f, 2.0f },
+  { 0.40000001f, 2.0f },
+  { 0.5f, 2.0f },
+  { 0.40000001f, 2.5f },
+  { 0.69999999f, 1.0f },
+  { 1.0f, 2.0f },
+  { 0.69999999f, 2.0f },
+  { 0.69999999f, 3.2f },
+  { 0.69999999f, 2.0f },
+  { 1.0f, 2.5f },
+  { 0.40000001f, 2.0f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.0f },
+  { 1.2f, 2.2f },
+  { 0.44999999f, 0.89999998f },
+  { 0.40000001f, 1.3f },
+  { 2.5f, 1.5f },
+  { 0.40000001f, 1.0f },
+  { 0.69999999f, 1.0f },
+  { 0.60000002f, 2.5f },
+  { 0.80000001f, 1.0f },
+  { 0.69999999f, 1.0f },
+  { 0.69999999f, 1.0f },
+  { 1.4f, 1.2f },
+  { 1.8f, 1.5f },
+  { 0.5f, 0.2f },
+  { 1.0f, 2.5f },
+  { 2.0f, 2.0f },
+  { 1.8f, 1.8f },
+  { 2.0f, 1.8f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.8f },
+  { 1.2f, 2.2f },
+  { 0.80000001f, 1.0f },
+  { 2.9000001f, 2.5f },
+  { 1.4f, 3.0f },
+  { 1.4f, 3.2f },
+  { 0.40000001f, 3.5f },
+  { 0.40000001f, 3.5f },
+  { 0.40000001f, 2.0999999f },
+  { 0.40000001f, 2.8f },
+  { 0.40000001f, 2.5f },
+  { 0.40000001f, 2.0f },
+  { 0.40000001f, 2.0f },
+  { 0.40000001f, 2.0f },
+  { 0.40000001f, 1.0f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.0f },
+  { 1.0f, 1.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f },
+  { 0.0f, 0.0f }
+};
+
 DWORD TMHuman::m_dwNameColor[9] =
 {
   0xFF000000,
@@ -281,18 +383,89 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
 
 void TMHuman::InitPosition(float fX, float fY, float fZ)
 {
+    if (m_dwDelayDel != 0)
+        return;
+
+    SetPosition(fX, fY, fZ);
+    m_fWantHeight = fY;
+
+    m_vecMoveToPos = m_vecPosition;
+    m_vecFromPos = m_vecPosition;
+
+    m_vecTargetPos.x = (int)m_vecPosition.x;
+    m_vecTargetPos.y = (int)m_vecPosition.y;
+
+    m_vecDPosition = TMVector2(0.0f, 0.0f);
+
+    for (int i = 0; i < 48; i++)
+        m_vecRouteBuffer[i] = m_vecPosition;
+
+    m_LastSendTargetPos = m_vecTargetPos;
 }
 
 void TMHuman::InitAngle(float fYaw, float fPitch, float fRoll)
 {
+    if (m_dwDelayDel != 0)
+        return;
+
+    if (m_nClass == 44)
+        fPitch = D3DXToRadian(180);
+
+    TMObject::InitAngle(fYaw, fPitch, fRoll);
+    m_fWantAngle = m_fAngle;
+    m_fMoveToAngle = m_fAngle;
 }
 
 void TMHuman::SetAngle(float fYaw, float fPitch, float fRoll)
 {
+    if (m_dwDelayDel != 0)
+        return;
+
+    m_fAngle = fPitch;
+    if (m_cMount == 0)
+    {
+        if (m_pSkinMesh)
+            m_pSkinMesh->SetAngle(fYaw, fPitch, fRoll);
+    }
+    else
+    {
+        if (m_pMount)
+            m_pMount->SetAngle(fYaw, fPitch + D3DXToRadian(360), fRoll);
+        if (m_pSkinMesh)
+            m_pSkinMesh->SetAngle(0.0f, 0.0f, 0.0f);
+    }
 }
 
 void TMHuman::SetPosition(float fX, float fY, float fZ)
 {
+    if (m_dwDelayDel == 0)
+        return;
+
+    m_vecPosition.x = fX;
+    m_vecPosition.y = fZ;
+    m_fHeight = fY;
+
+    float fHSize = (TMHuman::m_vecPickSize[m_nSkinMeshType].x * m_fScale) / 2.0f;
+    if (m_cMount)
+        fHSize = (TMHuman::m_vecPickSize[m_nMountSkinMeshType].x * m_fScale) / 2.0f;
+
+    float fDX = cosf(m_fAngle) * fHSize;
+    float fDY = sinf(m_fAngle) * fHSize;
+
+    if (m_cMount == 0)
+    {
+        if (m_nClass == 44)
+            fDX = fDX + 0.5f;
+        if (m_pSkinMesh)
+            m_pSkinMesh->SetPosition(fX + fDX, fY, fZ - fDY);
+    }
+    else
+    {
+        if (m_pMount)
+            m_pMount->SetPosition(fX + fDX, fY, fZ - fDY);
+        if (m_pSkinMesh)
+            m_pSkinMesh->SetPosition(0.0f, 0.0f, 0.0f);
+    }
 }
 
 void TMHuman::RestoreDeviceObjects()
@@ -301,6 +474,11 @@ void TMHuman::RestoreDeviceObjects()
 
 void TMHuman::InvalidateDeviceObjects()
 {
+    if (m_dwDelayDel != 0)
+        return;
+
+    if (m_pSkinMesh)
+        m_pSkinMesh->InvalidateDeviceObjects();
 }
 
 int TMHuman::IsMouseOver()
@@ -450,7 +628,13 @@ int TMHuman::OnPacketVisualEffect(MSG_STANDARD* pStd)
 
 int TMHuman::IsMerchant()
 {
-	return 0;
+    if ((m_stScore.Reserved & 0xF) >= 1 && (m_stScore.Reserved & 0xF) <= 14)
+        return 1;
+
+    if (m_sHeadIndex == 54 || m_sHeadIndex == 55 || m_sHeadIndex == 56 || m_sHeadIndex == 57 || m_sHeadIndex == 51 || m_sHeadIndex == 68 || m_sHeadIndex == 67)
+        return 1;
+    
+    return 0;
 }
 
 void TMHuman::Init()
