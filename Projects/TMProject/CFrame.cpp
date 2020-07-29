@@ -118,7 +118,7 @@ int CFrame::Render()
 			{
 				D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, 0.009f, 0.0f);
 				D3DXMatrixRotationYawPitchRoll(&mat, D3DXToRadian(180), 0.0f, 0.0f);
-			}			
+			}
 			else
 			{
 				if (m_pParentSkin->m_nBoneAniIndex == 6)
@@ -138,7 +138,7 @@ int CFrame::Render()
 					D3DXMatrixRotationYawPitchRoll(&mat, -D3DXToRadian(15), -D3DXToRadian(10), D3DXToRadian(180));
 				}
 				else if (m_pParentSkin->m_nBoneAniIndex == 6)
-				{				
+				{
 					D3DXMatrixRotationYawPitchRoll(&mat, -D3DXToRadian(20), D3DXToRadian(0), D3DXToRadian(180));
 				}
 				else
@@ -162,76 +162,70 @@ int CFrame::Render()
 					m_pParentSkin->m_pSwingEffect[1]->m_nWeaponType = pHuman->m_nWeaponTypeR;
 			}
 		}
-		if (m_pParentSkin->m_pOwner != nullptr)
+		if (m_pParentSkin->m_pOwner != nullptr &&
+			(m_pParentSkin->m_nBoneAniIndex == 0 || m_pParentSkin->m_nBoneAniIndex == 1 ||
+				m_pParentSkin->m_nBoneAniIndex == 2 || m_pParentSkin->m_nBoneAniIndex == 4) &&
+			m_pParentSkin->m_pOwner->m_cWeapon == 1 &&
+			(m_pMesh->m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][0] ||
+				m_pMesh->m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][1]))
 		{
-			if (m_pParentSkin->m_nBoneAniIndex == 0 || m_pParentSkin->m_nBoneAniIndex == 1 ||
-				m_pParentSkin->m_nBoneAniIndex == 2 || m_pParentSkin->m_nBoneAniIndex == 4)
+			if (m_pParentSkin->m_cDefaultAlpha == 1)
 			{
-				if (m_pParentSkin->m_pOwner->m_cWeapon == 1)
-				{
-					if (m_pMesh->m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][0]	||
-						m_pMesh->m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][1])
-					{
-						if (m_pParentSkin->m_cDefaultAlpha == 1)
-						{
-							g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_SRCBLEND, D3DBLEND::D3DBLEND_SRCCOLOR);
-							g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_DESTBLEND, D3DBLEND::D3DBLEND_DESTCOLOR);
-						}
+				g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_SRCBLEND, D3DBLEND::D3DBLEND_SRCCOLOR);
+				g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_DESTBLEND, D3DBLEND::D3DBLEND_DESTCOLOR);
+			}
 
-						D3DCOLORVALUE color;
-						color.r = 0.5f;
-						color.g = 0.5f;
-						color.b = 0.5f;
-						color.a = 0.5f;
+			D3DCOLORVALUE color;
+			color.r = 0.5f;
+			color.g = 0.5f;
+			color.b = 0.5f;
+			color.a = 0.5f;
 
-						D3DMATERIAL9 materials{};
-						materials.Specular.r = 0.5f;
-						materials.Specular.g = 0.5f;
-						materials.Specular.b = 0.5f;
-						materials.Specular.a = 0.5f;
-						materials.Diffuse.r = 0.5f;
-						materials.Diffuse.g = 0.5f;
-						materials.Diffuse.b = 0.5f;
-						materials.Diffuse.a = 0.5f;
-						materials.Emissive.r = 0.5f;
-						materials.Emissive.g = 0.5f;
-						materials.Emissive.b = 0.5f;
-						materials.Emissive.a = 0.5f;
-						materials.Ambient.r = 0.5f;
-						materials.Ambient.g = 0.5f;
-						materials.Ambient.b = 0.5f;
-						materials.Ambient.a = 0.5f;
+			D3DMATERIAL9 materials{};
+			materials.Specular.r = 0.5f;
+			materials.Specular.g = 0.5f;
+			materials.Specular.b = 0.5f;
+			materials.Specular.a = 0.5f;
+			materials.Diffuse.r = 0.5f;
+			materials.Diffuse.g = 0.5f;
+			materials.Diffuse.b = 0.5f;
+			materials.Diffuse.a = 0.5f;
+			materials.Emissive.r = 0.5f;
+			materials.Emissive.g = 0.5f;
+			materials.Emissive.b = 0.5f;
+			materials.Emissive.a = 0.5f;
+			materials.Ambient.r = 0.5f;
+			materials.Ambient.g = 0.5f;
+			materials.Ambient.b = 0.5f;
+			materials.Ambient.a = 0.5f;
 
-						g_pDevice->m_pd3dDevice->SetMaterial(&materials);
-						g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &matrixComb);
+			g_pDevice->m_pd3dDevice->SetMaterial(&materials);
+			g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &matrixComb);
 
-						m_pMesh->Render(1);
+			m_pMesh->Render(1);
 
-						materials.Specular = color;
-						materials.Diffuse = color;
-						materials.Emissive = color;
-						materials.Ambient = color;
+			materials.Specular = color;
+			materials.Diffuse = color;
+			materials.Emissive = color;
+			materials.Ambient = color;
 
-						g_pDevice->m_pd3dDevice->SetMaterial(&materials);
+			g_pDevice->m_pd3dDevice->SetMaterial(&materials);
 
-						D3DXMATRIX matrixScale;
-						D3DXMatrixScaling(&matrixScale,
-							m_pParentSkin->m_pOwner->m_fScale + 0.05f,
-							m_pParentSkin->m_pOwner->m_fScale + 0.05f,
-							m_pParentSkin->m_pOwner->m_fScale + 0.05f);
+			D3DXMATRIX matrixScale;
+			D3DXMatrixScaling(&matrixScale,
+				m_pParentSkin->m_pOwner->m_fScale + 0.05f,
+				m_pParentSkin->m_pOwner->m_fScale + 0.05f,
+				m_pParentSkin->m_pOwner->m_fScale + 0.05f);
 
-						D3DXMatrixMultiply(&matrixScale, &matrixScale, &matrixComb);
+			D3DXMatrixMultiply(&matrixScale, &matrixScale, &matrixComb);
 
-						g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &matrixScale);
-						m_pMesh->Render(1);
+			g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &matrixScale);
+			m_pMesh->Render(1);
 
-						if (m_pParentSkin->m_cDefaultAlpha == 1)
-						{
-							g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_SRCBLEND, D3DBLEND::D3DBLEND_ONE);
-							g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_DESTBLEND, D3DBLEND::D3DBLEND_INVSRCALPHA);
-						}
-					}
-				}
+			if (m_pParentSkin->m_cDefaultAlpha == 1)
+			{
+				g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_SRCBLEND, D3DBLEND::D3DBLEND_ONE);
+				g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_DESTBLEND, D3DBLEND::D3DBLEND_INVSRCALPHA);
 			}
 		}
 		else
