@@ -952,7 +952,7 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 
 	if (m_nDemoType == 1 && dwServerTime - m_dwStartCamTime > 14000 && !m_bRemove)
 	{
-		RemoveHuman();
+		//RemoveHuman();
 		m_bRemove = 1;
 	}
 
@@ -1137,7 +1137,7 @@ void TMSelectServerScene::ResetDemoPlayer()
 			m_pCheckHumanList[i]->InitObject();
 			m_pCheckHumanList[i]->CheckWeapon(m_stDemoHuman[i].Left, m_stDemoHuman[i].Right);
 			m_pCheckHumanList[i]->InitAngle(0.0f, ((float)m_stDemoHuman[i].nAngle * 6.2831855f) / 360.0f, 0.0f);
-			m_pCheckHumanList[i]->InitPosition(m_stDemoHuman[i].fX, 0.0f, m_stDemoHuman[i].fY);
+			m_pCheckHumanList[i]->InitPosition(2112.5f, 0.0f, 2148.5f);
 
 			m_pCheckHumanList[i]->m_fMaxSpeed = (float)m_stDemoHuman[i].nSpeed;
 			m_pCheckHumanList[i]->m_bParty = 1;
@@ -1206,8 +1206,13 @@ void TMSelectServerScene::MoveHuman(int nIndex)
 	if (nIndex < 0)
 	{
 		for (int nPerson = 0; nPerson < 50; ++nPerson)
+		{
 			if (m_pCheckHumanList[nPerson])
+			{
 				m_pCheckHumanList[nPerson]->GetRoute(m_vecMoveToPos[nPerson], 32, 0);
+				m_pCheckHumanList[nPerson]->SetPosition(2129.0f, 5.0f, 2120.0f);
+			}
+		}
 	}
 	else if (m_pCheckHumanList[nIndex])
 		m_pCheckHumanList[nIndex]->GetRoute(m_vecMoveToPos[nIndex], 32, 0);

@@ -122,7 +122,7 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 
 	SAFE_DELETE(m_pRoot);
 
-	m_pRoot = new CFrame(1);
+	m_pRoot = new CFrame(0);
 
 	if (m_pRoot == nullptr)
 		return 0x80004005;

@@ -836,6 +836,8 @@ int CMesh::LoadMesh(char* file)
             g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_dwNames = (DWORD*)malloc(160);
             fread(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_pBoneMatrix, m_numPalette << 6, 1, handle);
             fread(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_dwNames, 4, m_numPalette, handle);
+            m_pBoneMatrix = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_pBoneMatrix;
+            m_dwNames = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_dwNames;
         }
         else
         {
