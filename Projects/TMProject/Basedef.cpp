@@ -277,6 +277,250 @@ float BASE_GetMountScale(int nSkinMeshType, int nMeshIndex)
     return fSize;
 }
 
+int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int distance, char* pHeight, int MH)
+{
+    int lastx = x;
+    int lasty = y;
+    int tx = *targetx;
+    int ty = *targety;
+    memset(Route, 0, 24);
+
+    for (int i = 0; i < distance && i < 23; ++i)
+    {
+        if (x - g_HeightPosX < 1 || y - g_HeightPosY < 1 || x - g_HeightPosX > g_HeightWidth - 2 || y - g_HeightPosY > g_HeightHeight - 2)
+        {
+            Route[i] = 0;
+            break;
+        }
+
+        int cul = pHeight[x + g_HeightWidth * (y - g_HeightPosY) - g_HeightPosX];
+        int n = pHeight[x + g_HeightWidth * (y - g_HeightPosY - 1) - g_HeightPosX];
+        int ne = pHeight[x + g_HeightWidth * (y - g_HeightPosY - 1) - g_HeightPosX + 1];
+        int e = pHeight[x + g_HeightWidth * (y - g_HeightPosY) - g_HeightPosX + 1];
+        int se = pHeight[x + g_HeightWidth * (y - g_HeightPosY + 1) - g_HeightPosX + 1];
+        int s = pHeight[x + g_HeightWidth * (y - g_HeightPosY + 1) - g_HeightPosX];
+        int sw = pHeight[x + g_HeightWidth * (y - g_HeightPosY + 1) - g_HeightPosX - 1];
+        int w = pHeight[x + g_HeightWidth * (y - g_HeightPosY) - g_HeightPosX - 1];
+        int nw = pHeight[x + g_HeightWidth * (y - g_HeightPosY - 1) - g_HeightPosX - 1];
+
+        if (tx == x && ty > y && s < MH + cul && s > cul - MH)
+        {
+            Route[i] = '8';
+            ++y;
+        }
+        else if (tx == x && ty < y && n < MH + cul && n > cul - MH)
+        {
+            Route[i] = '2';
+            --y;
+        }
+        else if (tx > x
+            && ty < y
+            && ne < MH + cul
+            && ne > cul - MH
+            && (n < MH + cul && n > cul - MH || e < MH + cul && e > cul - MH))
+        {
+            Route[i] = '3';
+            ++x;
+            --y;
+        }
+        else if (tx > x && ty == y && e < MH + cul && e > cul - MH)
+        {
+            Route[i] = '6';
+            ++x;
+        }
+        else if (tx > x
+            && ty > y
+            && se < MH + cul
+            && se > cul - MH
+            && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
+        {
+            Route[i] = '9';
+            ++x;
+            ++y;
+        }
+        else if (tx < x
+            && ty > y
+            && sw < MH + cul
+            && sw > cul - MH
+            && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
+        {
+            Route[i] = '7';
+            --x;
+            ++y;
+        }
+        else if (tx < x && ty == y && w < MH + cul && w > cul - MH)
+        {
+            Route[i] = '4';
+            --x;
+        }
+        else if (tx < x
+            && ty < y
+            && nw < MH + cul
+            && nw > cul - MH
+            && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
+        {
+            Route[i] = '1';
+            --x;
+            --y;
+        }
+        else if (tx > x && ty < y && e < MH + cul && e > cul - MH)
+        {
+            Route[i] = '6';
+            ++x;
+        }
+        else if (tx > x && ty < y && n < MH + cul && n > cul - MH)
+        {
+            Route[i] = '2';
+            --y;
+        }
+        else if (tx > x && ty > y && e < MH + cul && e > cul - MH)
+        {
+            Route[i] = '6';
+            ++x;
+        }
+        else if (tx > x && ty > y && s < MH + cul && s > cul - MH)
+        {
+            Route[i] = '8';
+            ++y;
+        }
+        else if (tx < x && ty > y && w < MH + cul && w > cul - MH)
+        {
+            Route[i] = '4';
+            --x;
+        }
+        else if (tx < x && ty > y && s < MH + cul && s > cul - MH)
+        {
+            Route[i] = '8';
+            ++y;
+        }
+        else if (tx < x && ty < y && w < MH + cul && w > cul - MH)
+        {
+            Route[i] = '4';
+            --x;
+        }
+        else if (tx < x && ty < y && n < MH + cul && n > cul - MH)
+        {
+            Route[i] = '2';
+            --y;
+        }
+        else if (tx == x + 1 || ty == y + 1 || tx == x - 1 || ty == y - 1)
+        {
+            Route[i] = 0;
+            break;
+        }
+        if (tx == x
+            && ty > y
+            && se < MH + cul
+            && se > cul - MH
+            && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
+        {
+            Route[i] = '9';
+            ++x;
+            ++y;
+        }
+        else if (tx == x
+            && ty > y
+            && sw < MH + cul
+            && sw > cul - MH
+            && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
+        {
+            Route[i] = '7';
+            --x;
+            ++y;
+        }
+        else if (tx == x
+            && ty < y
+            && ne < MH + cul
+            && ne > cul - MH
+            && (n < MH + cul && n > cul - MH || e < MH + cul && e > cul - MH))
+        {
+            Route[i] = '3';
+            ++x;
+            --y;
+        }
+        else if (tx == x
+            && ty < y
+            && nw < MH + cul
+            && nw > cul - MH
+            && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
+        {
+            Route[i] = '1';
+            --x;
+            --y;
+        }
+        else if (tx < x
+            && ty == y
+            && sw < MH + cul
+            && sw > cul - MH
+            && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
+        {
+            Route[i] = '7';
+            --x;
+            ++y;
+        }
+        else if (tx < x
+            && ty == y
+            && nw < MH + cul
+            && nw > cul - MH
+            && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
+        {
+            Route[i] = '1';
+            --x;
+            --y;
+        }
+        else if (tx > x
+            && ty == y
+            && se < MH + cul
+            && se > cul - MH
+            && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
+        {
+            Route[i] = '9';
+            ++x;
+            ++y;
+        }
+        else if (tx <= x
+            || ty != y
+            || ne >= MH + cul
+            || ne <= cul - MH
+            || (n >= MH + cul || n <= cul - MH) && (e >= MH + cul || e <= cul - MH))
+        {
+            Route[i] = 0;
+            break;
+        }
+
+        Route[i] = '3';
+        ++x;
+        --y;
+    }
+
+    if (lastx == x && lasty == y)
+        return 0;
+
+    *targetx = x;
+    *targety = y;
+    return lastx != x || lasty != y;
+}
+
+int BASE_GetDistance(int x1, int y1, int x2, int y2)
+{
+    int dy;
+    int dx;
+    if (x1 <= x2)
+        dx = x2 - x1;
+    else
+        dx = x1 - x2;
+    if (y1 <= y2)
+        dy = y2 - y1;
+    else
+        dy = y1 - y2;
+    if (dx <= 6 && dy <= 6)
+        return g_pDistanceTable[dy][dx];
+    if (dx <= dy)
+        return dy + 1;
+
+    return dx + 1;
+}
+
 int ReadItemicon()
 {
 	return 0;

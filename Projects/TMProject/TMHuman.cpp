@@ -3724,20 +3724,273 @@ void TMHuman::SetMotion(ECHAR_MOTION eMotion, float fAngle)
 
 void TMHuman::GetRoute(IVector2 vecTarget, int nCount, int bStop)
 {
+    if (!m_dwDelayDel && (vecTarget.x != m_LastSendTargetPos.x || vecTarget.y != m_LastSendTargetPos.y))
+    {
+        int nStartRouteIndex = m_nLastRouteIndex;
+        if (m_fProgressRate > 0.5)
+            nStartRouteIndex = m_nLastRouteIndex + 1;
+        int nSX = (signed int)m_vecRouteBuffer[nStartRouteIndex].x;
+        int nSY = (signed int)m_vecRouteBuffer[nStartRouteIndex].y;
+        unsigned int dwDealyTime = 1000;
+        unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+        if (this == g_pCurrentScene->m_pMyHuman && (signed int)m_fMaxSpeed == 4)
+            dwDealyTime = 500;
+        if (this == g_pCurrentScene->m_pMyHuman && (signed int)m_fMaxSpeed == 5)
+            dwDealyTime = 500;
+        if (this == g_pCurrentScene->m_pMyHuman && (signed int)m_fMaxSpeed == 6)
+            dwDealyTime = 100;
+        if (this == g_pCurrentScene->m_pMyHuman && (signed int)m_fMaxSpeed == 7)
+            dwDealyTime = 100;
+
+        unsigned int dwTime = g_pTimerManager->GetServerTime();
+        TMFieldScene* pFScene = (TMFieldScene*)g_pCurrentScene;
+
+        if ((this != g_pCurrentScene->m_pMyHuman || g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_FIELD || dwTime >= g_dwStartQuitGameTime + 6000) &&
+            dwTime >= pFScene->m_dwLastLogout + 6000
+            && dwTime >= pFScene->m_dwLastSelServer + 6000
+            && dwTime >= pFScene->m_dwLastTown + 6000
+            && dwTime >= pFScene->m_dwLastTeleport + 6000)
+        {
+            if (dwServerTime - m_dwOldMovePacketTime > dwDealyTime || bStop)
+            {
+
+            }
+        }
+    }
 }
 
 void TMHuman::GenerateRouteTable(int nSX, int nSY, char* pRouteBuffer, TMVector2* pRouteTable, int* pMaxRouteIndex)
 {
+    if (m_dwDelayDel != 0)
+        return;
+
+    TMVector2 vecCurrent = TMVector2((float)nSX + 0.5f, (float)nSY + 0.f);
+    TMVector2 pRotueTable = vecCurrent;
+
+    if (pMaxRouteIndex)
+        *pMaxRouteIndex = strlen(pRouteBuffer) + 2;
+
+    for (int i = 1; i < 48; ++i)
+    {
+        pRouteTable[i] = vecCurrent;
+        switch (pRouteBuffer[i - 1])
+        {
+        case '6':
+            pRouteTable[i].x = pRouteTable[i].x + 1.0;
+            break;
+        case '4':
+            pRouteTable[i].x = pRouteTable[i].x - 1.0;
+            break;
+        case '8':
+            pRouteTable[i].y = pRouteTable[i].y + 1.0;
+            break;
+        case '2':
+            pRouteTable[i].y = pRouteTable[i].y - 1.0;
+            break;
+        case '3':
+            pRouteTable[i].x = pRouteTable[i].x + 1.0;
+            pRouteTable[i].y = pRouteTable[i].y - 1.0;
+            break;
+        case '1':
+            pRouteTable[i].x = pRouteTable[i].x - 1.0;
+            pRouteTable[i].y = pRouteTable[i].y - 1.0;
+            break;
+        case '9':
+            pRouteTable[i].x = pRouteTable[i].x + 1.0;
+            pRouteTable[i].y = pRouteTable[i].y + 1.0;
+            break;
+        case '7':
+            pRouteTable[i].x = pRouteTable[i].x - 1.0;
+            pRouteTable[i].y = pRouteTable[i].y + 1.0;
+            break;
+        }
+        vecCurrent = pRouteTable[i];
+    }
 }
 
 int TMHuman::StraightRouteTable(int nSX, int nSY, int nTargetX, int nTargetY, TMVector2* pRouteTable, int* pMaxRouteIndex, int distance, char* pHeight, int MH)
 {
-	return 0;
+    if (m_dwDelayDel)
+        return 0;
+
+    if (nSX == nTargetX && nSY == nTargetY)
+        return 0;
+
+    TMFieldScene* pFScene = (TMFieldScene*)g_pCurrentScene;
+
+    // This is probably e ifndef of debug
+    int a;
+    if (g_pCurrentScene->m_pMyHuman == this)
+        a = 0;
+
+    int nDis = BASE_GetDistance(nSX, nSY, nTargetX, nTargetY);
+    TMVector2 vecCurrent;
+
+    if ((int)m_vecPosition.y == nTargetX && (int)m_vecPosition.y == nTargetY)
+        return 0;
+
+    vecCurrent.x = m_vecPosition.x;
+    vecCurrent.y = m_vecPosition.y;
+
+    D3DXVECTOR2 NorVec2;
+    D3DXVec2Normalize(&NorVec2, &D3DXVECTOR2((float)(nTargetX - nSX), (float)(nTargetY - nSY)));
+
+    float TargetLen = D3DXVec2Length(&D3DXVECTOR2((float)((float)nTargetX + 0.5f) - vecCurrent.x,
+                                                  (float)((float)nTargetY + 0.5f) - vecCurrent.y));
+
+    TMVector2* pRouteTable = &vecCurrent;
+
+    float NowLen = 0.0f;
+    int nMax = 48;
+    int nSXa = (int)pRouteTable->x;
+    int nSYa = (int)pRouteTable->y;
+    int nPlusX = 1;
+
+    if (nTargetX - nSXa < 0)
+        nPlusX = -1;
+
+    int nPlusY = 1;
+    if (nTargetY - nSYa < 0)
+        nPlusY = -1;
+
+    int nMinX = nSXa <= nTargetX ? nSXa : nTargetX;
+    int nMinY = nSYa <= nTargetY ? nSYa : nTargetY;
+    int nMaxX = nSXa <= nTargetX ? nTargetX : nSXa;
+    int nMaxY = nSYa <= nTargetY ? nTargetY : nSYa;
+
+    int Cul = pHeight[nSXa + g_HeightWidth * (nSYa - g_HeightPosY) - g_HeightPosX];
+
+    for (int nY = nMinY; nY < nMaxY; ++nY)
+    {
+        for (int nX = nMinX; nX < nMaxX; ++nX)
+        {
+            int nH = pHeight[nX + g_HeightWidth * (nY - g_HeightPosY) - g_HeightPosX];
+            int res = 0;
+            if (nH - Cul <= 0)
+                res = Cul - nH;
+            else
+                res = nH - Cul;
+
+            if (res > MH)
+                return 0;
+        }
+    }
+
+    for (int i = 1; i < 48; ++i)
+    {
+        pRouteTable[i] = vecCurrent;
+        if (nMax > i)
+        {
+            float fy = (float)nDis;
+            float value = TargetLen;
+
+            pRouteTable[i] += &((TMVector2(NorVec2.x, NorVec2.y) * value) / fy);
+
+            int nSXb = (int)pRouteTable[i].x;
+            int nSYb = (int)pRouteTable[i].y;
+
+            if (nSXb != (int)pRouteTable[i - 1].x
+                || pRouteTable[i].y != pRouteTable[i].x - 1)
+            {
+                Cul = pHeight[nSXb + g_HeightWidth * (nSYb - g_HeightPosY) - g_HeightPosX];
+                if ((signed int)pRouteTable->x != nSXb - nPlusX)
+                {
+                    int CulX = pHeight[nSXb + g_HeightWidth * (nSYb - g_HeightPosY) - nPlusX - g_HeightPosX];
+                    if (MH - 2 <= Cul - CulX <= 0 ? CulX - Cul : Cul - CulX)
+                        return 0;
+                }
+                if ((signed int)pRouteTable->y != nSYb - nPlusY)
+                {
+                    int CulY = pHeight[nSXb + g_HeightWidth * (nSYb - nPlusY - g_HeightPosY) - g_HeightPosX];
+                    if (MH - 2 <= Cul - CulY <= 0 ? CulY - Cul : Cul - CulY)
+                        return 0;
+                }
+                if ((signed int)pRouteTable->y != nSYb - nPlusY && (signed int)pRouteTable->x != nSXb - nPlusX)
+                {
+                    int CulXY = pHeight[nSXb + g_HeightWidth * (nSYb - nPlusY - g_HeightPosY) - nPlusX - g_HeightPosX];
+                    if (MH - 2 <= Cul - CulXY <= 0 ? CulXY - Cul : Cul - CulXY)
+                        return 0;
+                }
+
+                if (i)
+                {
+                    int CulBack = pHeight[(signed int)pRouteTable[i - 1].x
+                        + g_HeightWidth * ((signed int)*((float*)&pRouteTable[i] - 1) - g_HeightPosY)
+                        - g_HeightPosX];
+                    if (MH - 2 <= Cul - CulBack <= 0 ? CulBack - Cul : Cul - CulBack)
+                        return 0;
+                }
+            }
+
+            if (i >= nDis)
+            {
+                nMax = i;
+                pRouteTable[i].x = (float)nTargetX + 0.5;
+                pRouteTable[i].y = (float)nTargetY + 0.5;
+            }
+        }
+
+        vecCurrent = pRouteTable[i];
+    }
+
+    if (pMaxRouteIndex)
+        *pMaxRouteIndex = nMax;
+
+    m_cSameHeight = 2;
+    return 1;
 }
 
 int TMHuman::ChangeRouteBuffer(int nSX, int nSY, TMVector2* pRouteTable, int* pMaxRouteIndex)
-{
-	return 0;
+{	
+    char* pHeightMapData = g_pCurrentScene->m_HeightMapData;
+    int nRoutCount = 0;            
+    char szBuffer[48]{};
+
+    int i;
+    for (i = 46; i >= 0; --i)
+    {
+        if (pRouteTable[i].x != pRouteTable[i + 1].x || 
+            pRouteTable[i].y != pRouteTable[i + 1].y)
+        {
+            int tX = (int)pRouteTable[i].x;
+            int tY = (int)pRouteTable[i].y;
+            BASE_GetRoute(nSX, nSY, &tX, &tY, szBuffer, 12, pHeightMapData, 8);
+            if (tX == (signed int)pRouteTable[i].x && tY == (signed int)pRouteTable[i].y)
+            {
+                nRoutCount = i;
+                break;
+            }
+        }
+    }
+
+    if (i < 0 || i > 46)
+        return 0;
+
+    if (nRoutCount < 0 || nRoutCount > 46)
+        return 0;
+
+
+    TMVector2 vecRouteBuffer[48]{};
+    TMVector2 vecCurrent;
+    int nMaxRouteIndex;
+    GenerateRouteTable(nSX, nSY, szBuffer, vecRouteBuffer, &nMaxRouteIndex);
+
+    if (nMaxRouteIndex - 2 < 0)
+        return 0;
+
+    vecCurrent = vecRouteBuffer[nMaxRouteIndex - 2];
+    for (i = nMaxRouteIndex - 2; i < 48; ++i)
+    {
+        vecRouteBuffer[i] = vecCurrent;
+        if (i + nRoutCount - (nMaxRouteIndex - 2) < 48)
+           vecRouteBuffer[i] = pRouteTable[i + nRoutCount - (nMaxRouteIndex - 2)];
+
+        vecCurrent = vecRouteBuffer[i];
+    }
+
+    memcpy(pRouteTable, vecRouteBuffer, sizeof(vecRouteBuffer));
+    return 1;
 }
 
 void TMHuman::SetHandEffect(int nHandEffect)

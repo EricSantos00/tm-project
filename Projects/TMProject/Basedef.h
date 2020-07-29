@@ -814,6 +814,16 @@ struct MSG_AccountLogin
 	unsigned int Mac[4];
 };
 
+static int g_pDistanceTable[7][7] =
+{
+  { 0, 1, 2, 3, 4, 5, 6 },
+  { 1, 1, 2, 3, 4, 5, 6 },
+  { 2, 2, 3, 4, 4, 5, 6 },
+  { 3, 3, 4, 4, 5, 5, 6 },
+  { 4, 4, 4, 5, 5, 5, 6 },
+  { 5, 5, 5, 5, 5, 6, 6 },
+  { 6, 6, 6, 6, 6, 6, 6 }
+};
 
 extern HWND hWndMain;
 extern char EncodeByte[4];
@@ -840,6 +850,8 @@ int BASE_GetWeekNumber();
 int BASE_GetItemAbility(STRUCT_ITEM* item, char Type);
 int BASE_DefineSkinMeshType(int nClass);
 float BASE_GetMountScale(int nSkinMeshType, int nMeshIndex);
+int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int distance, char* pHeight, int MH);
+int BASE_GetDistance(int x1, int y1, int x2, int y2);
 
 /* Read Functions */
 int ReadItemicon();
