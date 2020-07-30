@@ -577,7 +577,7 @@ int CMesh::RenderMesh(char cAlpha)
                 bMulti = 1;
 
             if (cAlpha == 'C')
-                g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHABLENDENABLE, 1);
+                g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 1);
 
             g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, D3DCULL::D3DCULL_CW);
 
