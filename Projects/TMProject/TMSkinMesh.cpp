@@ -436,139 +436,139 @@ void TMSkinMesh::FrameMove(unsigned int dwServerTime)
 		if (m_nBoneAniIndex == 49)
 			dwMod -= 2;
 
-		if (dwMod != 0)
+		if (dwMod == 0)
+			return;
+		dwOffset %= 4 * dwMod;
+		m_dwOffset = dwOffset / 4;
+		unsigned int dwTick = m_dwOffset + m_nAniBaseIndex;
+		unsigned int numBone = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniFrame;
+		unsigned int addr = numBone * dwTick;
+		unsigned int numAniFrame = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniFrame;
+
+		if (numAniFrame >= 0 && numAniFrame <= 100)
 		{
-			dwOffset %= 4 * dwMod;
-			m_dwOffset = dwOffset / 4;
-			unsigned int dwTick = m_dwOffset + m_nAniBaseIndex;
-			unsigned int numBone = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniFrame;
-			unsigned int addr = numBone * dwTick;
-			unsigned int numAniFrame = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniFrame;
-
-			if (numAniFrame >= 0 && numAniFrame <= 100)
+			if (dwMod == 1 || !TMSkinMesh::m_nSmooth || g_pDevice->m_fFPS < 10.0f)
 			{
-				if (dwMod == 1 || !TMSkinMesh::m_nSmooth || g_pDevice->m_fFPS < 10.0f)
+				for (int Frame = 0; Frame < numAniFrame; ++Frame)
 				{
-					for (int Frame = 0; Frame < numAniFrame; ++Frame)
+					if (m_pframeToAnimate[Frame] != nullptr)
 					{
-						if (m_pframeToAnimate[Frame] != nullptr)
-						{
-							D3DXMATRIX matRot = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[Frame + addr];
-							m_pframeToAnimate[Frame]->m_matRot = matRot;							
-						}
+						LPD3DXMATRIX matRot = &MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[Frame + addr];
+						m_pframeToAnimate[Frame]->m_matRot = *matRot;
 					}
-					m_bMeshGenerated = 1;
 				}
-				else
+				m_bMeshGenerated = 1;
+				return;
+			}
+
+			// Isolate this function for now.
+			return;
+			float* before;
+			float* ori;
+			int EndEdge = 4 * dwMod - 3;
+			for (int j = 0; j < numAniFrame; ++j)
+			{
+				if (m_pframeToAnimate[j] != nullptr)
 				{
-					float* before;
-					float* ori;
-					int EndEdge = 4 * dwMod - 3;
-					for (int j = 0; j < numAniFrame; ++j)
+					D3DXMATRIX matRot = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j + addr];
+					if (m_nAniIndexLast == 0 || dwOffset >= 10)
 					{
-						if (m_pframeToAnimate[j] != nullptr)
+						m_nAniIndexLast = 0;
+						int mod = dwOffset % 4;
+
+						if (mod)
 						{
-							D3DXMATRIX matRot = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j + addr];
-							if (m_nAniIndexLast == 0 || dwOffset >= 10)
-							{
-								m_nAniIndexLast = 0;
-								int mod = dwOffset % 4;
-
-								if (mod)
-								{
-									D3DXMATRIX NewMat = matRot;
-									D3DXMATRIX m;
-									if (dwOffset < EndEdge)
-										m = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[numBone + j + addr];
-									else
-										m = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j
-										+ numBone
-										* m_nAniBaseIndex];
-
-									before = (float*)m;
-									ori = (float*)&NewMat;
-
-									switch (mod)
-									{
-									case 1:
-										for (int i = 0; i < 16; ++i)
-										{
-											*ori = (float)((float)((float)(*ori + *ori) + *ori) + *before) / 4.0f;
-											++ori;
-											++before;
-										}
-										break;
-									case 2:
-										for (int m = 0; m < 16; ++m)
-										{
-											*ori = (float)(*ori + *before) / 2.0f;
-											++ori;
-											++before;
-										}
-										break;
-									case 3:
-										for (int n = 0; n < 16; ++n)
-										{
-											*ori = (float)((float)((float)(*ori + *before) + *before) + *before) / 4.0f;
-											++ori;
-											++before;
-										}
-										break;
-									}
-
-									m_pframeToAnimate[j]->m_matRot = NewMat;
-								}
-								else
-								{
-									m_pframeToAnimate[j]->m_matRot = matRot;
-								}
-							}
+							D3DXMATRIX NewMat = matRot;
+							D3DXMATRIX m;
+							if (dwOffset < EndEdge)
+								m = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[numBone + j + addr];
 							else
+								m = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j
+								+ numBone
+								* m_nAniBaseIndex];
+
+							before = (float*)m;
+							ori = (float*)&NewMat;
+
+							switch (mod)
 							{
-								before = (float*)MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j + m_dwTickLast];
-								D3DXMATRIX NewMat = matRot;
-								if (m_nBoneAniIndex != 1 && m_nBoneAniIndex)
+							case 1:
+								for (int i = 0; i < 16; ++i)
 								{
-									ori = (float*)&NewMat;
-									int offset_ = 10 - dwOffset;
-									for (int k = 0; k < 16; ++k)
-									{
-										*ori = (float)((float)((float)dwOffset * *ori) + (float)((float)offset_ * *before)) / 10.0f;
-										++ori;
-										++before;
-									}
-									m_pframeToAnimate[j]->m_matRot = NewMat;
+									*ori = (float)((float)((float)(*ori + *ori) + *ori) + *before) / 4.0f;
+									++ori;
+									++before;
 								}
-								else
+								break;
+							case 2:
+								for (int m = 0; m < 16; ++m)
 								{
-									int InvTick = 10 - dwOffset;
-									D3DXMATRIX QuatMat;
-									D3DXQUATERNION NewQuat;
-									D3DXQuaternionSlerp(
-										&NewQuat,
-										&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matQuaternion[j + addr],
-										&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matQuaternion[j + m_dwTickLast],
-										(float)InvTick / 10.0f);
-									D3DXMatrixRotationQuaternion(&QuatMat, &NewQuat);
-									D3DXMATRIX NewMat2 = matRot;
-									ori = (float*)&NewMat2;
-									before += 12;
-									float* Now = &QuatMat._41;
-									for (int l = 0; l < 3; ++l)
-									{
-										*Now = (float)((float)((float)dwOffset * *ori) + (float)((float)InvTick * *before)) / 10.0f;
-										++ori;
-										++before;
-										++Now;
-									}
-									m_pframeToAnimate[j]->m_matRot = QuatMat;
+									*ori = (float)(*ori + *before) / 2.0f;
+									++ori;
+									++before;
 								}
+								break;
+							case 3:
+								for (int n = 0; n < 16; ++n)
+								{
+									*ori = (float)((float)((float)(*ori + *before) + *before) + *before) / 4.0f;
+									++ori;
+									++before;
+								}
+								break;
 							}
+
+							m_pframeToAnimate[j]->m_matRot = NewMat;
+						}
+						else
+						{
+							m_pframeToAnimate[j]->m_matRot = matRot;
 						}
 					}
-					m_bMeshGenerated = 1;
+					else
+					{
+						before = (float*)MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j + m_dwTickLast];
+						D3DXMATRIX NewMat = matRot;
+						if (m_nBoneAniIndex != 1 && m_nBoneAniIndex)
+						{
+							ori = (float*)&NewMat;
+							int offset_ = 10 - dwOffset;
+							for (int k = 0; k < 16; ++k)
+							{
+								*ori = (float)((float)((float)dwOffset * *ori) + (float)((float)offset_ * *before)) / 10.0f;
+								++ori;
+								++before;
+							}
+							m_pframeToAnimate[j]->m_matRot = NewMat;
+						}
+						else
+						{
+							int InvTick = 10 - dwOffset;
+							D3DXMATRIX QuatMat;
+							D3DXQUATERNION NewQuat;
+							D3DXQuaternionSlerp(
+								&NewQuat,
+								&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matQuaternion[j + addr],
+								&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matQuaternion[j + m_dwTickLast],
+								(float)InvTick / 10.0f);
+							D3DXMatrixRotationQuaternion(&QuatMat, &NewQuat);
+							D3DXMATRIX NewMat2 = matRot;
+							ori = (float*)&NewMat2;
+							before += 12;
+							float* Now = &QuatMat._41;
+							for (int l = 0; l < 3; ++l)
+							{
+								*Now = (float)((float)((float)dwOffset * *ori) + (float)((float)InvTick * *before)) / 10.0f;
+								++ori;
+								++before;
+								++Now;
+							}
+							m_pframeToAnimate[j]->m_matRot = QuatMat;
+						}
+					}
 				}
 			}
+			m_bMeshGenerated = 1;
 		}
 	}
 }
@@ -686,7 +686,7 @@ int TMSkinMesh::Render(float fLen, float fScale, float fLen2)
 	}
 
 	g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_FOGENABLE, g_pDevice->m_bFog);
-	m_pRoot->UpdateFrames(mCur);
+	m_pRoot->UpdateFrames(&mCur);
 	m_pRoot->Render();
 	g_pDevice->SetTexture(1, nullptr);
 	RenderSkinMeshEffect();
@@ -790,7 +790,7 @@ void TMSkinMesh::SetSwingMatrix()
 
 			for (int j = 0; j < pSW[0]->m_dwNumIndex - 1; ++j)
 			{
-				matTrans = pmatStart[pSW[0]->m_dwIndices[j] + dwNumBones * i];
+				matTrans = matTrans * pmatStart[pSW[0]->m_dwIndices[j] + dwNumBones * i];
 			}
 
 			pSW[0]->m_matRot[i] = matTrans;
@@ -808,7 +808,7 @@ void TMSkinMesh::SetSwingMatrix()
 
 			for (int j = 0; j < pSW[1]->m_dwNumIndex - 1; ++j)
 			{
-				matTrans = pmatStart[pSW[1]->m_dwIndices[j] + dwNumBones * i];
+				matTrans = matTrans * pmatStart[pSW[1]->m_dwIndices[j] + dwNumBones * i];
 			}
 
 			pSW[1]->m_matRot[i] = matTrans;

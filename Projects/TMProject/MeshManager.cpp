@@ -148,8 +148,8 @@ int MeshManager::InitBoneAnimation()
 		{
 			MeshManager::m_BoneAnimationList[nCount].matQuaternion = (LPD3DXQUATERNION)malloc(
 				MeshManager::m_BoneAnimationList[nCount].numAniFrame
-				* sizeof(D3DXQUATERNION)
-				* nFullTickCount);
+				* (sizeof(D3DXQUATERNION)
+				* nFullTickCount));
 		}		
 		
 		dwFileIndex = 0;
@@ -187,8 +187,8 @@ int MeshManager::InitBoneAnimation()
 			if (nCount == 0 || nCount == 1)
 			{
 				int nArrayIndex = m_stValidAniList[nCount][nFI].nI + 1;
-				int nWeapon = nArrayIndex / 100 - 1;
-				int nAnimation = nArrayIndex % 100 - 1;
+				int nWeapon = (nArrayIndex / 100) - 1;
+				int nAnimation = (nArrayIndex % 100) - 1;
 				MeshManager::m_sAnimationArray[nCount][nWeapon][nAnimation] = dwFileIndex;
 
 				// TK-BM

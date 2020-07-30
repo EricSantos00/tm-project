@@ -614,9 +614,9 @@ int CMesh::RenderMesh(char cAlpha)
         }
         else
         {
-            if (g_pDevice->m_pd3dDevice->SetVertexDeclaration(g_pDevice->m_pVertexDeclaration[m_numFaceInflunce]) < 0)
+            if (g_pDevice->m_pd3dDevice->SetVertexDeclaration(g_pDevice->m_pVertexDeclaration[m_numFaceInflunce - 1]) < 0)
                 return 0;
-            if (g_pDevice->m_pd3dDevice->SetVertexShader(g_pDevice->m_pVertexShader[m_numFaceInflunce]) < 0)
+            if (g_pDevice->m_pd3dDevice->SetVertexShader(g_pDevice->m_pVertexShader[m_numFaceInflunce - 1]) < 0)
                 return 0;
         }
 
