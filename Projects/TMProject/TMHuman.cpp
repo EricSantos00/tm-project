@@ -3839,7 +3839,7 @@ int TMHuman::StraightRouteTable(int nSX, int nSY, int nTargetX, int nTargetY, TM
     float TargetLen = D3DXVec2Length(&D3DXVECTOR2((float)((float)nTargetX + 0.5f) - vecCurrent.x,
                                                   (float)((float)nTargetY + 0.5f) - vecCurrent.y));
 
-    TMVector2* pRouteTable = &vecCurrent;
+    pRouteTable[0] = vecCurrent;
 
     float NowLen = 0.0f;
     int nMax = 48;

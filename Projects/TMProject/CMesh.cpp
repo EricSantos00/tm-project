@@ -212,6 +212,7 @@ int CMesh::Render(int nBright)
             g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAOP, D3DTEXTUREOP::D3DTOP_DISABLE);
             g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAARG1, D3DTEXTUREOP::D3DTOP_SELECTARG1);
         }
+        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 5u);
 
         unsigned int dwTime = g_pTimerManager->GetServerTime();
         float fProgress = (float)(dwTime % 10000) / 10000.0f;
@@ -474,13 +475,13 @@ int CMesh::RenderMesh(char cAlpha)
             else if (m_sMultiType < 7)
             {
                 g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE);
-                if (cAlpha != 67)
+                if (cAlpha != 'C')
                     g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_ADDSMOOTH);
             }
             else
             {
                 g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE2X);  
-                if (cAlpha != 67)
+                if (cAlpha != 'C')
                     g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_ADDSMOOTH);
             }
         }
@@ -511,13 +512,13 @@ int CMesh::RenderMesh(char cAlpha)
             if (m_sMultiType < 7)
             {
                 g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE);
-                if (cAlpha != 67)
+                if (cAlpha != 'C')
                     g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_ADDSMOOTH);
             }
             else
             {
                 g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE2X);
-                if (cAlpha != 67)
+                if (cAlpha != 'C')
                     g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_ADDSMOOTH);
             }
         }
@@ -584,7 +585,7 @@ int CMesh::RenderMesh(char cAlpha)
 
             g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, D3DCULL::D3DCULL_CCW);
         }
-        if (m_sMultiType)
+        if (m_sMultiType > 0)
         {
             g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_TEXCOORDINDEX, D3DTEXTUREOP::D3DTOP_DISABLE);
             g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE);
@@ -601,7 +602,7 @@ int CMesh::RenderMesh(char cAlpha)
         if (g_pDevice->m_pd3dDevice->SetStreamSource(0, m_pMesh->m_pVB, 0, m_pMesh->m_sizeVertex) < 0)
             return 0;
         if (g_pDevice->m_pd3dDevice->SetIndices(m_pMesh->m_pIB) < 0)
-            return 1;        
+            return 0;        
         if (m_numFaceInflunce > 4 || m_numFaceInflunce < 1)
             return 0;
         if (m_pParentSkin->m_nBoneAniIndex == 61)
@@ -622,7 +623,7 @@ int CMesh::RenderMesh(char cAlpha)
         for (int i = 0; i < m_numPalette; ++i)
         {
             D3DXMATRIXA16 mat;
-            D3DXMatrixMultiply(&mat, &m_pBoneMatrix[i], &m_pBoneMatrix[i]);
+            D3DXMatrixMultiply(&mat, &m_pBoneMatrix[i], m_pBoneOffset[i]);
             D3DXMatrixMultiplyTranspose(&mat, &mat, &g_pDevice->m_matView);
             g_pDevice->m_pd3dDevice->SetVertexShaderConstantF(3 * i + 9, (const float*)&mat, 3);
         }
@@ -802,7 +803,7 @@ int CMesh::LoadMesh(char* file)
             if (g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].pMesh)
                 m_pMesh = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].pMesh;
 
-            sprintf_s(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].szFileName, "%s", file);
+            sprintf(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].szFileName, "%s", file);
         }
 
         if (m_nSkinMeshIndex < 0)
@@ -847,7 +848,8 @@ int CMesh::LoadMesh(char* file)
         float* pVertex = nullptr;
         char* pIndices = nullptr;
 
-        g_pDevice->m_pd3dDevice->CreateVertexBuffer(m_pMesh->m_sizeVertex * m_pMesh->m_AttRange[0].VertexCount,
+        g_pDevice->m_pd3dDevice->CreateVertexBuffer(
+            m_pMesh->m_sizeVertex * m_pMesh->m_AttRange[0].VertexCount,
             0,
             m_pMesh->m_dwFVF,
             D3DPOOL_MANAGED,
