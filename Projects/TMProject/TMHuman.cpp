@@ -22,6 +22,7 @@
 #include "TMGround.h"
 #include "TMFieldScene.h"
 #include "TMEffectParticle.h"
+#include "TMLog.h"
 
 TMVector2 TMHuman::m_vecPickSize[100]{
   { 0.40000001f, 2.0f },
@@ -3704,10 +3705,682 @@ void TMHuman::SetWantAngle(float fAngle)
 
 void TMHuman::SetWeaponType(int nWeaponType)
 {
+    if (m_dwDelayDel != 0)
+        return;
+
+    m_nWeaponTypeIndex = nWeaponType;
 }
 
 void TMHuman::CheckWeapon(short sIndexL, short sIndexR)
 {
+    if (m_dwDelayDel != 0)
+        return;
+
+    m_cHasShield = 0;
+
+    STRUCT_ITEM itemL{};
+    STRUCT_ITEM itemR{};
+
+    m_sLeftIndex = sIndexL;
+    itemL.sIndex = sIndexL;
+    m_sRightIndex = sIndexR;
+    itemR.sIndex = sIndexR;
+    m_nWeaponTypeL = BASE_GetItemAbility(&itemL, 21);
+    m_nWeaponTypeR = BASE_GetItemAbility(&itemR, 21);
+    int nWeaponPosL = BASE_GetItemAbility(&itemL, 17);
+    int nWeaponPosR = BASE_GetItemAbility(&itemR, 17);
+
+    if (itemR.sIndex < 0 || itemL.sIndex < 0 || itemR.sIndex >= 6500 || itemL.sIndex >= 6500)
+    {
+        LOG_WRITELOG("Check Weapon : L = %d R = %d", itemL.sIndex, itemR.sIndex);
+        return;
+    }
+    if (g_pItemList[itemR.sIndex].nIndexMesh >= 0 && g_pItemList[itemL.sIndex].nIndexMesh >= 0)
+    {
+        TMMesh* pMesh1 = g_pMeshManager->GetCommonMesh(g_pItemList[itemR.sIndex].nIndexMesh, 0, 3_min);
+        TMMesh* pMesh2 = g_pMeshManager->GetCommonMesh(g_pItemList[itemL.sIndex].nIndexMesh, 0, 3_min);
+
+        if (!pMesh1 || !pMesh2)
+        {
+            LOG_WRITELOG("NULL Mesh Check Weapon : L = %d R = %d", itemL.sIndex, itemR.sIndex);
+            return;
+        }
+
+        m_fSowrdLength[0] = pMesh1->m_fMaxZ;
+        m_fSowrdLength[1] = pMesh2->m_fMaxZ;
+        m_bSwordShadow[0] = 0;
+        m_bSwordShadow[1] = 0;
+
+        if (m_pSkinMesh)
+        {
+            if (m_nClass == 26 || m_nClass == 33 || m_nClass == 40)
+            {
+                SetWeaponType(0);
+                if (m_sRightIndex)
+                    m_bSwordShadow[0] = 1;
+                if (m_sLeftIndex)
+                    m_bSwordShadow[1] = 1;
+                if (m_pSkinMesh->m_pSwingEffect[0])
+                {
+                    m_fSowrdLength[0] = 0.029f;
+                    m_pSkinMesh->m_pSwingEffect[0]->m_fWeaponLength = 0.029f;
+                    m_pSkinMesh->m_pSwingEffect[0]->m_fEffectLength = 0.029f;
+                    m_pSkinMesh->m_pSwingEffect[0]->m_cMixEffect = 16 * g_pItemList[itemR.sIndex].nGrade;
+                    m_pSkinMesh->m_pSwingEffect[0]->m_cMixEffect += m_stSancInfo.Sanc6;
+                }
+                if (m_pSkinMesh->m_pSwingEffect[1])
+                {
+                    m_fSowrdLength[1] = 0.029f;
+                    m_pSkinMesh->m_pSwingEffect[1]->m_fWeaponLength = 0.029f;
+                    m_pSkinMesh->m_pSwingEffect[1]->m_fEffectLength = 0.029f;
+                    m_pSkinMesh->m_pSwingEffect[1]->m_cMixEffect = 16 * g_pItemList[itemL.sIndex].nGrade;
+                    m_pSkinMesh->m_pSwingEffect[1]->m_cMixEffect += m_stSancInfo.Sanc7;
+                }
+                return;
+            }
+
+            if (m_pSkinMesh->m_pSwingEffect[0])
+            {
+                m_pSkinMesh->m_pSwingEffect[0]->m_fWeaponLength = m_fSowrdLength[0] - 0.1;
+                m_pSkinMesh->m_pSwingEffect[0]->m_cMixEffect = 16 * g_pItemList[itemR.sIndex].nGrade;
+                m_pSkinMesh->m_pSwingEffect[0]->m_cMixEffect += m_stSancInfo.Sanc6;
+            }
+            if (m_pSkinMesh->m_pSwingEffect[1])
+            {
+                m_pSkinMesh->m_pSwingEffect[1]->m_fWeaponLength = m_fSowrdLength[1] - 0.1;
+                m_pSkinMesh->m_pSwingEffect[1]->m_cMixEffect = 16 * g_pItemList[itemL.sIndex].nGrade;
+                m_pSkinMesh->m_pSwingEffect[1]->m_cMixEffect += m_stSancInfo.Sanc7;
+            }
+            if (m_cWeapon == 1)
+            {
+                if (m_pSkinMesh->m_pSwingEffect[0] && m_sRightIndex)
+                    m_pSkinMesh->m_pSwingEffect[0]->m_cMagicWeapon = 1;
+                if (m_pSkinMesh->m_pSwingEffect[1] && m_sLeftIndex)
+                    m_pSkinMesh->m_pSwingEffect[1]->m_cMagicWeapon = 1;
+            }
+            else
+            {
+                if (m_pSkinMesh->m_pSwingEffect[0])
+                    m_pSkinMesh->m_pSwingEffect[0]->m_cMagicWeapon = 0;
+                if (m_pSkinMesh->m_pSwingEffect[1])
+                    m_pSkinMesh->m_pSwingEffect[1]->m_cMagicWeapon = 0;
+            }
+
+            if (m_nClass == 36)
+            {
+                if (m_nWeaponTypeL == 1 || m_nWeaponTypeL == 61 || m_nWeaponTypeL == 31)
+                {
+                    SetWeaponType(11);
+                }
+                else if (m_nWeaponTypeL == 11)
+                {
+                    SetWeaponType(15);
+                }
+                else if (m_nWeaponTypeL == 13)
+                {
+                    SetWeaponType(12);
+                }
+                else if (m_nWeaponTypeL == 21 || m_nWeaponTypeL == 22 || m_nWeaponTypeL == 23)
+                {
+                    SetWeaponType(13);
+                }
+                else if (m_nWeaponTypeL == 3 || m_nWeaponTypeL == 63)
+                {
+                    SetWeaponType(14);
+                }
+                m_bSwordShadow[1] = 1;
+                return;
+            }
+            if (m_nClass == 37)
+            {
+                SetWeaponType(11);
+                m_bSwordShadow[1] = 1;
+                return;
+            }
+            if (m_nClass == 60)
+            {
+                if (m_nWeaponTypeL == 41 && !nWeaponPosR)
+                {
+                    m_pSkinMesh->m_cRotate[1] = 1;
+                    SetWeaponType(0);
+                    m_bSwordShadow[0] = 1;
+                }
+                else if (m_nWeaponTypeL == 11 && nWeaponPosR == 128)
+                {
+                    SetWeaponType(1);
+                    m_bSwordShadow[0] = 1;
+                }
+                else if (m_nWeaponTypeL == 11 && nWeaponPosR == 192)
+                {
+                    SetWeaponType(4);
+                    m_bSwordShadow[0] = 1;
+                    m_bSwordShadow[1] = 1;
+                }
+                else
+                {
+                    m_bSwordShadow[1] = 1;
+                    m_bSwordShadow[0] = 1;
+                    SetWeaponType(0);
+                }
+                return;
+            }
+            if (m_nClass == 61)
+            {
+                SetWeaponType(1);
+                m_bSwordShadow[1] = 1;
+                return;
+            }
+            if (m_nClass == 62)
+            {
+                if (m_nWeaponTypeL == 1
+                    || m_nWeaponTypeL == 11
+                    || m_nWeaponTypeL == 61
+                    || m_nWeaponTypeL == 2
+                    || m_nWeaponTypeL == 12
+                    || m_nWeaponTypeL == 62
+                    || m_nWeaponTypeL == 31)
+                {
+                    SetWeaponType(1);
+                    m_bSwordShadow[1] = 1;
+                    m_bSwordShadow[0] = 1;
+                }
+                else
+                {
+                    SetWeaponType(0);
+                }
+                return;
+            }
+
+            if (!m_nSkinMeshType)
+            {
+                if (!m_cMount)
+                {
+                    if (!m_nWeaponTypeL && nWeaponPosR == 128)
+                    {
+                        SetWeaponType(2);
+                    }
+                    else if (nWeaponPosL == 192 && nWeaponPosR == 192)
+                    {
+                        SetWeaponType(4);
+                        m_bSwordShadow[0] = 1;
+                        m_bSwordShadow[1] = 1;
+                    }
+                    else if (m_nWeaponTypeL == 1
+                        || m_nWeaponTypeL == 11
+                        || m_nWeaponTypeL == 61
+                        || m_nWeaponTypeL == 31)
+                    {
+                        if (!m_nWeaponTypeR)
+                        {
+                            SetWeaponType(1);
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (nWeaponPosR == 128)
+                        {
+                            SetWeaponType(1);
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (nWeaponPosR == 196)
+                        {
+                            SetWeaponType(4);
+                            m_bSwordShadow[0] = 1;
+                            m_bSwordShadow[1] = 1;
+                        }
+                    }
+                    else if (m_nWeaponTypeL == 2
+                        || m_nWeaponTypeL == 12
+                        || m_nWeaponTypeL == 62)
+                    {
+                        if (nWeaponPosR == 128)
+                        {
+                            SetWeaponType(3);
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (!m_nWeaponTypeR)
+                        {
+                            SetWeaponType(5);
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (nWeaponPosR == 196)
+                        {
+                            SetWeaponType(4);
+                            m_bSwordShadow[0] = 1;
+                            m_bSwordShadow[1] = 1;
+                        }
+                    }
+                    else if (m_nWeaponTypeL == 3 || m_nWeaponTypeL == 63)
+                    {
+                        SetWeaponType(6);
+                        m_bSwordShadow[1] = 1;
+                    }
+                    else if (m_nWeaponTypeL == 13)
+                    {
+                        if (nWeaponPosL == 64)
+                        {
+                            SetWeaponType(7);
+                            m_bSwordShadow[1] = 1;
+                        }
+                    }
+                    else if (m_nWeaponTypeL == 21
+                        || m_nWeaponTypeL == 22
+                        || m_nWeaponTypeL == 23)
+                    {
+                        if (nWeaponPosL == 64)
+                        {
+                            SetWeaponType(8);
+                            m_bSwordShadow[1] = 1;
+                        }
+                    }
+                    else if (m_nWeaponTypeL == 102 || m_nWeaponTypeL == 103)
+                    {
+                        if (nWeaponPosL == 64)
+                        {
+                            SetWeaponType(10);
+                            m_bSwordShadow[1] = 1;
+                        }
+                    }
+                    else if (m_nWeaponTypeL == 104)
+                    {
+                        if (nWeaponPosL == 64)
+                        {
+                            SetWeaponType(9);
+                            m_bSwordShadow[1] = 1;
+                        }
+                    }
+                    else if (m_nWeaponTypeL == 101)
+                    {
+                        SetWeaponType(3);
+                        m_bSwordShadow[1] = 1;
+                    }
+                    else if (m_nWeaponTypeL == 32 || m_nWeaponTypeL == 33)
+                    {
+                        SetWeaponType(5);
+                        m_bSwordShadow[1] = 1;
+                    }
+                    else
+                    {
+                        if (m_nWeaponTypeL == 41)
+                        {
+                            m_bSwordShadow[1] = 1;
+                            m_bSwordShadow[0] = 1;
+                        }
+                        SetWeaponType(0);
+                    }
+                }
+                else if (!m_nWeaponTypeL && nWeaponPosR == 128)
+                {
+                    SetWeaponType(3);
+                }
+                else if (nWeaponPosL == 192 && nWeaponPosR == 192)
+                {
+                    SetWeaponType(2);
+                    m_bSwordShadow[0] = 1;
+                    m_bSwordShadow[1] = 1;
+                }
+                else if (m_nWeaponTypeL == 1
+                    || m_nWeaponTypeL == 11
+                    || m_nWeaponTypeL == 61
+                    || m_nWeaponTypeL == 2
+                    || m_nWeaponTypeL == 12
+                    || m_nWeaponTypeL == 62
+                    || m_nWeaponTypeL == 31)
+                {
+                    SetWeaponType(1);
+                    if (!m_nWeaponTypeR)
+                    {
+                        m_bSwordShadow[1] = 1;
+                    }
+                    else if (nWeaponPosR == 128)
+                    {
+                        m_bSwordShadow[1] = 1;
+                    }
+                }
+                else if (m_nWeaponTypeL == 21
+                    || m_nWeaponTypeL == 22
+                    || m_nWeaponTypeL == 23
+                    || m_nWeaponTypeL == 13
+                    || m_nWeaponTypeL == 3
+                    || m_nWeaponTypeL == 63
+                    || m_nWeaponTypeL == 32
+                    || m_nWeaponTypeL == 33)
+                {
+                    if (nWeaponPosL == 64)
+                    {
+                        SetWeaponType(4);
+                        m_bSwordShadow[1] = 1;
+                    }
+                }
+                else if (m_nWeaponTypeL == 101)
+                {
+                    SetWeaponType(5);
+                    m_bSwordShadow[1] = 1;
+                }
+                else if (m_nWeaponTypeL == 102 || m_nWeaponTypeL == 103)
+                {
+                    if (nWeaponPosL == 64)
+                    {
+                        SetWeaponType(1);
+                        m_bSwordShadow[1] = 1;
+                    }
+                }
+                else
+                {
+                    if (m_nWeaponTypeL == 41)
+                    {
+                        m_bSwordShadow[1] = 1;
+                        m_bSwordShadow[0] = 1;
+                    }
+                    SetWeaponType(0);
+                }
+                if (m_nWeaponTypeL == 41)
+                {
+                    m_bSwordShadow[1] = 1;
+                    m_bSwordShadow[0] = 1;
+                }               
+            }
+            else
+            {
+                switch (m_nSkinMeshType)
+                {
+                case 1:
+                    if (!m_cMount)
+                    {
+                        if (!m_nWeaponTypeL && nWeaponPosR == 128)
+                        {
+                            SetWeaponType(2);
+                        }
+                        else if (nWeaponPosL == 192 && nWeaponPosR == 192)
+                        {
+                            SetWeaponType(4);
+                            m_bSwordShadow[0] = 1;
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (m_nWeaponTypeL == 3 || m_nWeaponTypeL == 63)
+                        {
+                            SetWeaponType(10);
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (m_nWeaponTypeL == 1
+                            || m_nWeaponTypeL == 11
+                            || m_nWeaponTypeL == 61
+                            || m_nWeaponTypeL == 2
+                            || m_nWeaponTypeL == 12
+                            || m_nWeaponTypeL == 62
+                            || m_nWeaponTypeL == 31)
+                        {
+                            if (!m_nWeaponTypeR)
+                            {
+                                SetWeaponType(1);
+                                m_bSwordShadow[1] = 1;
+                            }
+                            else if (nWeaponPosR == 128)
+                            {
+                                SetWeaponType(3);
+                                m_bSwordShadow[1] = 1;
+                            }
+                            else if (nWeaponPosR == 196)
+                            {
+                                SetWeaponType(4);
+                                m_bSwordShadow[0] = 1;
+                                m_bSwordShadow[1] = 1;
+                            }
+                        }
+                        else if (m_nWeaponTypeL == 21
+                            || m_nWeaponTypeL == 22
+                            || m_nWeaponTypeL == 23)
+                        {
+                            SetWeaponType(5);
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (m_nWeaponTypeL == 102 || m_nWeaponTypeL == 103)
+                        {
+                            if (nWeaponPosL == 64)
+                            {
+                                SetWeaponType(3);
+                                m_bSwordShadow[1] = 1;
+                            }
+                        }
+                        else if (m_nWeaponTypeL == 31)
+                        {
+                            SetWeaponType(3);
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (m_nWeaponTypeL == 13)
+                        {
+                            SetWeaponType(7);
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (m_nWeaponTypeL == 32 || m_nWeaponTypeL == 33)
+                        {
+                            if (nWeaponPosL == 64)
+                            {
+                                SetWeaponType(9);
+                                m_bSwordShadow[1] = 1;
+                            }
+                        }
+                        else if (m_nWeaponTypeL == 101)
+                        {
+                            if (nWeaponPosL == 64)
+                            {
+                                SetWeaponType(6);
+                                m_bSwordShadow[1] = 1;
+                            }
+                        }
+                        else
+                        {
+                            if (m_nWeaponTypeL == 41)
+                            {
+                                m_bSwordShadow[1] = 1;
+                                m_bSwordShadow[0] = 1;
+                            }
+                            SetWeaponType(0);
+                        }
+                    }
+                    else if (!m_nWeaponTypeL && nWeaponPosR == 128)
+                    {
+                        SetWeaponType(3);
+                    }
+                    else if (nWeaponPosL == 192 && nWeaponPosR == 192)
+                    {
+                        SetWeaponType(2);
+                        m_bSwordShadow[0] = 1;
+                        m_bSwordShadow[1] = 1;
+                    }
+                    else if (m_nWeaponTypeL == 1
+                        || m_nWeaponTypeL == 11
+                        || m_nWeaponTypeL == 61
+                        || m_nWeaponTypeL == 2
+                        || m_nWeaponTypeL == 12
+                        || m_nWeaponTypeL == 62
+                        || m_nWeaponTypeL == 31)
+                    {
+                        SetWeaponType(1);
+                        if (!m_nWeaponTypeR)
+                        {
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (nWeaponPosR == 128)
+                        {
+                            m_bSwordShadow[1] = 1;
+                        }
+                    }
+                    else if (m_nWeaponTypeL == 21
+                        || m_nWeaponTypeL == 22
+                        || m_nWeaponTypeL == 23
+                        || m_nWeaponTypeL == 13
+                        || m_nWeaponTypeL == 3
+                        || m_nWeaponTypeL == 63
+                        || m_nWeaponTypeL == 32
+                        || m_nWeaponTypeL == 33)
+                    {
+                        if (nWeaponPosL == 64)
+                        {
+                            SetWeaponType(4);
+                            m_bSwordShadow[1] = 1;
+                        }
+                    }
+                    else if (m_nWeaponTypeL == 101)
+                    {
+                        SetWeaponType(5);
+                        m_bSwordShadow[1] = 1;
+                    }
+                    else if (m_nWeaponTypeL == 102 || m_nWeaponTypeL == 103)
+                    {
+                        if (nWeaponPosL == 64)
+                        {
+                            SetWeaponType(1);
+                            m_bSwordShadow[1] = 1;
+                        }
+                    }
+                    else
+                    {
+                        if (m_nWeaponTypeL == 41)
+                        {
+                            m_bSwordShadow[1] = 1;
+                            m_bSwordShadow[0] = 1;
+                        }
+                        SetWeaponType(0);
+                    }
+                    break;
+                    case 2:
+                        if (!m_cMount)
+                        {
+                            if (m_nWeaponTypeL == 101)
+                            {
+                                SetWeaponType(1);
+                                m_bSwordShadow[1] = 0;
+                            }
+                            else if (m_nWeaponTypeL == 12)
+                            {
+                                SetWeaponType(2);
+                                m_bSwordShadow[1] = 1;
+                            }
+                            else if (nWeaponPosR == 128 || m_nWeaponTypeL == 1 || m_nWeaponTypeL == 11)
+                            {
+                                SetWeaponType(5);
+                                m_bSwordShadow[1] = 1;
+                            }
+                            else if (m_nWeaponTypeL == 11
+                                || m_nWeaponTypeL == 12
+                                || m_nWeaponTypeL == 13
+                                || m_nWeaponTypeL == 21)
+                            {
+                                SetWeaponType(3);
+                                m_bSwordShadow[1] = 1;
+                            }
+                            else if (m_nWeaponTypeL == 31
+                                || m_nWeaponTypeL == 32
+                                || m_nWeaponTypeL == 33)
+                            {
+                                SetWeaponType(4);
+                                m_bSwordShadow[1] = 1;
+                            }
+                            else
+                            {
+                                SetWeaponType(0);
+                                if (nWeaponPosL)
+                                    m_bSwordShadow[1] = 1;
+                                else
+                                    m_bSwordShadow[1] = 0;
+                            }
+                        }
+                        else if (m_nWeaponTypeL == 101)
+                        {
+                            SetWeaponType(1);
+                            m_bSwordShadow[1] = 0;
+                        }
+                        else if (m_nWeaponTypeL == 1
+                            || m_nWeaponTypeL == 11
+                            || m_nWeaponTypeL == 12
+                            || m_nWeaponTypeL == 13
+                            || m_nWeaponTypeL == 31
+                            || m_nWeaponTypeL == 32
+                            || m_nWeaponTypeL == 33)
+                        {
+                            SetWeaponType(5);
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else
+                        {
+                            SetWeaponType(0);
+                            if (nWeaponPosL)
+                                m_bSwordShadow[1] = 1;
+                            else
+                                m_bSwordShadow[1] = 0;
+                        }
+                        break;
+                    case 3:
+                        if (m_cMount)
+                        {
+                            SetWeaponType(0);
+                        }
+                        else if (m_stLookInfo.FaceMesh)
+                        {
+                            if (m_stLookInfo.FaceMesh == 1)
+                                SetWeaponType(1);
+                        }
+                        else
+                        {
+                            SetWeaponType(0);
+                        }
+                        break;
+                    case 4:
+                        if (m_nWeaponTypeL == 1
+                            || m_nWeaponTypeL == 11
+                            || m_nWeaponTypeL == 61)
+                        {
+                            SetWeaponType(1);
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (m_nWeaponTypeL == 21
+                            || m_nWeaponTypeL == 22
+                            || m_nWeaponTypeL == 23
+                            || m_nWeaponTypeL == 13)
+                        {
+                            SetWeaponType(2);
+                            m_bSwordShadow[1] = 1;
+                        }
+                        else if (m_nWeaponTypeL == 102 || m_nWeaponTypeL == 103)
+                        {
+                            SetWeaponType(3);
+                            m_bSwordShadow[1] = 0;
+                        }
+                        else
+                        {
+                            SetWeaponType(0);
+                            if (nWeaponPosL)
+                                m_bSwordShadow[1] = 1;
+                            else
+                                m_bSwordShadow[1] = 0;
+                        }
+                        break;
+                }
+            }
+            if (m_nWeaponTypeL == 41 && m_pSkinMesh)
+            {
+                m_pSkinMesh->m_cRotate[1] = 1;
+            }
+            else if (m_pSkinMesh)
+            {
+                m_pSkinMesh->m_cRotate[1] = 0;
+            }
+            if (m_nSkinMeshType == 11)
+            {
+                m_pSkinMesh->m_cRotate[1] = 1;
+            }
+            else if (m_nSkinMeshType == 10)
+            {
+                m_pSkinMesh->m_cRotate[0] = 1;
+                SetWeaponType(0);
+                if (m_sRightIndex)
+                    m_bSwordShadow[0] = 1;
+                if (m_sLeftIndex)
+                    m_bSwordShadow[1] = 1;
+            }
+            if ((int)m_eMotion < 14)
+                SetAnimation(ECHAR_MOTION::ECMOTION_STAND02, 1);
+        }
+    }
 }
 
 void TMHuman::PlayAttackSound(ECHAR_MOTION eMotion, int nLR)

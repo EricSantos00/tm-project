@@ -925,7 +925,9 @@ int CMesh::InitEffect()
 
     for (int i = 0; i < 2; i++)
     {
-        if (m_pParentSkin && m_pParentSkin->m_nBoneAniIndex < 19 && m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][i])
+        if (m_pParentSkin && 
+            m_pParentSkin->m_nBoneAniIndex < 19 && 
+            m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][i])
         {
             TMEffectSWSwing* eff = new TMEffectSWSwing();
             if (eff != nullptr)
