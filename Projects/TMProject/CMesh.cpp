@@ -38,16 +38,16 @@ int CMesh::Render(int nBright)
     if (!m_pParentSkin)
         return 0;
 
-    LPDIRECT3DTEXTURE9 pTex = g_pTextureManager->GetModelTexture(m_nTextureIndex, 10000);;
+    LPDIRECT3DTEXTURE9 pTex = g_pTextureManager->GetModelTexture(m_nTextureIndex, 10000);
  
     char cAlpha = 'A';
     if (m_nTextureIndex >= 0)
         cAlpha = g_pTextureManager->m_stModelTextureList[m_nTextureIndex].cAlpha;
 
-    g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHABLENDENABLE, 1);
+    g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 1);
 
     if (cAlpha == 'C')
-        g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHABLENDENABLE, 0);
+        g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 0);
 
     g_pDevice->SetTexture(0, pTex);
 
@@ -521,6 +521,8 @@ int CMesh::RenderMesh(char cAlpha)
                 if (cAlpha != 'C')
                     g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_ADDSMOOTH);
             }
+
+            g_pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, 0);
         }
         else
         {

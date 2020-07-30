@@ -230,55 +230,55 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 		{
 			sprintf(szTexture, "mesh\\ch020314.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\bm010102.wyt"))
+		else if (!strcmp(szTexture, "mesh\\bm010102.wyt"))
 		{
 			sprintf(szTexture, "mesh\\mi010105.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\tr13"))
+		else if (!strcmp(szTexture, "mesh\\tr13"))
 		{
 			sprintf(szTexture, "mesh\\tr130101.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\tr14"))
+		else if (!strcmp(szTexture, "mesh\\tr14"))
 		{
 			sprintf(szTexture, "mesh\\tr130101.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\tr15"))
+		else if (!strcmp(szTexture, "mesh\\tr15"))
 		{
 			sprintf(szTexture, "mesh\\tr130101.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\tr16"))
+		else if (!strcmp(szTexture, "mesh\\tr16"))
 		{
 			sprintf(szTexture, "mesh\\tr130101.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\tr17"))
+		else if (!strcmp(szTexture, "mesh\\tr17"))
 		{
 			sprintf(szTexture, "mesh\\tr130101.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\tr190101"))
+		else if (!strcmp(szTexture, "mesh\\tr190101"))
 		{
 			sprintf(szTexture, "mesh\\tr180101.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\tr190102"))
+		else if (!strcmp(szTexture, "mesh\\tr190102"))
 		{
 			sprintf(szTexture, "mesh\\tr180102.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\tr200101"))
+		else if (!strcmp(szTexture, "mesh\\tr200101"))
 		{
 			sprintf(szTexture, "mesh\\tr180101.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\tr200102"))
+		else if (!strcmp(szTexture, "mesh\\tr200102"))
 		{
 			sprintf(szTexture, "mesh\\tr180102.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\ch010237"))
+		else if (!strcmp(szTexture, "mesh\\ch010237"))
 		{
 			sprintf(szTexture, "mesh\\ch010137.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\ch010238"))
+		else if (!strcmp(szTexture, "mesh\\ch010238"))
 		{
 			sprintf(szTexture, "mesh\\ch010138.wyt");
 		}
-		else if (strcmp(szTexture, "mesh\\ch020217"))
+		else if (!strcmp(szTexture, "mesh\\ch020217"))
 		{
 			sprintf(szTexture, "mesh\\ch020117.wyt");
 		}
