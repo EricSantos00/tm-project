@@ -462,7 +462,6 @@ void TMSkinMesh::FrameMove(unsigned int dwServerTime)
 			}
 
 			// Isolate this function for now.
-			return;
 			float* before;
 			float* ori;
 			int EndEdge = 4 * dwMod - 3;

@@ -135,11 +135,11 @@ int CFrame::Render()
 				}
 				if (m_pParentSkin->m_nBoneAniIndex == 1)
 				{
-					D3DXMatrixRotationYawPitchRoll(&mat, -D3DXToRadian(15), -D3DXToRadian(10), D3DXToRadian(180));
+					D3DXMatrixRotationYawPitchRoll(&mat, -0.2617994f, -0.17453294f, D3DXToRadian(180));
 				}
 				else if (m_pParentSkin->m_nBoneAniIndex == 6)
 				{
-					D3DXMatrixRotationYawPitchRoll(&mat, -D3DXToRadian(20), D3DXToRadian(0), D3DXToRadian(180));
+					D3DXMatrixRotationYawPitchRoll(&mat, -0.34906587f, D3DXToRadian(0), D3DXToRadian(180));
 				}
 				else
 				{
@@ -159,7 +159,7 @@ int CFrame::Render()
 
 				TMHuman* pHuman = (TMHuman*)m_pParentSkin->m_pOwner;
 				if (pHuman)
-					m_pParentSkin->m_pSwingEffect[1]->m_nWeaponType = pHuman->m_nWeaponTypeR;
+					m_pParentSkin->m_pSwingEffect[1]->m_nWeaponType = pHuman->m_nWeaponTypeL;
 			}
 		}
 		if (m_pParentSkin->m_pOwner != nullptr &&

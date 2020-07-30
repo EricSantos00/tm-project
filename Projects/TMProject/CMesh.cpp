@@ -583,7 +583,7 @@ int CMesh::RenderMesh(char cAlpha)
 
             TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 20_min);
             if (pMesh)
-                pMesh->Render(bMulti, 0);
+               pMesh->Render(bMulti, 0);
 
             g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, 3);
         }

@@ -187,8 +187,8 @@ int MeshManager::InitBoneAnimation()
 			if (nCount == 0 || nCount == 1)
 			{
 				int nArrayIndex = m_stValidAniList[nCount][nFI].nI + 1;
-				int nWeapon = (nArrayIndex / 100) - 1;
-				int nAnimation = (nArrayIndex % 100) - 1;
+				int nWeapon = nArrayIndex / 100 - 1;
+				int nAnimation = nArrayIndex % 100 - 1;
 				MeshManager::m_sAnimationArray[nCount][nWeapon][nAnimation] = dwFileIndex;
 
 				// TK-BM
