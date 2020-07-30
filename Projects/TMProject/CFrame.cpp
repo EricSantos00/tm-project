@@ -345,8 +345,8 @@ void CFrame::UpdateFrames(const D3DXMATRIX& matCur)
 				m_pParentSkin->m_OutMatrix = m_matCombined;
 			}
 		}
-		else if (m_pParentSkin->m_nBoneAniIndex == 0 || m_pParentSkin->m_nBoneAniIndex == 1 || 
-				 m_pParentSkin->m_nBoneAniIndex == 56 || m_pParentSkin->m_nBoneAniIndex == 57 || m_pParentSkin->m_nBoneAniIndex == 54)
+		else if (m_pParentSkin->m_nBoneAniIndex == 0 || m_pParentSkin->m_nBoneAniIndex == 1 /*|| 
+				 m_pParentSkin->m_nBoneAniIndex == 56 || m_pParentSkin->m_nBoneAniIndex == 57 || m_pParentSkin->m_nBoneAniIndex == 54*/)
 		{
 			D3DXVECTOR4 vecOut(0.0f, 0.0f, 0.0f, 0.0f);
 			D3DXVECTOR3 vecIn(0.0f, 0.0f, 0.0f);
