@@ -2,6 +2,7 @@
 #include "Basedef.h"
 #include "TMGlobal.h"
 #include "TMLog.h"
+#include "ItemEffect.h"
 
 HWND hWndMain;
 char EncodeByte[4];
@@ -29,6 +30,66 @@ void BASE_ApplyAttribute(char* pHeight, int size)
 {
 }
 
+int BASE_ReadItemList()
+{
+    FILE* fp = nullptr;
+
+    fopen_s(&fp, ".\\ItemList.bin", "rb");
+
+    if (!fp)
+    {
+        MessageBoxA(0, "Can't read ItemList.bin", "ERROR", 0);
+        return 0;
+    }
+
+    int size = sizeof(g_pItemList);
+
+    char* temp = (char*)g_pItemList;
+
+    int tsum{};
+
+    fread(g_pItemList, size, 1u, fp);
+    fread(&tsum, 4u, 1u, fp);
+    fclose(fp);
+
+    int sum = BASE_GetSum2((char*)g_pItemList, size); // Not being used...
+
+    if (tsum != 0x1343B16)
+        return 0;
+    
+    for (int i = 0; i < size; ++i)
+        temp[i] ^= 0x5A;
+
+    int Handle = _open(".\\ExtraItem.bin", _O_RDONLY | _O_BINARY, 0);
+
+    if (Handle != -1)
+    {
+        char buff[256]{};
+
+        while (_read(Handle, buff, sizeof(STRUCT_ITEMLIST) + 2) >= sizeof(STRUCT_ITEMLIST) + 2)
+        {
+            short idx = *(short*)buff;
+
+            if (buff > 0 && idx < MAX_ITEMLIST)
+                memcpy(&g_pItemList[idx], &buff[2], sizeof(STRUCT_ITEMLIST));
+        }
+
+        _close(Handle);
+
+        for (int j = 0; j < size; ++j)
+            temp[j] ^= 0x5A;
+
+        sum = BASE_GetSum2((char*)g_pItemList, size); // Not being used...
+
+        if (tsum != 0x1343B16)
+            return 0;
+
+        for (int j = 0; j < size; ++j)
+            temp[j] ^= 0x5A;
+    }
+    return 1;
+}
+
 int BASE_GetSum(char* p, int size)
 {
 	int sum = 0;
@@ -52,6 +113,32 @@ int BASE_GetSum(char* p, int size)
 	}
 
 	return sum;
+}
+
+int BASE_GetSum2(char* p, int size)
+{
+    int sum = 0;
+
+    for (int i = 0; i < size; ++i)
+    {
+        int mod = i % 9;
+        if (mod == 0)
+            sum += 2 * p[i];
+        if (mod == 1)
+            sum += p[i] ^ 0xFF;
+        if (mod == 2)
+            sum += p[i] / 3;
+        if (mod == 3)
+            sum += 2 * p[i];
+        if (mod == 4)
+            sum -= p[i] ^ 0x5A;
+        if (mod == 5)
+            sum -= p[i];
+        else
+            sum += p[i] / 5;
+    }
+
+    return sum;
 }
 
 int BASE_ReadMessageBin()
@@ -88,6 +175,7 @@ int BASE_InitializeBaseDef()
 {
 	BASE_InitializeServerList();
 
+    BASE_ReadItemList();
 	return 1;
 }
 
@@ -120,9 +208,279 @@ int BASE_GetWeekNumber()
 	return (int)(now / week - 3);
 
 }
+
+int BASE_GetItemSanc(STRUCT_ITEM* item)
+{
+    if (item->sIndex >= 2330 && item->sIndex < 2390)
+        return 0;
+
+    if (item->sIndex >= 3200 && item->sIndex < 3300)
+        return 0;
+
+    if (item->sIndex >= 3980 && item->sIndex < 4000)
+        return 0;
+
+    int sanc{};
+
+    if (item->stEffect[0].cEffect != EF_SANC && item->stEffect[1].cEffect != EF_SANC && item->stEffect[2].cEffect != EF_SANC)
+    {
+        if (item->stEffect[0].cEffect >= 115 && item->stEffect[0].cEffect <= 126)
+            sanc = item->stEffect[0].cValue;
+
+        else if (item->stEffect[1].cEffect >= 115 && item->stEffect[1].cEffect <= 126)
+            sanc = item->stEffect[1].cValue;
+
+        else if (item->stEffect[2].cEffect >= 115 && item->stEffect[2].cEffect <= 126)
+            sanc = item->stEffect[2].cValue;
+    }
+    else if (item->stEffect[0].cEffect == EF_SANC)
+        sanc = item->stEffect[0].cValue;
+
+    else if (item->stEffect[1].cEffect == EF_SANC)
+        sanc = item->stEffect[1].cValue;
+
+    else
+        sanc = item->stEffect[2].cValue;
+
+    if (item->sIndex != 786 && item->sIndex != 1936 && item->sIndex != 1937)
+    {
+        if (sanc < 230)
+            sanc %= 10;
+        else
+            sanc -= 220;
+
+        if (sanc >= 10 && sanc <= 35)
+            sanc = (sanc - 10) / 4 + 10;
+    }
+
+    return sanc;
+}
+
 int BASE_GetItemAbility(STRUCT_ITEM* item, char Type)
 {
-	return 0;
+    int value = 0;
+    int idx = item->sIndex;
+
+    if (idx <= 0 || idx > MAX_ITEMLIST)
+        return 0;
+
+    int nUnique = g_pItemList[idx].nUnique;
+    int nPos = g_pItemList[idx].nPos;
+
+    if ((Type == EF_DAMAGEADD || Type == EF_MAGICADD) && (nUnique < 41 || nUnique > 50))
+        return 0;
+
+    if (Type == EF_CRITICAL && (item->stEffect[1].cEffect == EF_CRITICAL2 || item->stEffect[2].cEffect == EF_CRITICAL2))
+        Type = EF_CRITICAL2;
+
+    if (Type == EF_DAMAGE && nPos == 32 && (item->stEffect[1].cEffect == EF_DAMAGE2 || item->stEffect[2].cEffect == EF_DAMAGE2))
+        Type = EF_DAMAGE2;
+
+    if (Type == EF_MPADD && (item->stEffect[1].cEffect == EF_MPADD2 || item->stEffect[2].cEffect == EF_MPADD2))
+        Type = EF_MPADD2;
+
+    if (Type == EF_HPADD && (item->stEffect[1].cEffect == EF_HPADD2 || item->stEffect[2].cEffect == EF_HPADD2))
+        Type = EF_HPADD2;
+
+    if (Type == EF_ACADD && (item->stEffect[1].cEffect == EF_ACADD2 || item->stEffect[2].cEffect == EF_ACADD2))
+        Type = EF_ACADD2;
+
+    if (Type == EF_LEVEL)
+        value = g_pItemList[idx].nReqLvl;
+
+    if (Type == EF_REQ_STR)
+        value += g_pItemList[idx].nReqStr;
+
+    if (Type == EF_REQ_INT)
+        value += g_pItemList[idx].nReqInt;
+
+    if (Type == EF_REQ_DEX)
+        value += g_pItemList[idx].nReqDex;
+
+    if (Type == EF_REQ_CON)
+        value += g_pItemList[idx].nReqCon;
+
+    if (Type == EF_POS)
+        value += g_pItemList[idx].nPos;
+
+    if (Type != EF_INCUBATE)
+    {
+        for (int i = 0; i < 12; ++i)
+        {
+            if (g_pItemList[idx].stEffect[i].sEffect == Type ||
+                g_pItemList[idx].stEffect[i].sEffect == EF_HPADD && Type == EF_HPADD2)
+            {
+                int tvalue = g_pItemList[idx].stEffect[i].sValue;
+
+                if (Type == EF_ATTSPEED && tvalue == 1)
+                    tvalue = 10;
+
+                value += tvalue;
+            }
+        }
+    }
+
+    if (item->sIndex >= 2330 && item->sIndex < 2390)
+    {
+        switch (Type)
+        {
+        case EF_MOUNTHP:
+            return item->stEffect[0].sValue;
+        case EF_MOUNTSANC:
+            return item->stEffect[1].cEffect;
+        case EF_MOUNTLIFE:
+            return item->stEffect[1].cValue;
+        case EF_MOUNTFEED:
+            return item->stEffect[2].cEffect;
+        case EF_MOUNTKILL:
+            return item->stEffect[2].cValue;
+        }
+
+        if (item->sIndex < 2362 || item->sIndex >= 2390 || item->stEffect[0].sValue <= 0)
+            return value;
+
+        int lv = item->stEffect[1].cEffect;
+        int cd = item->sIndex - 2360;
+
+        switch (Type)
+        {
+        case EF_DAMAGE:
+            value = g_pMountBonus[cd][0] * (lv + 20) / 100;
+            break;
+        case EF_MAGIC:
+            value = g_pMountBonus[cd][1] * (lv + 15) / 100;
+            break;
+        case EF_PARRY:
+            value = g_pMountBonus[cd][2];
+            break;
+        case EF_RESISTALL:
+            value = g_pMountBonus[cd][3];
+            break;
+        default:
+            break;
+        }
+    }
+    else if (item->sIndex >= 3980 && item->sIndex < 4000)
+    {
+        int cd = item->sIndex - 3980;
+
+        switch (Type)
+        {
+        case EF_DAMAGE:
+            value = g_pMountBonus2[cd][0];
+            break;
+        case EF_MAGIC:
+            value = g_pMountBonus2[cd][1];
+            break;
+        case EF_PARRY:
+            value = g_pMountBonus2[cd][2];
+            break;
+        case EF_RESISTALL:
+            value = g_pMountBonus2[cd][3];
+            break;
+        default:
+            break;
+        }
+    }
+    else
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            if (item->stEffect[j].cEffect == Type)
+            {
+                int tvalue = item->stEffect[j].cValue;
+
+                if (Type == EF_ATTSPEED && tvalue == 1)
+                    tvalue = 10;
+
+                value += tvalue;
+            }
+        }
+
+        int sanc = BASE_GetItemSanc(item);
+
+        if (item->sIndex <= 40)
+            sanc = 0;
+
+        if (sanc >= 9 && nPos & 0xF00)
+            sanc++;
+
+        if (sanc
+            && Type != EF_GRID
+            && Type != EF_CLASS
+            && Type != EF_POS
+            && Type != EF_WTYPE
+            && Type != EF_RANGE
+            && Type != EF_LEVEL
+            && Type != EF_REQ_STR
+            && Type != EF_REQ_INT
+            && Type != EF_REQ_DEX
+            && Type != EF_REQ_CON
+            && Type != EF_VOLATILE
+            && Type != EF_INCUBATE
+            && Type != EF_INCUDELAY
+            && Type != EF_PREVBONUS
+            && Type != EF_TRANS
+            && Type != EF_REFLEVEL
+            && Type != EF_GAMEROOM
+            && Type != EF_REGENMP
+            && Type != EF_REGENHP
+            && Type != EF_FAME)
+        {
+            if (sanc > 10)
+            {
+                int UpSanc = sanc - 10;
+
+                switch (UpSanc)
+                {
+                case 1:
+                    UpSanc = 220;
+                    break;
+                case 2:
+                    UpSanc = 250;
+                    break;
+                case 3:
+                    UpSanc = 280;
+                    break;
+                case 4:
+                    UpSanc = 320;
+                    break;
+                case 5:
+                    UpSanc = 370;
+                    break;
+                case 6:
+                    UpSanc = 400;
+                    break;
+                }
+
+                value = UpSanc * 10 * value / 100 / 10;
+            }
+            else
+            {
+                value = value * (sanc + 10) / 10;
+            }
+        }
+
+        if (Type == EF_RUNSPEED)
+        {
+            if (value >= 3)
+                value = 2;
+
+            if (value > 0 && sanc >= 9)
+                value++;
+        }
+
+       /* if (Type == EF_HWORDGUILD || Type == EF_LWORDGUILD)
+            value = value;*/
+
+        if (Type == EF_REGENMP || Type == EF_REGENHP)
+            value *= sanc;
+
+        if (Type == EF_GRID && (value < 0 || value > 7))
+            value = 0;
+    }
+
+	return value;
 }
 int BASE_DefineSkinMeshType(int nClass)
 {

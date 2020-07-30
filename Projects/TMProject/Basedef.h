@@ -825,6 +825,64 @@ static int g_pDistanceTable[7][7] =
   { 6, 6, 6, 6, 6, 6, 6 }
 };
 
+static int g_pMountBonus[30][6] =
+{
+  { 10, 1, 0, 0, 4, 75 },
+  { 10, 1, 0, 0, 4, 75 },
+  { 50, 10, 0, 0, 5, 75 },
+  { 80, 15, 0, 0, 5, 75 },
+  { 100, 20, 0, 0, 4, 75 },
+  { 150, 25, 0, 0, 5, 75 },
+  { 250, 50, 40, 0, 6, 75 },
+  { 300, 60, 50, 0, 6, 75 },
+  { 350, 65, 60, 0, 6, 75 },
+  { 400, 70, 70, 0, 6, 75 },
+  { 500, 85, 80, 0, 6, 73 },
+  { 250, 50, 0, 16, 6, 75 },
+  { 300, 60, 0, 20, 6, 75 },
+  { 350, 65, 0, 24, 6, 75 },
+  { 400, 70, 0, 28, 6, 75 },
+  { 500, 85, 0, 32, 6, 73 },
+  { 550, 90, 0, 0, 6, 73 },
+  { 600, 90, 0, 0, 6, 66 },
+  { 550, 90, 0, 20, 6, 73 },
+  { 650, 100, 60, 28, 6, 65 },
+  { 700, 110, 80, 32, 6, 65 },
+  { 570, 90, 20, 16, 6, 71 },
+  { 570, 90, 30, 8, 6, 71 },
+  { 570, 90, 40, 12, 6, 69 },
+  { 590, 95, 30, 20, 6, 69 },
+  { 600, 95, 40, 16, 6, 65 },
+  { 600, 95, 50, 16, 6, 65 },
+  { 600, 40, 60, 28, 6, 65 },
+  { 300, 95, 60, 28, 6, 65 },
+  { 150, 25, 0, 20, 5, 75 }
+};
+
+static int g_pMountBonus2[20][6] =
+{
+  { 35, 7, 0, 0, 6, 75 },
+  { 350, 55, 10, 28, 6, 74 },
+  { 450, 55, 0, 0, 6, 74 },
+  { 35, 7, 0, 0, 6, 75 },
+  { 450, 72, 10, 28, 6, 74 },
+  { 450, 72, 0, 0, 6, 74 },
+  { 120, 45, 0, 0, 6, 75 },
+  { 450, 72, 10, 28, 6, 74 },
+  { 450, 72, 0, 0, 6, 74 },
+  { 325, 35, 16, 28, 6, 65 },
+  { 350, 45, 10, 4, 6, 65 },
+  { 250, 25, 0, 31, 6, 65 },
+  { 80, 15, 0, 31, 6, 75 },
+  { 950, 145, 60, 20, 6, 75 },
+  { 950, 145, 60, 20, 6, 75 },
+  { 300, 60, 50, 0, 6, 75 },
+  { 350, 65, 60, 0, 6, 75 },
+  { 400, 70, 70, 0, 6, 75 },
+  { 500, 85, 80, 0, 6, 73 },
+  { 0, 0, 0, 0, 0, 0 }
+};
+
 extern HWND hWndMain;
 extern char EncodeByte[4];
 extern int g_nChannelWidth;
@@ -838,6 +896,7 @@ float BASE_ScreenResize(float size);
 void BASE_InitModuleDir();
 void BASE_InitializeHitRate();
 void BASE_ApplyAttribute(char* pHeight, int size);
+int BASE_ReadItemList();
 int	BASE_ReadMessageBin();
 void BASE_InitEffectString();
 int BASE_InitializeBaseDef();
@@ -846,7 +905,9 @@ void BASE_UnderBarToSpace(char* szStr);
 int BASE_InitializeServerList();
 int	BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer);
 int BASE_GetSum(char* p, int size);
+int BASE_GetSum2(char* p, int size);
 int BASE_GetWeekNumber();
+int BASE_GetItemSanc(STRUCT_ITEM* item);
 int BASE_GetItemAbility(STRUCT_ITEM* item, char Type);
 int BASE_DefineSkinMeshType(int nClass);
 float BASE_GetMountScale(int nSkinMeshType, int nMeshIndex);
