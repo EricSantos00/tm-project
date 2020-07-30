@@ -533,7 +533,7 @@ int CMesh::RenderMesh(char cAlpha)
     }
     else
     {
-        g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE);
+        g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 4);
         g_pDevice->SetTexture(1, nullptr);
     }
 
@@ -579,19 +579,19 @@ int CMesh::RenderMesh(char cAlpha)
             if (cAlpha == 'C')
                 g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 1);
 
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, D3DCULL::D3DCULL_CW);
+            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, 2);
 
             TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 20_min);
             if (pMesh)
                 pMesh->Render(bMulti, 0);
 
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, D3DCULL::D3DCULL_CCW);
+            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, 3);
         }
         if (m_sMultiType > 0)
         {
-            g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_TEXCOORDINDEX, D3DTEXTUREOP::D3DTOP_DISABLE);
-            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE);
-            g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_DISABLE);
+            g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_TEXCOORDINDEX, 1);
+            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 4);
+            g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 1);
         }
         return 1;
     }

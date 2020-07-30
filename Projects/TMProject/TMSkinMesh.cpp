@@ -286,15 +286,15 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 		if (m_nCosType != 0 && m_nCosType != 100)
 			SetCostume(m_nCosType, szTexture, szName);
 
-		if ((signed int)*look < 90 || !i || look[2 * i])
+		if ((int)*look < 90 || !i || look[2 * i])
 		{
 			CMesh* tmpMesh = new CMesh(this);
 
 			if(tmpMesh == nullptr)
 				return 0x80004005;
 
-			short nSanc = (unsigned short)sanc[i];
-			short nLegnd = (unsigned short)sanc[i + 8];
+			short nSanc = (unsigned char)sanc[i];
+			short nLegnd = (unsigned char)sanc[i + 8];
 
 			if (nSanc > 15)
 				nSanc = 15;
