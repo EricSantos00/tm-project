@@ -800,94 +800,100 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
             Route[i] = '2';
             --y;
         }
-        else if (tx == x + 1 || ty == y + 1 || tx == x - 1 || ty == y - 1)
+        else
         {
-            Route[i] = 0;
-            break;
-        }
-        if (tx == x
-            && ty > y
-            && se < MH + cul
-            && se > cul - MH
-            && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
-        {
-            Route[i] = '9';
-            ++x;
-            ++y;
-        }
-        else if (tx == x
-            && ty > y
-            && sw < MH + cul
-            && sw > cul - MH
-            && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
-        {
-            Route[i] = '7';
-            --x;
-            ++y;
-        }
-        else if (tx == x
-            && ty < y
-            && ne < MH + cul
-            && ne > cul - MH
-            && (n < MH + cul && n > cul - MH || e < MH + cul && e > cul - MH))
-        {
-            Route[i] = '3';
-            ++x;
-            --y;
-        }
-        else if (tx == x
-            && ty < y
-            && nw < MH + cul
-            && nw > cul - MH
-            && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
-        {
-            Route[i] = '1';
-            --x;
-            --y;
-        }
-        else if (tx < x
-            && ty == y
-            && sw < MH + cul
-            && sw > cul - MH
-            && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
-        {
-            Route[i] = '7';
-            --x;
-            ++y;
-        }
-        else if (tx < x
-            && ty == y
-            && nw < MH + cul
-            && nw > cul - MH
-            && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
-        {
-            Route[i] = '1';
-            --x;
-            --y;
-        }
-        else if (tx > x
-            && ty == y
-            && se < MH + cul
-            && se > cul - MH
-            && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
-        {
-            Route[i] = '9';
-            ++x;
-            ++y;
-        }
-        else if (tx <= x
-            || ty != y
-            || ne >= MH + cul
-            || ne <= cul - MH
-            || (n >= MH + cul || n <= cul - MH) && (e >= MH + cul || e <= cul - MH))
-        {
-            Route[i] = 0;
-            break;
-        }
+            if (tx == x + 1 || ty == y + 1 || tx == x - 1 || ty == y - 1)
+            {
+                Route[i] = 0;
+                break;
+            }
+            if (tx == x
+                && ty > y
+                && se < MH + cul
+                && se > cul - MH
+                && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
+            {
+                Route[i] = '9';
+                ++x;
+                ++y;
+            }
+            else if (tx == x
+                && ty > y
+                && sw < MH + cul
+                && sw > cul - MH
+                && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
+            {
+                Route[i] = '7';
+                --x;
+                ++y;
+            }
+            else if (tx == x
+                && ty < y
+                && ne < MH + cul
+                && ne > cul - MH
+                && (n < MH + cul && n > cul - MH || e < MH + cul && e > cul - MH))
+            {
+                Route[i] = '3';
+                ++x;
+                --y;
+            }
+            else if (tx == x
+                && ty < y
+                && nw < MH + cul
+                && nw > cul - MH
+                && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
+            {
+                Route[i] = '1';
+                --x;
+                --y;
+            }
+            else if (tx < x
+                && ty == y
+                && sw < MH + cul
+                && sw > cul - MH
+                && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
+            {
+                Route[i] = '7';
+                --x;
+                ++y;
+            }
+            else if (tx < x
+                && ty == y
+                && nw < MH + cul
+                && nw > cul - MH
+                && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
+            {
+                Route[i] = '1';
+                --x;
+                --y;
+            }
+            else if (tx > x
+                && ty == y
+                && se < MH + cul
+                && se > cul - MH
+                && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
+            {
+                Route[i] = '9';
+                ++x;
+                ++y;
+            }
+            else
+            {
+                if (tx <= x
+                    || ty != y
+                    || ne >= MH + cul
+                    || ne <= cul - MH
+                    || (n >= MH + cul || n <= cul - MH) && (e >= MH + cul || e <= cul - MH))
+                {
+                    Route[i] = 0;
+                    break;
+                }
 
-        Route[i] = '3';
-        ++x;
-        --y;
+                Route[i] = '3';
+                ++x;
+                --y;
+            }
+        }
     }
 
     if (lastx == x && lasty == y)

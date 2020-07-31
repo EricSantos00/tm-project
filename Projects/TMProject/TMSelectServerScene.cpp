@@ -1219,14 +1219,23 @@ void TMSelectServerScene::MoveHuman(int nIndex)
 
 void TMSelectServerScene::RemoveHuman()
 {
-	for (int nPerson = 0; nPerson < 50; ++nPerson)
+	for (int nPerson = 0; nPerson < 18; ++nPerson)
 	{
 		if (m_pCheckHumanList[nPerson])
 		{
 			g_pObjectManager->DeleteObject(m_pCheckHumanList[nPerson]);
-			m_pCheckHumanList[nPerson] = nullptr;
+			m_pCheckHumanList[nPerson] = 0;
 		}
-	}	
+	}
+	
+	for (int nPerson = 26; nPerson < 40; ++nPerson)
+	{
+		if (m_pCheckHumanList[nPerson])
+		{
+			g_pObjectManager->DeleteObject(m_pCheckHumanList[nPerson]);
+			m_pCheckHumanList[nPerson] = 0;
+		}
+	}
 }
 
 void TMSelectServerScene::SetAlphaServer(unsigned int dwStartTime, unsigned int dwServerTime, unsigned int dwTerm, int bFade)

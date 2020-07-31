@@ -3902,6 +3902,9 @@ void TMHuman::MoveTo(TMVector2 vecPos)
             m_fWantAngle = m_fWantAngle - 6.2831855f;
         }
 
+
+        std::cout << "Moved to " << m_vecMoveToPos.x << " " << m_vecMoveToPos.y << '\n';
+
         m_vecFromPos = m_vecPosition;
         m_vecDPosition = m_vecMoveToPos - m_vecPosition;
         float fDistance = m_vecDPosition.DistanceFrom(TMVector2(0.0f, 0.0f));
@@ -4712,8 +4715,8 @@ void TMHuman::GetRoute(IVector2 vecTarget, int nCount, int bStop)
                 int nStart = pScene->GroundGetMask(TMVector2((float)nSX, (float)nSY));
                 int nEnd = pScene->GroundGetMask(TMVector2((float)vecTarget.x, (float)vecTarget.y));
 
-                int nHeight = nEnd - nStart <= 0 ? nStart - nEnd : nEnd - nStart;
-                int nHeight2 = nEnd - nStart2 <= 0 ? nStart2 - nEnd : nEnd - nStart2;
+                int nHeight = abs(nEnd - nStart);
+                int nHeight2 = abs(nEnd - nStart2);
 
                 if (nHeight2 <= 30 || !m_LastSendTargetPos.x || !m_LastSendTargetPos.y)
                 {
@@ -4723,14 +4726,14 @@ void TMHuman::GetRoute(IVector2 vecTarget, int nCount, int bStop)
                         BASE_GetRoute(nSX, nSY, &vecTarget.x, &vecTarget.y, cRouteBuffer, nMaxRoute / 2, pHeightMapData, 8);
 
                         nEnd = pScene->GroundGetMask(TMVector2((float)vecTarget.x, (float)vecTarget.y));
-                        nHeight = nEnd - nStart <= 0 ? nStart - nEnd : nEnd - nStart;
+                        nHeight = abs(nEnd - nStart);
                         if (nHeight > 30)
                         {
                             memset(cRouteBuffer, 0, sizeof(cRouteBuffer));
                             BASE_GetRoute(nSX, nSY, &vecTarget.x, &vecTarget.y, cRouteBuffer, nMaxRoute / 4, pHeightMapData, 8);
 
                             nEnd = pScene->GroundGetMask(TMVector2((float)vecTarget.x, (float)vecTarget.y)); 
-                            nHeight = nEnd - nStart <= 0 ? nStart - nEnd : nEnd - nStart;
+                            nHeight = abs(nEnd - nStart);
                         }
                     }
                     if ((int)m_vecPosition.x == vecTarget.x
@@ -4759,8 +4762,7 @@ void TMHuman::GetRoute(IVector2 vecTarget, int nCount, int bStop)
                                 dst.TargetX = vecTarget.x;
                                 dst.TargetY = vecTarget.y;
 
-                                TMFieldScene* pFScene = (TMFieldScene*)g_pCurrentScene;
-                                pFScene->OnPacketEvent(MSG_Action_Opcode, (char*)&dst);
+                                g_pCurrentScene->OnPacketEvent(MSG_Action_Opcode, (char*)&dst);
 
                                 if (bStop != 2)
                                 {
@@ -4802,7 +4804,7 @@ void TMHuman::GetRoute(IVector2 vecTarget, int nCount, int bStop)
 
                                     if ((int)vecRouteTable[nRouteIndex].x == nX && (int)vecRouteTable[nRouteIndex].y == nY && !pNode->m_cDie)
                                     {
-                                        bFind = 1;
+                                        bFind = true;
                                         break;
                                     }
                                 }
@@ -4933,6 +4935,8 @@ void TMHuman::GenerateRouteTable(int nSX, int nSY, char* pRouteBuffer, TMVector2
         }
         vecCurrent = pRouteTable[i];
     }
+
+    std::cout << "Current " << vecCurrent.x << " " << vecCurrent.y << '\n';
 }
 
 int TMHuman::StraightRouteTable(int nSX, int nSY, int nTargetX, int nTargetY, TMVector2* pRouteTable, int* pMaxRouteIndex, int distance, char* pHeight, int MH)
