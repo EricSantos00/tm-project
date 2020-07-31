@@ -348,7 +348,7 @@ int TMObject::IsVisible()
 
 	TMCamera* pCamera = g_pObjectManager->m_pCamera;
 	D3DXVECTOR3 VecCam = D3DXVECTOR3(pCamera->m_cameraPos.x, pCamera->m_cameraPos.z, pCamera->m_cameraPos.y);
-	D3DXVECTOR3 Vec = D3DXVECTOR3(m_vecPosition.x, m_vecPosition.y, m_fHeight + 7.0f) - VecCam;
+	D3DXVECTOR3 Vec = D3DXVECTOR3(m_vecPosition.x, m_vecPosition.y, m_fHeight) - VecCam;
 
 	if (pMesh->m_fRadius >= D3DXVec3Length(&Vec))
 	{

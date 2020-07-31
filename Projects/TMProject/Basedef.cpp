@@ -26,10 +26,37 @@ void BASE_InitializeHitRate()
 {
 }
 
+int BASE_InitializeAttribute()
+{
+    char FileName[256]{};
+    strcpy(FileName, "./Env/AttributeMap.dat");
+
+    FILE* fp = nullptr;
+    fopen_s(&fp, FileName, "rb");
+    if (fp == nullptr)
+        fopen_s(&fp, "../../TMSRV/Run/AttributeMap.dat", "rb");
+
+    if (fp == nullptr)
+    {
+        MessageBox(0, "There is no file", "Attributemap.dat", MB_OK);
+        return 0;
+    }
+
+    fread(g_pAttribute, 1024, 1024, fp);
+    int tsum = 0;
+    fread(&tsum, 4, 1, fp);
+    fclose(fp);
+
+    int sum = BASE_GetSum((char*)g_pAttribute, sizeof(g_pAttribute));
+
+    return sum == tsum;
+}
+
 void BASE_ApplyAttribute(char* pHeight, int size)
 {
     int endx = size + g_HeightPosX;
     int endy = size + g_HeightPosY;
+
     for (int y = g_HeightPosY; y < endy; ++y)
     {
         for (int x = g_HeightPosX; x < endx; ++x)
@@ -183,10 +210,12 @@ void BASE_InitEffectString()
 
 int BASE_InitializeBaseDef()
 {
-	BASE_InitializeServerList();
+    int ret = 0;
+	ret = BASE_InitializeServerList() & 1;
+    ret = BASE_ReadItemList() & ret;
+    ret = BASE_InitializeAttribute() & ret;
 
-    BASE_ReadItemList();
-	return 1;
+	return ret;
 }
 
 void BASE_ReadItemPrice()

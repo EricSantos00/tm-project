@@ -903,6 +903,7 @@ extern STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
 float BASE_ScreenResize(float size);
 void BASE_InitModuleDir();
 void BASE_InitializeHitRate();
+int BASE_InitializeAttribute();
 void BASE_ApplyAttribute(char* pHeight, int size);
 int BASE_ReadItemList();
 int	BASE_ReadMessageBin();

@@ -5191,7 +5191,49 @@ void TMHuman::UpdateMount()
 
 float TMHuman::GetMyHeight()
 {
-	return 0.0f;
+    if (g_pCurrentScene == nullptr)
+        return 0.0f;
+
+    if (m_nClass == 45 && !m_stLookInfo.LeftMesh)
+    {
+        m_fWantHeight = 0.0;
+        return 0.0f;
+    }
+    else if (m_nClass == 50 && g_pCurrentScene->m_pGround)
+    {
+        m_fWantHeight = (float)g_pCurrentScene->GetMask2(m_vecPosition) * 0.1f;
+        return m_fWantHeight;
+    }
+
+    else if (m_nSkinMeshType == 40
+        || m_nSkinMeshType == 24
+        || m_nSkinMeshType == 20
+        || m_nSkinMeshType == 39
+        || m_nSkinMeshType == 8
+        || m_cMount && (m_nMountSkinMeshType == 40
+            || m_nMountSkinMeshType == 20
+            || m_nMountSkinMeshType == 39
+            || m_nMountSkinMeshType == 45
+            || m_nMountSkinMeshType == 46
+            || m_nMountSkinMeshType == 47))
+    {
+        if (fabsf(m_fHeight - m_fWantHeight) <= 0.1f)
+            return m_fWantHeight;
+        else
+            return (float)(m_fWantHeight
+                - (float)((float)(m_fWantHeight - m_fHeight) * 0.89999998f));
+    }
+
+    else if (m_nSkinMeshType == 5 && m_stLookInfo.FaceMesh != 1)
+    {      
+        if (fabsf(m_fHeight - m_fWantHeight) <= 0.1f)
+            return m_fWantHeight;
+        else
+            return (float)(m_fWantHeight
+                - (float)((float)(m_fWantHeight - m_fHeight) * 0.89999998f));
+    }
+
+    return m_fWantHeight;
 }
 
 void TMHuman::SetGuildBattleHPColor()
