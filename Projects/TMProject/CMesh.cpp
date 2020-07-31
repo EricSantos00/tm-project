@@ -879,10 +879,20 @@ int CMesh::LoadMesh(char* file)
                 m_pMesh->m_fMinZ = pVertex[nFloatCount * i + 2];
         }
 
-        // fabsf?
-        std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinX, m_pMesh->m_fMaxX);
-        std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinY, m_pMesh->m_fMaxY);
-        std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinZ, m_pMesh->m_fMaxZ);
+        if (fabsf(m_pMesh->m_fMaxX) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMaxX);
+        if (fabsf(m_pMesh->m_fMinX) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMinX);
+
+        if (fabsf(m_pMesh->m_fMaxY) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMaxY);
+        if (fabsf(m_pMesh->m_fMinY) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMinY);
+
+        if (fabsf(m_pMesh->m_fMaxZ) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMaxZ);
+        if (fabsf(m_pMesh->m_fMinZ) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMinZ);
 
         m_pMesh->m_pVB->Unlock();
 

@@ -2129,10 +2129,6 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         fDAngle = m_fWantAngle - m_fMoveToAngle;
     }
 
-    float fAux = m_fAngle - m_fWantAngle;
-    if (fAux <= 0.0f)
-        fAux = -fAux;
-
     if (fabsf(m_fAngle - m_fWantAngle) > 0.017453292f)
     {
         if (m_bForcedRotation)

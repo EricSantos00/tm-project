@@ -704,10 +704,20 @@ int TMMesh::LoadMsa(const char* szFileName)
 			m_fMinZ = pVertex[i * (nAddedFloatNum + nFloatCount) + 2];
 	}
 
-	// TODO: Check if is clamp here
-	std::clamp(m_fRadius, m_fMinX, m_fMaxX);
-	std::clamp(m_fRadius, m_fMinY, m_fMaxY);
-	std::clamp(m_fRadius, m_fMinZ, m_fMaxZ);
+	if (fabsf(m_fMaxX) > m_fRadius)
+		m_fRadius = fabsf(m_fMaxX);
+	if (fabsf(m_fMinX) > m_fRadius)
+		m_fRadius = fabsf(m_fMinX);
+
+	if (fabsf(m_fMaxY) > m_fRadius)
+		m_fRadius = fabsf(m_fMaxY);
+	if (fabsf(m_fMinY) > m_fRadius)
+		m_fRadius = fabsf(m_fMinY);
+
+	if (fabsf(m_fMaxZ) > m_fRadius)
+		m_fRadius = fabsf(m_fMaxZ);
+	if (fabsf(m_fMinZ) > m_fRadius)
+		m_fRadius = fabsf(m_fMinZ);
 
 	m_vecCenter = TMVector3((float)(m_fMaxX + m_fMinX) * 0.5f,
 		(float)(m_fMaxY + m_fMinY) * 0.5f,
