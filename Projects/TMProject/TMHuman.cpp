@@ -2070,7 +2070,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
     }
 
     int nRouteIndex = dwElapsedStartTime / dwUnitTime;
-    float fProgressRate = (float)(dwElapsedStartTime - dwElapsedStartTime / dwUnitTime * dwUnitTime) / (float)dwUnitTime;
+    float fProgressRate = (float)((dwElapsedStartTime - dwElapsedStartTime) / (dwUnitTime * dwUnitTime)) / (float)dwUnitTime;
     if ((int)(dwElapsedStartTime / dwUnitTime) < m_nMaxRouteIndex)
         m_bMoveing = 1;
     else
@@ -2080,8 +2080,9 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         m_bMoveing = 0;
     }
 
-    if (m_nMaxRouteIndex + 1 < 48 && (m_vecRouteBuffer[m_nMaxRouteIndex].x != m_vecRouteBuffer[m_nMaxRouteIndex + 1].x || 
-        m_vecRouteBuffer[m_nMaxRouteIndex].y != m_vecRouteBuffer[m_nMaxRouteIndex + 1].y))
+    if (m_nMaxRouteIndex + 1 < 48 && 
+        (m_vecRouteBuffer[m_nMaxRouteIndex].x != m_vecRouteBuffer[m_nMaxRouteIndex + 1].x || 
+         m_vecRouteBuffer[m_nMaxRouteIndex].y != m_vecRouteBuffer[m_nMaxRouteIndex + 1].y))
     {
         ++m_nMaxRouteIndex;
     }
@@ -2288,6 +2289,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         }
         else if (m_stScore.Hp <= 0 && m_eMotion != ECHAR_MOTION::ECMOTION_DIE && m_nWillDie == 4)
             SetAnimation(ECHAR_MOTION::ECMOTION_DEAD, 1);
+
         else if (m_stScore.Hp <= 0 && m_eMotion != ECHAR_MOTION::ECMOTION_DIE && m_eMotion != ECHAR_MOTION::ECMOTION_DEAD
             && m_nWillDie == 1)
         {
@@ -2313,7 +2315,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
             m_bSliding = 0;
         }
     }
-    else if ((m_eMotion != ECHAR_MOTION::ECMOTION_WALK || m_eMotion != ECHAR_MOTION::ECMOTION_RUN || (int)m_eMotion < 4 && (int)m_eMotion > 9)
+    else if ((m_eMotion != ECHAR_MOTION::ECMOTION_WALK || m_eMotion != ECHAR_MOTION::ECMOTION_RUN || ((int)m_eMotion < 4 && (int)m_eMotion > 9))
         && !m_bSliding)
     {
         int nWalk = 2;
@@ -2903,12 +2905,231 @@ int TMHuman::OnCharEvent(char iCharCode, int lParam)
 
 int TMHuman::OnPacketEvent(unsigned int dwCode, char* buf)
 {
-	return 0;
+    if (m_dwDelayDel)
+        return 0;
+
+    if (buf == nullptr)
+        return 0;
+
+    MSG_STANDARD* pStandard = (MSG_STANDARD*)buf;
+
+    if (pStandard->ID != m_dwID)
+        return 0;
+
+    if (pStandard->Type == MSG_Action_Opcode || pStandard->Type == MSG_Action_Stop_Opcode || pStandard->Type == MSG_Action2_Opcode)
+    {
+        MSG_Action* pAction = (MSG_Action*)buf;
+        if (pAction->TargetX < 0 || pAction->TargetX > 5000 ||
+            pAction->TargetY < 0 || pAction->TargetY > 5000)
+        {
+            LOG_WRITELOG("\nError Position [X:%d Y:%d] MSG Type : 0x%X\n", pAction->TargetX, pAction->TargetY, pAction->Header.Type);
+        }
+
+        if (pAction->Effect == 0 || pAction->Effect == 2)
+            return OnPacketMove(pAction);
+        else if (pAction->Effect == 7)
+            return OnPacketChaosCube(pAction);
+        else if (pAction->Effect >= 1)
+            return OnPacketIllusion(pStandard);
+        else
+            return 1;
+    }
+
+    switch (pStandard->Type)
+    {
+    case 0x3CA:
+        return OnPacketPremiumFireWork((MSG_STANDARD*)buf);
+        break;
+    case 0x36A:
+        return OnPacketFireWork((MSG_STANDARD*)buf);
+        break;
+    case 0x165:
+        return OnPacketRemoveMob((MSG_STANDARD*)buf);
+        break;
+    case 0x182:
+        return OnPacketSendItem((MSG_STANDARD*)buf);
+        break;
+    case 0x36B:
+        return OnPacketUpdateEquip((MSG_STANDARD*)buf);
+        break;
+    case 0x3B9:
+        return OnPacketUpdateAffect((MSG_STANDARD*)buf);
+        break;
+    case 0x336:
+        return OnPacketUpdateScore((MSG_STANDARD*)buf);
+        break;
+    case 0x181:
+        return OnPacketSetHpMp((MSG_STANDARD*)buf);
+        break;
+    case 0x18A:
+        return OnPacketSetHpDam((MSG_STANDARD*)buf);
+        break;
+    case 0x333:
+        return OnPacketMessageChat((MSG_STANDARD*)buf);
+        break;
+    case 0x105:
+        return OnPacketMessageChat_Index((MSG_STANDARD*)buf);
+        break;
+    case 0x106:
+        return OnPacketMessageChat_Param((MSG_STANDARD*)buf);
+        break;
+    case 0x334:
+        return OnPacketMessageWhisper((MSG_STANDARD*)buf);
+        break;
+    case 0x337:
+        return OnPacketUpdateEtc((MSG_STANDARD*)buf);
+        break;
+    case 0x3AF:
+        return OnPacketUpdateCoin((MSG_STANDARD*)buf);
+        break;
+    case 0x1CF:
+        return OnPacketUpdateRMB((MSG_STANDARD*)buf);
+        break;
+    case 0x383:
+        return OnPacketTrade((MSG_STANDARD*)buf);
+        break;
+    case 0x384:
+        return OnPacketQuitTrade((MSG_STANDARD*)buf);
+        break;
+    case 0x185:
+        return OnPacketCarry((MSG_STANDARD*)buf);
+        break;
+    case 0x386:
+        return OnPacketCNFCheck((MSG_STANDARD*)buf);
+        break;
+    case 0x193:
+        return OnPacketSetClan((MSG_STANDARD*)buf);
+        break;
+    case 0x39F:
+        return OnPacketReqRanking((MSG_STANDARD*)buf);
+        break;
+    case 0x3AD:
+        return OnPacketVisualEffect((MSG_STANDARD*)buf);
+        break;
+    default:
+        break;    
+    }
+
+    return 0;
 }
 
 int TMHuman::OnPacketMove(MSG_Action* pAction)
 {
-	return 0;
+    if (pAction == nullptr)
+        return 0;
+
+    // NOTE: there's a strange code in the beginnig, that not make sense...
+    // and is not used aparently.
+
+    if (m_cDie == 1)
+        return 1;
+    if (pAction->Effect == 2)
+        m_bSliding = 1;
+
+    m_fMaxSpeed = (float)pAction->Speed;
+    if (pAction->Speed < 1)
+        m_fMaxSpeed = 1.0f;
+
+    char szBuffer[48]{};
+
+    int nStartRouteIndex = m_nLastRouteIndex;
+    if (m_fProgressRate > 0.5f)
+        nStartRouteIndex = m_nLastRouteIndex + 1;
+
+    int nX = (int)m_vecRouteBuffer[nStartRouteIndex].x;
+    int nY = (int)m_vecRouteBuffer[nStartRouteIndex].y;
+
+    if (strlen(pAction->Route) == 0)
+        m_cOnlyMove = 1;
+
+    int tX = 0;
+    int tY = 0;
+
+    if (nX == pAction->PosX && nY == pAction->PosY && m_cOnlyMove != 1)
+    {
+        memcpy(m_cRouteBuffer, pAction->Route, 24);
+
+        m_vecTargetPos.x = pAction->TargetX;
+        m_vecTargetPos.y = pAction->TargetY;
+
+        m_cSameHeight = 0;
+        GenerateRouteTable(pAction->PosX, pAction->PosY, m_cRouteBuffer, m_vecRouteBuffer, &m_nMaxRouteIndex);
+    }
+    else
+    {
+        if (std::abs(pAction->PosX - nX) > 33 || std::abs(pAction->PosY - nY) > 33)
+        {
+            nX = pAction->PosX;
+            nY = pAction->PosY;
+        }
+
+        int tX = pAction->TargetX;
+        int tY = pAction->TargetY;
+
+        int bRoute = 0;
+        char* pHeightMapData = g_pCurrentScene->m_HeightMapData;
+        BASE_GetRoute(nX, nY, &tX, &tY, szBuffer, 12, pHeightMapData, 8);
+
+        if (strlen(szBuffer) == 0)
+            return 1;
+
+        if (tX == pAction->TargetX && tY == pAction->TargetY)
+        {
+            memcpy(m_cRouteBuffer, szBuffer, 48);
+            m_vecTargetPos.x = pAction->TargetX;
+            m_vecTargetPos.y = pAction->TargetY;
+            m_cSameHeight = 0;
+
+            GenerateRouteTable(nX, nY, m_cRouteBuffer, m_vecRouteBuffer, &m_nMaxRouteIndex);
+        }
+        else if (g_pCurrentScene)
+        {
+            if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD && g_pCurrentScene->m_pMyHuman != this)
+            {
+                int nStartX = nX;
+                int nStartY = nY;
+                nX = pAction->PosX;
+                nY = pAction->PosY;
+                tX = pAction->TargetX;
+                tY = pAction->TargetY;
+                char* pHeight = g_pCurrentScene->m_HeightMapData;
+                BASE_GetRoute(nX, nY, &tX, &tY, szBuffer, 12, pHeight, 8);
+
+                if (strlen(szBuffer))
+                {
+                    if (tX == pAction->TargetX && tY == pAction->TargetY)
+                    {
+                        memcpy(m_cRouteBuffer, szBuffer, 48);
+
+                        m_vecTargetPos.x = pAction->TargetX;
+                        m_vecTargetPos.y = pAction->TargetY;
+                        m_cSameHeight = 0;
+
+                        GenerateRouteTable(nX, nY, m_cRouteBuffer, m_vecRouteBuffer, &m_nMaxRouteIndex);
+                        ChangeRouteBuffer(nStartX, nStartY, m_vecRouteBuffer, &m_nMaxRouteIndex);
+                    }
+                }
+            }
+        }
+    }
+
+    if (m_cOnlyMove)
+    {
+        if (g_pCurrentScene->m_pMyHuman == this)
+        {
+            TMFieldScene* pFScene = (TMFieldScene*)g_pCurrentScene;
+            pFScene->m_stMoveStop.LastX = pAction->PosX;
+            pFScene->m_stMoveStop.LastY = pAction->PosY;
+            pFScene->m_stMoveStop.NextX = pAction->TargetX;
+            pFScene->m_stMoveStop.NextY = pAction->TargetY;
+        }
+    }
+
+    MoveTo(m_vecRouteBuffer[1]);
+    m_fMoveToAngle = m_fAngle;
+    m_dwStartMoveTime = g_pTimerManager->GetServerTime();
+
+    return 1;
 }
 
 int TMHuman::OnPacketChaosCube(MSG_Action* pAction)
@@ -3653,6 +3874,38 @@ void TMHuman::FrameMoveEffect_AvatarHunter()
 
 void TMHuman::MoveTo(TMVector2 vecPos)
 {
+    if (!m_dwDelayDel && (vecPos.x != m_vecPosition.x || vecPos.y != m_vecPosition.y))
+    {
+        TMVector2 dPosition = vecPos - m_vecPosition;
+        m_vecMoveToPos = vecPos;
+
+        m_fWantAngle = atan2f(dPosition.x, dPosition.y) + 1.5707964f;
+
+        if (m_fAngle < 0.0f)
+        {
+            m_fAngle = m_fAngle + 6.2831855f;
+        }
+        else if (m_fAngle > 6.2831855f)
+        {
+            m_fAngle = m_fAngle - 6.2831855f;
+        }
+
+        m_fMoveToAngle = m_fAngle;
+        if ((float)(m_fWantAngle - m_fMoveToAngle) < 0.0f && 
+            (float)(m_fWantAngle - m_fMoveToAngle) < -3.1415927f)
+        {
+            m_fWantAngle = m_fWantAngle + 6.2831855f;
+        }
+        else if ((float)(m_fWantAngle - m_fMoveToAngle) > 0.0f && (float)(m_fWantAngle - m_fMoveToAngle) > 3.1415927f)
+        {
+            m_fWantAngle = m_fWantAngle - 6.2831855f;
+        }
+
+        m_vecFromPos = m_vecPosition;
+        m_vecDPosition = m_vecMoveToPos - m_vecPosition;
+        float fDistance = m_vecDPosition.DistanceFrom(TMVector2(0.0f, 0.0f));
+        m_dwMoveToTime = g_pTimerManager->GetServerTime();
+    }
 }
 
 void TMHuman::MoveAttack(TMHuman* pTarget)
@@ -3693,11 +3946,21 @@ void TMHuman::Stand()
 
 void TMHuman::OnlyMove(int nX, int nY, int nLocal)
 {
+
 }
 
 int TMHuman::IsGoMore()
-{
-	return 0;
+{	
+    if (m_dwDelayDel)
+        return 0;
+
+    if (m_vecRouteBuffer[m_nLastRouteIndex].x != m_vecRouteBuffer[m_nLastRouteIndex + 1].x || 
+        m_vecRouteBuffer[m_nLastRouteIndex].y != m_vecRouteBuffer[m_nLastRouteIndex + 1].y)
+    {
+        return 1;
+    }
+
+    return 0;
 }
 
 void TMHuman::SetWantAngle(float fAngle)
@@ -4626,8 +4889,8 @@ void TMHuman::GenerateRouteTable(int nSX, int nSY, char* pRouteBuffer, TMVector2
     if (m_dwDelayDel != 0)
         return;
 
-    TMVector2 vecCurrent = TMVector2((float)nSX + 0.5f, (float)nSY + 0.f);
-    TMVector2 pRotueTable = vecCurrent;
+    TMVector2 vecCurrent = TMVector2((float)nSX + 0.5f, (float)nSY + 0.5f);
+    pRouteTable[0] = vecCurrent;
 
     if (pMaxRouteIndex)
         *pMaxRouteIndex = strlen(pRouteBuffer) + 2;
@@ -4638,32 +4901,32 @@ void TMHuman::GenerateRouteTable(int nSX, int nSY, char* pRouteBuffer, TMVector2
         switch (pRouteBuffer[i - 1])
         {
         case '6':
-            pRouteTable[i].x = pRouteTable[i].x + 1.0;
+            pRouteTable[i].x = pRouteTable[i].x + 1.0f;
             break;
         case '4':
-            pRouteTable[i].x = pRouteTable[i].x - 1.0;
+            pRouteTable[i].x = pRouteTable[i].x - 1.0f;
             break;
         case '8':
-            pRouteTable[i].y = pRouteTable[i].y + 1.0;
+            pRouteTable[i].y = pRouteTable[i].y + 1.0f;
             break;
         case '2':
-            pRouteTable[i].y = pRouteTable[i].y - 1.0;
+            pRouteTable[i].y = pRouteTable[i].y - 1.0f;
             break;
         case '3':
-            pRouteTable[i].x = pRouteTable[i].x + 1.0;
-            pRouteTable[i].y = pRouteTable[i].y - 1.0;
+            pRouteTable[i].x = pRouteTable[i].x + 1.0f;
+            pRouteTable[i].y = pRouteTable[i].y - 1.0f;
             break;
         case '1':
-            pRouteTable[i].x = pRouteTable[i].x - 1.0;
-            pRouteTable[i].y = pRouteTable[i].y - 1.0;
+            pRouteTable[i].x = pRouteTable[i].x - 1.0f;
+            pRouteTable[i].y = pRouteTable[i].y - 1.0f;
             break;
         case '9':
-            pRouteTable[i].x = pRouteTable[i].x + 1.0;
-            pRouteTable[i].y = pRouteTable[i].y + 1.0;
+            pRouteTable[i].x = pRouteTable[i].x + 1.0f;
+            pRouteTable[i].y = pRouteTable[i].y + 1.0f;
             break;
         case '7':
-            pRouteTable[i].x = pRouteTable[i].x - 1.0;
-            pRouteTable[i].y = pRouteTable[i].y + 1.0;
+            pRouteTable[i].x = pRouteTable[i].x - 1.0f;
+            pRouteTable[i].y = pRouteTable[i].y + 1.0f;
             break;
         }
         vecCurrent = pRouteTable[i];

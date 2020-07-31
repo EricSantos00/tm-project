@@ -24,6 +24,12 @@ TMVector3 TMVector3Cross(const TMVector3* pV1, const TMVector3* pV2)
     return v;
 }
 
+float disTanceSq(float stX, float stY, float taX, float taY)
+{
+    return (((taX - stX) * (taX - stX)) 
+         + ((taY - stY) * (taY - stY)));
+}
+
 void SendOneMessage(char* Msg, int Size)
 {
     MSG_STANDARD* pMsgStandard = (MSG_STANDARD*)Msg;
