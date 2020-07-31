@@ -654,6 +654,9 @@ struct STRUCT_AUTOKICK
 	char route[4][128];
 };
 
+constexpr auto MSG_Action_Opcode = 0x36C;
+constexpr auto MSG_Action_Stop_Opcode = 0x366;
+
 struct MSG_Action
 {
 	MSG_STANDARD Header;
@@ -813,6 +816,10 @@ struct MSG_AccountLogin
 	int Force;
 	unsigned int Mac[4];
 };
+
+constexpr auto MSG_Attack_Multi = 0x367;
+constexpr auto MSG_Attack_One = 0x39D;
+constexpr auto MSG_Attack_Two = 0x39E;
 
 static int g_pDistanceTable[7][7] =
 {

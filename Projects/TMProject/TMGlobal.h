@@ -83,6 +83,8 @@ extern int g_nCurrentPos;
 extern int g_nDumpPacketSize;
 extern FILE* g_hPacketDump;
 extern char* g_pDumpPacket;
+extern unsigned short g_usLastPacketType;
+extern int g_bLastStop;
 
 extern int g_bEndGame;
 
@@ -124,6 +126,8 @@ extern int g_bHideBackground;
 
 extern int g_nMobCount;
 extern int g_nWeather;
+
+extern int g_nMyHumanSpeed;
 
 static unsigned int g_dwHandIndex[101][2] =
 {

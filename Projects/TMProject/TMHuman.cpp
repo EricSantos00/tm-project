@@ -23,6 +23,7 @@
 #include "TMFieldScene.h"
 #include "TMEffectParticle.h"
 #include "TMLog.h"
+#include "TMUtil.h"
 
 TMVector2 TMHuman::m_vecPickSize[100]{
   { 0.40000001f, 2.0f },
@@ -4427,7 +4428,194 @@ void TMHuman::GetRoute(IVector2 vecTarget, int nCount, int bStop)
         {
             if (dwServerTime - m_dwOldMovePacketTime > dwDealyTime || bStop)
             {
+                char* pHeightMapData = g_pCurrentScene->m_HeightMapData;
+                int nTX = vecTarget.x;
+                int nTY = vecTarget.y;
 
+                char cRouteBuffer[48]{};
+
+                TMScene* pScene = g_pCurrentScene;
+                float fHeight = (float)pScene->GroundGetMask(m_vecPosition);
+                int nMaxRoute = 12;
+
+                if (pScene->m_eSceneType == ESCENE_TYPE::ESCENE_DEMO)
+                    nMaxRoute = 16;
+
+                BASE_GetRoute(nSX, nSY, &vecTarget.x, &vecTarget.y, cRouteBuffer, nMaxRoute, pHeightMapData, 8);
+
+                int nStart2 = pScene->GroundGetMask(TMVector2((float)m_LastSendTargetPos.x, (float)m_LastSendTargetPos.y));
+                int nStart = pScene->GroundGetMask(TMVector2((float)nSX, (float)nSY));
+                int nEnd = pScene->GroundGetMask(TMVector2((float)vecTarget.x, (float)vecTarget.y));
+
+                int nHeight = nEnd - nStart <= 0 ? nStart - nEnd : nEnd - nStart;
+                int nHeight2 = nEnd - nStart2 <= 0 ? nStart2 - nEnd : nEnd - nStart2;
+
+                if (nHeight2 <= 30 || !m_LastSendTargetPos.x || !m_LastSendTargetPos.y)
+                {
+                    if (nHeight > 30)
+                    {
+                        memset(cRouteBuffer, 0, sizeof(cRouteBuffer));
+                        BASE_GetRoute(nSX, nSY, &vecTarget.x, &vecTarget.y, cRouteBuffer, nMaxRoute / 2, pHeightMapData, 8);
+
+                        nEnd = pScene->GroundGetMask(TMVector2((float)vecTarget.x, (float)vecTarget.y));
+                        nHeight = nEnd - nStart <= 0 ? nStart - nEnd : nEnd - nStart;
+                        if (nHeight > 30)
+                        {
+                            memset(cRouteBuffer, 0, sizeof(cRouteBuffer));
+                            BASE_GetRoute(nSX, nSY, &vecTarget.x, &vecTarget.y, cRouteBuffer, nMaxRoute / 4, pHeightMapData, 8);
+
+                            nEnd = pScene->GroundGetMask(TMVector2((float)vecTarget.x, (float)vecTarget.y)); 
+                            nHeight = nEnd - nStart <= 0 ? nStart - nEnd : nEnd - nStart;
+                        }
+                    }
+                    if ((int)m_vecPosition.x == vecTarget.x
+                     && (int)m_vecPosition.y == vecTarget.y)
+                    {
+                        if (bStop && (m_LastSendTargetPos.x != vecTarget.x || m_LastSendTargetPos.y != vecTarget.y))
+                        {
+                            m_cLastMoveStop = 1;
+                            TMHuman* pObj = g_pCurrentScene->m_pMyHuman;
+
+                            if (pObj == this
+                                && g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_SELECT_SERVER
+                                && g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_DEMO)
+                            {
+                                m_LastSendTargetPos.x = vecTarget.x;
+                                m_LastSendTargetPos.y = vecTarget.y;
+
+                                MSG_Action dst{};
+
+                                dst.Header.ID = m_dwID;
+                                dst.PosX = nSX;
+                                dst.PosY = nSY;
+                                dst.Effect = 0;
+                                dst.Header.Type = MSG_Action_Opcode;
+                                dst.Speed = g_nMyHumanSpeed;
+                                dst.TargetX = vecTarget.x;
+                                dst.TargetY = vecTarget.y;
+
+                                TMFieldScene* pFScene = (TMFieldScene*)g_pCurrentScene;
+                                pFScene->OnPacketEvent(MSG_Action_Opcode, (char*)&dst);
+
+                                if (bStop != 2)
+                                {
+                                    pFScene->m_stMoveStop.LastX = dst.PosX;
+                                    pFScene->m_stMoveStop.LastY = dst.PosY;
+                                    pFScene->m_stMoveStop.NextX = dst.TargetX;
+                                    pFScene->m_stMoveStop.NextY = dst.TargetY;
+                                    SendOneMessage((char*)&dst, 52);
+                                    g_bLastStop = dst.Header.Type;
+                                }
+
+                                for (int i = 0; i < 48; ++i)
+                                {
+                                    m_vecRouteBuffer[i].x = (float)nSX + 0.5f;
+                                    m_vecRouteBuffer[i].y = (float)nSY + 0.5f;
+                                }
+
+                                m_dwOldMovePacketTime = g_pTimerManager->GetServerTime();
+                            }
+                        }
+                    }
+                    else if (cRouteBuffer[0] != 0)
+                    {
+                        TMVector2 vecRouteTable[48]{};
+                        int nRouteLen;
+                        GenerateRouteTable(nSX, nSY, cRouteBuffer, vecRouteTable, &nRouteLen);
+
+                        bool bFind = false;
+                        int nRouteIndex = nRouteLen;
+                        if (g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_DEMO)
+                        {
+                            for (nRouteIndex = nRouteLen; nRouteIndex > 0; --nRouteIndex)
+                            {
+                                bFind = false;
+                                for (TMHuman* pNode = (TMHuman*)pScene->m_pHumanContainer->m_pDown; pNode && pNode->m_pNextLink; pNode = (TMHuman*)pNode->m_pNextLink)
+                                {
+                                    int nX = (int)pNode->m_vecRouteBuffer[47].x;
+                                    int nY = (int)pNode->m_vecRouteBuffer[47].y;
+
+                                    if ((int)vecRouteTable[nRouteIndex].x == nX && (int)vecRouteTable[nRouteIndex].y == nY && !pNode->m_cDie)
+                                    {
+                                        bFind = 1;
+                                        break;
+                                    }
+                                }
+
+                                if (!bFind)
+                                    break;
+                            }
+                        }
+
+                        vecTarget.x = (int)vecRouteTable[nRouteIndex].x;
+                        vecTarget.y = (int)vecRouteTable[nRouteIndex].y;
+
+                        for (int k = nRouteIndex + 1; k < 48; ++k)
+                        {
+                            vecRouteTable[k].x = 0.0f;
+                            vecRouteTable[k].y = 0.0f;
+                        }
+
+                        if (g_pCurrentScene->m_pMyHuman == this && g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+                            pFScene->m_vecMyNext = vecTarget;
+
+                        if ((vecTarget.x != nSX || vecTarget.y != nSY) && (vecTarget.x != m_vecTargetPos.x || vecTarget.y != m_vecTargetPos.y || bStop))
+                        {
+                            memset(m_cRouteBuffer, 0, sizeof(m_cRouteBuffer));
+                            memcpy(m_cRouteBuffer, cRouteBuffer, nRouteIndex);
+                            
+                            MSG_Action stAction{};
+                            stAction.Header.ID = m_dwID;
+                            stAction.PosX = nSX;
+                            stAction.PosY = nSY;
+                            stAction.Effect = 0;
+
+                            if (bStop)
+                                stAction.Header.Type = MSG_Action_Stop_Opcode;
+                            else
+                                stAction.Header.Type = MSG_Action_Opcode;
+
+                            if (g_pCurrentScene->m_pMyHuman == this)
+                                stAction.Speed = g_nMyHumanSpeed;
+                            else
+                                stAction.Speed = (int)m_fMaxSpeed;
+
+                            stAction.TargetX = vecTarget.x;
+                            stAction.TargetY = vecTarget.y;
+
+                            for (int j = 0; j < 23; ++j)
+                                stAction.Route[j] = m_cRouteBuffer[j % 24];
+
+                            if (m_LastSendTargetPos.x != vecTarget.x || m_LastSendTargetPos.y != vecTarget.y)
+                            {
+                                if (m_cLastMoveStop == bStop && bStop == 1)
+                                    return;
+
+                                m_cLastMoveStop = bStop;
+                                if (g_pCurrentScene->m_pMyHuman == this
+                                    && g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_SELECT_SERVER
+                                    && g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_DEMO
+                                    && dwServerTime - m_dwOldMovePacketTime > 1000
+                                    && bStop != 2)
+                                {
+                                    pFScene->m_stMoveStop.LastX = stAction.PosX;
+                                    pFScene->m_stMoveStop.LastY = stAction.PosY;
+                                    pFScene->m_stMoveStop.NextX = stAction.TargetX;
+                                    pFScene->m_stMoveStop.NextY = stAction.TargetY;
+                                    SendOneMessage((char*)&stAction, sizeof(stAction));
+                                    g_bLastStop = stAction.Header.Type;
+
+                                    m_dwOldMovePacketTime = g_pTimerManager->GetServerTime();
+                                    m_LastSendTargetPos.x = stAction.TargetX;
+                                    m_LastSendTargetPos.y = stAction.TargetY;
+                                }
+                            }
+
+                            OnPacketEvent(MSG_Action_Opcode, (char*)&stAction);
+                            return;
+                        }
+                    }
+                }
             }
         }
     }
