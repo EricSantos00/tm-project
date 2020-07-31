@@ -442,6 +442,7 @@ void TMSkinMesh::FrameMove(unsigned int dwServerTime)
 
 		if (dwMod == 0)
 			return;
+
 		dwOffset %= 4 * dwMod;
 		m_dwOffset = dwOffset / 4;
 		unsigned int dwTick = m_dwOffset + m_nAniBaseIndex;
@@ -449,130 +450,143 @@ void TMSkinMesh::FrameMove(unsigned int dwServerTime)
 		unsigned int addr = numBone * dwTick;
 		unsigned int numAniFrame = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniFrame;
 
-		if (numAniFrame >= 0 && numAniFrame <= 100)
+		if (numAniFrame < 0 || numAniFrame > 100)
+			return;
+
+		if (dwMod == 1 || !TMSkinMesh::m_nSmooth || g_pDevice->m_fFPS < 10.0f)
 		{
-			if (dwMod == 1 || !TMSkinMesh::m_nSmooth || g_pDevice->m_fFPS < 10.0f)
+			for (int Frame = 0; Frame < numAniFrame; ++Frame)
 			{
-				for (int Frame = 0; Frame < numAniFrame; ++Frame)
+				if (m_pframeToAnimate[Frame] != nullptr)
 				{
-					if (m_pframeToAnimate[Frame] != nullptr)
-					{
-						LPD3DXMATRIX matRot = &MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[Frame + addr];
-						m_pframeToAnimate[Frame]->m_matRot = *matRot;
-					}
-				}
-				m_bMeshGenerated = 1;
-				return;
-			}
-
-			// Isolate this function for now.
-			float* before;
-			float* ori;
-			int EndEdge = 4 * dwMod - 3;
-			for (int j = 0; j < numAniFrame; ++j)
-			{
-				if (m_pframeToAnimate[j] != nullptr)
-				{
-					D3DXMATRIX matRot = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j + addr];
-					if (m_nAniIndexLast == 0 || dwOffset >= 10)
-					{
-						m_nAniIndexLast = 0;
-						int mod = dwOffset % 4;
-
-						if (mod)
-						{
-							D3DXMATRIX NewMat = matRot;
-							D3DXMATRIX m;
-							if (dwOffset < EndEdge)
-								m = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[numBone + j + addr];
-							else
-								m = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j
-								+ numBone
-								* m_nAniBaseIndex];
-
-							before = (float*)m;
-							ori = (float*)&NewMat;
-
-							switch (mod)
-							{
-							case 1:
-								for (int i = 0; i < 16; ++i)
-								{
-									*ori = (float)((float)((float)(*ori + *ori) + *ori) + *before) / 4.0f;
-									++ori;
-									++before;
-								}
-								break;
-							case 2:
-								for (int m = 0; m < 16; ++m)
-								{
-									*ori = (float)(*ori + *before) / 2.0f;
-									++ori;
-									++before;
-								}
-								break;
-							case 3:
-								for (int n = 0; n < 16; ++n)
-								{
-									*ori = (float)((float)((float)(*ori + *before) + *before) + *before) / 4.0f;
-									++ori;
-									++before;
-								}
-								break;
-							}
-
-							m_pframeToAnimate[j]->m_matRot = NewMat;
-						}
-						else
-						{
-							m_pframeToAnimate[j]->m_matRot = matRot;
-						}
-					}
-					else
-					{
-						before = (float*)MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j + m_dwTickLast];
-						D3DXMATRIX NewMat = matRot;
-						if (m_nBoneAniIndex != 1 && m_nBoneAniIndex)
-						{
-							ori = (float*)&NewMat;
-							int offset_ = 10 - dwOffset;
-							for (int k = 0; k < 16; ++k)
-							{
-								*ori = (float)((float)((float)dwOffset * *ori) + (float)((float)offset_ * *before)) / 10.0f;
-								++ori;
-								++before;
-							}
-							m_pframeToAnimate[j]->m_matRot = NewMat;
-						}
-						else
-						{
-							int InvTick = 10 - dwOffset;
-							D3DXMATRIX QuatMat;
-							D3DXQUATERNION NewQuat;
-							D3DXQuaternionSlerp(
-								&NewQuat,
-								&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matQuaternion[j + addr],
-								&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matQuaternion[j + m_dwTickLast],
-								(float)InvTick / 10.0f);
-							D3DXMatrixRotationQuaternion(&QuatMat, &NewQuat);
-							D3DXMATRIX NewMat2 = matRot;
-							ori = (float*)&NewMat2;
-							before += 12;
-							float* Now = &QuatMat._41;
-							for (int l = 0; l < 3; ++l)
-							{
-								*Now = (float)((float)((float)dwOffset * *ori) + (float)((float)InvTick * *before)) / 10.0f;
-								++ori;
-								++before;
-								++Now;
-							}
-							m_pframeToAnimate[j]->m_matRot = QuatMat;
-						}
-					}
+					LPD3DXMATRIX matRot = &MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[Frame + addr];
+					m_pframeToAnimate[Frame]->m_matRot = *matRot;
 				}
 			}
 			m_bMeshGenerated = 1;
+			return;
 		}
+
+		float* before;
+		float* ori;
+		int EndEdge = 4 * dwMod - 3;
+		for (int j = 0; j < numAniFrame; ++j)
+		{
+			if (m_pframeToAnimate[j] == nullptr)
+				continue;
+
+			LPD3DXMATRIX matRot = &MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j + addr];
+			if (m_nAniIndexLast == 0 || dwOffset >= 10)
+			{
+				m_nAniIndexLast = 0;
+				int mod = dwOffset % 4;
+
+				if (mod == 0)
+				{
+					m_pframeToAnimate[j]->m_matRot = matRot[0];
+				}
+				else
+				{
+					D3DXMATRIX NewMat = matRot[0];
+
+					if (dwOffset >= EndEdge)
+					{
+						before = (float*)&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j
+							+ numBone
+							* m_nAniBaseIndex];
+					}
+					else
+					{
+						before = (float*)&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[numBone + j + addr];
+
+					}
+
+					ori = (float*)&NewMat;
+
+					if (mod == 1)
+					{
+						for (int i = 0; i < 16; ++i)
+						{
+							*ori = (float)((float)((float)(*ori + *ori) + *ori) + *before) / 4.0f;
+							++ori;
+							++before;
+						}
+					}
+					else if (mod == 2)
+					{
+						for (int m = 0; m < 16; ++m)
+						{
+							*ori = (float)(*ori + *before) / 2.0f;
+							++ori;
+							++before;
+						}
+					}
+					else if (mod == 3)
+					{
+						for (int n = 0; n < 16; ++n)
+						{
+							*ori = (float)((float)((float)(*ori + *before) + *before) + *before) / 4.0f;
+							++ori;
+							++before;
+						}
+					}
+
+					m_pframeToAnimate[j]->m_matRot = NewMat;
+				}
+			}
+			else
+			{
+				before = (float*)&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[j + m_dwTickLast];
+
+				D3DXMATRIX NewMat = matRot[0];
+
+				if (m_nBoneAniIndex == 1 || m_nBoneAniIndex == 0)
+				{
+					int InvTick = 10 - dwOffset;
+					D3DXMATRIX QuatMat;
+					D3DXQUATERNION NewQuat;
+
+					D3DXQuaternionSlerp(
+						&NewQuat,
+						&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matQuaternion[j + addr],
+						&MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matQuaternion[j + m_dwTickLast],
+						(float)InvTick / 10.0f);
+
+					D3DXMatrixRotationQuaternion(&QuatMat, &NewQuat);
+
+					ori = (float*)&NewMat;
+					float* now = (float*)&QuatMat;
+					//before = (float*)&QuatMat;
+
+					ori += 12;
+					before += 12;
+					now += 12;
+
+					for (int l = 0; l < 3; ++l)
+					{
+						*now = (float)((float)((float)dwOffset * *ori) + (float)((float)InvTick * *before)) / 10.0f;
+						++ori;
+						++before;
+						++now;
+					}
+
+					m_pframeToAnimate[j]->m_matRot = QuatMat;
+				}
+				else
+				{
+					ori = (float*)&NewMat;
+					int offset_ = 10 - dwOffset;
+					for (int k = 0; k < 16; ++k)
+					{
+						*ori = (float)((float)((float)dwOffset * *ori) + (float)((float)offset_ * *before)) / 10.0f;
+						++ori;
+						++before;
+					}
+					m_pframeToAnimate[j]->m_matRot = NewMat;
+				}
+			}
+		}
+		m_bMeshGenerated = 1;
 	}
 }
 
