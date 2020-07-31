@@ -2059,7 +2059,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
 
     unsigned int dwUnitTime = 1000;
     if (m_fMaxSpeed > 0.0f)
-        dwUnitTime = (unsigned int)(float)(1000.0f / m_fMaxSpeed);
+        dwUnitTime = (unsigned int)(1000.0f / m_fMaxSpeed);
 
     unsigned int dwElapsedStartTime = dwServerTime - m_dwStartMoveTime;
     if (!dwUnitTime)
@@ -2069,9 +2069,9 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         return 1;
     }
 
-    int nRouteIndex = dwElapsedStartTime / dwUnitTime;
-    float fProgressRate = (float)((dwElapsedStartTime - dwElapsedStartTime) / (dwUnitTime * dwUnitTime)) / (float)dwUnitTime;
-    if ((int)(dwElapsedStartTime / dwUnitTime) < m_nMaxRouteIndex)
+    int nRouteIndex = (int)(dwElapsedStartTime / dwUnitTime);
+    float fProgressRate = (float)(dwElapsedStartTime - (nRouteIndex * dwUnitTime)) / (float)dwUnitTime;
+    if (nRouteIndex < m_nMaxRouteIndex)
         m_bMoveing = 1;
     else
     {
@@ -2092,7 +2092,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         m_nLastRouteIndex = nRouteIndex % 48;
     }
 
-    float fElapsedAngleToTime = (float)(dwServerTime - m_dwMoveToTime) * 0.005f;
+    float fElapsedAngleToTime = (float)(dwServerTime - m_dwMoveToTime) * 0.05f;
     if (fElapsedAngleToTime > 1.0f)
         fElapsedAngleToTime = 1.0f;
 
@@ -2163,12 +2163,12 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
 
     if (pScene && pScene->m_pGround)
     {
-        float fCurrent = pScene->GroundGetMask(m_vecRouteBuffer[nRouteIndex]) * 0.1f;
-        float fNext = pScene->GroundGetMask(m_vecRouteBuffer[nRouteIndex + 1]) * 0.1f;
+        float fCurrent = (float)pScene->GroundGetMask(m_vecRouteBuffer[nRouteIndex]) * 0.1f;
+        float fNext = (float)pScene->GroundGetMask(m_vecRouteBuffer[nRouteIndex + 1]) * 0.1f;
         if (m_cSameHeight == 1)
         {
-            fCurrent = pScene->GroundGetMask(m_vecStartPos) * 0.1f;
-            fNext = pScene->GroundGetMask(m_vecTargetPos) * 0.1f;
+            fCurrent = (float)pScene->GroundGetMask(m_vecStartPos) * 0.1f;
+            fNext = (float)pScene->GroundGetMask(m_vecTargetPos) * 0.1f;
         }
 
         m_fWantHeight = ((1.0f - fProgressRate) * fCurrent) + (float)(fNext * fProgressRate);
@@ -2180,7 +2180,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
                 m_fWantHeight = 0.1f;
         }
 
-        if (m_dwID >= 0 && m_dwID < 1000)
+        if (m_dwID < 0 || m_dwID > 1000)
             m_fWantHeight = m_fWantHeight + fDieHeight;
 
         if (m_nSkinMeshType == 20)
@@ -3067,7 +3067,7 @@ int TMHuman::OnPacketMove(MSG_Action* pAction)
         int tY = pAction->TargetY;
 
         int bRoute = 0;
-        char* pHeightMapData = g_pCurrentScene->m_HeightMapData;
+        char* pHeightMapData = (char*)g_pCurrentScene->m_HeightMapData;
         BASE_GetRoute(nX, nY, &tX, &tY, szBuffer, 12, pHeightMapData, 8);
 
         if (strlen(szBuffer) == 0)
@@ -3092,7 +3092,7 @@ int TMHuman::OnPacketMove(MSG_Action* pAction)
                 nY = pAction->PosY;
                 tX = pAction->TargetX;
                 tY = pAction->TargetY;
-                char* pHeight = g_pCurrentScene->m_HeightMapData;
+                char* pHeight = (char*)g_pCurrentScene->m_HeightMapData;
                 BASE_GetRoute(nX, nY, &tX, &tY, szBuffer, 12, pHeight, 8);
 
                 if (strlen(szBuffer))
@@ -3528,8 +3528,8 @@ void TMHuman::SetAnimation(ECHAR_MOTION eMotion, int nLoop)
 
             if (eMotion == ECHAR_MOTION::ECMOTION_RUN)
             {
-                m_pSkinMesh->m_dwFPS = (int)(float)(27.0f - m_fMaxSpeed) / 2;
-                m_pSkinMesh->m_dwFPS = (unsigned int)(float)((float)m_pSkinMesh->m_dwFPS * m_fScale);
+                m_pSkinMesh->m_dwFPS = (int)(27.0f - m_fMaxSpeed) / 2;
+                m_pSkinMesh->m_dwFPS = (unsigned int)((float)m_pSkinMesh->m_dwFPS * m_fScale);
                 if (m_cMantua > 0 && m_pMantua)
                 {
                     if (m_cMount <= 0)
@@ -4666,8 +4666,8 @@ void TMHuman::GetRoute(IVector2 vecTarget, int nCount, int bStop)
         int nStartRouteIndex = m_nLastRouteIndex;
         if (m_fProgressRate > 0.5)
             nStartRouteIndex = m_nLastRouteIndex + 1;
-        int nSX = (signed int)m_vecRouteBuffer[nStartRouteIndex].x;
-        int nSY = (signed int)m_vecRouteBuffer[nStartRouteIndex].y;
+        int nSX = (int)m_vecRouteBuffer[nStartRouteIndex].x;
+        int nSY = (int)m_vecRouteBuffer[nStartRouteIndex].y;
         unsigned int dwDealyTime = 1000;
         unsigned int dwServerTime = g_pTimerManager->GetServerTime();
 
@@ -4683,15 +4683,16 @@ void TMHuman::GetRoute(IVector2 vecTarget, int nCount, int bStop)
         unsigned int dwTime = g_pTimerManager->GetServerTime();
         TMFieldScene* pFScene = (TMFieldScene*)g_pCurrentScene;
 
-        if ((this != g_pCurrentScene->m_pMyHuman || g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_FIELD || dwTime >= g_dwStartQuitGameTime + 6000) &&
-            dwTime >= pFScene->m_dwLastLogout + 6000
+        if ((this != g_pCurrentScene->m_pMyHuman || g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_FIELD || 
+            (dwTime >= g_dwStartQuitGameTime + 6000 
+            && dwTime >= pFScene->m_dwLastLogout + 6000
             && dwTime >= pFScene->m_dwLastSelServer + 6000
             && dwTime >= pFScene->m_dwLastTown + 6000
-            && dwTime >= pFScene->m_dwLastTeleport + 6000)
+            && dwTime >= pFScene->m_dwLastTeleport + 6000)))
         {
             if (dwServerTime - m_dwOldMovePacketTime > dwDealyTime || bStop)
             {
-                char* pHeightMapData = g_pCurrentScene->m_HeightMapData;
+                char* pHeightMapData = (char*)g_pCurrentScene->m_HeightMapData;
                 int nTX = vecTarget.x;
                 int nTY = vecTarget.y;
 
@@ -5067,7 +5068,7 @@ int TMHuman::StraightRouteTable(int nSX, int nSY, int nTargetX, int nTargetY, TM
 
 int TMHuman::ChangeRouteBuffer(int nSX, int nSY, TMVector2* pRouteTable, int* pMaxRouteIndex)
 {	
-    char* pHeightMapData = g_pCurrentScene->m_HeightMapData;
+    char* pHeightMapData = (char*)g_pCurrentScene->m_HeightMapData;
     int nRoutCount = 0;            
     char szBuffer[48]{};
 

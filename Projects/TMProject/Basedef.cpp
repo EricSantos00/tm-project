@@ -28,6 +28,16 @@ void BASE_InitializeHitRate()
 
 void BASE_ApplyAttribute(char* pHeight, int size)
 {
+    int endx = size + g_HeightPosX;
+    int endy = size + g_HeightPosY;
+    for (int y = g_HeightPosY; y < endy; ++y)
+    {
+        for (int x = g_HeightPosX; x < endx; ++x)
+        {
+            if (g_pAttribute[(y >> 2) & 0x3FF][(x >> 2) & 0x3FF] & 2)
+                pHeight[x + g_HeightWidth * (y - g_HeightPosY) - g_HeightPosX] = 127;
+        }
+    }
 }
 
 int BASE_ReadItemList()

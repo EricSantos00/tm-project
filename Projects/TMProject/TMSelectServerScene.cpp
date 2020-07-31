@@ -295,7 +295,7 @@ int TMSelectServerScene::InitializeScene()
 	m_pGround = m_pGroundList[0];
 
 	for (int nY = 0; nY < 128; ++nY)
-		memcpy(&m_HeightMapData[256 * nY], m_pGround->m_pMaskData[nY], 128);
+		memcpy(m_HeightMapData[nY], m_pGround->m_pMaskData[nY], 128);
 
 	g_HeightPosX = m_pGround->m_vecOffset.x;
 	g_HeightPosY = m_pGround->m_vecOffset.y;

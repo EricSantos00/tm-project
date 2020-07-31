@@ -244,10 +244,10 @@ TMScene::TMScene() : TreeNode(0)
 		}
 	}
 
-	memset(m_HeightMapData, 0, sizeof(m_HeightMapData));
-	memset(m_GateMapData, 0, sizeof(m_GateMapData));
+	memset(&m_HeightMapData, 0, sizeof(m_HeightMapData));
+	memset(&m_GateMapData, 0, sizeof(m_GateMapData));
 
-	BASE_ApplyAttribute(m_HeightMapData, 256);
+	BASE_ApplyAttribute((char*)m_HeightMapData, 256);
 
 	for (int i = 0; i < 32; ++i)
 		m_TargetAffect[i] = 0;
@@ -1089,31 +1089,31 @@ int TMScene::GroundNewAttach(EDirection eDir)
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+				memcpy(heightMapData[i], m_HeightMapData[i], 128);
 		}
 		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x &&
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y + 1)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+				memcpy(heightMapData[i], m_HeightMapData[i], 128);
 		}
 		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x - 1 &&
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * i + 128], 128);
+				memcpy(heightMapData[i], &m_HeightMapData[i][128], 128);
 		}
 		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x &&
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y - 1)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * (i + 128)], 128);
+				memcpy(heightMapData[i], &m_HeightMapData[i][128], 128);
 		}
 	}
 	else
 	{
 		for (int i = 0; i < 128; ++i)
-			memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+			memcpy(heightMapData[i], m_HeightMapData[i], 128);
 	}
 	
 	auto pGround = new TMGround();
@@ -1182,8 +1182,8 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_LEFT:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i], m_pGround->m_pLeftGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i + 128], &heightMapData[i], 128);
+			memcpy(m_HeightMapData[i], m_pGround->m_pLeftGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[i][128], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_pLeftGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_pLeftGround->m_vecOffset.y;
@@ -1191,8 +1191,8 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_RIGHT:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i + 128], m_pGround->m_pRightGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i], &heightMapData[i], 128);
+			memcpy(&m_HeightMapData[i][128], m_pGround->m_pRightGround->m_pMaskData[i], 128);
+			memcpy(m_HeightMapData[i], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_vecOffset.y;
@@ -1200,8 +1200,8 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_UP:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i], m_pGround->m_pUpGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i + 128], &heightMapData[i], 128);
+			memcpy(&m_HeightMapData[i], m_pGround->m_pUpGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[i][128], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_pUpGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_pUpGround->m_vecOffset.y;
@@ -1209,15 +1209,15 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_DOWN:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i + 128], m_pGround->m_pDownGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i], &heightMapData[i], 128);
+			memcpy(&m_HeightMapData[i][128], m_pGround->m_pDownGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[i], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_vecOffset.y;
 		break;
 	}
 
-	BASE_ApplyAttribute(m_HeightMapData, 256);
+	BASE_ApplyAttribute((char*)m_HeightMapData, 256);
 
 	memcpy(m_GateMapData, m_HeightMapData, sizeof(m_HeightMapData));
 
@@ -1379,7 +1379,7 @@ int TMScene::GroundGetMask(TMVector2 vecPosition)
 	if (nYIndex > 256)
 		nYIndex = 255;
 
-	return m_HeightMapData[nXIndex + g_HeightWidth * nYIndex];
+	return m_HeightMapData[0][nXIndex + g_HeightWidth * nYIndex];
 }
 
 int TMScene::GroundGetMask(IVector2 vecPosition)
@@ -1399,7 +1399,7 @@ int TMScene::GroundGetMask(IVector2 vecPosition)
 	if (nYIndex > 256)
 		nYIndex = 255;
 
-	return m_HeightMapData[nXIndex + g_HeightWidth * nYIndex];
+	return m_HeightMapData[0][nXIndex + g_HeightWidth * nYIndex];
 }
 
 float TMScene::GroundGetHeight(TMVector2 vecPosition)
@@ -1571,7 +1571,7 @@ int TMScene::GetMask2(TMVector2 vecPosition)
 	int nMaskY = (int)(vecPosition.y - (float)g_HeightPosY);
 
 	if (nMaskX >= 0 && nMaskY >= 0 && nMaskX < 256 && nMaskY < 256)
-		return m_GateMapData[256 * nMaskY + nMaskX];
+		return m_GateMapData[nMaskY][nMaskX];
 
 	return -10000;
 }
