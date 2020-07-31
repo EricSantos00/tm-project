@@ -1707,7 +1707,7 @@ int TMHuman::Render()
             else if (m_sHeadIndex == 25)
             {
                 m_pMantua->m_BaseMatrix = m_pSkinMesh->m_OutMatrix;
-                m_pMantua->Render(0.009f, 1.0f, 0.05f);
+                m_pMantua->Render(0.01f, 1.0f, 0.05f);
             }
             else if (m_sHeadIndex == 26)
             {
@@ -1901,7 +1901,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         {
             float fX = pFocusedObject->m_vecPosition.x - m_vecPosition.x;
             float fY = pFocusedObject->m_vecPosition.y - m_vecPosition.y;
-            float fX2 = (((((0.70710701f * fX) + (-0.70710701f * fY)) * 2.0f) + temp)
+            float fX2 = (((-(float)((0.70710701f * fX) + (-0.70710701f * fY)) * 2.0f) + temp)
                 + TMGround::m_fMiniMapScale * 120.0f);
             float fY2 = (((((0.70710701f * fX) + (0.70710701f * fY)) * 2.0f) + temp)
                 + TMGround::m_fMiniMapScale * 120.0f);
@@ -2090,7 +2090,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         m_nLastRouteIndex = nRouteIndex % 48;
     }
 
-    float fElapsedAngleToTime = (float)(dwServerTime - m_dwMoveToTime) * 0.0049f;
+    float fElapsedAngleToTime = (float)(dwServerTime - m_dwMoveToTime) * 0.005f;
     if (fElapsedAngleToTime > 1.0f)
         fElapsedAngleToTime = 1.0f;
 
@@ -2129,7 +2129,11 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         fDAngle = m_fWantAngle - m_fMoveToAngle;
     }
 
-    if (m_fAngle - m_fWantAngle > 0.017453292f)
+    float fAux = m_fAngle - m_fWantAngle;
+    if (fAux <= 0.0f)
+        fAux = -fAux;
+
+    if (fabsf(m_fAngle - m_fWantAngle) > 0.017453292f)
     {
         if (m_bForcedRotation)
             m_fAngle = fElapsedAngleToTime * fDAngle;
@@ -2834,12 +2838,12 @@ void TMHuman::SetAngle(float fYaw, float fPitch, float fRoll)
     if (m_cMount == 0)
     {
         if (m_pSkinMesh)
-            m_pSkinMesh->SetAngle(fYaw, fPitch, fRoll);
+            m_pSkinMesh->SetAngle(fYaw, -fPitch, fRoll);
     }
     else
     {
         if (m_pMount)
-            m_pMount->SetAngle(fYaw, fPitch + D3DXToRadian(360), fRoll);
+            m_pMount->SetAngle(fYaw, -fPitch + D3DXToRadian(360), fRoll);
         if (m_pSkinMesh)
             m_pSkinMesh->SetAngle(0.0f, 0.0f, 0.0f);
     }

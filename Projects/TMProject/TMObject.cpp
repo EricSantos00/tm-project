@@ -514,7 +514,7 @@ int TMObject::IsInView()
 		vecPos[5].x = vecPos[7].x;
 		vecPos[3].x = vecPos[7].x;
 		vecPos[1].x = vecPos[7].x;
-		vecPos[6].z = vecPos[6].z + pMesh->m_fMinY;
+		vecPos[6].z = vecPos[6].z + -pMesh->m_fMinY;
 		vecPos[5].z = vecPos[6].z;
 		vecPos[2].z = vecPos[6].z;
 		vecPos[1].z = vecPos[6].z;
@@ -526,7 +526,7 @@ int TMObject::IsInView()
 		vecPos[6].x = vecPos[8].x;
 		vecPos[4].x = vecPos[8].x;
 		vecPos[2].x = vecPos[8].x;
-		vecPos[8].z = vecPos[8].z + pMesh->m_fMaxY;
+		vecPos[8].z = vecPos[8].z + -pMesh->m_fMaxY;
 		vecPos[7].z = vecPos[8].z;
 		vecPos[4].z = vecPos[8].z;
 		vecPos[3].z = vecPos[8].z;
@@ -562,7 +562,7 @@ int TMObject::IsInView()
 		{
 			D3DXVec3Project(&vPosTransformed[i], &vecPos[i], &g_pDevice->m_viewport, &g_pDevice->m_matProj, &g_pDevice->m_matView,	&g_pDevice->m_matWorld);
 
-			if (vPosTransformed[i].z >= -0.009f && vPosTransformed[i].z < 1.0f)
+			if (vPosTransformed[i].z >= -0.01f && vPosTransformed[i].z < 1.0f)
 			{
 				int vPosInX = (int)vPosTransformed[i].x;
 				int vPosInY = (int)vPosTransformed[i].y;
@@ -714,11 +714,11 @@ int TMObject::isCamPos()
 	}
 
 	vecPos[1].x = vecPos[3].x = vecPos[5].x = vecPos[7].x = vecPos[7].x + pMesh->m_fMinX;
-	vecPos[1].z = vecPos[2].z = vecPos[5].z = vecPos[6].z = vecPos[6].z + pMesh->m_fMinY;
+	vecPos[1].z = vecPos[2].z = vecPos[5].z = vecPos[6].z = vecPos[6].z + -pMesh->m_fMinY;
 	vecPos[1].y = vecPos[2].y = vecPos[3].y = vecPos[4].y = vecPos[4].y + pMesh->m_fMinZ;
 
 	vecPos[2].x = vecPos[4].x = vecPos[6].x = vecPos[8].x = vecPos[8].x + pMesh->m_fMaxX;
-	vecPos[3].z = vecPos[4].z = vecPos[7].z = vecPos[8].z = vecPos[8].z + pMesh->m_fMaxY;
+	vecPos[3].z = vecPos[4].z = vecPos[7].z = vecPos[8].z = vecPos[8].z + -pMesh->m_fMaxY;
 	vecPos[5].y = vecPos[6].y = vecPos[7].y = vecPos[8].y = vecPos[8].y + pMesh->m_fMaxZ;
 
 	D3DXMATRIX matScale;

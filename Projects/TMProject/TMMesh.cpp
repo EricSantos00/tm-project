@@ -301,8 +301,8 @@ int TMMesh::RenderForUI(int nX, int nY, float fAngle, float fScale, DWORD dwColo
 
 	D3DXMatrixScaling(&matScale, 0.51999998f * fScale, 0.51999998f * fScale, 0.51999998f * fScale);
 	D3DXMatrixTranslation(&matPosition,
-		fX - ((m_vecCenter.x * 0.51999998f) * fScale),
-		fY - ((m_vecCenter.z * 0.51999998f) * fScale),
+		-fX - ((m_vecCenter.x * 0.51999998f) * fScale),
+		-fY - ((m_vecCenter.z * 0.51999998f) * fScale),
 		(m_vecCenter.y * 0.51999998f) * fScale);
 
 	D3DXMatrixRotationYawPitchRoll(&mat, fYaw + fAngle, fPitch + -1.5707964f, 0.0);

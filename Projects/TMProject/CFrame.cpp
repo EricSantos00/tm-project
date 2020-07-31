@@ -76,7 +76,7 @@ int CFrame::Render()
 			D3DXMATRIX matTrans;
 			if (m_pParentSkin->m_cRotate[0] == 1)
 			{
-				D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, 0.009f, 0.0f);
+				D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail, 0.01f, 0.0f);
 				D3DXMatrixRotationYawPitchRoll(&matrix, 0, 0, D3DXToRadian(180));
 			}
 			else
@@ -88,7 +88,7 @@ int CFrame::Render()
 					fShield = -0.05f;
 				}
 
-				D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, fShield + 0.009f, 0);
+				D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail, fShield + 0.01f, 0);
 				D3DXMatrixRotationYawPitchRoll(&matrix, D3DXToRadian(180), 0, 0);
 			}
 
@@ -111,39 +111,40 @@ int CFrame::Render()
 		if (m_pParentSkin->m_nBoneAniIndex < 19
 			&& m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][1])
 		{
-			D3DXMATRIX mat;
-			D3DXMATRIX matTrans;
+			D3DXMATRIX mat{};
+			D3DXMATRIX matTrans{};
 
 			if (m_pParentSkin->m_cRotate[1] == 1)
 			{
-				D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, 0.009f, 0.0f);
-				D3DXMatrixRotationYawPitchRoll(&mat, D3DXToRadian(180), 0.0f, 0.0f);
+				D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail, 0.01f, 0.0f);
+				D3DXMatrixRotationYawPitchRoll(&mat, 3.1415927f, 0.0f, 0.0f);
 			}
 			else
 			{
 				if (m_pParentSkin->m_nBoneAniIndex == 6)
 				{
-					D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail * 0.5f, -0.009f, 0.0f);
+					D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail * 0.5f, -0.01f, 0.0f);
 				}
 				else if (m_pParentSkin->m_nBoneAniIndex == 9)
 				{
-					D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail * 1.6f, 0.029f, 0.0f);
+					D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail * 1.6f, 0.03f, 0.0f);
 				}
 				else
 				{
-					D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, -0.009f, 0.0f);
+					D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail, -0.01f, 0.0f);
 				}
+
 				if (m_pParentSkin->m_nBoneAniIndex == 1)
 				{
-					D3DXMatrixRotationYawPitchRoll(&mat, -0.2617994f, -0.17453294f, D3DXToRadian(180));
+					D3DXMatrixRotationYawPitchRoll(&mat, -0.2617994f, -0.17453294f, 3.1415927f);
 				}
 				else if (m_pParentSkin->m_nBoneAniIndex == 6)
 				{
-					D3DXMatrixRotationYawPitchRoll(&mat, -0.34906587f, D3DXToRadian(0), D3DXToRadian(180));
+					D3DXMatrixRotationYawPitchRoll(&mat, -0.34906587f, 0.0f, 3.1415927f);
 				}
 				else
 				{
-					D3DXMatrixRotationYawPitchRoll(&mat, D3DXToRadian(0), D3DXToRadian(0), D3DXToRadian(180));
+					D3DXMatrixRotationYawPitchRoll(&mat, 0, 0, 3.1415927f);
 				}
 			}
 			D3DXMatrixMultiply(&mat, &matTrans, &mat);

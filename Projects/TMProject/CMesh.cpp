@@ -879,6 +879,7 @@ int CMesh::LoadMesh(char* file)
                 m_pMesh->m_fMinZ = pVertex[nFloatCount * i + 2];
         }
 
+        // fabsf?
         std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinX, m_pMesh->m_fMaxX);
         std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinY, m_pMesh->m_fMaxY);
         std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinZ, m_pMesh->m_fMaxZ);
@@ -1029,7 +1030,7 @@ void CMesh::SetMaterial(char cAlpha)
 
         float fDistance = fEnd - g_pDevice->m_fFogStart;
         if (fDistance == 0.0f)
-            fDistance = 0.009f;
+            fDistance = 0.01f;
 
         float fFog[4] = {1.0f, fEnd, 1.0f / fDistance, 0.0f};
         g_pDevice->m_pd3dDevice->SetVertexShaderConstantF(

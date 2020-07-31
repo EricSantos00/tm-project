@@ -1251,17 +1251,17 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 
 	vPickTempPos = m_pGround->GetPickPos();
 
-	if ((vFocusePos.y - vPickTempPos.y) < 4.0f)
+	if (fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 		vPickPos = vPickTempPos;
 
-	if (vPickPos.y >= -5000.0f && (vFocusePos.y - vPickPos.y) < 2.0f)
+	if (vPickPos.y >= -5000.0f && fabsf(vFocusePos.y - vPickPos.y) < 2.0f)
 		return vPickPos;
 
 	if (m_pGround->m_pLeftGround)
 	{
 		vPickTempPos = m_pGround->m_pLeftGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y) || (vFocusePos.y - vPickTempPos.y) < 4.0f)
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y) || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 		{
 			vPickPos = vPickTempPos;
 
@@ -1274,11 +1274,11 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 	{
 		vPickTempPos = m_pGround->m_pRightGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y))
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y))
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0f && (vFocusePos.y - vPickPos.y) < 2.0f || (vFocusePos.y - vPickTempPos.y < 4.0f))
+			if (vPickTempPos.y > -5000.0f && fabsf(vFocusePos.y - vPickPos.y) < 2.0f || fabsf(vFocusePos.y - vPickTempPos.y < 4.0f))
 				return vPickPos;
 		}
 	}
@@ -1287,11 +1287,11 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 	{
 		vPickTempPos = m_pGround->m_pUpGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y))
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y))
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0f && (vFocusePos.y - vPickPos.y) < 2.0f || (vFocusePos.y - vPickTempPos.y) < 4.0f)
+			if (vPickTempPos.y > -5000.0f && fabsf(vFocusePos.y - vPickPos.y) < 2.0f || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 				return vPickPos;
 		}
 	}
@@ -1300,11 +1300,11 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 	{
 		vPickTempPos = m_pGround->m_pDownGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y) || (vFocusePos.y - vPickTempPos.y) < 4.0f)
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y) || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0 && (vFocusePos.y - vPickPos.y) < 2.0f)
+			if (vPickTempPos.y > -5000.0 && fabsf(vFocusePos.y - vPickPos.y) < 2.0f)
 				return vPickPos;
 		}
 	}

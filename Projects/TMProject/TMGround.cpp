@@ -2754,8 +2754,8 @@ int TMGround::Render()
         nClipIndex = 18;
 
     int nMinClipIndex = 0;
-    //NOTE: IDA has a strange decompilation on this part
-    if (g_pObjectManager->m_pCamera->m_fVerticalAngle > 1.0f)
+
+    if (fabsf(g_pObjectManager->m_pCamera->m_fVerticalAngle) > 1.0f)
         nClipIndex = (int)(pCamera->m_fSightLength * 1.5f) + 8.0f;
 
     nMinClipIndex = nClipIndex / 3;
@@ -3273,7 +3273,7 @@ int TMGround::Render()
                             if (vPosTransformed.z >= 0.0f && vPosTransformed.z < 1.0f)
                             {
                                 int vPosInX = (int)((((vPosTransformed.x + 1.0f) * ((float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift) / 2.0f))));
-                                int vPosInY = (int)((((vPosTransformed.y + 1.0f) * ((float)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nWidthShift) / 2.0f))));
+                                int vPosInY = (int)((((-vPosTransformed.y + 1.0f) * ((float)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nWidthShift) / 2.0f))));
 
                                 if ((float)vPosInX > (float)(-50.0f * RenderDevice::m_fWidthRatio)
                                     && ((float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)
@@ -3372,7 +3372,7 @@ D3DXVECTOR3 TMGround::GetPickPos()
     int nClipIndex = 25;
     int nMinClipIndex = 0;
 
-    if(g_pObjectManager->m_pCamera->m_fVerticalAngle > 1.0f)
+    if(fabsf(g_pObjectManager->m_pCamera->m_fVerticalAngle) > 1.0f)
         nClipIndex = (int)((pCamera->m_fSightLength * 1.5f) + 8.0f);
 
     nMinClipIndex = nClipIndex / 2;
@@ -3463,7 +3463,7 @@ D3DXVECTOR3 TMGround::GetPickPos()
                                 (float)m_TileMapData[k + ((j + 1) << 6) + 1].cHeight * 0.1f,
                                 (float)((float)(j + 1) * 2.0) + m_vecOffset.y);
 
-                            if ((float)m_pMaskData[j][k] * 0.1f - ((((vec[0].y + vec[1].y) + vec[2].y) + vec[3].y) / 4.0f) > 1.0f)
+                            if (fabsf((float)m_pMaskData[j][k] * 0.1f - ((((vec[0].y + vec[1].y) + vec[2].y) + vec[3].y) / 4.0f)) > 1.0f)
                                 continue;
                         }
 
@@ -3482,7 +3482,7 @@ D3DXVECTOR3 TMGround::GetPickPos()
                                     int vPosInX = g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift;
                                     vPosInX = (int)(((vPosTransformed.x + 1.0f) * vPosInX) / 2.0f);
                                     int vPosInY = g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift;
-                                    vPosInY = (int)(((vPosTransformed.y + 1.0f) * vPosInY) / 2.0f);
+                                    vPosInY = (int)(((-vPosTransformed.y + 1.0f) * vPosInY) / 2.0f);
 
                                     if ((float)vPosInX > (float)(-100.0f * RenderDevice::m_fWidthRatio)
                                         && (float)((float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)
@@ -3520,7 +3520,7 @@ D3DXVECTOR3 TMGround::GetPickPos()
                                     int vPosInX = g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift;
                                     vPosInX = (int)(((vPosTransformed.x + 1.0f) * vPosInX) / 2.0f);
                                     int vPosInY = g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift;
-                                    vPosInY = (int)(((vPosTransformed.y + 1.0f) * vPosInY) / 2.0f);
+                                    vPosInY = (int)(((-vPosTransformed.y + 1.0f) * vPosInY) / 2.0f);
 
 
                                     if ((float)vPosInX > (float)(-100.0f * RenderDevice::m_fWidthRatio)
