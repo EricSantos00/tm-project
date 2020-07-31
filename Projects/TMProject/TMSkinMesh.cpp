@@ -286,6 +286,7 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 		if (m_nCosType != 0 && m_nCosType != 100)
 			SetCostume(m_nCosType, szTexture, szName);
 
+
 		if ((int)*look < 90 || !i || look[2 * i])
 		{
 			CMesh* tmpMesh = new CMesh(this);
@@ -375,6 +376,7 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 				tmpMesh->m_sLegendType = 125;
 				break;
 			}
+
 			if (m_nBoneAniIndex < 19 && (i == 6 || i == 7))
 			{
 				if (i == 6)
@@ -407,6 +409,8 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 			}
 			else
 			{
+				std::cout << "Can't Load " << szName << " mesh.\n";
+
 				if (tmpMesh)
 					delete tmpMesh;
 			}
@@ -844,7 +848,7 @@ void TMSkinMesh::SetVecMantua(int nType, int nSkinIndex)
 		fMantuaUp = 0.25f;
 		break;
 	case 38:
-		fMantuaUp = 0.25f;
+		fMantuaUp = 0.26f;
 		break;
 	case 40:
 		fMantuaUp = 0.18f;
@@ -857,7 +861,7 @@ void TMSkinMesh::SetVecMantua(int nType, int nSkinIndex)
 		D3DXMatrixRotationYawPitchRoll(&m_matMantua, -D3DXToRadian(90), fMantuaUp + -D3DXToRadian(180), 0);
 		break;
 	case 2:
-		D3DXMatrixRotationYawPitchRoll(&m_matMantua, -D3DXToRadian(90), fMantuaUp + D3DXToRadian(180), 0);
+		D3DXMatrixRotationYawPitchRoll(&m_matMantua, -D3DXToRadian(90), fMantuaUp + D3DXToRadian(90), 0);
 		break;
 	case 3:
 		D3DXMatrixRotationYawPitchRoll(

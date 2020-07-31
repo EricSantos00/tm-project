@@ -1718,14 +1718,14 @@ int TMHuman::Render()
             else
             {
                 if (m_nSkinMeshType == 1)
-                    fScale = 0.89f;
+                    fScale = 0.9f;
 
                 int nMesh = m_stLookInfo.CoatMesh;
                 float fLen = 0.0f;
                 if (nMesh < 40)
                     fLen = fMantuaList[nClass][nMesh];
                 else
-                    fLen = fMantuaList[2 + nClass][nMesh]; // TODO: confirm this later
+                    fLen = fMantuaList[nClass][nMesh - 40]; // TODO: confirm this later
 
                 float fLenUp = 0.0;
                 if (m_sMantuaIndex >= 3197 && m_sMantuaIndex <= 3199)
@@ -1739,6 +1739,7 @@ int TMHuman::Render()
                     fLenUp = 0.05f;
                 }
                 m_pMantua->m_BaseMatrix = m_pSkinMesh->m_OutMatrix;
+                m_pMantua->Render(fLen, fScale, fLenUp);
             }
         }
         RenderEffect();
@@ -5153,6 +5154,9 @@ void TMHuman::SetInMiniMap(unsigned int dwCol)
 
 void TMHuman::SetSpeed(int bMountDead)
 {
+    m_fMaxSpeed = (float)BASE_GetSpeed(&m_stScore);
+    if (g_pCurrentScene->m_pMyHuman == this)
+        g_nMyHumanSpeed = (int)m_fMaxSpeed;
 }
 
 void TMHuman::UpdateGuildName()
@@ -5174,6 +5178,19 @@ void TMHuman::DelayDelete()
 
 void TMHuman::SetCharHeight(float fCon)
 {
+    float fRatio = 0.0f;
+    if (m_dwID > 0 && m_dwID < 1000 || g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELCHAR)
+    {
+        fRatio = 4000.0f;
+        if (fCon > 500.0f && m_stScore.Level < 500)
+            fCon = 500.0f;
+    }
+    else
+    {
+        fRatio = 2000.0;
+    }
+
+    m_fScale = ((fCon / fRatio) + 1.0f) * 0.89999998f;
 }
 
 int TMHuman::StartKhepraDieEffect()
@@ -5187,6 +5204,83 @@ void TMHuman::SetAvatar(char cAvatar)
 
 void TMHuman::UpdateMount()
 {
+    TMFieldScene* pScene = (TMFieldScene*)g_pCurrentScene;
+    if (pScene->m_bAirMove == 1 && g_pCurrentScene->m_pMyHuman == this)
+    {
+        m_cMount = 1;
+        m_nMountSkinMeshType = 40;
+        SetAnimation(ECHAR_MOTION::ECMOTION_SEATING, 1);
+
+        memset(&m_stMountLook, 0, sizeof(m_stMountLook));
+        if (m_pMantua)
+        {
+            m_pMantua->SetVecMantua(1, 40);
+            m_pMantua->SetAnimation(3);
+        }
+    }
+
+    SAFE_DELETE(m_pMount);
+
+    if (m_cMount > 0)
+    {
+        if (m_pMount == nullptr)
+        {
+            m_pMount = new TMSkinMesh(&m_stMountLook,
+                &m_stMountSanc,
+                m_nMountSkinMeshType,
+                0,
+                0,
+                1,
+                0,
+                1);
+
+            if (m_pMount)
+            {
+                m_pMount->m_pOwner = this;
+                if (m_pMount->m_nBoneAniIndex == 50)
+                    m_pMount->m_dwFPS = 7;
+                else
+                    m_pMount->m_dwFPS = 40;
+                if (m_nClass == 40)
+                {
+                    m_pMount->m_vScale.x = m_fMountScale;
+                    m_pMount->m_vScale.y = m_fMountScale;
+                    m_pMount->m_vScale.z = m_fMountScale;
+                }
+                else
+                {
+                    m_pMount->m_vScale.x = m_fScale * m_fMountScale;
+                    m_pMount->m_vScale.y = m_fScale * m_fMountScale;
+                    m_pMount->m_vScale.z = m_fScale * m_fMountScale;
+                }
+
+                m_pMount->m_bBaseMat = 0;
+                if (m_nMountSkinMeshType == 20 && m_stMountLook.Mesh0 == 7)
+                {
+                    m_pSkinMesh->SetVecMantua(4, m_nMountSkinMeshType);
+                }
+                else if (m_nMountSkinMeshType == 20)
+                {
+                    m_pSkinMesh->SetVecMantua(3, m_nMountSkinMeshType);
+                }
+                else
+                {
+                    m_pSkinMesh->SetVecMantua(2, m_nMountSkinMeshType);
+                }
+            }
+        }
+
+        if (m_pMount)
+            m_pMount->RestoreDeviceObjects();
+
+        return;
+    }
+
+    if (g_pCurrentScene && g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD && g_pCurrentScene->m_pMyHuman == this)
+    {
+        pScene->SetPosPKRun();
+        SetSpeed(pScene->m_bMountDead);
+    }
 }
 
 float TMHuman::GetMyHeight()
@@ -5273,6 +5367,48 @@ int TMHuman::StrByteCheck(char* szString)
 
 void TMHuman::SetMantua(int nTexture)
 {
+    if (!nTexture
+        || nTexture == 2
+        || nTexture == 8
+        || nTexture == 9
+        || nTexture == 11
+        || nTexture == 24
+        || nTexture == 27
+        || nTexture == 31
+        || nTexture == 34)
+    {
+        m_cMantua = 1;
+    }
+    else if (nTexture == 1
+        || nTexture == 3
+        || nTexture == 12
+        || nTexture == 13
+        || nTexture == 14
+        || nTexture == 25
+        || nTexture == 28
+        || nTexture == 30
+        || nTexture == 32
+        || nTexture == 35)
+    {
+        m_cMantua = 2;
+    }
+    else if (nTexture == 6
+        || nTexture == 7
+        || nTexture == 15
+        || nTexture == 16
+        || nTexture == 17
+        || nTexture == 19
+        || nTexture == 26
+        || nTexture == 29
+        || nTexture == 33
+        || nTexture == 36)
+    {
+        m_cMantua = 3;
+    }
+    else
+    {
+        m_cMantua = 4;
+    }
 }
 
 int TMHuman::SetCitizenMantle(int BaseSkin)

@@ -703,12 +703,13 @@ void CFrame::UpdateFrames(D3DXMATRIX* matCur)
 				m_pParentSkin->m_OutMatrix = m_matCombined;
 
 			D3DXVECTOR4 vecOut(0.0f, 0.0f, 0.0f, 0.0f);
-			D3DXVECTOR3 vecIn(0.0f, 0.00f, -0.40f);
+			D3DXVECTOR3 vecIn(0.3f, 0.1f, 0.0f);
 
 			// this is actualy a switch
 			switch (m_dwID - 10)
 			{
 			case 0:
+				vecIn = D3DXVECTOR3(-0.5f, -0.25f, 0.1f);
 				D3DXVec3Transform(&vecOut, &vecIn, &m_matCombined);
 				m_pParentSkin->m_pOwner->m_vecTempPos[4].x = vecOut.x;
 				m_pParentSkin->m_pOwner->m_vecTempPos[4].y = vecOut.y;

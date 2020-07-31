@@ -918,6 +918,19 @@ int BASE_GetDistance(int x1, int y1, int x2, int y2)
     return dx + 1;
 }
 
+int BASE_GetSpeed(STRUCT_SCORE* score)
+{
+    int Run;
+
+    Run = score->AttackRun & 0xF;
+    if (Run < 1)
+        Run = 1;
+    if (Run > 7)
+        Run = 7;
+
+    return Run;
+}
+
 int ReadItemicon()
 {
 	return 0;
