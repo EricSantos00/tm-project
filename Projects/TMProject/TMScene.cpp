@@ -840,7 +840,7 @@ int TMScene::InitializeScene()
 
 int TMScene::OnPacketEvent(unsigned int dwCode, char* pSBuffer)
 {
-	return 0;
+	return 1;
 }
 
 int TMScene::OnKeyDownEvent(unsigned int iKeyCode)
@@ -1677,7 +1677,7 @@ void TMScene::CameraAction()
 	}
 }
 
-void TMScene::ReadCameraPos(char* szFileName)
+void TMScene::ReadCameraPos(const char* szFileName)
 {
 	m_nCameraLoop = 0;
 

@@ -26,7 +26,7 @@ public:
 
 	virtual void VisibleSelectCreate(int bSelect);
 
-	void CamAction(char* szAction);
+	void CamAction(const char* szAction);
 	void LookSampleHuman(int nIndex, int bLook, int bSelect);
 	void SetvirtualKey();
 	void AddvirtualKeyNum(int num);

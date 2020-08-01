@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "TMSelectCharScene.h"
+#include "TMCamera.h"
 #include "TMGlobal.h"
+#include "ObjectManager.h"
 
 TMSelectCharScene::TMSelectCharScene() :
 	m_vecSelPos{},
@@ -84,8 +86,15 @@ void TMSelectCharScene::VisibleSelectCreate(int bSelect)
 {
 }
 
-void TMSelectCharScene::CamAction(char* szAction)
+void TMSelectCharScene::CamAction(const char* szAction)
 {
+	auto pCamera = g_pObjectManager->m_pCamera;
+	pCamera->m_bStandAlone = 1;
+
+	m_dwStartCamTime = g_pTimerManager->GetServerTime();
+	ReadCameraPos(szAction);
+
+	m_sPlayDemo = 1;
 }
 
 void TMSelectCharScene::LookSampleHuman(int nIndex, int bLook, int bSelect)
