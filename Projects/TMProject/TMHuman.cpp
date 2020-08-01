@@ -5738,12 +5738,96 @@ void TMHuman::SetMantua(int nTexture)
 
 int TMHuman::SetCitizenMantle(int BaseSkin)
 {
-	return 0;
+    if (m_citizen < 0 || m_citizen > 10)
+        m_citizen = 0;
+    if (!m_citizen)
+        return BaseSkin;
+
+    switch (BaseSkin)
+    {
+    case 34:
+    case 35:
+    case 36:
+        return BaseSkin;
+    case 19:
+        return m_citizen + 39;
+    case 3:
+        return m_citizen + 49;
+    case 2:
+        return m_citizen + 59;
+    case 6:
+        return m_citizen + 69;
+    case 1:
+        return m_citizen + 79;
+    case 0:
+        return m_citizen + 89;
+    case 7:
+        return m_citizen + 99;
+    case 25:
+        return m_citizen + 109;
+    case 24:
+        return m_citizen + 119;
+    case 26:
+        return m_citizen + 129;
+    case 28:
+        return m_citizen + 139;
+    case 27:
+        return m_citizen + 149;
+    case 29:
+        return m_citizen + 159;
+    case 32:
+        return m_citizen + 169;
+    case 31:
+        return m_citizen + 179;
+    case 33:
+        BaseSkin = m_citizen + 189;
+        break;
+    }
+
+    return BaseSkin;
 }
 
 int TMHuman::UnSetCitizenMantle(int BaseSkin)
 {
-	return 0;
+    int mantle = BaseSkin / 10;
+    if (BaseSkin / 10 == 4)
+        return 19;
+
+    switch (mantle)
+    {
+    case 5:
+        return 3;
+    case 6:
+        return 2;
+    case 7:
+        return 6;
+    case 8:
+        return 1;
+    case 9:
+        return 0;
+    case 10:
+        return 7;
+    case 11:
+        return 25;
+    case 12:
+        return 24;
+    case 13:
+        return 26;
+    case 14:
+        return 28;
+    case 15:
+        return 27;
+    case 16:
+        return 29;
+    case 17:
+        return 32;
+    case 18:
+        return 31;
+    case 19:
+        BaseSkin = 33;
+        break;
+    }
+    return BaseSkin;
 }
 
 int TMHuman::MAutoAttack(TMHuman* pTarget, int mode)
@@ -5753,16 +5837,300 @@ int TMHuman::MAutoAttack(TMHuman* pTarget, int mode)
 
 void TMHuman::SetMountCostume(unsigned int index)
 {
+    if (index >= 11)
+    {
+        m_stMountLook.Mesh2 = 0;
+        m_stMountLook.Mesh1 = 0;
+        m_stMountLook.Mesh0 = 0;
+        m_stMountLook.Skin2 = 0;
+        m_stMountLook.Skin1 = 0;
+        m_stMountLook.Skin0 = 0;
+        memset(&m_stMountSanc.Sanc0, 0, sizeof m_stMountSanc);
+        memset(&m_stOldMountSanc.Sanc0, 0, sizeof m_stOldMountSanc);
+
+        switch (index)
+        {
+        case 11:
+            m_nMountSkinMeshType = 29;
+            m_stMountLook.Mesh0 = 5;
+            m_stMountLook.Mesh1 = 5;
+            m_fMountScale = 1.25f;
+            break;
+        case 12:
+        case 13:
+            m_nMountSkinMeshType = 31;
+            m_stMountLook.Mesh0 = 8;
+            m_stMountLook.Mesh1 = 8;
+            if (index == 12)
+            {
+                m_stMountLook.Skin0 = 1;
+                m_stMountLook.Skin1 = 1;
+            }
+            else
+            {
+                m_stMountSanc.Sanc2 = 12;
+                m_stMountSanc.Sanc1 = 12;
+                m_stMountSanc.Sanc0 = 12;
+                m_stOldMountSanc.Sanc2 = 12;
+                m_stOldMountSanc.Sanc1 = 12;
+                m_stOldMountSanc.Sanc0 = 12;
+            }
+
+            m_fMountScale = 1.0f;
+            break;
+        case 14:
+            m_nMountSkinMeshType = 48;
+            m_fMountScale = 0.80f;
+            break;
+        case 15:
+        case 16:
+            m_stMountLook.Skin0 = 1;
+            m_nMountSkinMeshType = 49;
+            m_fMountScale = 0.69f;
+            break;
+        case 17:
+        case 18:
+            m_nMountSkinMeshType = 31;
+            m_stMountLook.Mesh0 = 14;
+            m_stMountLook.Mesh1 = 14;
+            if (index == 18)
+            {
+                m_stMountLook.Skin0 = 1;
+                m_stMountLook.Skin1 = 1;
+            }
+
+            m_fMountScale = 0.89f;
+            m_stMountSanc.Sanc2 = 13;
+            m_stMountSanc.Sanc1 = 13;
+            m_stMountSanc.Sanc0 = 13;
+            m_stOldMountSanc.Sanc2 = 13;
+            m_stOldMountSanc.Sanc1 = 13;
+            m_stOldMountSanc.Sanc0 = 13;
+            break;
+        case 19:
+            m_nMountSkinMeshType = 50;
+            m_stMountSanc.Sanc2 = 13;
+            m_stMountSanc.Sanc1 = 13;
+            m_stMountSanc.Sanc0 = 13;
+            m_stOldMountSanc.Sanc2 = 13;
+            m_stOldMountSanc.Sanc1 = 13;
+            m_stOldMountSanc.Sanc0 = 13;
+            break;
+        case 20:
+            m_stMountLook.Skin0 = 1;
+            m_stMountLook.Skin1 = 1;
+            m_stMountLook.Mesh0 = 1;
+            m_stMountLook.Mesh1 = 1;
+            m_nMountSkinMeshType = 49;
+            m_fMountScale = 0.69f;
+            break;
+        case 21:
+            m_nMountSkinMeshType = 51;
+            m_fMountScale = 1.0f;
+            break;
+        }
+    }
 }
 
 bool TMHuman::_locationCheck(TMVector2 vec2, int mapX, int mapY)
 {
-	return false;
+    return mapY == (int)(vec2.y * 0.0078125f) && mapX == (int)(vec2.x * 0.0078125f);
 }
 
 int TMHuman::SetHumanCostume()
 {
-	return 0;
+    int nCos = 0;
+    m_nSkinMeshType = 0;
+    if (m_sCostume <= 6301)
+    {
+        if (m_sCostume != 6301)
+        {
+            switch (m_sCostume)
+            {
+            case 4150:
+                nCos = 16;
+                m_nSkinMeshType = 0;
+                break;
+            case 4151:
+                nCos = -1;
+                m_nSkinMeshType = 0;
+                break;
+            case 4152:
+                nCos = 1;
+                m_nSkinMeshType = 1;
+                break;
+            case 4153:
+                nCos = 2;
+                m_nSkinMeshType = 0;
+                break;
+            case 4154:
+                nCos = 3;
+                m_nSkinMeshType = 1;
+                break;
+            case 4155:
+                nCos = 4;
+                m_nSkinMeshType = 0;
+                break;
+            case 4156:
+                nCos = 5;
+                m_nSkinMeshType = 1;
+                break;
+            case 4157:
+                nCos = 7;
+                m_nSkinMeshType = 1;
+                break;
+            case 4158:
+                nCos = 6;
+                m_nSkinMeshType = 0;
+                break;
+            case 4159:
+                nCos = 8;
+                m_nSkinMeshType = 1;
+                break;
+            case 4160:
+                nCos = 9;
+                m_nSkinMeshType = 1;
+                break;
+            case 4161:
+                nCos = 10;
+                m_nSkinMeshType = 1;
+                break;
+            case 4162:
+                nCos = 11;
+                m_nSkinMeshType = 1;
+                break;
+            case 4163:
+                nCos = 13;
+                m_nSkinMeshType = 1;
+                break;
+            case 4164:
+                nCos = 12;
+                m_nSkinMeshType = 1;
+                break;
+            case 4165:
+                nCos = 14;
+                m_nSkinMeshType = 0;
+                break;
+            case 4166:
+                nCos = 15;
+                m_nSkinMeshType = 1;
+                break;
+            case 4167:
+                nCos = 17;
+                m_nSkinMeshType = 1;
+                break;
+            case 4168:
+                nCos = 18;
+                m_nSkinMeshType = 1;
+                break;
+            case 4169:
+                nCos = 21;
+                m_nSkinMeshType = 0;
+                break;
+            case 4170:
+                nCos = 22;
+                m_nSkinMeshType = 0;
+                break;
+            case 4171:
+                nCos = 19;
+                m_nSkinMeshType = 0;
+                break;
+            case 4172:
+                nCos = 20;
+                m_nSkinMeshType = 0;
+                break;
+            case 4173:
+                nCos = 23;
+                m_nSkinMeshType = 0;
+                break;
+            case 4174:
+                nCos = 24;
+                m_nSkinMeshType = 0;
+                break;
+            case 4175:
+                nCos = 25;
+                m_nSkinMeshType = 1;
+                break;
+            case 4176:
+                nCos = 26;
+                m_nSkinMeshType = 1;
+                break;
+            case 4177:
+                nCos = 27;
+                m_nSkinMeshType = 1;
+                break;
+            case 4178:
+                nCos = 28;
+                m_nSkinMeshType = 0;
+                break;
+            case 4179:
+                nCos = 29;
+                m_nSkinMeshType = 1;
+                break;
+            case 4180:
+                nCos = 30;
+                m_nSkinMeshType = 1;
+                break;
+            case 4181:
+                nCos = 31;
+                m_nSkinMeshType = 1;
+                break;
+            case 4182:
+                nCos = 32;
+                m_nSkinMeshType = 1;
+                break;
+            case 4183:
+                nCos = 33;
+                m_nSkinMeshType = 1;
+                break;
+            }
+        }
+        else
+        {
+            nCos = 16;
+            m_nSkinMeshType = 0;
+        }
+    }
+    else if (m_sCostume == 6400)
+    {
+        nCos = 34;
+        m_nSkinMeshType = 1;
+    }
+
+    m_stLookInfo.FaceMesh = 0;
+    m_stLookInfo.FaceSkin = 0;
+    m_stLookInfo.HelmMesh = 0;
+    m_stLookInfo.CoatMesh = 0;
+    m_stLookInfo.PantsMesh = 0;
+    m_stLookInfo.GlovesMesh = 0;
+    m_stLookInfo.BootsMesh = 0;
+    m_stLookInfo.CoatSkin = 0;
+    m_stLookInfo.CoatSkin = 0;
+    m_stLookInfo.PantsSkin = 0;
+    m_stLookInfo.GlovesSkin = 0;
+    m_stLookInfo.BootsSkin = 0;
+
+    if (m_sCostume == 4150)
+    {
+        memset(&m_stSancInfo.Sanc0, 9, 6u);
+        memset(&m_stSancInfo.Legend0, 0, 6u);
+    }
+    else if ((m_sCostume < 4169 || m_sCostume > 4174) && (m_sCostume < 4176 || m_sCostume > 4179)  && m_sCostume != 4183 && m_sCostume != 4151)
+    {
+        if (m_sCostume == 6301)
+            memset(&m_stSancInfo.Sanc0, 9, 6u);
+        else
+            memset(&m_stSancInfo.Sanc0, 0, 6u);
+
+        memset(&m_stSancInfo.Legend0, 0, 6u);
+    }
+    else
+    {
+        memset(&m_stSancInfo.Sanc0, 13, 6u);
+        memset(&m_stSancInfo.Legend0, 0, 6u);
+    }
+
+    return nCos;
 }
 
 void TMHuman::RenderEffect_RudolphCostume(unsigned int dwServerTime)
