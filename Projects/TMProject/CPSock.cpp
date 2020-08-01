@@ -2,6 +2,8 @@
 #include "CPSock.h"
 #include <WinSock2.h>
 #include "Basedef.h"
+#include "TMGlobal.h"
+#include "TMLog.h"
 
 int ConnectPort = 0;
 
@@ -435,54 +437,236 @@ int CPSock::CloseSocket()
 
 int CPSock::AddMessage(char* pMsg, int Size)
 {
-	if (SendQueue[0] != 0)
+	int Keyword = 0;
+	if (SendQueue[0])
 	{
 		if (SendCount > 15)
 		{
 			if (EncodeByte)
 			{
-
+				// we don't need this now... maaybe we can decompile later...
 			}
+			else
+			{
+				if (SendQueue[15] % 2)
+					Keyword = SendQueue[11] + SendQueue[13] - SendQueue[9] + 4;
+				else
+					Keyword = SendQueue[3] + SendQueue[1] + SendQueue[5] - 87;
+
+				Keyword ^= 0xFF;
+			}
+		}
+		else if(SendQueue[0])
+		{
+			if (SendCount > 15)
+			{
+				if (SendQueue[15] % 2)
+					Keyword = SendQueue[11] + SendQueue[13] - SendQueue[9] + 4;
+				else
+					Keyword = SendQueue[3] + SendQueue[1] + SendQueue[5] - 87;
+
+				Keyword ^= 0xFF;
+			}
+			else
+				Keyword = SendQueue[SendCount++] ^ 0xFF;
 		}
 	}
 
-	return 1;
+	return AddMessage(pMsg, Size, Keyword);
 }
 
-int CPSock::AddMessage_0(char* pMsg, int Size, int FixedKeyWord)
+int CPSock::AddMessage(char* pMsg, int Size, int FixedKeyWord)
 {
+	if (!Sock)
+	{
+		ErrCount = 10;
+
+		return 0;
+	}
+
+	if (Size + nSendPosition < SEND_BUFFER_SIZE)
+	{
+		unsigned char iKeyWord = FixedKeyWord;
+		if (!FixedKeyWord)
+			iKeyWord = rand() & 0x800000FF;
+
+		unsigned char KeyWord = pKeyWord[iKeyWord][0];
+		
+		auto packet = reinterpret_cast<MSG_STANDARD*>(pMsg);
+		packet->Size = Size;
+		packet->KeyWord = iKeyWord;
+		packet->CheckSum = 0;
+
+		packet->Tick = CurrentTime;
+		LastSendTime = CurrentTime;
+
+		char Sum1 = 0;
+		char Sum2 = 0;
+
+		int pos = KeyWord;
+		int i = 4;
+
+		while (i < Size)
+		{
+			Sum1 += pMsg[i];
+
+			char Trans = pKeyWord[pos % 256][1];
+			int mod = i & 3;
+
+			if (!mod)
+				pSendBuffer[i + nSendPosition] = pMsg[i] + 2 * Trans;
+			else if (mod == 1)
+				pSendBuffer[i + nSendPosition] = pMsg[i] - ((int)Trans >> 3);
+			else if (mod == 2)
+				pSendBuffer[i + nSendPosition] = pMsg[i] + 4 * Trans;
+			else if (mod == 3)
+				pSendBuffer[i + nSendPosition] = pMsg[i] - ((int)Trans >> 5);
+
+			++pos;
+		}
+
+		packet->CheckSum = Sum2 - Sum1;
+		memcpy(&pSendBuffer[nSendPosition], pMsg, 4u);
+
+		nSendPosition += Size;
+
+		SendMessageA();
+		return 1;
+	}
+
+	ErrCount = 1;
 	return 0;
 }
 
 bool CPSock::SendMessageA()
 {
+	if (!Sock)
+	{
+		nSendPosition = 0;
+		nSentPosition = 0;
+
+		return false;
+	}
+
+	if (nSentPosition > 0)
+		RefreshSendBuffer();
+
+	char temp[256] = { 0 };
+	if (nSendPosition <= SEND_BUFFER_SIZE && nSendPosition >= 0)
+	{
+		if (nSentPosition > nSendPosition || nSentPosition >= SEND_BUFFER_SIZE || nSentPosition < 0)
+		{
+			sprintf_s(temp, "err, send2 %d %d %d", nSendPosition, nSentPosition, Sock);
+
+			//Log(temp, "-system", 0);
+			nSendPosition = 0;
+			nSentPosition = 0;
+		}
+
+		for (int i = 0; i < 1; ++i)
+		{
+			int tSend = send(Sock, &pSendBuffer[nSentPosition], nSendPosition - nSentPosition, 0);
+			if (tSend == -1)
+				WSAGetLastError();
+			else
+				nSentPosition += tSend;
+
+			if (nSentPosition >= nSendPosition && tSend != -1)
+			{
+				nSendPosition = 0;
+				nSentPosition = 0;
+
+				return true;
+			}
+		}
+
+		return nSendPosition < SEND_BUFFER_SIZE;
+	}
+	
+	sprintf_s(temp, "err,send1 %d %d %d", nSendPosition, nSentPosition, Sock);
+	//Log(temp, "-system", 0);
+	nSendPosition = 0;
+	nSentPosition = 0;
 	return false;
 }
 
 int CPSock::SendOneMessage(char* Msg, int Size)
 {
-	return 0;
+	AddMessage(Msg, Size);
+
+	return SendMessageA();
 }
 
 int CPSock::SendOneMessageKeyword(char* Msg, int Size, int Keyword)
 {
-	return 0;
+	AddMessage(Msg, Size, Keyword);
+
+	return SendMessageA();
 }
 
 int CPSock::AddMessage2(char* pMsg, int Size)
 {
-	return 0;
+	if (!Sock)
+		return 0;
+
+	if (Size + nSendPosition > SEND_BUFFER_SIZE)
+		return 0;
+
+	memcpy(&pSendBuffer[nSendPosition], pMsg, Size);
+	nSendPosition += Size;
+
+	return 1;
 }
 
 char* CPSock::ReadMessage2(int* ErrorCode, int* ErrorType)
 {
+	*ErrorCode = 0;
+
+	if (nProcPosition >= nRecvPosition)
+	{
+		nRecvPosition = 0;
+		nProcPosition = 0;
+	}
+	else if ((unsigned int)(nRecvPosition - nProcPosition) >= 12)
+	{
+		auto pMsg = &pRecvBuffer[nProcPosition];
+
+		nProcPosition += *(WORD*)pMsg;
+
+		if (nRecvPosition <= nProcPosition)
+		{
+			nRecvPosition = 0;
+			nProcPosition = 0;
+		}
+
+		return pMsg;
+	}
+
 	return nullptr;
 }
 
 void CPSock::RefreshRecvBuffer()
 {
+	int left = nRecvPosition - nProcPosition;
+
+	if (left > 0 && left <= RECV_BUFFER_SIZE)
+	{
+		memcpy(pRecvBuffer, &pRecvBuffer[nProcPosition], left);
+
+		nProcPosition = 0;
+		nRecvPosition -= left;
+	}
 }
 
 void CPSock::RefreshSendBuffer()
 {
+	int left = nSendPosition - nSentPosition;
+
+	if (left > 0 && left <= RECV_BUFFER_SIZE)
+	{
+		memcpy(pSendBuffer, &pRecvBuffer[nSentPosition], left);
+
+		nSentPosition = 0;
+		nSendPosition -= left;
+	}
 }

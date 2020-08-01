@@ -21,7 +21,7 @@ public:
 	char* ReadMessage(int* ErrorCode, int* ErrorType);
 	int CloseSocket();
 	int AddMessage(char* pMsg, int Size);
-	int AddMessage_0(char* pMsg, int Size, int FixedKeyWord);
+	int AddMessage(char* pMsg, int Size, int FixedKeyWord);
 	bool SendMessageA();
 	int SendOneMessage(char* Msg, int Size);
 	int SendOneMessageKeyword(char* Msg, int Size, int Keyword);

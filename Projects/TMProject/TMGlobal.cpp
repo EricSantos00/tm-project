@@ -94,3 +94,9 @@ int g_bMoveServer;
 char g_szEncryptedAcc[256];
 
 int g_bHideBackground = FALSE;
+
+int g_nMobCount;
+int g_nWeather;
+
+int g_nMyHumanSpeed = 3;
+unsigned int CurrentTime;
