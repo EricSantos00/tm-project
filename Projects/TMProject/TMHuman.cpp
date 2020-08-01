@@ -4076,8 +4076,6 @@ void TMHuman::MoveTo(TMVector2 vecPos)
         }
 
 
-        std::cout << "Moved to " << m_vecMoveToPos.x << " " << m_vecMoveToPos.y << '\n';
-
         m_vecFromPos = m_vecPosition;
         m_vecDPosition = m_vecMoveToPos - m_vecPosition;
         float fDistance = m_vecDPosition.DistanceFrom(TMVector2(0.0f, 0.0f));
@@ -5304,13 +5302,43 @@ void TMHuman::CheckAffect()
 {
 }
 
-void TMHuman::SetChatMessage(char* szString)
+void TMHuman::SetChatMessage(const char* szString)
 {
+    if (!m_dwDelayDel)
+    {
+        int nHeight = 25;
+        m_dwStartChatMsgTime = g_pTimerManager->GetServerTime();
+
+        char temp[256] = { 0 };
+        sprintf_s(temp, "%s", m_pNameLabel->GetText());
+
+        GetChatLen(temp, &nHeight);
+        sprintf_s(temp, "%s", szString);
+
+        m_pChatMsg->SetText(temp, 0);
+        m_pChatMsg->SetSize(GetChatLen(temp, &nHeight) * RenderDevice::m_fWidthRatio, nHeight * RenderDevice::m_fHeightRatio);
+    }
 }
 
-int TMHuman::GetChatLen(char* szString, int* pHeight)
+int TMHuman::GetChatLen(const char* szString, int* pHeight)
 {
-	return 0;
+    if (m_dwDelayDel)
+        return 0;
+
+    int len = strlen(szString);
+    int nLen = 0;
+    if (len >= 41)
+    {
+        nLen = 256 * 1.0f;
+        *pHeight = 50;
+    }
+    else
+    {
+        nLen = (6 * 1.0f) + 20;
+        *pHeight = 40;
+    }
+
+	return nLen;
 }
 
 void TMHuman::SetPacketMOBItem(STRUCT_MOB* pMobData)
@@ -5323,10 +5351,213 @@ void TMHuman::SetPacketEquipItem(unsigned short* sEquip)
 
 void TMHuman::SetColorItem(char* sEquip2)
 {
+    char sEquipType = 0;
+    char sEquipTypea = 0;
+    char sEquipTypeb = 0; 
+    char sEquipTypec = 0;
+    char sEquipTyped = 0;  
+    char sEquipTypee = 0; 
+    char sEquipTypef = 0;
+    char sEquipTypeg = 0;
+    if (!m_dwDelayDel)
+    {
+        if (m_stSancInfo.Sanc0 > 9)
+        {
+            m_stColorInfo.Sanc0 = *sEquip2 & 0xF;
+            if (m_stColorInfo.Sanc0)
+                m_stColorInfo.Sanc0 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc0 = *sEquip2;
+        }
+        if (m_stSancInfo.Sanc1 > 9)
+        {
+            m_stColorInfo.Sanc1 = sEquip2[1] & 0xF;
+            if (m_stColorInfo.Sanc1)
+                m_stColorInfo.Sanc1 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc1 = sEquip2[1];
+        }
+        if (m_stSancInfo.Sanc2 > 9)
+        {
+            m_stColorInfo.Sanc2 = sEquip2[2] & 0xF;
+            if (m_stColorInfo.Sanc2)
+                m_stColorInfo.Sanc2 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc2 = sEquip2[2];
+        }
+        if (m_stSancInfo.Sanc3 > 9)
+        {
+            m_stColorInfo.Sanc3 = sEquip2[3] & 0xF;
+            if (m_stColorInfo.Sanc3)
+                m_stColorInfo.Sanc3 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc3 = sEquip2[3];
+        }
+        if (m_stSancInfo.Sanc4 > 9)
+        {
+            m_stColorInfo.Sanc4 = sEquip2[4] & 0xF;
+            if (m_stColorInfo.Sanc4)
+                m_stColorInfo.Sanc4 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc4 = sEquip2[4];
+        }
+        if (m_stSancInfo.Sanc5 > 9)
+        {
+            m_stColorInfo.Sanc5 = sEquip2[5] & 0xF;
+            if (m_stColorInfo.Sanc5)
+                m_stColorInfo.Sanc5 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc5 = sEquip2[5];
+        }
+        if (m_stSancInfo.Sanc7 > 9)
+        {
+            m_stColorInfo.Sanc7 = sEquip2[6] & 0xF;
+            if (m_stColorInfo.Sanc7)
+                m_stColorInfo.Sanc7 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc7 = sEquip2[6];
+        }
+        if (m_stSancInfo.Sanc6 > 9)
+        {
+            m_stColorInfo.Sanc6 = sEquip2[7] & 0xF;
+            if (m_stColorInfo.Sanc6)
+                m_stColorInfo.Sanc6 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc6 = sEquip2[7];
+        }
+        sEquipType = *sEquip2 >> 4;
+        if (!sEquipType || m_stSancInfo.Legend0 > 4 || m_stSancInfo.Sanc0 <= 9)
+        {
+            if (sEquipType && m_stSancInfo.Legend0 == 4 && m_stSancInfo.Sanc0 > 9)
+                m_stSancInfo.Legend0 = sEquipType + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend0 = sEquipType + 8;
+        }
+        sEquipTypea = sEquip2[1] >> 4;
+        if (!sEquipTypea || m_stSancInfo.Legend1 > 4 || m_stSancInfo.Sanc1 <= 9)
+        {
+            if (sEquipTypea && m_stSancInfo.Legend1 == 4 && m_stSancInfo.Sanc1 > 9)
+                m_stSancInfo.Legend1 = sEquipTypea + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend1 = sEquipTypea + 8;
+        }
+        sEquipTypeb = sEquip2[2] >> 4;
+        if (!sEquipTypeb || m_stSancInfo.Legend2 > 4 || m_stSancInfo.Sanc2 <= 9)
+        {
+            if (sEquipTypeb && m_stSancInfo.Legend2 == 4 && m_stSancInfo.Sanc2 > 9)
+                m_stSancInfo.Legend2 = sEquipTypeb + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend2 = sEquipTypeb + 8;
+        }
+        sEquipTypec = sEquip2[3] >> 4;
+        if (!sEquipTypec || m_stSancInfo.Legend3 > 4 || m_stSancInfo.Sanc3 <= 9)
+        {
+            if (sEquipTypec && m_stSancInfo.Legend3 == 4 && m_stSancInfo.Sanc3 > 9)
+                m_stSancInfo.Legend3 = sEquipTypec + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend3 = sEquipTypec + 8;
+        }
+        sEquipTyped = sEquip2[4] >> 4;
+        if (!sEquipTyped || m_stSancInfo.Legend4 > 4 || m_stSancInfo.Sanc4 <= 9)
+        {
+            if (sEquipTyped && m_stSancInfo.Legend4 == 4 && m_stSancInfo.Sanc4 > 9)
+                m_stSancInfo.Legend4 = sEquipTyped + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend4 = sEquipTyped + 8;
+        }
+        sEquipTypee = sEquip2[5] >> 4;
+        if (!sEquipTypee || m_stSancInfo.Legend5 > 4 || m_stSancInfo.Sanc5 <= 9)
+        {
+            if (sEquipTypee && m_stSancInfo.Legend5 == 4 && m_stSancInfo.Sanc5 > 9)
+                m_stSancInfo.Legend5 = sEquipTypee + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend5 = sEquipTypee + 8;
+        }
+        sEquipTypef = sEquip2[6] >> 4;
+        if (m_stSancInfo.Legend7 > 4 || m_stSancInfo.Sanc7 <= 9)
+        {
+            if (sEquipTypef && m_stSancInfo.Legend7 == 4 && m_stSancInfo.Sanc7 > 9)
+                m_stSancInfo.Legend7 = sEquipTypef + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend7 = sEquipTypef + 8;
+        }
+        sEquipTypeg = sEquip2[7] >> 4;
+        int result = m_stSancInfo.Legend6;
+        if (result > 4 || m_stSancInfo.Sanc6 <= 9)
+        {
+            if (sEquipTypeg)
+            {
+                if (m_stSancInfo.Legend6 == 4)
+                {
+                    result = m_stSancInfo.Sanc6;
+                    if (result > 9)
+                    {
+                        result = sEquipTypeg;
+                        m_stSancInfo.Legend6 += sEquipTypeg + 4;
+                    }
+                }
+            }
+        }
+        else
+        {
+            result = sEquipTypeg + 8;
+            m_stSancInfo.Legend6 = result;
+        }
+    }
 }
 
 void TMHuman::SetInMiniMap(unsigned int dwCol)
 {
+    if (!m_pInMiniMap)
+    {
+        if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+        {
+            auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+            if (g_pCurrentScene->m_pMyHuman != this)
+            {
+                m_pInMiniMap = new SPanel(-2, 0.0f, 0.0f, 4.0f, 4.0f, dwCol, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+
+                if (m_pInMiniMap)
+                {
+                    m_pInMiniMap->m_bSelectEnable = 0;
+                    pFScene->m_pMiniMapPanel->AddChild(m_pInMiniMap);
+                }
+            }
+        }
+    }
+    else
+        m_pInMiniMap->m_GCPanel.dwColor = dwCol;
 }
 
 void TMHuman::SetSpeed(int bMountDead)
@@ -5338,15 +5569,188 @@ void TMHuman::SetSpeed(int bMountDead)
 
 void TMHuman::UpdateGuildName()
 {
+    if (!m_dwDelayDel)
+    {
+        if (!m_usGuild)
+        {
+            m_stGuildMark.bHideGuildmark = 1;
+            m_stGuildMark.pGuildMark->SetVisible(0);
+        }
+        else
+        {
+            m_stGuildMark.nSubGuild = BASE_GetSubGuild(m_sGuildLevel);
+            m_stGuildMark.nGuild = m_usGuild % 0xFFF;
+            m_stGuildMark.nGuildChannel = (m_usGuild >> 12) & 0xF;
+            m_stGuildMark.sGuildIndex = m_sGuildLevel;
+
+            TMFieldScene* pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+            if (g_pCurrentScene)
+            {
+                if (!m_pAutoTradeDesc->IsVisible())
+                    pFScene->Guildmark_Create(&m_stGuildMark);
+            }
+
+        }
+    }
 }
 
 void TMHuman::GetLegType()
 {
+    if (!m_dwDelayDel)
+    {
+        int nSkinMeshType = m_nSkinMeshType;
+        if (m_cMount == 1)
+            nSkinMeshType = m_nMountSkinMeshType;
+
+        if (nSkinMeshType)
+        {
+            switch (nSkinMeshType)
+            {
+            case 1:
+                m_nLegType = 1;
+                break;
+            case 11:
+                m_nLegType = 4;
+                break;
+            case 20:
+                m_nLegType = 0;
+                break;
+            case 21:
+                m_nLegType = 2;
+                break;
+            case 22:
+                m_nLegType = 1;
+                break;
+            case 23:
+                m_nLegType = 0;
+                break;
+            case 24:
+                m_nLegType = 0;
+                break;
+            case 2:
+                m_nLegType = 1;
+                break;
+            case 25:
+                m_nLegType = 2;
+                break;
+            case 26:
+                m_nLegType = 3;
+                break;
+            case 27:
+                m_nLegType = 3;
+                break;
+            case 3:
+                m_nLegType = 1;
+                break;
+            case 28:
+                m_nLegType = 2;
+                break;
+            case 29:
+                m_nLegType = 2;
+                break;
+            case 6:
+                m_nLegType = 1;
+                break;
+            case 4:
+                m_nLegType = 2;
+                break;
+            case 32:
+                m_nLegType = 0;
+                break;
+            case 7:
+                m_nLegType = 2;
+                break;
+            case 8:
+                m_nLegType = 0;
+                break;
+            case 69:
+                m_nLegType = 0;
+                break;
+            case 30:
+                m_nLegType = 2;
+                break;
+            case 31:
+                m_nLegType = 2;
+                break;
+            case 36:
+                m_nLegType = 3;
+                break;
+            case 35:
+                m_nLegType = 5;
+                break;
+            case 34:
+                m_nLegType = 3;
+                break;
+            case 38:
+                m_nLegType = 2;
+                break;
+            case 39:
+                m_nLegType = 2;
+                break;
+            case 40:
+                m_nLegType = 0;
+                break;
+            case 12:
+                m_nLegType = 0;
+                break;
+            case 43:
+                m_nLegType = 0;
+                break;
+            case 42:
+                m_nLegType = 4;
+                break;
+            case 10:
+                m_nLegType = 1;
+                break;
+            case 44:
+                m_nLegType = 0;
+                break;
+            case 5:
+                m_nLegType = m_stMountLook.Mesh0 == 1;
+                break;
+            }
+        }
+        else
+        {
+            m_nLegType = 1;
+        }
+    }
 }
 
 int TMHuman::GetBloodColor()
 {
-	return 0;
+    int nBlood = 0;
+    if (m_nClass <= 8)
+        nBlood = 0;
+
+    if (m_nClass == 25 && m_stLookInfo.FaceMesh == 3 && m_stLookInfo.FaceSkin == 8 || m_nClass == 25 && m_stLookInfo.FaceMesh == 12)
+        nBlood = 89;
+
+    if (m_nClass == 28 && m_stLookInfo.FaceMesh == 2)
+        nBlood = 89;
+    if (m_nClass == 16 && m_stLookInfo.FaceMesh == 6)
+        nBlood = 89;
+
+    switch (m_nSkinMeshType)
+    {
+    case 26:
+        nBlood = 89;
+        break;
+    case 35:
+        nBlood = 89;
+        break;
+    case 36:
+        nBlood = 89;
+        break;
+    case 11:
+        nBlood = 89;
+        break;
+    }
+
+    if (m_nClass == 44 || m_nClass == 45)
+        nBlood = 56;
+
+    return nBlood;
 }
 
 void TMHuman::DelayDelete()

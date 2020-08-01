@@ -136,8 +136,8 @@ public:
     int ChangeRouteBuffer(int nSX, int nSY, TMVector2* pRouteTable, int* pMaxRouteIndex);
     void SetHandEffect(int nHandEffect);
     void CheckAffect();
-    void SetChatMessage(char* szString);
-    int GetChatLen(char* szString, int* pHeight);
+    void SetChatMessage(const char* szString);
+    int GetChatLen(const char* szString, int* pHeight);
     void SetPacketMOBItem(STRUCT_MOB* pMobData);
     void SetPacketEquipItem(unsigned short* sEquip);
     void SetColorItem(char* sEquip2);

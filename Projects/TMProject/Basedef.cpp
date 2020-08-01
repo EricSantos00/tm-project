@@ -1057,3 +1057,12 @@ int BASE_InitializeServerList()
 
 	return 0;
 }
+
+int BASE_GetSubGuild(int item)
+{
+    int ret = 0;
+    if (item >= 3 && item <= 8)
+        ret = item % 3 + 1;
+
+    return ret;
+}

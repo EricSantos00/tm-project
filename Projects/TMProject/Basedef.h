@@ -923,7 +923,7 @@ float BASE_GetMountScale(int nSkinMeshType, int nMeshIndex);
 int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int distance, char* pHeight, int MH);
 int BASE_GetDistance(int x1, int y1, int x2, int y2);
 int BASE_GetSpeed(STRUCT_SCORE* score);
-
+int BASE_GetSubGuild(int item);
 /* Read Functions */
 int ReadItemicon();
 void ReadItemName();
