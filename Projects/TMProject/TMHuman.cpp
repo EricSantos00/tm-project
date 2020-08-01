@@ -3416,6 +3416,179 @@ void TMHuman::SetRace(short sIndex)
 
 void TMHuman::UpdateScore(int nGuildLevel)
 {
+    if (!m_dwDelayDel)
+    {
+        if (!m_MaxBigHp)
+        {
+            if (m_pProgressBar)
+            {
+                m_pProgressBar->SetMaxProgress(m_stScore.MaxHp);
+                m_pProgressBar->SetCurrentProgress(m_stScore.Hp);
+                m_pTitleProgressBar->SetMaxProgress(m_stScore.MaxHp);
+                m_pTitleProgressBar->SetCurrentProgress(m_stScore.Hp);
+            }
+
+            SetGuildBattleHPBar(m_stScore.Hp);
+        }
+        else
+        {
+            m_pProgressBar->SetMaxProgress(m_MaxBigHp);
+            m_pProgressBar->SetCurrentProgress(m_BigHp);
+            m_pTitleProgressBar->SetMaxProgress(m_MaxBigHp);
+            m_pTitleProgressBar->SetCurrentProgress(m_BigHp);
+
+            SetGuildBattleHPBar(m_BigHp);
+        }
+
+        SetGuildBattleLifeCount();
+
+        TMFieldScene* pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+        if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD && pScene->m_pMyHuman == this)
+        {
+            auto pHPBar = pScene->m_pHPBar;
+            auto pMPBar = pScene->m_pMPBar;
+            auto pCurrentHPText = pScene->m_pCurrentHPText;
+            auto pMaxHPText = pScene->m_pMaxHPText;
+            auto pCurrentMPText = pScene->m_pCurrentMPText;
+            auto pMaxMPText = pScene->m_pMaxMHPText;
+            auto pCurrentMHPText = pScene->m_pCurrentMHPText;
+            auto pMaxMHPText = pScene->m_pMaxMHPText;
+
+            memcpy(&g_pObjectManager->m_stMobData.CurrentScore, &m_stScore, sizeof m_stScore);
+            if (pCurrentHPText)
+            {
+                if (m_stScore.Hp > m_stScore.MaxHp)
+                    m_stScore.Hp = m_stScore.MaxHp;
+
+                char szHP[32] = { 0 };
+                sprintf_s(szHP, "%d", m_stScore.Hp);
+                pCurrentHPText->SetText(szHP, 0);
+            }
+            if (pMaxHPText)
+            {
+                char _Buffer[32] = { 0 };
+                sprintf_s(_Buffer, "/ %d", m_stScore.MaxHp);
+                pMaxHPText->SetText(_Buffer, 0);
+            }
+            if (pCurrentMPText)
+            {
+                char szMP[32] = { 0 };
+                sprintf_s(szMP, "%d", m_stScore.Mp);
+                pCurrentMPText->SetText(szMP, 0);
+            }
+            if (pMaxMPText)
+            {
+                char szMP[32] = { 0 };
+                sprintf_s(szMP, "/ %d", m_stScore.MaxMp);
+                pMaxMPText->SetText(szMP, 0);
+            }
+
+            if (pHPBar)
+            {
+                pHPBar->SetMaxProgress(m_stScore.MaxHp);
+                pHPBar->SetCurrentProgress(m_stScore.Hp);
+            }
+
+            if (pMPBar)
+            {
+                pMPBar->SetMaxProgress(m_stScore.MaxMp);
+                pMPBar->SetCurrentProgress(m_stScore.Mp);
+                pMPBar->SetVisible(1);
+            }
+        }
+
+        auto pDest = strchr(m_szName, '^');
+        if (pDest && !IsClearString2(m_szName, pDest - m_szName))
+            pDest = nullptr;
+
+        if(pDest == nullptr)
+        {
+            if (m_pNameLabel)
+                m_pNameLabel->SetText(m_szName, 1);
+
+            if (m_pTitleNameLabel)
+                m_pTitleNameLabel->SetText(m_szName, 2);
+
+            if (m_pNickNameLabel)
+            {
+                m_pNickNameLabel->SetText(m_szNickName, 1);
+                m_pNickNameLabel->SetTextColor(0xFFCCCCCC);
+            }
+
+            if (pScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+            {
+                bool v5 = m_dwID == 0;
+                if (m_dwID < 0x3E8 && (m_nCurrentKill || m_nTotalKill > 0))
+                {
+                    // I couldn't understand
+                    bool v20 = (signed int)m_vecPosition.x >> 7 <= 16
+                        || (signed int)m_vecPosition.x >> 7 >= 20
+                        || (signed int)m_vecPosition.y >> 7 <= 29 ? 0 : 1;
+
+                    bool v19 = v20 == 1 ? pScene->m_pMyHuman == this : 1;
+                    if (v19)
+                    {
+                        char szTemp[128] = { 0 };
+                        sprintf_s(szTemp, "%d", m_nCurrentKill);
+
+                        if (m_pKillLabel)
+                            m_pKillLabel->SetText(szTemp, 0);
+                    }
+                }
+            }
+
+            // this && was added to prevent null dereferencing
+            if (m_ucChaosLevel < 10 && m_pNameLabel)
+            {
+                m_pNameLabel->m_cBorder = 1;
+                m_pNameLabel->SetTextColor(0xFF000000);
+            }
+            else
+            {
+                if (m_ucChaosLevel > 150)
+                    m_ucChaosLevel = -106;
+                else if (m_ucChaosLevel < 10)
+                    m_ucChaosLevel = 5;
+
+                int nIndex = (m_ucChaosLevel - 5) / 20;
+                float fPos = (m_ucChaosLevel - (20 * nIndex + 5)) / 20.0f;
+
+                int dwR = (int)((((m_dwNameColor[nIndex] & 0xFF0000) >> 16) * (1.0f - fPos)) + ((m_dwNameColor[nIndex + 1] & 0xFF0000) >> 16) * fPos) << 16;
+                int dwG = (int)((((m_dwNameColor[nIndex] & 0xFF00) >> 8) * (1.0f - fPos)) + ((m_dwNameColor[nIndex + 1] & 0xFF00) >> 8)) << 8;
+                int dwB = (int)((m_dwNameColor[nIndex] & 0xFF) * (1.0f - fPos) + ((m_dwNameColor[nIndex + 1] & 0xFF) * fPos));
+                m_pNameLabel->SetTextColor(dwB | dwG | dwR | 0xFF000000);
+
+                // this && was added to prevent null dereferencing
+                if (m_dwID < 1000 && m_pNameLabel)
+                    m_pNameLabel->m_cBorder = 0;
+            }
+
+            m_pNameLabel->SetSize(strlen(m_szName) * 6.0f + 18.0f, 16.0f);
+
+            if (m_pNameLabel->m_cBorder)
+                m_cSummons = 0;
+        }
+        else
+        {
+            char szMyMob[64] = { 0 };
+            memcpy(szMyMob, m_szName, pDest - m_szName);
+
+            m_cSummons = 1;
+            m_pNameLabel->SetText(szMyMob, 0);
+
+            if (m_pTitleNameLabel)
+                m_pTitleNameLabel->SetText(szMyMob, 0);
+
+            m_pNameLabel->SetSize(strlen(szMyMob) * 6.0f + 18.0f, 16.0f);
+        }
+
+        if (m_pSkinMesh)
+        {
+            m_pSkinMesh->m_vScale.x = m_fScale;
+            m_pSkinMesh->m_vScale.y = m_fScale;
+            m_pSkinMesh->m_vScale.z = m_fScale;
+        }
+    }
 }
 
 void TMHuman::SetAnimation(ECHAR_MOTION eMotion, int nLoop)
