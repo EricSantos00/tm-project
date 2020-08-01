@@ -828,7 +828,7 @@ int TMHuman::InitObject()
             if (m_sMantuaIndex == 548 || m_sMantuaIndex == 3199 || m_sMantuaIndex >= 572 && m_sMantuaIndex <= 574)
                 stLook.Skin0 = 2;
 
-            stSanc.Sanc0 = m_citizen;
+            stSanc.Sanc0 = static_cast<char>(m_citizen);
             stSanc.Legend0 = m_ucMantuaLegend;
 
             m_pMantua = new TMSkinMesh(&stLook, &stSanc, 85, 0, 0, 1, nCos, 0);
@@ -1003,9 +1003,9 @@ int TMHuman::InitObject()
                     (float)(m_fHeight + 1.5f) + (float)((float)l * 0.2f),
                     (float)((float)l * 0.2f) + m_vecPosition.y);
 
-                m_pFly[l]->m_fParticleH = m_pFly[l]->m_fParticleH * 0.5;
-                m_pFly[l]->m_fParticleV = m_pFly[l]->m_fParticleV * 0.5;
-                m_pFly[l]->m_fCircleSpeed = (float)l + 8.0;
+                m_pFly[l]->m_fParticleH = m_pFly[l]->m_fParticleH * 0.5f;
+                m_pFly[l]->m_fParticleV = m_pFly[l]->m_fParticleV * 0.5f;
+                m_pFly[l]->m_fCircleSpeed = (float)l + 8.0f;
 
                 g_pCurrentScene->m_pEffectContainer->AddChild(m_pFly[l]);
             }
@@ -1086,9 +1086,9 @@ int TMHuman::InitObject()
 
             m_pEyeFire[i] = new TMEffectBillBoard(11,
                 0,
-                1.2 * m_fScale,
-                1.8 * m_fScale,
-                1.2 * m_fScale,
+                1.2f * m_fScale,
+                1.8f * m_fScale,
+                1.2f * m_fScale,
                 0.0,
                 8,
                 80);
@@ -1243,10 +1243,10 @@ int TMHuman::InitObject()
             m_pEyeFire[i] = new TMEffectBillBoard(
                 101,
                 0,
-                2.0 * m_fScale,
-                3.0 * m_fScale,
-                2.0 * m_fScale,
-                0.0,
+                2.0f * m_fScale,
+                3.0f * m_fScale,
+                2.0f * m_fScale,
+                0.0f,
                 8,
                 80);
 
@@ -1585,9 +1585,9 @@ int TMHuman::Render()
                 }
                 else
                 {
-                    vecPosScale.x = 0.25 * m_fMountScale;
-                    vecPosScale.y = 1.0 / m_fMountScale;
-                    vecPosScale.z = -0.1 * m_fMountScale;
+                    vecPosScale.x = 0.25f * m_fMountScale;
+                    vecPosScale.y = 1.0f / m_fMountScale;
+                    vecPosScale.z = -0.1f * m_fMountScale;
                 }
                 break;
             default:       
@@ -1599,39 +1599,39 @@ int TMHuman::Render()
             {
                 if (m_nMountSkinMeshType == 20 && m_stMountLook.Mesh0 != 7)
                 {
-                    vecPosScale.y = m_fScale / 1.3;
-                    vecPosScale.x = vecPosScale.x / 1.45;
+                    vecPosScale.y = m_fScale / 1.3f;
+                    vecPosScale.x = vecPosScale.x / 1.45f;
                 }
                 else if (m_nMountSkinMeshType == 20 && m_stMountLook.Mesh0 == 7)
                 {
-                    vecPosScale.y = m_fScale * 1.7;
+                    vecPosScale.y = m_fScale * 1.7f;
                 }
                 else
                 {
                     vecPosScale.y = m_fScale;
-                    vecPosScale.x = vecPosScale.x + 0.050000001;
+                    vecPosScale.x = vecPosScale.x + 0.050000001f;
                 }
             }
 
             if (m_nMountSkinMeshType == 29 && m_stMountLook.Mesh1 == 5)
             {
                 vecPosScale.x = -0.2f;
-                vecPosScale.y = 1.0 / m_fMountScale;
+                vecPosScale.y = 1.0f / m_fMountScale;
             }
             else if (m_nMountSkinMeshType == 48)
             {
-                vecPosScale.x = vecPosScale.x - 0.80000001;
-                vecPosScale.z = vecPosScale.z + 0.2;
+                vecPosScale.x = vecPosScale.x - 0.80000001f;
+                vecPosScale.z = vecPosScale.z + 0.2f;
             }
             else if (m_nMountSkinMeshType == 49 || m_nMountSkinMeshType == 52)
             {
-                vecPosScale.x = vecPosScale.x - 0.2;
-                vecPosScale.z = vecPosScale.z - 0.2;
+                vecPosScale.x = vecPosScale.x - 0.2f;
+                vecPosScale.z = vecPosScale.z - 0.2f;
             }
             else if (m_nMountSkinMeshType == 50)
             {
-                vecPosScale.x = vecPosScale.x - 0.5;
-                vecPosScale.z = vecPosScale.z - 0.2;
+                vecPosScale.x = vecPosScale.x - 0.5f;
+                vecPosScale.z = vecPosScale.z - 0.2f;
             }
 
             m_pSkinMesh->Render(vecPosScale.x, vecPosScale.y, vecPosScale.z);
@@ -2372,7 +2372,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
                 nTextureIndex = 193;
 
             float fSpeed = 0.392f;
-            fSpeed = (float)(m_fScale * TMHuman::m_vecPickSize[m_nSkinMeshType].x) * 0.0392;
+            fSpeed = (float)(m_fScale * TMHuman::m_vecPickSize[m_nSkinMeshType].x) * 0.0392f;
             if (!m_cMount && m_nSkinMeshType != 40 || m_cMount && m_nMountSkinMeshType != 40)
             {
                 TMEffectBillBoard* pChild = new TMEffectBillBoard(10, 450, 0.1f, 0.1f, 0.1f, fSpeed, 1, 80);
@@ -3334,7 +3334,7 @@ void TMHuman::Init()
     m_vecPosition = TMVector2(0.0f, 0.0f);
     m_vecAttTargetPos = TMVector2(0.0f, 0.0f);
     m_vecOldFire = TMVector3(0.0f, 0.0f, 0.0f);
-    m_LastSendTargetPos = IVector2(0.0f, 0.0f);
+    m_LastSendTargetPos = IVector2(0, 0);
 
     m_bSelected = 0;
     m_vecTargetPos.x = -1;
@@ -4220,13 +4220,13 @@ void TMHuman::CheckWeapon(short sIndexL, short sIndexR)
 
             if (m_pSkinMesh->m_pSwingEffect[0])
             {
-                m_pSkinMesh->m_pSwingEffect[0]->m_fWeaponLength = m_fSowrdLength[0] - 0.1;
+                m_pSkinMesh->m_pSwingEffect[0]->m_fWeaponLength = m_fSowrdLength[0] - 0.1f;
                 m_pSkinMesh->m_pSwingEffect[0]->m_cMixEffect = 16 * g_pItemList[itemR.sIndex].nGrade;
                 m_pSkinMesh->m_pSwingEffect[0]->m_cMixEffect += m_stSancInfo.Sanc6;
             }
             if (m_pSkinMesh->m_pSwingEffect[1])
             {
-                m_pSkinMesh->m_pSwingEffect[1]->m_fWeaponLength = m_fSowrdLength[1] - 0.1;
+                m_pSkinMesh->m_pSwingEffect[1]->m_fWeaponLength = m_fSowrdLength[1] - 0.1f;
                 m_pSkinMesh->m_pSwingEffect[1]->m_cMixEffect = 16 * g_pItemList[itemL.sIndex].nGrade;
                 m_pSkinMesh->m_pSwingEffect[1]->m_cMixEffect += m_stSancInfo.Sanc7;
             }
@@ -5195,22 +5195,22 @@ int TMHuman::StraightRouteTable(int nSX, int nSY, int nTargetX, int nTargetY, TM
                 || pRouteTable[i].y != pRouteTable[i].x - 1)
             {
                 Cul = pHeight[nSXb + g_HeightWidth * (nSYb - g_HeightPosY) - g_HeightPosX];
-                if ((signed int)pRouteTable->x != nSXb - nPlusX)
+                if ((int)pRouteTable->x != nSXb - nPlusX)
                 {
                     int CulX = pHeight[nSXb + g_HeightWidth * (nSYb - g_HeightPosY) - nPlusX - g_HeightPosX];
-                    if (MH - 2 <= Cul - CulX <= 0 ? CulX - Cul : Cul - CulX)
+                    if (MH - 2 <= abs(Cul - CulX))
                         return 0;
                 }
-                if ((signed int)pRouteTable->y != nSYb - nPlusY)
+                if ((int)pRouteTable->y != nSYb - nPlusY)
                 {
                     int CulY = pHeight[nSXb + g_HeightWidth * (nSYb - nPlusY - g_HeightPosY) - g_HeightPosX];
-                    if (MH - 2 <= Cul - CulY <= 0 ? CulY - Cul : Cul - CulY)
+                    if (MH - 2 <= abs(Cul - CulY))
                         return 0;
                 }
-                if ((signed int)pRouteTable->y != nSYb - nPlusY && (signed int)pRouteTable->x != nSXb - nPlusX)
+                if ((int)pRouteTable->y != nSYb - nPlusY && (int)pRouteTable->x != nSXb - nPlusX)
                 {
                     int CulXY = pHeight[nSXb + g_HeightWidth * (nSYb - nPlusY - g_HeightPosY) - nPlusX - g_HeightPosX];
-                    if (MH - 2 <= Cul - CulXY <= 0 ? CulXY - Cul : Cul - CulXY)
+                    if (MH - 2 <= abs(Cul - CulXY))
                         return 0;
                 }
 
@@ -5219,7 +5219,7 @@ int TMHuman::StraightRouteTable(int nSX, int nSY, int nTargetX, int nTargetY, TM
                     int CulBack = pHeight[(signed int)pRouteTable[i - 1].x
                         + g_HeightWidth * ((signed int)*((float*)&pRouteTable[i] - 1) - g_HeightPosY)
                         - g_HeightPosX];
-                    if (MH - 2 <= Cul - CulBack <= 0 ? CulBack - Cul : Cul - CulBack)
+                    if (MH - 2 <= abs(Cul - CulBack))
                         return 0;
                 }
             }
@@ -5227,8 +5227,8 @@ int TMHuman::StraightRouteTable(int nSX, int nSY, int nTargetX, int nTargetY, TM
             if (i >= nDis)
             {
                 nMax = i;
-                pRouteTable[i].x = (float)nTargetX + 0.5;
-                pRouteTable[i].y = (float)nTargetY + 0.5;
+                pRouteTable[i].x = (float)nTargetX + 0.5f;
+                pRouteTable[i].y = (float)nTargetY + 0.5f;
             }
         }
 

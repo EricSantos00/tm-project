@@ -556,7 +556,6 @@ void TMSkinMesh::FrameMove(unsigned int dwServerTime)
 
 					ori = (float*)&NewMat;
 					float* now = (float*)&QuatMat;
-					//before = (float*)&QuatMat;
 
 					ori += 12;
 					before += 12;
