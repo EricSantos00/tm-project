@@ -61,7 +61,6 @@ unsigned int g_dwServerTime;
 unsigned int g_dwClientTime;
 unsigned int g_pLastFixTime;
 
-unsigned int CurrentTime;
 unsigned int LastSendTime;
 
 int g_nUnDelMobCount;

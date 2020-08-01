@@ -836,6 +836,7 @@ void BASE_UnderBarToSpace(char* szStr);
 int BASE_InitializeServerList();
 int	BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer);
 int BASE_GetSum(char* p, int size);
+int BASE_GetSum2(char* p, int size);
 int BASE_GetWeekNumber();
 int BASE_GetItemAbility(STRUCT_ITEM* item, char Type);
 int BASE_DefineSkinMeshType(int nClass);

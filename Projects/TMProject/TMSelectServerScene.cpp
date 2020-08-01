@@ -413,7 +413,8 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 					&nUserCount2[6], &nUserCount2[7], &nUserCount2[8], &nUserCount2[9], &nUserCount2[10]);
 
 				// 
-				sprintf_s(g_pServerList[nIndexN][i + 1], "%s", g_pServerList[m_nAdmitGroup - i - 1][m_nDay[m_nAdmitGroup - i]]);
+				nUserCount[m_nDay[m_nAdmitGroup - i]] = nUserCount2[m_nDay[m_nAdmitGroup - i]];
+				sprintf_s(g_pServerList[nIndexN][i + 1], "%s", g_pServerList[m_nAdmitGroup - i - 1][m_nDay[m_nAdmitGroup - i] + 1]);
 			}
 		}
 		else
@@ -558,7 +559,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 
 					pServerList->AddItem(pServerItem[num]);
 				}
-				else if (m_bAdmit == -1 && num < m_nMaxGroup)
+				else if (m_bAdmit == 1 && num < m_nMaxGroup)
 				{
 					sprintf_s(szStr, g_pMessageStringTable[70]);
 
@@ -601,8 +602,8 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 		g_pObjectManager->m_nServerIndex = nServerIndex;
 
 		sprintf_s(g_pApp->m_szServerIP, "%s", g_pServerList[nServerGroupIndex][nServerIndex]);
+		printf("Servidor que conectara: \"%s\"\n", g_pApp->m_szServerIP);
 
-		printf("%s\n", g_pApp->m_szServerIP);
 		m_pNServerSelect->SetVisible(0);
 		for (int i = 0; i < 3; ++i)
 			m_pLoginBtns[i]->SetVisible(1);
@@ -683,7 +684,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 
 			m_pMessagePanel->SetMessage(g_pMessageStringTable[7], 4000);
 
-			if (!g_pSocketManager->ConnectServer(g_pApp->m_szServerIP, 8281, 0, 1124))
+			if (!g_pSocketManager->ConnectServer(g_pApp->m_szServerIP, 8174, 0, 1124))
 			{
 				pLoginOK->SetEnable(1);
 
