@@ -2595,10 +2595,10 @@ int TMGround::LoadTileMap(const char* szFileName)
                 }
 
                 float fCenter = (((f1 + f2) + f3) + f4) / 4.0f;
-                m_pMaskData[2 * nY][2 * j] = (f1 + fCenter) / 2.0f;
-                m_pMaskData[2 * nY][2 * j + 1] = (f2 + fCenter) / 2.0f;
-                m_pMaskData[2 * nY + 1][2 * j] = (f3 + fCenter) / 2.0f;
-                m_pMaskData[2 * nY + 1][2 * j + 1] = (f4 + fCenter) / 2.0f;
+                m_pMaskData[2 * nY][2 * j] = static_cast<char>((f1 + fCenter) / 2.0f);
+                m_pMaskData[2 * nY][2 * j + 1] = static_cast<char>((f2 + fCenter) / 2.0f);
+                m_pMaskData[2 * nY + 1][2 * j] = static_cast<char>((f3 + fCenter) / 2.0f);
+                m_pMaskData[2 * nY + 1][2 * j + 1] = static_cast<char>((f4 + fCenter) / 2.0f);
             }
         }
 
@@ -2756,7 +2756,7 @@ int TMGround::Render()
     int nMinClipIndex = 0;
 
     if (fabsf(g_pObjectManager->m_pCamera->m_fVerticalAngle) > 1.0f)
-        nClipIndex = (int)(pCamera->m_fSightLength * 1.5f) + 8.0f;
+        nClipIndex = (int)((pCamera->m_fSightLength * 1.5f) + 8.0f);
 
     nMinClipIndex = nClipIndex / 3;
     

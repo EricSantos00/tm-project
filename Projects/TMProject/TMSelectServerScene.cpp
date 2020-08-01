@@ -49,7 +49,7 @@ void SwapLauncher()
 int IsCastle(int nServerIndex)
 {
 	int iweek = BASE_GetWeekNumber();
-	return !(iweek % 7) && (signed int)(iweek / 7) & 2 != nServerIndex % 2;
+	return !(iweek % 7) && (int)((iweek / 7) & 2) != nServerIndex % 2;
 }
 
 TMSelectServerScene::TMSelectServerScene()
@@ -297,8 +297,8 @@ int TMSelectServerScene::InitializeScene()
 	for (int nY = 0; nY < 128; ++nY)
 		memcpy(m_HeightMapData[nY], m_pGround->m_pMaskData[nY], 128);
 
-	g_HeightPosX = m_pGround->m_vecOffset.x;
-	g_HeightPosY = m_pGround->m_vecOffset.y;
+	g_HeightPosX = static_cast<int>(m_pGround->m_vecOffset.x);
+	g_HeightPosY = static_cast<int>(m_pGround->m_vecOffset.y);
 
 	m_pObjectContainerList[0] = new TMObjectContainer(m_pGround);
 	m_pGroundObjectContainer->AddChild(m_pObjectContainerList[0]);
@@ -336,7 +336,7 @@ int TMSelectServerScene::InitializeScene()
 
 		memset(m_pCheckHumanList, 0, sizeof m_pCheckHumanList);
 
-		g_pObjectManager->m_pCamera->m_vecCamPos = TMVector2(2112.55, 2088.0f);
+		g_pObjectManager->m_pCamera->m_vecCamPos = TMVector2(2112.55f, 2088.0f);
 		g_pObjectManager->m_pCamera->m_fHorizonAngle = 4.71f;
 		g_pObjectManager->m_pCamera->m_fVerticalAngle = 0.26f;
 
@@ -644,7 +644,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 	{
 		case 65873:
 		{
-			int LiveTime = g_pTimerManager->GetServerTime();
+			unsigned int LiveTime = g_pTimerManager->GetServerTime();
 			if (LastSendMsgTime + 1500 > LiveTime)
 				return 1;
 
@@ -1050,7 +1050,7 @@ void TMSelectServerScene::ResetDemoPlayer()
 			stSancInfo.Sanc4 = stSancInfo.Sanc7;
 			stSancInfo.Sanc3 = stSancInfo.Sanc7;
 			stSancInfo.Sanc2 = stSancInfo.Sanc7;
-			stSancInfo.Legend7 = g_pItemList[m_stDemoHuman[i].Body].nGrade;
+			stSancInfo.Legend7 = static_cast<char>(g_pItemList[m_stDemoHuman[i].Body].nGrade);
 			stSancInfo.Legend6 = stSancInfo.Legend7;
 			stSancInfo.Legend5 = stSancInfo.Legend7;
 			stSancInfo.Legend4 = stSancInfo.Legend7;
@@ -1126,7 +1126,7 @@ void TMSelectServerScene::ResetDemoPlayer()
 				m_pCheckHumanList[i]->m_cMantua = 1;
 				m_pCheckHumanList[i]->m_wMantuaSkin = g_pItemList[m_stDemoHuman[i].Mantua].nIndexTexture;
 				m_pCheckHumanList[i]->m_ucMantuaSanc = m_stDemoHuman[i].nSanc;
-				m_pCheckHumanList[i]->m_ucMantuaLegend = g_pItemList[m_stDemoHuman[i].Mantua].nGrade;
+				m_pCheckHumanList[i]->m_ucMantuaLegend = static_cast<char>(g_pItemList[m_stDemoHuman[i].Mantua].nGrade);
 			}
 
 			m_vecMoveToPos[i].x = (int)m_stDemoHuman[i].fTX;
