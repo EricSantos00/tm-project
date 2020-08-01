@@ -5178,6 +5178,240 @@ int TMHuman::GetBloodColor()
 
 void TMHuman::DelayDelete()
 {
+    m_dwDelayDel = g_pTimerManager->GetServerTime();
+    g_pObjectManager->DisconnectEffectFromMob(this);
+
+    auto pScene = static_cast<TMFieldScene*>(m_pParentScene);
+    if (pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+    {
+        m_sDelayDel = 1;
+
+        if (pScene->m_pTargetHuman == this)
+            pScene->m_pTargetHuman = nullptr;
+
+        if (pScene->m_pMyHuman && pScene->m_pMyHuman->m_pMoveTargetHuman == this)
+            pScene->m_pMyHuman->m_pMoveTargetHuman = nullptr;
+        
+        if (pScene->m_pMyHuman && pScene->m_pMyHuman->m_pMoveSkillTargetHuman == this)
+            pScene->m_pMyHuman->m_pMoveSkillTargetHuman = nullptr;
+
+        for (int j = 0; j < 13; ++j)
+        {
+            if (m_usTargetID[j])
+            {
+                auto pTarget = static_cast<TMHuman*>(g_pObjectManager->GetHumanByID(m_usTargetID[j]));
+                if (pTarget)
+                {
+                    if (pTarget->m_wAttackerID == m_dwID)
+                        pTarget->m_wAttackerID = 0;
+                }
+            }
+        }
+
+        if (pScene->m_pPGTOver == this)
+            pScene->m_pPGTOver = nullptr;
+        if (pScene->m_pMyHuman == this)
+            pScene->m_pMyHuman = nullptr;
+    }
+
+    if (g_pCurrentScene->m_pMouseOverHuman == this)
+        g_pCurrentScene->m_pMouseOverHuman = nullptr;
+
+    if (static_cast<TMHuman*>(g_pObjectManager->m_pCamera->m_pFocusedObject) == this)
+        g_pObjectManager->m_pCamera->m_pFocusedObject = nullptr;
+
+    if (m_pSkinMesh)
+    {
+        m_pSkinMesh->m_pOwner = nullptr;
+
+        if (m_pSkinMesh->m_pSwingEffect[0])
+        {
+            m_pSkinMesh->m_pSwingEffect[0]->m_pParentSkin = nullptr;
+
+            if (m_pSkinMesh->m_pSwingEffect[0]->m_pEnchant)
+            {
+                g_pObjectManager->DeleteObject(m_pSkinMesh->m_pSwingEffect[0]->m_pEnchant);
+                m_pSkinMesh->m_pSwingEffect[0]->m_pEnchant = nullptr;
+            }
+        }
+
+        if (m_pSkinMesh->m_pSwingEffect[1])
+        {
+            m_pSkinMesh->m_pSwingEffect[1]->m_pParentSkin = nullptr;
+
+            if (m_pSkinMesh->m_pSwingEffect[1]->m_pEnchant)
+            {
+                g_pObjectManager->DeleteObject(m_pSkinMesh->m_pSwingEffect[1]->m_pEnchant);
+                m_pSkinMesh->m_pSwingEffect[1]->m_pEnchant = nullptr;
+            }
+        }
+    }
+
+    if (m_pLifeDrain)
+    {
+        g_pObjectManager->DeleteObject(m_pLifeDrain);
+        m_pLifeDrain = nullptr;
+    }
+    if (m_pHuntersVision)
+    {
+        g_pObjectManager->DeleteObject(m_pHuntersVision);
+        m_pHuntersVision = nullptr;
+    }
+    if (m_pOverExp)
+    {
+        g_pObjectManager->DeleteObject(m_pOverExp);
+        m_pOverExp = nullptr;
+    }
+    if (m_pBraveOverExp)
+    {
+        g_pObjectManager->DeleteObject(m_pBraveOverExp);
+        m_pBraveOverExp = nullptr;
+    }
+    if (m_pProtector)
+    {
+        g_pObjectManager->DeleteObject(m_pProtector);
+        m_pProtector = nullptr;
+    }
+    if (m_pFamiliar)
+    {
+        g_pObjectManager->DeleteObject(m_pFamiliar);
+        m_pFamiliar = nullptr;
+    }
+    if (m_pShade)
+    {
+        g_pObjectManager->DeleteObject(m_pShade);
+        m_pShade = nullptr;
+    }
+    if (m_pAurora)
+    {
+        g_pObjectManager->DeleteObject(m_pAurora);
+        m_pAurora = nullptr;
+    }
+    if (m_pSkillAmp)
+    {
+        g_pObjectManager->DeleteObject(m_pSkillAmp);
+        m_pSkillAmp = nullptr;
+    }
+    if (m_pbomb)
+    {
+        g_pObjectManager->DeleteObject(m_pbomb);
+        m_pbomb = nullptr;
+    }
+    if (m_pShadow)
+    {
+        g_pObjectManager->DeleteObject(m_pShadow);
+        m_pShadow = nullptr;
+    }
+    if (m_pCriticalArmor)
+    {
+        g_pObjectManager->DeleteObject(m_pCriticalArmor);
+        m_pCriticalArmor = nullptr;
+    }
+
+    for (int i = 0; i < 2; ++i)
+    {
+        if (m_pSoul[i])
+        {
+            g_pObjectManager->DeleteObject(m_pSoul[i]);
+            m_pSoul[i] = nullptr;
+        }
+    }
+    for (int i = 0; i < 7; ++i)
+    {
+        if (m_pRotateBone[i])
+        {
+            g_pObjectManager->DeleteObject(m_pRotateBone[i]);
+            m_pRotateBone[i] = nullptr;
+        }
+    }
+    for (int i = 0; i < 7; ++i)
+    {
+        if (m_pEyeFire[i])
+        {
+            g_pObjectManager->DeleteObject(m_pEyeFire[i]);
+            m_pEyeFire[i] = nullptr;
+        }
+        if (m_pEyeFire2[i])
+        {
+            g_pObjectManager->DeleteObject(m_pEyeFire2[i]);
+            m_pEyeFire2[i] = nullptr;
+        }
+    }
+    for (int i = 0; i < 4; ++i)
+    {
+        if (m_pFly[i])
+        {
+            g_pObjectManager->DeleteObject(m_pFly[i]);
+            m_pFly[i] = nullptr;
+        }
+    }
+    for (int i = 0; i < 5; ++i)
+    {
+        if (m_pImmunity[i])
+        {
+            g_pObjectManager->DeleteObject(m_pImmunity[i]);
+            m_pImmunity[i] = nullptr;
+        }
+    }
+    for (int i = 0; i < 2; ++i)
+    {
+        if (m_pLightenStorm[i])
+        {
+            g_pObjectManager->DeleteObject(m_pLightenStorm[i]);
+            m_pLightenStorm[i] = nullptr;
+        }
+    }
+    if (m_pEleStream)
+    {
+        g_pObjectManager->DeleteObject(m_pEleStream);
+        m_pEleStream = nullptr;
+    }
+    if (m_pEleStream2)
+    {
+        g_pObjectManager->DeleteObject(m_pEleStream2);
+        m_pEleStream2 = nullptr;
+    }
+    if (m_pRescue)
+    {
+        g_pObjectManager->DeleteObject(m_pRescue);
+        m_pRescue = nullptr;
+    }
+    if (m_pMagicShield)
+    {
+        g_pObjectManager->DeleteObject(m_pMagicShield);
+        m_pMagicShield = nullptr;
+    }
+    if (m_pCancelation)
+    {
+        g_pObjectManager->DeleteObject(m_pCancelation);
+        m_pCancelation = nullptr;
+    }
+
+    if (m_pChatMsg)
+        m_pChatMsg->SetVisible(0);
+
+    int result = 0;
+    if (m_pNameLabel)
+        m_pNameLabel->SetVisible(0);
+    if (m_pKillLabel)
+        m_pKillLabel->SetVisible(0);
+    if (m_stGuildMark.pGuildMark)
+        m_stGuildMark.pGuildMark->SetVisible(0);
+    if (m_pAutoTradeDesc)
+        m_pAutoTradeDesc->SetVisible(0);
+    if (m_pAutoTradePanel)
+        m_pAutoTradePanel->SetVisible(0);
+    if (m_pNickNameLabel)
+        m_pNickNameLabel->SetVisible(0);
+    if (m_pProgressBar)
+        m_pProgressBar->SetVisible(0);
+    if (m_pMountHPBar)
+        m_pMountHPBar->SetVisible(0);
+    if (m_pInMiniMap)
+        m_pInMiniMap->SetVisible(0);
+
+    m_dwID = -1;
+    m_bParty = 0;
 }
 
 void TMHuman::SetCharHeight(float fCon)
@@ -5204,6 +5438,7 @@ int TMHuman::StartKhepraDieEffect()
 
 void TMHuman::SetAvatar(char cAvatar)
 {
+    m_cAvatar = cAvatar;
 }
 
 void TMHuman::UpdateMount()
@@ -5336,28 +5571,83 @@ float TMHuman::GetMyHeight()
 
 void TMHuman::SetGuildBattleHPColor()
 {
+    // It's an empty function... yeah! 
 }
 
 void TMHuman::SetGuildBattleHPBar(int nHP)
 {
+    // It's an empty function... yeah! 
 }
 
 void TMHuman::SetGuildBattleLifeCount()
 {
+    // It's an empty function... yeah! 
 }
 
 int TMHuman::Is2stClass()
 {
-	return 0;
+    int mantua = g_pObjectManager->m_stMobData.Equip[15].sIndex;
+    
+    if (!g_pObjectManager->m_stMobData.Equip[0].stEffect[1].cValue)
+        return 0;
+
+    if (g_pObjectManager->m_stMobData.LearnedSkill[0] & 0x40000000)
+        return 2;
+
+    return 1;
 }
 
 int TMHuman::IAmkhepra()
 {
-	return 0;
+    return m_nClass == 56 && !m_stLookInfo.FaceMesh;
 }
 
 void TMHuman::CreateControl()
 {
+    DestroyControl();
+
+    m_pNameLabel = new SText(-1, "MoName", 0xFFFFFFAA, 0.0f, 650.0f, 128.0f, 16.0f, 0, 0x55AA0000u, 1u, 0);
+    m_pKillLabel = new SText(-1, "", 0xFFFFFFAA, 0.0f, 650.0f, 128.0, 16.0f, 0, 0x55AA0000u, 1u, 0);
+    m_pAutoTradeDesc = new SText(-1, "", 0xFFFFFFFF, 0.0f, 650.0f, 143.0f, 50.0f, 0, 0xFFFFFFFF, 1u, 0);
+    m_pAutoTradePanel = new SPanel(512, -10.0f, 635.0f, 141.0f, 43.0f, 0x77777777u, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+    m_pAutoTradePanel->m_bSelectEnable = 0;
+
+    m_pChatMsg = new SText(-2, "", 0xFFFFFFFF, 0.0, 650.0, (float)256, 64.0, 1, 0x77000000u, 1u, 0);
+    m_pChatMsg->m_Font.m_bMultiLine = 1;
+
+    m_stGuildMark.pGuildMark = nullptr;
+
+    m_stGuildMark.pGuildMark = new SPanel(-2, 0.0, 0.0, 12.0, 16.0, 0x77777777u, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+    m_pProgressBar = new SProgressBar(-2, 30, 30, 0.0f, 0.0f, 60.0f, 7.0f, 0xFFFF0000, 0xFF333333, 1u);
+    m_pMountHPBar = new SProgressBar(-2, 30, 30, 0.0f, 0.0f, 60.0f, 7.0f, 0xFFFFAA00, 0xFF333333, 1u);
+
+    m_pChatMsg->SetVisible(0);
+    m_pNameLabel->m_GCBorder.nTextureSetIndex = -2;
+    m_pNameLabel->SetVisible(0);
+    m_pKillLabel->SetVisible(0);
+
+    if (m_stGuildMark.pGuildMark)
+        m_stGuildMark.pGuildMark->SetVisible(0);
+
+    m_pAutoTradeDesc->SetVisible(0);
+
+    m_pNickNameLabel = new SText(-1, "", 0xFFFFFFAA, 0.0f, 650.0f, 128.0f, 16.0f, 0, 0x55AA0000u, 1u, 0);
+    m_pNickNameLabel->m_GCBorder.nTextureSetIndex = -2;
+    m_pNickNameLabel->SetVisible(0);
+    m_pAutoTradePanel->SetVisible(0);
+    m_pMountHPBar->SetVisible(0);
+
+    if (g_pCurrentScene)
+    {
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pNameLabel);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pKillLabel);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_stGuildMark.pGuildMark);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pAutoTradePanel);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pNickNameLabel);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pChatMsg);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pProgressBar);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pMountHPBar);
+    }
 }
 
 void TMHuman::DestroyControl()
