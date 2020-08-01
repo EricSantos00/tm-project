@@ -194,6 +194,7 @@
     <ClInclude Include="Quest.h" />
     <ClInclude Include="RenderDevice.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourceControl.h" />
     <ClInclude Include="SControl.h" />
     <ClInclude Include="SControlContainer.h" />
     <ClInclude Include="SGrid.h" />

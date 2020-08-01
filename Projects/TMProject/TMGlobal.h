@@ -12,6 +12,7 @@
 #include "dsutil.h"
 #include "SControl.h"
 #include "TMPaths.h"
+#include "ResourceControl.h"
 
 constexpr unsigned int WYDCOLOR_ALPHA(unsigned int color) { return color & 0xFF000000; }
 constexpr unsigned int WYDCOLOR_RED(unsigned int color) { return (((unsigned int)0xFF0000 & color) >> 16); }
