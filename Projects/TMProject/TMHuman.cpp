@@ -3416,6 +3416,179 @@ void TMHuman::SetRace(short sIndex)
 
 void TMHuman::UpdateScore(int nGuildLevel)
 {
+    if (!m_dwDelayDel)
+    {
+        if (!m_MaxBigHp)
+        {
+            if (m_pProgressBar)
+            {
+                m_pProgressBar->SetMaxProgress(m_stScore.MaxHp);
+                m_pProgressBar->SetCurrentProgress(m_stScore.Hp);
+                m_pTitleProgressBar->SetMaxProgress(m_stScore.MaxHp);
+                m_pTitleProgressBar->SetCurrentProgress(m_stScore.Hp);
+            }
+
+            SetGuildBattleHPBar(m_stScore.Hp);
+        }
+        else
+        {
+            m_pProgressBar->SetMaxProgress(m_MaxBigHp);
+            m_pProgressBar->SetCurrentProgress(m_BigHp);
+            m_pTitleProgressBar->SetMaxProgress(m_MaxBigHp);
+            m_pTitleProgressBar->SetCurrentProgress(m_BigHp);
+
+            SetGuildBattleHPBar(m_BigHp);
+        }
+
+        SetGuildBattleLifeCount();
+
+        TMFieldScene* pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+        if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD && pScene->m_pMyHuman == this)
+        {
+            auto pHPBar = pScene->m_pHPBar;
+            auto pMPBar = pScene->m_pMPBar;
+            auto pCurrentHPText = pScene->m_pCurrentHPText;
+            auto pMaxHPText = pScene->m_pMaxHPText;
+            auto pCurrentMPText = pScene->m_pCurrentMPText;
+            auto pMaxMPText = pScene->m_pMaxMHPText;
+            auto pCurrentMHPText = pScene->m_pCurrentMHPText;
+            auto pMaxMHPText = pScene->m_pMaxMHPText;
+
+            memcpy(&g_pObjectManager->m_stMobData.CurrentScore, &m_stScore, sizeof m_stScore);
+            if (pCurrentHPText)
+            {
+                if (m_stScore.Hp > m_stScore.MaxHp)
+                    m_stScore.Hp = m_stScore.MaxHp;
+
+                char szHP[32] = { 0 };
+                sprintf_s(szHP, "%d", m_stScore.Hp);
+                pCurrentHPText->SetText(szHP, 0);
+            }
+            if (pMaxHPText)
+            {
+                char _Buffer[32] = { 0 };
+                sprintf_s(_Buffer, "/ %d", m_stScore.MaxHp);
+                pMaxHPText->SetText(_Buffer, 0);
+            }
+            if (pCurrentMPText)
+            {
+                char szMP[32] = { 0 };
+                sprintf_s(szMP, "%d", m_stScore.Mp);
+                pCurrentMPText->SetText(szMP, 0);
+            }
+            if (pMaxMPText)
+            {
+                char szMP[32] = { 0 };
+                sprintf_s(szMP, "/ %d", m_stScore.MaxMp);
+                pMaxMPText->SetText(szMP, 0);
+            }
+
+            if (pHPBar)
+            {
+                pHPBar->SetMaxProgress(m_stScore.MaxHp);
+                pHPBar->SetCurrentProgress(m_stScore.Hp);
+            }
+
+            if (pMPBar)
+            {
+                pMPBar->SetMaxProgress(m_stScore.MaxMp);
+                pMPBar->SetCurrentProgress(m_stScore.Mp);
+                pMPBar->SetVisible(1);
+            }
+        }
+
+        auto pDest = strchr(m_szName, '^');
+        if (pDest && !IsClearString2(m_szName, pDest - m_szName))
+            pDest = nullptr;
+
+        if(pDest == nullptr)
+        {
+            if (m_pNameLabel)
+                m_pNameLabel->SetText(m_szName, 1);
+
+            if (m_pTitleNameLabel)
+                m_pTitleNameLabel->SetText(m_szName, 2);
+
+            if (m_pNickNameLabel)
+            {
+                m_pNickNameLabel->SetText(m_szNickName, 1);
+                m_pNickNameLabel->SetTextColor(0xFFCCCCCC);
+            }
+
+            if (pScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+            {
+                bool v5 = m_dwID == 0;
+                if (m_dwID < 0x3E8 && (m_nCurrentKill || m_nTotalKill > 0))
+                {
+                    // I couldn't understand
+                    bool v20 = (signed int)m_vecPosition.x >> 7 <= 16
+                        || (signed int)m_vecPosition.x >> 7 >= 20
+                        || (signed int)m_vecPosition.y >> 7 <= 29 ? 0 : 1;
+
+                    bool v19 = v20 == 1 ? pScene->m_pMyHuman == this : 1;
+                    if (v19)
+                    {
+                        char szTemp[128] = { 0 };
+                        sprintf_s(szTemp, "%d", m_nCurrentKill);
+
+                        if (m_pKillLabel)
+                            m_pKillLabel->SetText(szTemp, 0);
+                    }
+                }
+            }
+
+            // this && was added to prevent null dereferencing
+            if (m_ucChaosLevel < 10 && m_pNameLabel)
+            {
+                m_pNameLabel->m_cBorder = 1;
+                m_pNameLabel->SetTextColor(0xFF000000);
+            }
+            else
+            {
+                if (m_ucChaosLevel > 150)
+                    m_ucChaosLevel = -106;
+                else if (m_ucChaosLevel < 10)
+                    m_ucChaosLevel = 5;
+
+                int nIndex = (m_ucChaosLevel - 5) / 20;
+                float fPos = (m_ucChaosLevel - (20 * nIndex + 5)) / 20.0f;
+
+                int dwR = (int)((((m_dwNameColor[nIndex] & 0xFF0000) >> 16) * (1.0f - fPos)) + ((m_dwNameColor[nIndex + 1] & 0xFF0000) >> 16) * fPos) << 16;
+                int dwG = (int)((((m_dwNameColor[nIndex] & 0xFF00) >> 8) * (1.0f - fPos)) + ((m_dwNameColor[nIndex + 1] & 0xFF00) >> 8)) << 8;
+                int dwB = (int)((m_dwNameColor[nIndex] & 0xFF) * (1.0f - fPos) + ((m_dwNameColor[nIndex + 1] & 0xFF) * fPos));
+                m_pNameLabel->SetTextColor(dwB | dwG | dwR | 0xFF000000);
+
+                // this && was added to prevent null dereferencing
+                if (m_dwID < 1000 && m_pNameLabel)
+                    m_pNameLabel->m_cBorder = 0;
+            }
+
+            m_pNameLabel->SetSize(strlen(m_szName) * 6.0f + 18.0f, 16.0f);
+
+            if (m_pNameLabel->m_cBorder)
+                m_cSummons = 0;
+        }
+        else
+        {
+            char szMyMob[64] = { 0 };
+            memcpy(szMyMob, m_szName, pDest - m_szName);
+
+            m_cSummons = 1;
+            m_pNameLabel->SetText(szMyMob, 0);
+
+            if (m_pTitleNameLabel)
+                m_pTitleNameLabel->SetText(szMyMob, 0);
+
+            m_pNameLabel->SetSize(strlen(szMyMob) * 6.0f + 18.0f, 16.0f);
+        }
+
+        if (m_pSkinMesh)
+        {
+            m_pSkinMesh->m_vScale.x = m_fScale;
+            m_pSkinMesh->m_vScale.y = m_fScale;
+            m_pSkinMesh->m_vScale.z = m_fScale;
+        }
+    }
 }
 
 void TMHuman::SetAnimation(ECHAR_MOTION eMotion, int nLoop)
@@ -3902,8 +4075,6 @@ void TMHuman::MoveTo(TMVector2 vecPos)
             m_fWantAngle = m_fWantAngle - 6.2831855f;
         }
 
-
-        std::cout << "Moved to " << m_vecMoveToPos.x << " " << m_vecMoveToPos.y << '\n';
 
         m_vecFromPos = m_vecPosition;
         m_vecDPosition = m_vecMoveToPos - m_vecPosition;
@@ -5131,13 +5302,43 @@ void TMHuman::CheckAffect()
 {
 }
 
-void TMHuman::SetChatMessage(char* szString)
+void TMHuman::SetChatMessage(const char* szString)
 {
+    if (!m_dwDelayDel)
+    {
+        int nHeight = 25;
+        m_dwStartChatMsgTime = g_pTimerManager->GetServerTime();
+
+        char temp[256] = { 0 };
+        sprintf_s(temp, "%s", m_pNameLabel->GetText());
+
+        GetChatLen(temp, &nHeight);
+        sprintf_s(temp, "%s", szString);
+
+        m_pChatMsg->SetText(temp, 0);
+        m_pChatMsg->SetSize(GetChatLen(temp, &nHeight) * RenderDevice::m_fWidthRatio, nHeight * RenderDevice::m_fHeightRatio);
+    }
 }
 
-int TMHuman::GetChatLen(char* szString, int* pHeight)
+int TMHuman::GetChatLen(const char* szString, int* pHeight)
 {
-	return 0;
+    if (m_dwDelayDel)
+        return 0;
+
+    int len = strlen(szString);
+    int nLen = 0;
+    if (len >= 41)
+    {
+        nLen = 256 * 1.0f;
+        *pHeight = 50;
+    }
+    else
+    {
+        nLen = (6 * 1.0f) + 20;
+        *pHeight = 40;
+    }
+
+	return nLen;
 }
 
 void TMHuman::SetPacketMOBItem(STRUCT_MOB* pMobData)
@@ -5150,10 +5351,213 @@ void TMHuman::SetPacketEquipItem(unsigned short* sEquip)
 
 void TMHuman::SetColorItem(char* sEquip2)
 {
+    char sEquipType = 0;
+    char sEquipTypea = 0;
+    char sEquipTypeb = 0; 
+    char sEquipTypec = 0;
+    char sEquipTyped = 0;  
+    char sEquipTypee = 0; 
+    char sEquipTypef = 0;
+    char sEquipTypeg = 0;
+    if (!m_dwDelayDel)
+    {
+        if (m_stSancInfo.Sanc0 > 9)
+        {
+            m_stColorInfo.Sanc0 = *sEquip2 & 0xF;
+            if (m_stColorInfo.Sanc0)
+                m_stColorInfo.Sanc0 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc0 = *sEquip2;
+        }
+        if (m_stSancInfo.Sanc1 > 9)
+        {
+            m_stColorInfo.Sanc1 = sEquip2[1] & 0xF;
+            if (m_stColorInfo.Sanc1)
+                m_stColorInfo.Sanc1 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc1 = sEquip2[1];
+        }
+        if (m_stSancInfo.Sanc2 > 9)
+        {
+            m_stColorInfo.Sanc2 = sEquip2[2] & 0xF;
+            if (m_stColorInfo.Sanc2)
+                m_stColorInfo.Sanc2 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc2 = sEquip2[2];
+        }
+        if (m_stSancInfo.Sanc3 > 9)
+        {
+            m_stColorInfo.Sanc3 = sEquip2[3] & 0xF;
+            if (m_stColorInfo.Sanc3)
+                m_stColorInfo.Sanc3 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc3 = sEquip2[3];
+        }
+        if (m_stSancInfo.Sanc4 > 9)
+        {
+            m_stColorInfo.Sanc4 = sEquip2[4] & 0xF;
+            if (m_stColorInfo.Sanc4)
+                m_stColorInfo.Sanc4 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc4 = sEquip2[4];
+        }
+        if (m_stSancInfo.Sanc5 > 9)
+        {
+            m_stColorInfo.Sanc5 = sEquip2[5] & 0xF;
+            if (m_stColorInfo.Sanc5)
+                m_stColorInfo.Sanc5 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc5 = sEquip2[5];
+        }
+        if (m_stSancInfo.Sanc7 > 9)
+        {
+            m_stColorInfo.Sanc7 = sEquip2[6] & 0xF;
+            if (m_stColorInfo.Sanc7)
+                m_stColorInfo.Sanc7 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc7 = sEquip2[6];
+        }
+        if (m_stSancInfo.Sanc6 > 9)
+        {
+            m_stColorInfo.Sanc6 = sEquip2[7] & 0xF;
+            if (m_stColorInfo.Sanc6)
+                m_stColorInfo.Sanc6 += 115;
+        }
+        else
+        {
+            m_stColorInfo.Sanc6 = sEquip2[7];
+        }
+        sEquipType = *sEquip2 >> 4;
+        if (!sEquipType || m_stSancInfo.Legend0 > 4 || m_stSancInfo.Sanc0 <= 9)
+        {
+            if (sEquipType && m_stSancInfo.Legend0 == 4 && m_stSancInfo.Sanc0 > 9)
+                m_stSancInfo.Legend0 = sEquipType + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend0 = sEquipType + 8;
+        }
+        sEquipTypea = sEquip2[1] >> 4;
+        if (!sEquipTypea || m_stSancInfo.Legend1 > 4 || m_stSancInfo.Sanc1 <= 9)
+        {
+            if (sEquipTypea && m_stSancInfo.Legend1 == 4 && m_stSancInfo.Sanc1 > 9)
+                m_stSancInfo.Legend1 = sEquipTypea + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend1 = sEquipTypea + 8;
+        }
+        sEquipTypeb = sEquip2[2] >> 4;
+        if (!sEquipTypeb || m_stSancInfo.Legend2 > 4 || m_stSancInfo.Sanc2 <= 9)
+        {
+            if (sEquipTypeb && m_stSancInfo.Legend2 == 4 && m_stSancInfo.Sanc2 > 9)
+                m_stSancInfo.Legend2 = sEquipTypeb + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend2 = sEquipTypeb + 8;
+        }
+        sEquipTypec = sEquip2[3] >> 4;
+        if (!sEquipTypec || m_stSancInfo.Legend3 > 4 || m_stSancInfo.Sanc3 <= 9)
+        {
+            if (sEquipTypec && m_stSancInfo.Legend3 == 4 && m_stSancInfo.Sanc3 > 9)
+                m_stSancInfo.Legend3 = sEquipTypec + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend3 = sEquipTypec + 8;
+        }
+        sEquipTyped = sEquip2[4] >> 4;
+        if (!sEquipTyped || m_stSancInfo.Legend4 > 4 || m_stSancInfo.Sanc4 <= 9)
+        {
+            if (sEquipTyped && m_stSancInfo.Legend4 == 4 && m_stSancInfo.Sanc4 > 9)
+                m_stSancInfo.Legend4 = sEquipTyped + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend4 = sEquipTyped + 8;
+        }
+        sEquipTypee = sEquip2[5] >> 4;
+        if (!sEquipTypee || m_stSancInfo.Legend5 > 4 || m_stSancInfo.Sanc5 <= 9)
+        {
+            if (sEquipTypee && m_stSancInfo.Legend5 == 4 && m_stSancInfo.Sanc5 > 9)
+                m_stSancInfo.Legend5 = sEquipTypee + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend5 = sEquipTypee + 8;
+        }
+        sEquipTypef = sEquip2[6] >> 4;
+        if (m_stSancInfo.Legend7 > 4 || m_stSancInfo.Sanc7 <= 9)
+        {
+            if (sEquipTypef && m_stSancInfo.Legend7 == 4 && m_stSancInfo.Sanc7 > 9)
+                m_stSancInfo.Legend7 = sEquipTypef + 4;
+        }
+        else
+        {
+            m_stSancInfo.Legend7 = sEquipTypef + 8;
+        }
+        sEquipTypeg = sEquip2[7] >> 4;
+        int result = m_stSancInfo.Legend6;
+        if (result > 4 || m_stSancInfo.Sanc6 <= 9)
+        {
+            if (sEquipTypeg)
+            {
+                if (m_stSancInfo.Legend6 == 4)
+                {
+                    result = m_stSancInfo.Sanc6;
+                    if (result > 9)
+                    {
+                        result = sEquipTypeg;
+                        m_stSancInfo.Legend6 += sEquipTypeg + 4;
+                    }
+                }
+            }
+        }
+        else
+        {
+            result = sEquipTypeg + 8;
+            m_stSancInfo.Legend6 = result;
+        }
+    }
 }
 
 void TMHuman::SetInMiniMap(unsigned int dwCol)
 {
+    if (!m_pInMiniMap)
+    {
+        if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+        {
+            auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+            if (g_pCurrentScene->m_pMyHuman != this)
+            {
+                m_pInMiniMap = new SPanel(-2, 0.0f, 0.0f, 4.0f, 4.0f, dwCol, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+
+                if (m_pInMiniMap)
+                {
+                    m_pInMiniMap->m_bSelectEnable = 0;
+                    pFScene->m_pMiniMapPanel->AddChild(m_pInMiniMap);
+                }
+            }
+        }
+    }
+    else
+        m_pInMiniMap->m_GCPanel.dwColor = dwCol;
 }
 
 void TMHuman::SetSpeed(int bMountDead)
@@ -5165,19 +5569,426 @@ void TMHuman::SetSpeed(int bMountDead)
 
 void TMHuman::UpdateGuildName()
 {
+    if (!m_dwDelayDel)
+    {
+        if (!m_usGuild)
+        {
+            m_stGuildMark.bHideGuildmark = 1;
+            m_stGuildMark.pGuildMark->SetVisible(0);
+        }
+        else
+        {
+            m_stGuildMark.nSubGuild = BASE_GetSubGuild(m_sGuildLevel);
+            m_stGuildMark.nGuild = m_usGuild % 0xFFF;
+            m_stGuildMark.nGuildChannel = (m_usGuild >> 12) & 0xF;
+            m_stGuildMark.sGuildIndex = m_sGuildLevel;
+
+            TMFieldScene* pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+            if (g_pCurrentScene)
+            {
+                if (!m_pAutoTradeDesc->IsVisible())
+                    pFScene->Guildmark_Create(&m_stGuildMark);
+            }
+
+        }
+    }
 }
 
 void TMHuman::GetLegType()
 {
+    if (!m_dwDelayDel)
+    {
+        int nSkinMeshType = m_nSkinMeshType;
+        if (m_cMount == 1)
+            nSkinMeshType = m_nMountSkinMeshType;
+
+        if (nSkinMeshType)
+        {
+            switch (nSkinMeshType)
+            {
+            case 1:
+                m_nLegType = 1;
+                break;
+            case 11:
+                m_nLegType = 4;
+                break;
+            case 20:
+                m_nLegType = 0;
+                break;
+            case 21:
+                m_nLegType = 2;
+                break;
+            case 22:
+                m_nLegType = 1;
+                break;
+            case 23:
+                m_nLegType = 0;
+                break;
+            case 24:
+                m_nLegType = 0;
+                break;
+            case 2:
+                m_nLegType = 1;
+                break;
+            case 25:
+                m_nLegType = 2;
+                break;
+            case 26:
+                m_nLegType = 3;
+                break;
+            case 27:
+                m_nLegType = 3;
+                break;
+            case 3:
+                m_nLegType = 1;
+                break;
+            case 28:
+                m_nLegType = 2;
+                break;
+            case 29:
+                m_nLegType = 2;
+                break;
+            case 6:
+                m_nLegType = 1;
+                break;
+            case 4:
+                m_nLegType = 2;
+                break;
+            case 32:
+                m_nLegType = 0;
+                break;
+            case 7:
+                m_nLegType = 2;
+                break;
+            case 8:
+                m_nLegType = 0;
+                break;
+            case 69:
+                m_nLegType = 0;
+                break;
+            case 30:
+                m_nLegType = 2;
+                break;
+            case 31:
+                m_nLegType = 2;
+                break;
+            case 36:
+                m_nLegType = 3;
+                break;
+            case 35:
+                m_nLegType = 5;
+                break;
+            case 34:
+                m_nLegType = 3;
+                break;
+            case 38:
+                m_nLegType = 2;
+                break;
+            case 39:
+                m_nLegType = 2;
+                break;
+            case 40:
+                m_nLegType = 0;
+                break;
+            case 12:
+                m_nLegType = 0;
+                break;
+            case 43:
+                m_nLegType = 0;
+                break;
+            case 42:
+                m_nLegType = 4;
+                break;
+            case 10:
+                m_nLegType = 1;
+                break;
+            case 44:
+                m_nLegType = 0;
+                break;
+            case 5:
+                m_nLegType = m_stMountLook.Mesh0 == 1;
+                break;
+            }
+        }
+        else
+        {
+            m_nLegType = 1;
+        }
+    }
 }
 
 int TMHuman::GetBloodColor()
 {
-	return 0;
+    int nBlood = 0;
+    if (m_nClass <= 8)
+        nBlood = 0;
+
+    if (m_nClass == 25 && m_stLookInfo.FaceMesh == 3 && m_stLookInfo.FaceSkin == 8 || m_nClass == 25 && m_stLookInfo.FaceMesh == 12)
+        nBlood = 89;
+
+    if (m_nClass == 28 && m_stLookInfo.FaceMesh == 2)
+        nBlood = 89;
+    if (m_nClass == 16 && m_stLookInfo.FaceMesh == 6)
+        nBlood = 89;
+
+    switch (m_nSkinMeshType)
+    {
+    case 26:
+        nBlood = 89;
+        break;
+    case 35:
+        nBlood = 89;
+        break;
+    case 36:
+        nBlood = 89;
+        break;
+    case 11:
+        nBlood = 89;
+        break;
+    }
+
+    if (m_nClass == 44 || m_nClass == 45)
+        nBlood = 56;
+
+    return nBlood;
 }
 
 void TMHuman::DelayDelete()
 {
+    m_dwDelayDel = g_pTimerManager->GetServerTime();
+    g_pObjectManager->DisconnectEffectFromMob(this);
+
+    auto pScene = static_cast<TMFieldScene*>(m_pParentScene);
+    if (pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+    {
+        m_sDelayDel = 1;
+
+        if (pScene->m_pTargetHuman == this)
+            pScene->m_pTargetHuman = nullptr;
+
+        if (pScene->m_pMyHuman && pScene->m_pMyHuman->m_pMoveTargetHuman == this)
+            pScene->m_pMyHuman->m_pMoveTargetHuman = nullptr;
+        
+        if (pScene->m_pMyHuman && pScene->m_pMyHuman->m_pMoveSkillTargetHuman == this)
+            pScene->m_pMyHuman->m_pMoveSkillTargetHuman = nullptr;
+
+        for (int j = 0; j < 13; ++j)
+        {
+            if (m_usTargetID[j])
+            {
+                auto pTarget = static_cast<TMHuman*>(g_pObjectManager->GetHumanByID(m_usTargetID[j]));
+                if (pTarget)
+                {
+                    if (pTarget->m_wAttackerID == m_dwID)
+                        pTarget->m_wAttackerID = 0;
+                }
+            }
+        }
+
+        if (pScene->m_pPGTOver == this)
+            pScene->m_pPGTOver = nullptr;
+        if (pScene->m_pMyHuman == this)
+            pScene->m_pMyHuman = nullptr;
+    }
+
+    if (g_pCurrentScene->m_pMouseOverHuman == this)
+        g_pCurrentScene->m_pMouseOverHuman = nullptr;
+
+    if (static_cast<TMHuman*>(g_pObjectManager->m_pCamera->m_pFocusedObject) == this)
+        g_pObjectManager->m_pCamera->m_pFocusedObject = nullptr;
+
+    if (m_pSkinMesh)
+    {
+        m_pSkinMesh->m_pOwner = nullptr;
+
+        if (m_pSkinMesh->m_pSwingEffect[0])
+        {
+            m_pSkinMesh->m_pSwingEffect[0]->m_pParentSkin = nullptr;
+
+            if (m_pSkinMesh->m_pSwingEffect[0]->m_pEnchant)
+            {
+                g_pObjectManager->DeleteObject(m_pSkinMesh->m_pSwingEffect[0]->m_pEnchant);
+                m_pSkinMesh->m_pSwingEffect[0]->m_pEnchant = nullptr;
+            }
+        }
+
+        if (m_pSkinMesh->m_pSwingEffect[1])
+        {
+            m_pSkinMesh->m_pSwingEffect[1]->m_pParentSkin = nullptr;
+
+            if (m_pSkinMesh->m_pSwingEffect[1]->m_pEnchant)
+            {
+                g_pObjectManager->DeleteObject(m_pSkinMesh->m_pSwingEffect[1]->m_pEnchant);
+                m_pSkinMesh->m_pSwingEffect[1]->m_pEnchant = nullptr;
+            }
+        }
+    }
+
+    if (m_pLifeDrain)
+    {
+        g_pObjectManager->DeleteObject(m_pLifeDrain);
+        m_pLifeDrain = nullptr;
+    }
+    if (m_pHuntersVision)
+    {
+        g_pObjectManager->DeleteObject(m_pHuntersVision);
+        m_pHuntersVision = nullptr;
+    }
+    if (m_pOverExp)
+    {
+        g_pObjectManager->DeleteObject(m_pOverExp);
+        m_pOverExp = nullptr;
+    }
+    if (m_pBraveOverExp)
+    {
+        g_pObjectManager->DeleteObject(m_pBraveOverExp);
+        m_pBraveOverExp = nullptr;
+    }
+    if (m_pProtector)
+    {
+        g_pObjectManager->DeleteObject(m_pProtector);
+        m_pProtector = nullptr;
+    }
+    if (m_pFamiliar)
+    {
+        g_pObjectManager->DeleteObject(m_pFamiliar);
+        m_pFamiliar = nullptr;
+    }
+    if (m_pShade)
+    {
+        g_pObjectManager->DeleteObject(m_pShade);
+        m_pShade = nullptr;
+    }
+    if (m_pAurora)
+    {
+        g_pObjectManager->DeleteObject(m_pAurora);
+        m_pAurora = nullptr;
+    }
+    if (m_pSkillAmp)
+    {
+        g_pObjectManager->DeleteObject(m_pSkillAmp);
+        m_pSkillAmp = nullptr;
+    }
+    if (m_pbomb)
+    {
+        g_pObjectManager->DeleteObject(m_pbomb);
+        m_pbomb = nullptr;
+    }
+    if (m_pShadow)
+    {
+        g_pObjectManager->DeleteObject(m_pShadow);
+        m_pShadow = nullptr;
+    }
+    if (m_pCriticalArmor)
+    {
+        g_pObjectManager->DeleteObject(m_pCriticalArmor);
+        m_pCriticalArmor = nullptr;
+    }
+
+    for (int i = 0; i < 2; ++i)
+    {
+        if (m_pSoul[i])
+        {
+            g_pObjectManager->DeleteObject(m_pSoul[i]);
+            m_pSoul[i] = nullptr;
+        }
+    }
+    for (int i = 0; i < 7; ++i)
+    {
+        if (m_pRotateBone[i])
+        {
+            g_pObjectManager->DeleteObject(m_pRotateBone[i]);
+            m_pRotateBone[i] = nullptr;
+        }
+    }
+    for (int i = 0; i < 7; ++i)
+    {
+        if (m_pEyeFire[i])
+        {
+            g_pObjectManager->DeleteObject(m_pEyeFire[i]);
+            m_pEyeFire[i] = nullptr;
+        }
+        if (m_pEyeFire2[i])
+        {
+            g_pObjectManager->DeleteObject(m_pEyeFire2[i]);
+            m_pEyeFire2[i] = nullptr;
+        }
+    }
+    for (int i = 0; i < 4; ++i)
+    {
+        if (m_pFly[i])
+        {
+            g_pObjectManager->DeleteObject(m_pFly[i]);
+            m_pFly[i] = nullptr;
+        }
+    }
+    for (int i = 0; i < 5; ++i)
+    {
+        if (m_pImmunity[i])
+        {
+            g_pObjectManager->DeleteObject(m_pImmunity[i]);
+            m_pImmunity[i] = nullptr;
+        }
+    }
+    for (int i = 0; i < 2; ++i)
+    {
+        if (m_pLightenStorm[i])
+        {
+            g_pObjectManager->DeleteObject(m_pLightenStorm[i]);
+            m_pLightenStorm[i] = nullptr;
+        }
+    }
+    if (m_pEleStream)
+    {
+        g_pObjectManager->DeleteObject(m_pEleStream);
+        m_pEleStream = nullptr;
+    }
+    if (m_pEleStream2)
+    {
+        g_pObjectManager->DeleteObject(m_pEleStream2);
+        m_pEleStream2 = nullptr;
+    }
+    if (m_pRescue)
+    {
+        g_pObjectManager->DeleteObject(m_pRescue);
+        m_pRescue = nullptr;
+    }
+    if (m_pMagicShield)
+    {
+        g_pObjectManager->DeleteObject(m_pMagicShield);
+        m_pMagicShield = nullptr;
+    }
+    if (m_pCancelation)
+    {
+        g_pObjectManager->DeleteObject(m_pCancelation);
+        m_pCancelation = nullptr;
+    }
+
+    if (m_pChatMsg)
+        m_pChatMsg->SetVisible(0);
+
+    int result = 0;
+    if (m_pNameLabel)
+        m_pNameLabel->SetVisible(0);
+    if (m_pKillLabel)
+        m_pKillLabel->SetVisible(0);
+    if (m_stGuildMark.pGuildMark)
+        m_stGuildMark.pGuildMark->SetVisible(0);
+    if (m_pAutoTradeDesc)
+        m_pAutoTradeDesc->SetVisible(0);
+    if (m_pAutoTradePanel)
+        m_pAutoTradePanel->SetVisible(0);
+    if (m_pNickNameLabel)
+        m_pNickNameLabel->SetVisible(0);
+    if (m_pProgressBar)
+        m_pProgressBar->SetVisible(0);
+    if (m_pMountHPBar)
+        m_pMountHPBar->SetVisible(0);
+    if (m_pInMiniMap)
+        m_pInMiniMap->SetVisible(0);
+
+    m_dwID = -1;
+    m_bParty = 0;
 }
 
 void TMHuman::SetCharHeight(float fCon)
@@ -5204,6 +6015,7 @@ int TMHuman::StartKhepraDieEffect()
 
 void TMHuman::SetAvatar(char cAvatar)
 {
+    m_cAvatar = cAvatar;
 }
 
 void TMHuman::UpdateMount()
@@ -5336,37 +6148,123 @@ float TMHuman::GetMyHeight()
 
 void TMHuman::SetGuildBattleHPColor()
 {
+    // It's an empty function... yeah! 
 }
 
 void TMHuman::SetGuildBattleHPBar(int nHP)
 {
+    // It's an empty function... yeah! 
 }
 
 void TMHuman::SetGuildBattleLifeCount()
 {
+    // It's an empty function... yeah! 
 }
 
 int TMHuman::Is2stClass()
 {
-	return 0;
+    int mantua = g_pObjectManager->m_stMobData.Equip[15].sIndex;
+    
+    if (!g_pObjectManager->m_stMobData.Equip[0].stEffect[1].cValue)
+        return 0;
+
+    if (g_pObjectManager->m_stMobData.LearnedSkill[0] & 0x40000000)
+        return 2;
+
+    return 1;
 }
 
 int TMHuman::IAmkhepra()
 {
-	return 0;
+    return m_nClass == 56 && !m_stLookInfo.FaceMesh;
 }
 
 void TMHuman::CreateControl()
 {
+    DestroyControl();
+
+    m_pNameLabel = new SText(-1, "MoName", 0xFFFFFFAA, 0.0f, 650.0f, 128.0f, 16.0f, 0, 0x55AA0000u, 1u, 0);
+    m_pKillLabel = new SText(-1, "", 0xFFFFFFAA, 0.0f, 650.0f, 128.0, 16.0f, 0, 0x55AA0000u, 1u, 0);
+    m_pAutoTradeDesc = new SText(-1, "", 0xFFFFFFFF, 0.0f, 650.0f, 143.0f, 50.0f, 0, 0xFFFFFFFF, 1u, 0);
+    m_pAutoTradePanel = new SPanel(512, -10.0f, 635.0f, 141.0f, 43.0f, 0x77777777u, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+    m_pAutoTradePanel->m_bSelectEnable = 0;
+
+    m_pChatMsg = new SText(-2, "", 0xFFFFFFFF, 0.0, 650.0, (float)256, 64.0, 1, 0x77000000u, 1u, 0);
+    m_pChatMsg->m_Font.m_bMultiLine = 1;
+
+    m_stGuildMark.pGuildMark = nullptr;
+
+    m_stGuildMark.pGuildMark = new SPanel(-2, 0.0, 0.0, 12.0, 16.0, 0x77777777u, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+    m_pProgressBar = new SProgressBar(-2, 30, 30, 0.0f, 0.0f, 60.0f, 7.0f, 0xFFFF0000, 0xFF333333, 1u);
+    m_pMountHPBar = new SProgressBar(-2, 30, 30, 0.0f, 0.0f, 60.0f, 7.0f, 0xFFFFAA00, 0xFF333333, 1u);
+
+    m_pChatMsg->SetVisible(0);
+    m_pNameLabel->m_GCBorder.nTextureSetIndex = -2;
+    m_pNameLabel->SetVisible(0);
+    m_pKillLabel->SetVisible(0);
+
+    if (m_stGuildMark.pGuildMark)
+        m_stGuildMark.pGuildMark->SetVisible(0);
+
+    m_pAutoTradeDesc->SetVisible(0);
+
+    m_pNickNameLabel = new SText(-1, "", 0xFFFFFFAA, 0.0f, 650.0f, 128.0f, 16.0f, 0, 0x55AA0000u, 1u, 0);
+    m_pNickNameLabel->m_GCBorder.nTextureSetIndex = -2;
+    m_pNickNameLabel->SetVisible(0);
+    m_pAutoTradePanel->SetVisible(0);
+    m_pMountHPBar->SetVisible(0);
+
+    if (g_pCurrentScene)
+    {
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pNameLabel);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pKillLabel);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_stGuildMark.pGuildMark);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pAutoTradePanel);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pNickNameLabel);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pChatMsg);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pProgressBar);
+        g_pCurrentScene->m_pControlContainer->AddItem(m_pMountHPBar);
+    }
 }
 
 void TMHuman::DestroyControl()
 {
+    SAFE_DELETE(m_pChatMsg);
+    SAFE_DELETE(m_pNameLabel);
+    SAFE_DELETE(m_pKillLabel);
+    SAFE_DELETE(m_stGuildMark.pGuildMark);
+    SAFE_DELETE(m_pAutoTradeDesc);
+    SAFE_DELETE(m_pAutoTradePanel);
+    SAFE_DELETE(m_pNickNameLabel);
+    SAFE_DELETE(m_pProgressBar);
+    SAFE_DELETE(m_pMountHPBar);
+    SAFE_DELETE(m_pInMiniMap);
+    SAFE_DELETE(m_pSkinMesh);
+    SAFE_DELETE(m_pMantua);
+    SAFE_DELETE(m_pMount);
+    SAFE_DELETE(m_pMount);
 }
 
-int TMHuman::StrByteCheck(char* szString)
+int TMHuman::StrByteCheck(const char* szString)
 {
-	return 0;
+    int value = 0;
+    bool byteCheck = false;
+
+    int len = strlen(szString);
+    for (int i = 0;i < len ; ++i)
+    {
+        if (szString[i] >= 'A' && szString[i] <= 'z')
+            ++value;
+        else if (byteCheck)
+        {
+            ++value;
+            byteCheck = false;
+        }
+        else
+            byteCheck = true;
+    }
+
+    return value;
 }
 
 void TMHuman::SetMantua(int nTexture)
@@ -5417,12 +6315,96 @@ void TMHuman::SetMantua(int nTexture)
 
 int TMHuman::SetCitizenMantle(int BaseSkin)
 {
-	return 0;
+    if (m_citizen < 0 || m_citizen > 10)
+        m_citizen = 0;
+    if (!m_citizen)
+        return BaseSkin;
+
+    switch (BaseSkin)
+    {
+    case 34:
+    case 35:
+    case 36:
+        return BaseSkin;
+    case 19:
+        return m_citizen + 39;
+    case 3:
+        return m_citizen + 49;
+    case 2:
+        return m_citizen + 59;
+    case 6:
+        return m_citizen + 69;
+    case 1:
+        return m_citizen + 79;
+    case 0:
+        return m_citizen + 89;
+    case 7:
+        return m_citizen + 99;
+    case 25:
+        return m_citizen + 109;
+    case 24:
+        return m_citizen + 119;
+    case 26:
+        return m_citizen + 129;
+    case 28:
+        return m_citizen + 139;
+    case 27:
+        return m_citizen + 149;
+    case 29:
+        return m_citizen + 159;
+    case 32:
+        return m_citizen + 169;
+    case 31:
+        return m_citizen + 179;
+    case 33:
+        BaseSkin = m_citizen + 189;
+        break;
+    }
+
+    return BaseSkin;
 }
 
 int TMHuman::UnSetCitizenMantle(int BaseSkin)
 {
-	return 0;
+    int mantle = BaseSkin / 10;
+    if (BaseSkin / 10 == 4)
+        return 19;
+
+    switch (mantle)
+    {
+    case 5:
+        return 3;
+    case 6:
+        return 2;
+    case 7:
+        return 6;
+    case 8:
+        return 1;
+    case 9:
+        return 0;
+    case 10:
+        return 7;
+    case 11:
+        return 25;
+    case 12:
+        return 24;
+    case 13:
+        return 26;
+    case 14:
+        return 28;
+    case 15:
+        return 27;
+    case 16:
+        return 29;
+    case 17:
+        return 32;
+    case 18:
+        return 31;
+    case 19:
+        BaseSkin = 33;
+        break;
+    }
+    return BaseSkin;
 }
 
 int TMHuman::MAutoAttack(TMHuman* pTarget, int mode)
@@ -5432,16 +6414,300 @@ int TMHuman::MAutoAttack(TMHuman* pTarget, int mode)
 
 void TMHuman::SetMountCostume(unsigned int index)
 {
+    if (index >= 11)
+    {
+        m_stMountLook.Mesh2 = 0;
+        m_stMountLook.Mesh1 = 0;
+        m_stMountLook.Mesh0 = 0;
+        m_stMountLook.Skin2 = 0;
+        m_stMountLook.Skin1 = 0;
+        m_stMountLook.Skin0 = 0;
+        memset(&m_stMountSanc.Sanc0, 0, sizeof m_stMountSanc);
+        memset(&m_stOldMountSanc.Sanc0, 0, sizeof m_stOldMountSanc);
+
+        switch (index)
+        {
+        case 11:
+            m_nMountSkinMeshType = 29;
+            m_stMountLook.Mesh0 = 5;
+            m_stMountLook.Mesh1 = 5;
+            m_fMountScale = 1.25f;
+            break;
+        case 12:
+        case 13:
+            m_nMountSkinMeshType = 31;
+            m_stMountLook.Mesh0 = 8;
+            m_stMountLook.Mesh1 = 8;
+            if (index == 12)
+            {
+                m_stMountLook.Skin0 = 1;
+                m_stMountLook.Skin1 = 1;
+            }
+            else
+            {
+                m_stMountSanc.Sanc2 = 12;
+                m_stMountSanc.Sanc1 = 12;
+                m_stMountSanc.Sanc0 = 12;
+                m_stOldMountSanc.Sanc2 = 12;
+                m_stOldMountSanc.Sanc1 = 12;
+                m_stOldMountSanc.Sanc0 = 12;
+            }
+
+            m_fMountScale = 1.0f;
+            break;
+        case 14:
+            m_nMountSkinMeshType = 48;
+            m_fMountScale = 0.80f;
+            break;
+        case 15:
+        case 16:
+            m_stMountLook.Skin0 = 1;
+            m_nMountSkinMeshType = 49;
+            m_fMountScale = 0.69f;
+            break;
+        case 17:
+        case 18:
+            m_nMountSkinMeshType = 31;
+            m_stMountLook.Mesh0 = 14;
+            m_stMountLook.Mesh1 = 14;
+            if (index == 18)
+            {
+                m_stMountLook.Skin0 = 1;
+                m_stMountLook.Skin1 = 1;
+            }
+
+            m_fMountScale = 0.89f;
+            m_stMountSanc.Sanc2 = 13;
+            m_stMountSanc.Sanc1 = 13;
+            m_stMountSanc.Sanc0 = 13;
+            m_stOldMountSanc.Sanc2 = 13;
+            m_stOldMountSanc.Sanc1 = 13;
+            m_stOldMountSanc.Sanc0 = 13;
+            break;
+        case 19:
+            m_nMountSkinMeshType = 50;
+            m_stMountSanc.Sanc2 = 13;
+            m_stMountSanc.Sanc1 = 13;
+            m_stMountSanc.Sanc0 = 13;
+            m_stOldMountSanc.Sanc2 = 13;
+            m_stOldMountSanc.Sanc1 = 13;
+            m_stOldMountSanc.Sanc0 = 13;
+            break;
+        case 20:
+            m_stMountLook.Skin0 = 1;
+            m_stMountLook.Skin1 = 1;
+            m_stMountLook.Mesh0 = 1;
+            m_stMountLook.Mesh1 = 1;
+            m_nMountSkinMeshType = 49;
+            m_fMountScale = 0.69f;
+            break;
+        case 21:
+            m_nMountSkinMeshType = 51;
+            m_fMountScale = 1.0f;
+            break;
+        }
+    }
 }
 
 bool TMHuman::_locationCheck(TMVector2 vec2, int mapX, int mapY)
 {
-	return false;
+    return mapY == (int)(vec2.y * 0.0078125f) && mapX == (int)(vec2.x * 0.0078125f);
 }
 
 int TMHuman::SetHumanCostume()
 {
-	return 0;
+    int nCos = 0;
+    m_nSkinMeshType = 0;
+    if (m_sCostume <= 6301)
+    {
+        if (m_sCostume != 6301)
+        {
+            switch (m_sCostume)
+            {
+            case 4150:
+                nCos = 16;
+                m_nSkinMeshType = 0;
+                break;
+            case 4151:
+                nCos = -1;
+                m_nSkinMeshType = 0;
+                break;
+            case 4152:
+                nCos = 1;
+                m_nSkinMeshType = 1;
+                break;
+            case 4153:
+                nCos = 2;
+                m_nSkinMeshType = 0;
+                break;
+            case 4154:
+                nCos = 3;
+                m_nSkinMeshType = 1;
+                break;
+            case 4155:
+                nCos = 4;
+                m_nSkinMeshType = 0;
+                break;
+            case 4156:
+                nCos = 5;
+                m_nSkinMeshType = 1;
+                break;
+            case 4157:
+                nCos = 7;
+                m_nSkinMeshType = 1;
+                break;
+            case 4158:
+                nCos = 6;
+                m_nSkinMeshType = 0;
+                break;
+            case 4159:
+                nCos = 8;
+                m_nSkinMeshType = 1;
+                break;
+            case 4160:
+                nCos = 9;
+                m_nSkinMeshType = 1;
+                break;
+            case 4161:
+                nCos = 10;
+                m_nSkinMeshType = 1;
+                break;
+            case 4162:
+                nCos = 11;
+                m_nSkinMeshType = 1;
+                break;
+            case 4163:
+                nCos = 13;
+                m_nSkinMeshType = 1;
+                break;
+            case 4164:
+                nCos = 12;
+                m_nSkinMeshType = 1;
+                break;
+            case 4165:
+                nCos = 14;
+                m_nSkinMeshType = 0;
+                break;
+            case 4166:
+                nCos = 15;
+                m_nSkinMeshType = 1;
+                break;
+            case 4167:
+                nCos = 17;
+                m_nSkinMeshType = 1;
+                break;
+            case 4168:
+                nCos = 18;
+                m_nSkinMeshType = 1;
+                break;
+            case 4169:
+                nCos = 21;
+                m_nSkinMeshType = 0;
+                break;
+            case 4170:
+                nCos = 22;
+                m_nSkinMeshType = 0;
+                break;
+            case 4171:
+                nCos = 19;
+                m_nSkinMeshType = 0;
+                break;
+            case 4172:
+                nCos = 20;
+                m_nSkinMeshType = 0;
+                break;
+            case 4173:
+                nCos = 23;
+                m_nSkinMeshType = 0;
+                break;
+            case 4174:
+                nCos = 24;
+                m_nSkinMeshType = 0;
+                break;
+            case 4175:
+                nCos = 25;
+                m_nSkinMeshType = 1;
+                break;
+            case 4176:
+                nCos = 26;
+                m_nSkinMeshType = 1;
+                break;
+            case 4177:
+                nCos = 27;
+                m_nSkinMeshType = 1;
+                break;
+            case 4178:
+                nCos = 28;
+                m_nSkinMeshType = 0;
+                break;
+            case 4179:
+                nCos = 29;
+                m_nSkinMeshType = 1;
+                break;
+            case 4180:
+                nCos = 30;
+                m_nSkinMeshType = 1;
+                break;
+            case 4181:
+                nCos = 31;
+                m_nSkinMeshType = 1;
+                break;
+            case 4182:
+                nCos = 32;
+                m_nSkinMeshType = 1;
+                break;
+            case 4183:
+                nCos = 33;
+                m_nSkinMeshType = 1;
+                break;
+            }
+        }
+        else
+        {
+            nCos = 16;
+            m_nSkinMeshType = 0;
+        }
+    }
+    else if (m_sCostume == 6400)
+    {
+        nCos = 34;
+        m_nSkinMeshType = 1;
+    }
+
+    m_stLookInfo.FaceMesh = 0;
+    m_stLookInfo.FaceSkin = 0;
+    m_stLookInfo.HelmMesh = 0;
+    m_stLookInfo.CoatMesh = 0;
+    m_stLookInfo.PantsMesh = 0;
+    m_stLookInfo.GlovesMesh = 0;
+    m_stLookInfo.BootsMesh = 0;
+    m_stLookInfo.CoatSkin = 0;
+    m_stLookInfo.CoatSkin = 0;
+    m_stLookInfo.PantsSkin = 0;
+    m_stLookInfo.GlovesSkin = 0;
+    m_stLookInfo.BootsSkin = 0;
+
+    if (m_sCostume == 4150)
+    {
+        memset(&m_stSancInfo.Sanc0, 9, 6u);
+        memset(&m_stSancInfo.Legend0, 0, 6u);
+    }
+    else if ((m_sCostume < 4169 || m_sCostume > 4174) && (m_sCostume < 4176 || m_sCostume > 4179)  && m_sCostume != 4183 && m_sCostume != 4151)
+    {
+        if (m_sCostume == 6301)
+            memset(&m_stSancInfo.Sanc0, 9, 6u);
+        else
+            memset(&m_stSancInfo.Sanc0, 0, 6u);
+
+        memset(&m_stSancInfo.Legend0, 0, 6u);
+    }
+    else
+    {
+        memset(&m_stSancInfo.Sanc0, 13, 6u);
+        memset(&m_stSancInfo.Legend0, 0, 6u);
+    }
+
+    return nCos;
 }
 
 void TMHuman::RenderEffect_RudolphCostume(unsigned int dwServerTime)
