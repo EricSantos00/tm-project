@@ -164,8 +164,54 @@ void TMSelectCharScene::LookSampleHuman(int nIndex, int bLook, int bSelect)
 
 void TMSelectCharScene::SetvirtualKey()
 {
+	char Keylist[10];
+	Keylist[0] = 1;
+	Keylist[1] = 2;
+	Keylist[2] = 3;
+	Keylist[3] = 4;
+	Keylist[4] = 5;
+	Keylist[5] = 6;
+	Keylist[6] = 7;
+	Keylist[7] = 8;
+	Keylist[8] = 9;
+	Keylist[9] = 0;
+
+	srand(g_pTimerManager->GetServerTime());
+
+	for (int i = 0; i < 10; ++i)
+	{
+		auto key = rand() % 10 - i;
+		keybuf[i] = Keylist[key];
+
+		for (int j = key; j < 9; ++j)
+			Keylist[j] = Keylist[j + 1];
+	}
+
+	for (int i = 0; i < 10; ++i)
+	{
+		char chTmp[128] = { 0 };
+		sprintf_s(chTmp, "%d", keybuf[i]);
+
+		if (m_pBtnNumDlg[i])
+			m_pBtnNumDlg[i]->SetText(chTmp);
+	}
+
+	memset(keypass, 0, sizeof keypass);
 }
 
 void TMSelectCharScene::AddvirtualKeyNum(int num)
 {
+	int paslen = strlen(keypass);
+	char chdata[10];
+	char Passdata[11] = { 0 };
+	strcpy(Passdata, "**********");
+
+	memset(chdata, 0, sizeof chdata);
+
+	if (paslen < 6)
+	{
+		sprintf_s(keypass, "%s%d", keypass, keybuf[num]);
+		strncpy(chdata, Passdata, strlen(keypass));
+		m_pAccountLockDlgTitle->SetText(chdata, 0);
+	}
 }
