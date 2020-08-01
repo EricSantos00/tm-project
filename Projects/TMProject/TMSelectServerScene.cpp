@@ -380,7 +380,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 
 	SListBoxServerItem* pServerItem[11]{ nullptr };
 	
-	int nIndexN = g_nServerCountList[idwEvent];
+	int nIndexN = g_nServerCountList[nMaxGroupN - idwEvent - 1] - 1;
 	switch (idwControlID)
 	{
 	case 65542u:
@@ -405,16 +405,15 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 
 			for (int i = 0; i < m_nAdmitGroup; ++i)
 			{
+				memset(nUserCount2, -1, sizeof nUserCount2);
 				BASE_GetHttpRequest(g_pServerList[i][0], szUserCount, sizeof szUserCount);
 
 				sscanf_s(szUserCount, "%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n",
 					&nUserCount2[0], &nUserCount2[1], &nUserCount2[2], &nUserCount2[3], &nUserCount2[4], &nUserCount2[5],
 					&nUserCount2[6], &nUserCount2[7], &nUserCount2[8], &nUserCount2[9], &nUserCount2[10]);
 
-				if (m_nDay[i] >= 1)
-					nUserCount2[m_nAdmitGroup - i + 10] = (int)pServerItem[m_nDay[i] + 10];
-
-				sprintf_s(g_pServerList[nIndexN][i + 1], "%s", g_pServerList[m_nAdmitGroup - i - 1][m_bAdmit + m_nAdmitGroup - i]);
+				// 
+				sprintf_s(g_pServerList[nIndexN][i + 1], "%s", g_pServerList[m_nAdmitGroup - i - 1][m_nDay[m_nAdmitGroup - i]]);
 			}
 		}
 		else
@@ -499,7 +498,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 
 							nServerAge = m_nDay[nGIndex];
 
-							if (nUserCount2[num] > 600)
+							if (nUserCount[num] > 600)
 							{
 								int len = strlen(szStr);
 
@@ -554,7 +553,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 					// -1??
 					pServerItem[num] = new SListBoxServerItem(nTextureSet, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nCount, nCastle, 0, nServerAge);
 					
-					if (nUserCount2[num] < 0)
+					if (nUserCount[num] < 0)
 						pServerItem[num]->m_cConnected = 0;
 
 					pServerList->AddItem(pServerItem[num]);
@@ -565,7 +564,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 
 					pServerItem[num - 1] = new SListBoxServerItem(6, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nUserCount2[num], 0, 0, 0);
 
-					if (nUserCount2[num] < 0)
+					if (nUserCount[num] < 0)
 						pServerItem[num - 1]->m_cConnected = 0;
 
 					// TODO : review code					
@@ -580,10 +579,10 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 	break;
 	case 65538u:
 	{
-		int nServerGroupIndex = m_pNServerGroupList->GetSelectIndex();
+		int nServerGroupIndex = g_nServerCountList[nIndexN - m_pNServerGroupList->GetSelectIndex() - 1] - 1;
 		int nServerIndex = m_pNServerList->GetSelectIndex() + 1;
 
-		SListBoxServerItem* pItem = static_cast<SListBoxServerItem*>(m_pNServerList->GetItem(m_pNServerList->GetSelectIndex()));
+		SListBoxServerItem* pItem = static_cast<SListBoxServerItem*>(m_pNServerList->GetItem(nServerIndex - 1));
 		if (!pItem || nServerGroupIndex < 0 || nServerIndex < 1)
 		{
 			m_pMessagePanel->SetMessage(g_pMessageStringTable[24], 4000);
@@ -601,8 +600,9 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 		g_pObjectManager->m_nServerGroupIndex = nServerGroupIndex;
 		g_pObjectManager->m_nServerIndex = nServerIndex;
 
-		sprintf_s(g_pApp->m_szServerIP, "%s", g_pServerList[nServerGroupIndex + 1][nServerIndex - 1]);
+		sprintf_s(g_pApp->m_szServerIP, "%s", g_pServerList[nServerGroupIndex][nServerIndex]);
 
+		printf("%s\n", g_pApp->m_szServerIP);
 		m_pNServerSelect->SetVisible(0);
 		for (int i = 0; i < 3; ++i)
 			m_pLoginBtns[i]->SetVisible(1);
@@ -1351,6 +1351,9 @@ void TMSelectServerScene::InitializeUI()
 			}
 		}
 
+		int local20 = (time.wDay & 0xFFFF) % 10;
+		if (local20 == 0)
+			local20 = 10;
 		g_pTimerManager->GetServerTime();
 
 		for (int i = 0; i < 10; i++)
@@ -1373,7 +1376,7 @@ void TMSelectServerScene::InitializeUI()
 
 		m_nAdmitGroup = 0;
 
-		for (int nCount = 0; nCount <= 11; ++nCount)
+		for (int nCount = 0; nCount < 11; ++nCount)
 		{
 			if (m_nAdmitGroup <= g_nServerCountList[nCount])
 				m_nAdmitGroup = g_nServerCountList[nCount];
@@ -1394,8 +1397,8 @@ void TMSelectServerScene::InitializeUI()
 			if (count > -1 && g_pServerList[count][0][0])
 			{
 				char szStr[128]{ 0 };
-				if (g_szServerNameList[g_nServerCountList[i] - 1][0])
-					sprintf_s(szStr, g_szServerNameList[g_nServerCountList[i] - 1]);
+				if (g_szServerNameList[i][0])
+					sprintf_s(szStr, g_szServerNameList[i + 1]);
 				else
 					sprintf_s(szStr, g_pMessageStringTable[66], count);
 

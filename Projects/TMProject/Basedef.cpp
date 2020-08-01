@@ -27,6 +27,79 @@ void BASE_InitializeHitRate()
 
 void BASE_ApplyAttribute(char* pHeight, int size)
 {
+    int endx = size + g_HeightPosX;
+    int endy = size + g_HeightPosY;
+
+    for (int y = g_HeightPosY; y < endy; ++y)
+    {
+        for (int x = g_HeightPosX; x < endx; ++x)
+        {
+            if (g_pAttribute[(y >> 2) & 0x3FF][(x >> 2) & 0x3FF] & 2)
+                pHeight[x + g_HeightWidth * (y - g_HeightPosY) - g_HeightPosX] = 127;
+        }
+    }
+}
+
+int BASE_ReadItemList()
+{
+    FILE* fp = nullptr;
+
+    fopen_s(&fp, ".\\ItemList.bin", "rb");
+
+    if (!fp)
+    {
+        MessageBoxA(0, "Can't read ItemList.bin", "ERROR", 0);
+        return 0;
+    }
+
+    int size = sizeof(g_pItemList);
+
+    char* temp = (char*)g_pItemList;
+
+    int tsum{};
+
+    fread(g_pItemList, size, 1u, fp);
+    fread(&tsum, 4u, 1u, fp);
+    fclose(fp);
+
+    int sum = BASE_GetSum2((char*)g_pItemList, size); // Not being used...
+
+#if !defined _DEBUG
+    if (tsum != 0x1343B16)
+        return 0;
+#endif
+
+    for (int i = 0; i < size; ++i)
+        temp[i] ^= 0x5A;
+
+    int Handle = _open(".\\ExtraItem.bin", _O_RDONLY | _O_BINARY, 0);
+
+    if (Handle != -1)
+    {
+        char buff[256]{};
+
+        while (_read(Handle, buff, sizeof(STRUCT_ITEMLIST) + 2) >= sizeof(STRUCT_ITEMLIST) + 2)
+        {
+            short idx = *(short*)buff;
+
+            if (buff > 0 && idx < MAX_ITEMLIST)
+                memcpy(&g_pItemList[idx], &buff[2], sizeof(STRUCT_ITEMLIST));
+        }
+
+        _close(Handle);
+
+        for (int j = 0; j < size; ++j)
+            temp[j] ^= 0x5A;
+
+        sum = BASE_GetSum2((char*)g_pItemList, size); // Not being used...
+
+        if (tsum != 0x1343B16)
+            return 0;
+
+        for (int j = 0; j < size; ++j)
+            temp[j] ^= 0x5A;
+    }
+    return 1;
 }
 
 int BASE_GetSum(char* p, int size)
