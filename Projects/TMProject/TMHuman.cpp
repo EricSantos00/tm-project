@@ -5652,11 +5652,42 @@ void TMHuman::CreateControl()
 
 void TMHuman::DestroyControl()
 {
+    SAFE_DELETE(m_pChatMsg);
+    SAFE_DELETE(m_pNameLabel);
+    SAFE_DELETE(m_pKillLabel);
+    SAFE_DELETE(m_stGuildMark.pGuildMark);
+    SAFE_DELETE(m_pAutoTradeDesc);
+    SAFE_DELETE(m_pAutoTradePanel);
+    SAFE_DELETE(m_pNickNameLabel);
+    SAFE_DELETE(m_pProgressBar);
+    SAFE_DELETE(m_pMountHPBar);
+    SAFE_DELETE(m_pInMiniMap);
+    SAFE_DELETE(m_pSkinMesh);
+    SAFE_DELETE(m_pMantua);
+    SAFE_DELETE(m_pMount);
+    SAFE_DELETE(m_pMount);
 }
 
-int TMHuman::StrByteCheck(char* szString)
+int TMHuman::StrByteCheck(const char* szString)
 {
-	return 0;
+    int value = 0;
+    bool byteCheck = false;
+
+    int len = strlen(szString);
+    for (int i = 0;i < len ; ++i)
+    {
+        if (szString[i] >= 'A' && szString[i] <= 'z')
+            ++value;
+        else if (byteCheck)
+        {
+            ++value;
+            byteCheck = false;
+        }
+        else
+            byteCheck = true;
+    }
+
+    return value;
 }
 
 void TMHuman::SetMantua(int nTexture)

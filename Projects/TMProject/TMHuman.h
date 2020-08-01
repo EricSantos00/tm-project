@@ -159,7 +159,7 @@ public:
     int IAmkhepra();
     void CreateControl();
     void DestroyControl();
-    int StrByteCheck(char* szString);
+    int StrByteCheck(const char* szString);
 
     void SetMantua(int nTexture);
     int SetCitizenMantle(int BaseSkin);
