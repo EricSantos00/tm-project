@@ -91,9 +91,11 @@ int BASE_ReadItemList()
 
     int sum = BASE_GetSum2((char*)g_pItemList, size); // Not being used...
 
+#if !defined _DEBUG
     if (tsum != 0x1343B16)
         return 0;
-    
+#endif
+
     for (int i = 0; i < size; ++i)
         temp[i] ^= 0x5A;
 
