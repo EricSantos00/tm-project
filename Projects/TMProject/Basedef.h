@@ -10,6 +10,10 @@ constexpr int MAX_SERVERNUMBER = (MAX_SERVER + 1); // DB + TMSrvs + BISrv
 
 constexpr int MAX_ITEMLIST = 6500;
 
+constexpr int MSG_Ping_Opcode = 0x3A0;
+
+constexpr int MAX_GUILDZONE = 5;
+
 struct MSG_STANDARD
 {
 	unsigned short Size;
@@ -802,7 +806,7 @@ struct MSG_SendItem
 };
 
 
-constexpr auto MSG_AccountLogin_Opcode = 0x20D;
+constexpr auto MSG_AccountLogin_Opcode = 0x784	;
 struct MSG_AccountLogin
 {
 	MSG_STANDARD Header;
@@ -814,6 +818,14 @@ struct MSG_AccountLogin
 	unsigned int Mac[4];
 };
 
+constexpr auto MSG_MessageWhisper_Opcode = 0x334;
+struct MSG_MessageWhisper
+{
+	MSG_STANDARD Header;
+	char MobName[16];
+	char String[128];
+	short Color;
+};
 
 extern HWND hWndMain;
 extern char EncodeByte[4];
@@ -823,6 +835,7 @@ extern char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
 extern char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
 extern int g_nSelServerWeather;
 extern STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
+extern STRUCT_GUILDZONE g_pGuildZone[MAX_GUILDZONE];
 
 float BASE_ScreenResize(float size);
 void BASE_InitModuleDir();
@@ -840,6 +853,7 @@ int BASE_GetWeekNumber();
 int BASE_GetItemAbility(STRUCT_ITEM* item, char Type);
 int BASE_DefineSkinMeshType(int nClass);
 float BASE_GetMountScale(int nSkinMeshType, int nMeshIndex);
+int BASE_GetVillage(int x, int y);
 
 /* Read Functions */
 int ReadItemicon();

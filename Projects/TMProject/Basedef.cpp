@@ -12,6 +12,15 @@ int g_nSelServerWeather;
 char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
 STRUCT_ITEMLIST g_pItemList[6500];
 
+STRUCT_GUILDZONE g_pGuildZone[MAX_GUILDZONE] =
+{
+    {0, 0, 2088, 2148, 2086, 2093, 2052, 2052, 2171, 2163, 197, 213, 238, 230, 205, 220, 228, 220, 5, 0}, // Armia
+    {0, 0, 2531, 1700, 2494, 1707, 2432, 1672, 2675, 1767, 197, 149, 238, 166, 205, 157, 228, 157, 5, 0}, // Azran
+    {0, 0, 2460, 1976, 2453, 2000, 2448, 1966, 2476, 2024, 141, 213, 182, 230, 146, 220, 173, 220, 5, 0}, // Erion
+    {0, 0, 3614, 3124, 3652, 3122, 3605, 3090, 3690, 3260, 141, 149, 182, 166, 146, 157, 173, 157, 5, 0}, // Nippleheim
+    {0, 0, 1066, 1760, 1050, 1706, 1036, 1700, 1072, 1760, 4000, 4000, 4010, 4010, 4005, 4005, 4005, 4005, 5, 0} // Noatum
+};
+
 float BASE_ScreenResize(float size)
 {
 	return (float)((float)g_pDevice->m_dwScreenWidth * (float)(size / 800.0f));
@@ -469,4 +478,15 @@ int BASE_InitializeServerList()
 	}
 
 	return 0;
+}
+
+int BASE_GetVillage(int x, int y)
+{
+    for (int i = 0; i < 5; ++i)
+    {
+        if (x >= g_pGuildZone[i].vx1 && g_pGuildZone[i].vx2 && g_pGuildZone[i].vy1 && g_pGuildZone[i].vy2)
+            return i;
+    }
+
+    return MAX_GUILDZONE;
 }

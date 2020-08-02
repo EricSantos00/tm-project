@@ -47,6 +47,8 @@ TMSelectCharScene::TMSelectCharScene() :
 
 TMSelectCharScene::~TMSelectCharScene()
 {
+	if (m_pFocused)
+		SAFE_DELETE(m_pFocused);
 }
 
 int TMSelectCharScene::InitializeScene()
