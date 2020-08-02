@@ -24,6 +24,9 @@
 #include "TMEffectParticle.h"
 #include "TMLog.h"
 #include "TMUtil.h"
+#include "TMSky.h"
+#include "TMObjectContainer.h"
+#include "TMLight.h"
 
 TMVector2 TMHuman::m_vecPickSize[100]{
   { 0.40000001f, 2.0f },
@@ -4355,6 +4358,256 @@ void TMHuman::SetAnimation(ECHAR_MOTION eMotion, int nLoop)
 
 void TMHuman::SetColorMaterial()
 {
+    if (m_dwDelayDel)
+        return;
+
+    TMScene* pScene = g_pCurrentScene;
+    if (!m_pSkinMesh)
+        return;
+
+    float fAlpha = 1.0f;
+
+    if (pScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+    {
+        TMHuman *pFocused = (TMHuman*)g_pObjectManager->m_pCamera->m_pFocusedObject;
+
+        D3DCOLORVALUE color = pScene->GroundGetColor(m_vecPosition);
+        bool bLight = false;
+        TMSky* pSky = g_pCurrentScene->m_pSky;
+
+        if (pSky->m_nState && pSky->m_nState != 2 && pSky->m_nState != 12)
+        {
+            for (int i = 0; i < 2; ++i)
+            {
+                TMObjectContainer* pContainer = g_pCurrentScene->m_pObjectContainerList[i];
+                if (pContainer == nullptr)
+                    continue;
+
+                int nLightIndex = pContainer->m_nLightIndex;
+                for (int j = 0; j < nLightIndex; ++j)
+                {
+                    if (pContainer->m_pLightContainer[j]->m_bEnable != 1)
+                        continue;
+
+                    float fLen = pContainer->m_pLightContainer[j]->m_vecPosition.DistanceFrom(m_vecPosition);
+
+                    if (fLen >= 5.0f)
+                        continue;
+
+                    color.r = (((5.0f - fLen) * pContainer->m_pLightContainer[j]->m_Light.Ambient.r)
+                        / 3.0f)
+                        + (g_pDevice->m_colorLight.r * 0.2f);
+                    color.g = (((5.0f - fLen) * pContainer->m_pLightContainer[j]->m_Light.Ambient.g)
+                        / 3.0f)
+                        + (g_pDevice->m_colorLight.g * 0.2f);
+                    color.b = (((5.0f - fLen) * pContainer->m_pLightContainer[j]->m_Light.Ambient.b)
+                        / 3.0f)
+                        + (g_pDevice->m_colorLight.b * 0.2f);
+                    bLight = 1;
+                    break;
+                }
+            }
+        }
+
+        if (!bLight)
+        {
+            color.r = (color.r * 0.5f) + (g_pDevice->m_colorLight.r * 0.5f);
+            color.g = (color.g * 0.5f) + (g_pDevice->m_colorLight.g * 0.5f);
+            color.b = (color.b * 0.5f) + (g_pDevice->m_colorLight.b * 0.5f);
+            color.a = fAlpha;
+        }
+
+        m_pSkinMesh->m_materials.Specular.a = fAlpha;
+        m_pSkinMesh->m_materials.Emissive.a = fAlpha;
+        m_pSkinMesh->m_materials.Diffuse = color;
+        m_pSkinMesh->m_materials.Specular.r = 1.0f;
+        m_pSkinMesh->m_materials.Specular.g = 1.0f;
+        m_pSkinMesh->m_materials.Specular.b = 1.0f;
+
+        if (g_pCurrentScene->m_pMouseOverHuman == this && pFocused != this)
+        {
+            if ((m_dwID >= 0 && m_dwID < 1000) || (m_stScore.Reserved & 0xF) != 15)
+            {
+                if (m_dwID < 0 || m_dwID >= 1000 && IsMerchant())
+                    m_dwEdgeColor = 0x8800FF00;
+                else if (m_TradeDesc[0])
+                    m_dwEdgeColor = 0x8800FF00;
+                else if (m_bParty == 1)
+                    m_dwEdgeColor = 0x88FF00FF;
+                else if (m_usGuild && (m_usGuild == pFocused->m_usGuild || g_pObjectManager->m_usAllyGuild == m_usGuild))
+                    m_dwEdgeColor = 0x8800FFFF;
+                else
+                {
+                    int bTown = IsInTown();
+                    if (bTown || m_pProgressBar->m_GCProgress.dwColor != 0xFFFF0000)
+                        m_dwEdgeColor = 0x88FFFFFF;
+                    else
+                        m_dwEdgeColor = 0x88FF0000;
+                }
+            }
+            else
+            {
+                m_dwEdgeColor = 0x8800FF00;
+            }
+
+            if ((m_stScore.Reserved & 0xF) == 15 && pFocused->m_cMantua && pFocused->m_cMantua != 3 && m_pMantua && pFocused->m_pMantua
+                && m_cMantua != pFocused->m_cMantua)
+            {
+                m_dwEdgeColor = 0x88FF0000;
+            }
+        }
+        else
+        {
+            if (!g_bHideSkillBuffEffect && m_cHaste == 1)
+            {
+                unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+                if (m_eMotion == ECHAR_MOTION::ECMOTION_RUN && dwServerTime - m_dwLastHaste > (unsigned int)(600.0f / m_fMaxSpeed))
+                {
+                    TMEffectBillBoard2* pBill2 = new TMEffectBillBoard2(43, 1000, 0.5f, 0.5f, 0.5f, 0.00050000002f, 0);
+
+                    if (pBill2)
+                    {
+                        pBill2->m_vecPosition = TMVector3(m_vecPosition.x, m_fHeight + 0.2, m_vecPosition.y);
+                        pBill2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                        g_pCurrentScene->m_pEffectContainer->AddChild(pBill2);
+                        m_dwLastHaste = dwServerTime;
+                    }
+                }
+            }
+            if (m_nClass == 56 && !m_stLookInfo.FaceMesh)
+            {
+                color.a = fAlpha;
+                color.r = 0.6f;
+                color.g = 0.4f;
+                color.b = 0.4f;
+                m_pSkinMesh->m_materials.Emissive.r = (g_pDevice->m_colorBackLight.r * 0.4f)
+                    + (0.6f * 0.5f);
+                m_pSkinMesh->m_materials.Emissive.g = (g_pDevice->m_colorBackLight.g * 0.4f)
+                    + (color.r * 0.5f);
+                m_pSkinMesh->m_materials.Emissive.b = (g_pDevice->m_colorBackLight.b * 0.4f)
+                    + (color.r * 0.5f);
+                return;
+            }
+            if (m_cCancel == 1)
+            {
+                color.a = fAlpha;
+                color.r = (color.r * 0.4f) + 0.2f;
+                color.g = color.g * 0.4f;
+                color.b = color.b * 0.4f;
+
+                m_pSkinMesh->m_materials.Emissive = color;
+                m_pSkinMesh->m_materials.Specular = color;
+                m_pSkinMesh->m_materials.Diffuse = color;
+
+                if (m_cMount > 0 && m_pMount)
+                    memcpy(&m_pMount->m_materials, &m_pSkinMesh->m_materials, sizeof(m_pMount->m_materials));
+            }
+            else if (m_cFreeze == 1)
+            {
+                color.a = fAlpha;
+                color.r = 0.0f;
+                color.g = 0.4f;
+                color.b = 0.9f;
+
+                m_pSkinMesh->m_materials.Emissive = color;
+                m_pSkinMesh->m_materials.Specular = color;
+                m_pSkinMesh->m_materials.Diffuse = color;
+
+                if (m_cMount > 0 && m_pMount)
+                    memcpy(&m_pMount->m_materials, &m_pSkinMesh->m_materials, sizeof(m_pMount->m_materials));
+            }
+            else if (m_cPoison == 1)
+            {
+                color.a = fAlpha;
+                color.r = 0.0f;
+                color.g = 0.3f;
+                color.b = 0.0f;
+
+                m_pSkinMesh->m_materials.Emissive = color;
+                m_pSkinMesh->m_materials.Specular = color;
+
+                color.g = 0.8f;
+                m_pSkinMesh->m_materials.Diffuse = color;
+
+                if (m_cMount > 0 && m_pMount)
+                    memcpy(&m_pMount->m_materials, &m_pSkinMesh->m_materials, sizeof(m_pMount->m_materials));
+            }
+            else if(m_cSlowSlash == 1)
+            {
+                float fVel = (float)((g_pTimerManager->GetServerTime() + (300 * m_dwID)) % 1000) / 1000.0f;
+                float fR = (sinf((fVel * 3.1415927f) * 2.0f) * 0.5f) + 0.5f;
+                color.a = fAlpha;
+                color.r = fR / 2.0f;
+                color.g = fR / 2.0f;
+                color.b = 0.0f;
+
+                m_pSkinMesh->m_materials.Emissive = color;
+                m_pSkinMesh->m_materials.Specular = color;
+                m_pSkinMesh->m_materials.Diffuse = color;
+
+                if (m_cMount > 0 && m_pMount)
+                    memcpy(&m_pMount->m_materials, &m_pSkinMesh->m_materials, sizeof(m_pMount->m_materials));
+            }
+            else
+            {
+                m_pSkinMesh->m_materials.Emissive.r = (g_pDevice->m_colorBackLight.r * 0.3f) + (color.r * 0.4f);
+                m_pSkinMesh->m_materials.Emissive.g = (g_pDevice->m_colorBackLight.g * 0.3f) + (color.r * 0.4f);
+                m_pSkinMesh->m_materials.Emissive.b = (g_pDevice->m_colorBackLight.b * 0.3f) + (color.r * 0.4f);
+
+                if (m_nClass == 32 && m_stLookInfo.FaceMesh == 2)
+                {
+                    m_pSkinMesh->m_materials.Emissive.r = 0.65f;
+                    m_pSkinMesh->m_materials.Emissive.g = 0.0;
+                    m_pSkinMesh->m_materials.Emissive.b = 0.0;
+                }
+            }
+        }
+    }
+    else
+    {
+        if (m_bSelected)
+        {
+            m_pSkinMesh->m_materials.Diffuse.r = 1.0f;
+            m_pSkinMesh->m_materials.Diffuse.g = 1.0f;
+            m_pSkinMesh->m_materials.Diffuse.b = 1.0f;
+            m_pSkinMesh->m_materials.Specular.r = 1.0f;
+            m_pSkinMesh->m_materials.Specular.g = 1.0f;
+            m_pSkinMesh->m_materials.Specular.b = 1.0f;
+            m_pSkinMesh->m_materials.Emissive.r = 1.0f;
+            m_pSkinMesh->m_materials.Emissive.g = 1.0f;
+            m_pSkinMesh->m_materials.Emissive.b = 1.0f;
+        }
+        else if (m_bMouseOver == 1)
+        {
+            m_pSkinMesh->m_materials.Diffuse.r = 1.0f;
+            m_pSkinMesh->m_materials.Diffuse.g = 1.0f;
+            m_pSkinMesh->m_materials.Diffuse.b = 1.0f;
+            m_pSkinMesh->m_materials.Specular.r = 1.0f;
+            m_pSkinMesh->m_materials.Specular.g = 1.0f;
+            m_pSkinMesh->m_materials.Specular.b = 1.0f;
+            m_pSkinMesh->m_materials.Emissive.r = 0.3f;
+            m_pSkinMesh->m_materials.Emissive.g = 0.5f;
+            m_pSkinMesh->m_materials.Emissive.b = 0.0;
+        }
+        else
+        {
+            D3DCOLORVALUE color{};
+            color.r = (g_pDevice->m_colorLight.r * 0.30000001f) + 0.2f;
+            color.g = (g_pDevice->m_colorLight.g * 0.30000001f) + 0.2f;
+            color.b = (g_pDevice->m_colorLight.b * 0.30000001f) + 0.2f;
+
+            m_pSkinMesh->m_materials.Diffuse = color;
+            m_pSkinMesh->m_materials.Emissive = color;
+            m_pSkinMesh->m_materials.Specular.r = 1.0f;
+            m_pSkinMesh->m_materials.Specular.g = 1.0f;
+            m_pSkinMesh->m_materials.Specular.b = 1.0f;
+        }
+    }
+
+    if (m_cMantua > 0 && m_pMantua)
+        memcpy(&m_pMantua->m_materials, &m_pSkinMesh->m_materials, sizeof(m_pMantua->m_materials));
+    if (m_cMount > 0 && m_pMount)
+        memcpy(&m_pMount->m_materials, &m_pSkinMesh->m_materials, sizeof(m_pMount->m_materials));
 }
 
 void TMHuman::AnimationFrame(int nWalkSndIndex)

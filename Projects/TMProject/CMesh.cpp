@@ -701,7 +701,7 @@ int CMesh::RenderMesh(char cAlpha)
 
             if (g_pCurrentScene->m_pMouseOverHuman == (TMHuman*)m_pParentSkin->m_pOwner)
             {
-                float fvalue = 1.5f;
+                float fvalue = 0.5f;
                 m_pParentSkin->m_materials.Diffuse.r = fvalue;
                 m_pParentSkin->m_materials.Diffuse.g = fvalue;
                 m_pParentSkin->m_materials.Diffuse.b = fvalue;
