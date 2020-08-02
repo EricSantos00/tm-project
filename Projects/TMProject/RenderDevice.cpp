@@ -1867,8 +1867,8 @@ int RenderDevice::SetMatrixForUI()
 void RenderDevice::GetPickRayVector(D3DXVECTOR3* pRickRayOrig, D3DXVECTOR3* pPickRayDir)
 {
 	D3DXVECTOR3 v;
-	v.x = ((((float)(2.0f * g_pCursor->m_nPosX)) / (float)(m_dwScreenWidth - m_nWidthShift) - 1.0f) / m_matProj.m[0][0]);
-	v.y = -((((float)(2.0f * g_pCursor->m_nPosY)) / (float)(m_dwScreenHeight - m_nHeightShift) - 1.0f) / m_matProj.m[1][0]);
+	v.x = (((2.0f * g_pCursor->m_nPosX) / (float)(m_dwScreenWidth - m_nWidthShift)) - 1.0f) / m_matProj.m[0][0];
+	v.y = -(((2.0f * g_pCursor->m_nPosY) / (float)(m_dwScreenHeight - m_nHeightShift)) - 1.0f) / m_matProj.m[1][1];
 	v.z = 1.0f;
 
 	D3DXMATRIX matViewInv;
@@ -1879,7 +1879,7 @@ void RenderDevice::GetPickRayVector(D3DXVECTOR3* pRickRayOrig, D3DXVECTOR3* pPic
 	pPickRayDir->z = (float)((v.x * matViewInv.m[0][2]) + (v.y * matViewInv.m[1][2]) + (v.z * matViewInv.m[2][2]));
 
 	pRickRayOrig->x = matViewInv.m[3][0];
-	pRickRayOrig->x = matViewInv.m[3][1];
+	pRickRayOrig->y = matViewInv.m[3][1];
 	pRickRayOrig->z = matViewInv.m[3][2];
 }
 

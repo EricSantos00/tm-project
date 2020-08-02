@@ -2896,7 +2896,358 @@ void TMHuman::InvalidateDeviceObjects()
 
 int TMHuman::IsMouseOver()
 {
-	return 0;
+    if (m_dwDelayDel)
+        return 0;
+
+    if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELECT_SERVER)
+    {
+        m_bMouseOver = 0;
+        return 0;
+    }
+    if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_DEMO)
+    {
+        m_bMouseOver = 0;
+        return 0;
+    }
+    if (m_cHide || m_cShadow == 1 && g_pCurrentScene->m_pMyHuman != this && !g_pCurrentScene->m_pMyHuman->m_JewelGlasses)
+    {
+        m_bMouseOver = 0;
+        return 0;
+    }
+
+    if (g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_FIELD || g_pObjectManager->m_cShortSkill[g_pObjectManager->m_cSelectShortSkill] != 31)
+    {
+        if (m_eMotion == ECHAR_MOTION::ECMOTION_DEAD || m_eMotion == ECHAR_MOTION::ECMOTION_DIE || m_cDie == 1)
+        {
+            if (g_pCurrentScene->m_pMouseOverHuman == this)
+                g_pCurrentScene->m_pMouseOverHuman = nullptr;
+
+            m_bMouseOver = 0;
+            return 0;
+        }
+    }
+    else
+    {
+        if (m_eMotion != ECHAR_MOTION::ECMOTION_DEAD && m_eMotion != ECHAR_MOTION::ECMOTION_DIE && m_cDie != 1)
+        {
+            if (g_pCurrentScene->m_pMouseOverHuman == this)
+                g_pCurrentScene->m_pMouseOverHuman = nullptr;
+
+            m_bMouseOver = 0;
+            return 0;
+        }
+    }
+
+    D3DXVECTOR3 vPickRayDir{};
+    D3DXVECTOR3 vPickRayOrig{};
+    g_pDevice->GetPickRayVector(&vPickRayOrig, &vPickRayDir);
+
+    TMVector3 vecCam = g_pObjectManager->m_pCamera->m_cameraPos;
+
+    TMHuman* pOldOverHuman = g_pCurrentScene->m_pMouseOverHuman;
+    TMHuman* pFocusedObject = g_pCurrentScene->m_pMyHuman;
+
+    bool bMouseOver = 0;
+
+    int nMeshType = m_nSkinMeshType;
+    if (m_cMount > 0)
+        nMeshType = m_nMountSkinMeshType;
+
+    int nCommon = m_stLookInfo.LeftMesh;
+    TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nCommon, 0, 3_min);
+
+
+    if (m_pNameLabel && m_pNameLabel->IsOver())
+    {
+        if (!pFocusedObject)
+        {
+            g_pCurrentScene->m_pMouseOverHuman = this;
+            m_bMouseOver = 1;
+        }
+
+        bMouseOver = 1;
+    }
+
+    D3DXVECTOR3 v0{};
+    D3DXVECTOR3 v1{};
+    D3DXVECTOR3 v2{};
+    D3DXVECTOR3 v3{};
+
+    float fRadius = (TMHuman::m_vecPickSize[nMeshType].x * m_fScale) + 0.5f;
+
+    if (pMesh && (nCommon == 2888 || nCommon == 2889))
+    {
+        if (nCommon == 2888)
+        {
+            fRadius = 3.0f;
+        }
+        else if (nCommon == 2889)
+        {
+            fRadius = 4.0f;
+        }
+
+        if (!bMouseOver)
+        {
+            v0 = D3DXVECTOR3(m_vecPosition.x - fRadius, m_fHeight, m_vecPosition.y - fRadius);
+            v1 = D3DXVECTOR3(m_vecPosition.x - fRadius, m_fHeight, m_vecPosition.y + fRadius);
+            v2 = D3DXVECTOR3(m_vecPosition.x + fRadius, m_fHeight, m_vecPosition.y - fRadius);
+            v3 = D3DXVECTOR3(m_vecPosition.x + fRadius, m_fHeight, m_vecPosition.y + fRadius);
+
+            if (D3DXIntersectTri(&v0, &v2, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+            {
+                if (!pFocusedObject)
+                {
+                    g_pCurrentScene->m_pMouseOverHuman = this;
+                    m_bMouseOver = 1;
+                }
+                bMouseOver = 1;
+            }
+            if (!bMouseOver && D3DXIntersectTri(&v2, &v3, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+            {
+                if (!pFocusedObject)
+                {
+                    g_pCurrentScene->m_pMouseOverHuman = this;
+                    m_bMouseOver = 1;
+                }
+                bMouseOver = 1;
+            }
+        }
+    }
+    if (IAmkhepra() == 1)
+    {
+        fRadius -= 0.2f;
+
+        v0 = D3DXVECTOR3(m_vecPosition.x - fRadius, (TMHuman::m_vecPickSize[nMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y);
+        v1 = D3DXVECTOR3(m_vecPosition.x + fRadius, (TMHuman::m_vecPickSize[nMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y);
+        v2 = D3DXVECTOR3(m_vecPosition.x - fRadius, m_fHeight, m_vecPosition.y);
+        v3 = D3DXVECTOR3(m_vecPosition.x + fRadius, m_fHeight, m_vecPosition.y);
+
+        if (D3DXIntersectTri(&v0, &v2, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+        if (!bMouseOver && D3DXIntersectTri(&v2, &v3, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+    }
+    if (!bMouseOver)
+    {
+        fRadius = (TMHuman::m_vecPickSize[nMeshType].x * m_fScale) * 1.0f;
+        v0 = D3DXVECTOR3(m_vecPosition.x - fRadius, (TMHuman::m_vecPickSize[nMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y - fRadius);
+        v1 = D3DXVECTOR3(m_vecPosition.x - fRadius, (TMHuman::m_vecPickSize[nMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y + fRadius);
+        v2 = D3DXVECTOR3(m_vecPosition.x + fRadius, m_fHeight, m_vecPosition.y - fRadius);
+        v3 = D3DXVECTOR3(m_vecPosition.x + fRadius, m_fHeight, m_vecPosition.y + fRadius);
+
+        if (D3DXIntersectTri(&v0, &v2, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+        if (!bMouseOver && D3DXIntersectTri(&v2, &v3, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+
+        D3DXVECTOR3 v4{};
+        D3DXVECTOR3 v5{};
+        D3DXVECTOR3 v6{};
+        D3DXVECTOR3 v7{};
+
+        v0 = D3DXVECTOR3(m_vecPosition.x - fRadius, (TMHuman::m_vecPickSize[nMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y - fRadius);
+        v1 = D3DXVECTOR3(m_vecPosition.x + fRadius, (TMHuman::m_vecPickSize[nMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y - fRadius);
+        v2 = D3DXVECTOR3(m_vecPosition.x - fRadius, m_fHeight, m_vecPosition.y - fRadius);
+        v3 = D3DXVECTOR3(m_vecPosition.x + fRadius, m_fHeight, m_vecPosition.y - fRadius);
+        v4 = D3DXVECTOR3(m_vecPosition.x - fRadius, (TMHuman::m_vecPickSize[nMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y + fRadius);
+        v5 = D3DXVECTOR3(m_vecPosition.x + fRadius, (TMHuman::m_vecPickSize[nMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y + fRadius);
+        v6 = D3DXVECTOR3(m_vecPosition.x - fRadius, m_fHeight, m_vecPosition.y + fRadius);
+        v7 = D3DXVECTOR3(m_vecPosition.x + fRadius, m_fHeight, m_vecPosition.y + fRadius);
+
+        if (!bMouseOver && D3DXIntersectTri(&v4, &v0, &v2, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+        if (!bMouseOver && D3DXIntersectTri(&v2, &v6, &v4, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+        if (!bMouseOver && D3DXIntersectTri(&v0, &v1, &v3, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+        if (!bMouseOver && D3DXIntersectTri(&v3, &v2, &v0, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+        if (!bMouseOver && D3DXIntersectTri(&v1, &v5, &v7, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+        if (!bMouseOver && D3DXIntersectTri(&v7, &v3, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+        if (!bMouseOver && D3DXIntersectTri(&v5, &v4, &v6, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+        if (!bMouseOver && D3DXIntersectTri(&v6, &v7, &v5, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+    }
+    if (!bMouseOver && m_nClass == 56 && !m_stLookInfo.FaceMesh)
+    {
+        v0 = D3DXVECTOR3(m_vecPosition.x - fRadius, m_fHeight, m_vecPosition.y - fRadius);
+        v1 = D3DXVECTOR3(m_vecPosition.x - fRadius, m_fHeight, m_vecPosition.y + fRadius);
+        v2 = D3DXVECTOR3(m_vecPosition.x + fRadius, m_fHeight, m_vecPosition.y - fRadius);
+        v3 = D3DXVECTOR3(m_vecPosition.x + fRadius, m_fHeight, m_vecPosition.y + fRadius);
+
+        if (!bMouseOver && D3DXIntersectTri(&v0, &v2, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+        if (!bMouseOver && D3DXIntersectTri(&v2, &v3, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+        {
+            if (!pFocusedObject)
+            {
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+            bMouseOver = 1;
+        }
+    }
+    if (g_pObjectManager->m_pCamera && pFocusedObject != this)
+    {
+        if (bMouseOver == 1)
+        {
+            TMVector2 vec2{ vecCam.x, vecCam.z };
+            if (!pOldOverHuman || vec2.DistanceFrom(pOldOverHuman->m_vecPosition) > vec2.DistanceFrom(m_vecPosition))
+            {
+                if (g_pCurrentScene->m_pMouseOverHuman)
+                    g_pCurrentScene->m_pMouseOverHuman->m_bMouseOver = 0;
+
+                g_pCurrentScene->m_pMouseOverHuman = this;
+                m_bMouseOver = 1;
+            }
+        }
+        else if (g_pCurrentScene->m_pMouseOverHuman == this)
+        {
+            g_pCurrentScene->m_pMouseOverHuman = 0;
+            m_bMouseOver = 1;
+        }
+    }
+    if (bMouseOver == 1)
+    {
+        float fDis = TMVector2(vecCam.x, vecCam.z).DistanceFrom(m_vecPosition);
+
+        if (fDis < 1.5f)
+        {
+            bMouseOver = 0;
+            m_bMouseOver = 0;
+            g_pCurrentScene->m_pMouseOverHuman = pOldOverHuman;
+        }
+        else if (pOldOverHuman)
+        {
+            if (pFocusedObject != this)
+            {
+                if (m_dwID >= 0 && m_dwID < 1000)
+                {
+                    if ((pOldOverHuman->m_dwID < 0 || pOldOverHuman->m_dwID > 1000) && pOldOverHuman->m_cSummons == 1)
+                    {
+                        if (g_pCurrentScene->m_pMouseOverHuman)
+                            g_pCurrentScene->m_pMouseOverHuman->m_bMouseOver = 0;
+
+                        m_bMouseOver = 1;
+                        g_pCurrentScene->m_pMouseOverHuman = this;
+                    }
+                }
+            }
+        }
+    }
+    if (!m_bMouseOver && bMouseOver == 1)
+    {
+        TMScene* pScene = g_pCurrentScene;
+        if (pScene->GetSceneType() != ESCENE_TYPE::ESCENE_FIELD)
+        {
+            auto pSoundManager = g_pSoundManager;
+            if (pSoundManager)
+            {
+                auto pSoundData = pSoundManager->GetSoundData(52);
+                if (pSoundData->IsSoundPlaying())
+                {
+                    pSoundData->Play();
+                }
+            }
+        }        
+    }
+
+    m_bMouseOver = bMouseOver;
+    return bMouseOver;
 }
 
 int TMHuman::OnCharEvent(char iCharCode, int lParam)

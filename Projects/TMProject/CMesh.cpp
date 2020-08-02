@@ -680,7 +680,7 @@ int CMesh::RenderMesh(char cAlpha)
             TMVector3 resultVec = vecTargetPos - vecCamTarget;
 
             float fDist = vecTargetPos.Length();
-            fDist *= fDist * 0.000019999999f;
+            fDist = fDist * 0.00002f;
             D3DXVec3Normalize((D3DXVECTOR3*)&resultVec, (D3DXVECTOR3*)&resultVec);
             D3DXMatrixTranslation(&matMove, resultVec.x * 0.1f, resultVec.y * 0.1f, resultVec.z * 0.1f);
             if (m_pParentSkin->m_nBoneAniIndex == 41 && !m_pParentSkin->m_Look.Mesh0)
@@ -691,7 +691,7 @@ int CMesh::RenderMesh(char cAlpha)
             for (int l = 0; l < m_numPalette; ++l)
             {
                 D3DXMATRIX* fy = m_pBoneOffset[l];
-                D3DXMATRIX rMatrix = m_pBoneMatrix[l] * matScale * *fy * matMove * g_pDevice->m_matView;
+                D3DXMATRIX rMatrix = (((m_pBoneMatrix[l] * matScale) * *fy) * matMove) * g_pDevice->m_matView;
                 D3DXMatrixTranspose(&rMatrix, &rMatrix);
                 g_pDevice->m_pd3dDevice->SetVertexShaderConstantF(
                     3 * l + 9,
@@ -701,7 +701,7 @@ int CMesh::RenderMesh(char cAlpha)
 
             if (g_pCurrentScene->m_pMouseOverHuman == (TMHuman*)m_pParentSkin->m_pOwner)
             {
-                float fvalue = 0.5f;
+                float fvalue = 1.5f;
                 m_pParentSkin->m_materials.Diffuse.r = fvalue;
                 m_pParentSkin->m_materials.Diffuse.g = fvalue;
                 m_pParentSkin->m_materials.Diffuse.b = fvalue;
@@ -722,18 +722,17 @@ int CMesh::RenderMesh(char cAlpha)
 
             g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_TEXTUREFACTOR, g_pCurrentScene->m_pMouseOverHuman->m_dwEdgeColor);
             g_pDevice->SetTexture(0, g_pTextureManager->GetModelTexture(m_nTextureIndex, 10000));
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_SHADEMODE, D3DSHADEMODE::D3DSHADE_FLAT);
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_SRCBLEND, D3DBLEND::D3DBLEND_SRCALPHA);
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_DESTBLEND, D3DBLEND::D3DBLEND_INVSRCALPHA);
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 1);
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_FOGENABLE, D3DFOGMODE::D3DFOG_NONE);
-
-            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_SELECTARG1);
-            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLORARG1, D3DTEXTUREOP::D3DTOP_SELECTARG2);
-            g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_DISABLE);
-            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAOP, D3DTEXTUREOP::D3DTOP_SELECTARG1);
-            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAARG1, D3DTEXTUREOP::D3DTOP_SELECTARG1);
-            g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAOP, D3DTEXTUREOP::D3DTOP_DISABLE);
+            g_pDevice->SetRenderState(D3DRS_SHADEMODE, 1u);
+            g_pDevice->SetRenderState(D3DRS_SRCBLEND, 5u);
+            g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
+            g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 1u);
+            g_pDevice->SetRenderState(D3DRS_FOGENABLE, 0);
+            g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 2u);
+            g_pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, 3u);
+            g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+            g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+            g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, 2u);
+            g_pDevice->SetTextureStageState(1u, D3DTSS_ALPHAOP, 1u);
 
             if (g_pDevice->m_pd3dDevice->DrawIndexedPrimitive(D3DPRIMITIVETYPE::D3DPT_TRIANGLELIST,
                 0,
@@ -743,15 +742,15 @@ int CMesh::RenderMesh(char cAlpha)
                 m_numFaces) < 0)
                 return 0;
 
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, D3DCULL::D3DCULL_CCW);
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_SHADEMODE, D3DSHADEMODE::D3DSHADE_GOURAUD);
-            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE);
-            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLORARG1, D3DTEXTUREOP::D3DTOP_SELECTARG1);
-            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAOP, D3DTEXTUREOP::D3DTOP_SELECTARG1);
-            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAARG1, D3DTEXTUREOP::D3DTOP_SELECTARG1);
-            g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAOP, D3DTEXTUREOP::D3DTOP_DISABLE);
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_FOGENABLE, D3DFOGMODE::D3DFOG_EXP);
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 1);
+            g_pDevice->SetRenderState(D3DRS_CULLMODE, 3u);
+            g_pDevice->SetRenderState(D3DRS_SHADEMODE, 2u);
+            g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+            g_pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, 2u);
+            g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+            g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, 2u);
+            g_pDevice->SetTextureStageState(1u, D3DTSS_ALPHAOP, 1u);
+            g_pDevice->SetRenderState(D3DRS_FOGENABLE, 1u);
+            g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 1u);
         }
 
         if (g_pDevice->m_bUseSW)
