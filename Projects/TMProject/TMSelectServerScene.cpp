@@ -682,6 +682,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 			m_dwLastClickLoginBtnTime = g_pTimerManager->GetServerTime();
 
 			m_pMessagePanel->SetMessage(g_pMessageStringTable[7], 4000);
+			m_pMessagePanel->SetVisible(1, 1);
 
 			if (!g_pSocketManager->ConnectServer(g_pApp->m_szServerIP, 8281, 0, 1124))
 			{

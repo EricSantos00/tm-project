@@ -823,6 +823,26 @@ struct MSG_MessageWhisper
 	short Color;
 };
 
+constexpr auto MSG_Encode_Opcode = 0xBFF;
+struct MSG_Encode
+{
+	MSG_STANDARD Header;
+	int Parm[42];
+};
+
+struct MSG_MessageChat
+{
+	MSG_STANDARD Header;
+	char String[128];
+};
+
+constexpr auto MSG_MessagePanel_Opcode = 0x101;
+struct MSG_MessagePanel
+{
+	MSG_STANDARD Header;
+	char String[128];
+};
+
 constexpr auto MSG_Attack_Multi = 0x367;
 constexpr auto MSG_Attack_One = 0x39D;
 constexpr auto MSG_Attack_Two = 0x39E;

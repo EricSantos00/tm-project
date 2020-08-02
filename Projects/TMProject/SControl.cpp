@@ -2007,7 +2007,7 @@ void SScrollBar::scrollbarbackSetvisible(bool bSet)
 	m_pBackground1->SetVisible(bSet);
 }
 
-SListBoxItem::SListBoxItem(char* istrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType)
+SListBoxItem::SListBoxItem(const char* istrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType)
 	: SText(-1,
 		istrText,
 		idwFontColor,

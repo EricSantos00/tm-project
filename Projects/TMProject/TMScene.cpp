@@ -15,6 +15,8 @@
 #include "TMGlobal.h"
 #include "TMLog.h"
 #include "TMScene.h"
+#include "TMFieldScene.h"
+#include "TMEffectFirework.h"
 
 TMScene::TMScene() : TreeNode(0)
 {
@@ -840,6 +842,233 @@ int TMScene::InitializeScene()
 
 int TMScene::OnPacketEvent(unsigned int dwCode, char* pSBuffer)
 {
+	if (g_pCurrentScene != this)
+		return 0;
+
+	auto pStd = reinterpret_cast<MSG_STANDARD*>(pSBuffer);
+	auto dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (!pSBuffer && (!m_dwDelayDisconnectTime || m_dwDelayDisconnectTime + 15000 < dwServerTime))
+	{
+		if (!m_pMessagePanel->IsVisible())
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[13], 4000u);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+
+		if (m_eSceneType != ESCENE_TYPE::ESCENE_LOGIN)
+			g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTSERVER_STATE);
+
+		m_dwDelayDisconnectTime = 0;
+		return 1;
+	}
+
+	if (!pStd)
+	{
+		if(!m_pMessagePanel->IsVisible())
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[13], 4000u);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+
+		if (m_eSceneType != ESCENE_TYPE::ESCENE_LOGIN)
+			g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTSERVER_STATE);
+
+		m_dwDelayDisconnectTime = 0;
+		return 1;
+	}
+
+	if (pStd->Type == 0x194)
+	{
+		g_pObjectManager->m_bBilling = 1;
+		m_pMessageBox->SetMessage(g_pMessageStringTable[132], B_CREATE_ID, nullptr);
+		m_pMessageBox->SetVisible(1);
+	}
+
+	if (pStd->Type == MSG_Encode_Opcode)
+	{
+		MSG_Encode* pEncode = reinterpret_cast<MSG_Encode*>(pStd);
+
+		int EncodeByte1 = *(DWORD*)&pEncode->Parm[40];
+		int EncodeByte2 = *(DWORD*)&pEncode->Parm[41];
+
+		int type = (3 * (EncodeByte1 / 7) + 7 * (EncodeByte2 / 3) + 220) % 3;
+		if (type)
+		{
+			if (type == 1)
+				pStd->Type = 0x13BD;
+			else if (type == 2)
+				pStd->Type == 0x7BE;
+		}
+		else
+			pStd->Type = 0xFBC;
+	}
+
+	if (pStd->Type == 0xFBC)
+	{
+		// need to decompile here... and other encode packets
+	}
+
+	if (pStd->Type == 0x13BD)
+	{
+		// need to decompile here... and other encode packets
+	}
+
+	if (pStd->Type == 0x7BE)
+	{
+		// need to decompile here... and other encode packets
+	}
+
+	if (!pStd->ID && (pStd->Type == MSG_MessagePanel_Opcode || pStd->Type == 0x102 || pStd->Type == 0x104 || pStd->Type == 0x105 || pStd->Type == 0x106))
+	{
+		char szStr[128] = { 0 };
+		if (pStd->Type != MSG_MessagePanel_Opcode)
+		{
+			if (pStd->Type == 0x106)
+			{
+				auto v86 = reinterpret_cast<MSG_MessageChat*>(pStd);
+			}
+		}
+
+		auto pMsgPanel = reinterpret_cast<MSG_MessagePanel*>(pStd);
+		pMsgPanel->String[127] = 0;
+		pMsgPanel->String[126] = 0;
+
+		if (m_eSceneType == ESCENE_TYPE::ESCENE_SELCHAR && pMsgPanel->String[0] == '^')
+		{
+			char szMsg[128]{ 0 };
+			sprintf_s(szMsg, "%s", &pMsgPanel->String[1]);
+
+			m_pMessageBox2->SetMessage(szMsg, 0, nullptr);
+			m_pMessageBox2->SetVisible(1);
+		}
+
+		if (pMsgPanel->String[0] == '!' && pMsgPanel->String[1] == '#') 
+		{
+			for (int i = 2; i < 6; ++i)
+				if (pMsgPanel->String[i] < '0' || pMsgPanel->String[i] > '9')
+					pMsgPanel->String[i] = '0';
+
+			static_cast<TMFieldScene*>(g_pCurrentScene)->m_nYear = (pMsgPanel->String[3] - '0') + 10 * (pMsgPanel->String[2] - '0');
+			static_cast<TMFieldScene*>(g_pCurrentScene)->m_nDays = (pMsgPanel->String[6] - '0') + 10 * (pMsgPanel->String[5] - '0') + 100 * (pMsgPanel->String[4] - '0');
+		}
+		else
+		{
+			if (pMsgPanel->String[1] == '!' && pMsgPanel->String[2] == '!' && pMsgPanel->String[3] == '!')
+			{
+				auto pFocusedObject = static_cast<TMObject*>(m_pMyHuman);
+
+				if ((int)pFocusedObject->m_vecPosition.x >> 7 == 31 && (int)pFocusedObject->m_vecPosition.y >> 7 == 31)
+				{
+					for (int nType = 0; nType < 5; ++nType)
+					{
+						for (int j = 0; j < 5; ++j)
+						{
+							auto pFireWork = new TMEffectFireWork({ (pFocusedObject->m_vecPosition.x) - 10.0f + (5.0f * nType), 7.0f, ((pFocusedObject->m_vecPosition.y - 10.0f) + 5.0f * j) + 8.0f}, nType);
+
+							g_pCurrentScene->AddChild(pFireWork);
+						}
+					}
+				}
+
+				if (pFocusedObject->IsInTown() == 1 || (int)pFocusedObject->m_vecPosition.x >> 7 != 31 || (int)pFocusedObject->m_vecPosition.y >> 7 != 31)
+				{
+					m_pMessagePanel->SetMessage(pMsgPanel->String, 4000);
+					m_pMessagePanel->SetVisible(1, 1);
+				}
+
+				// goto LABEL_153
+			}
+
+			if (pMsgPanel->String[1] == '!' && pMsgPanel->String[2] == '!' && pMsgPanel->String[3] == '#')
+			{
+				if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD && pMsgPanel->String[4] == 'E')
+				{
+					auto pKilled = static_cast<TMHuman*>(g_pObjectManager->GetHumanByID(static_cast<TMFieldScene*>(g_pCurrentScene)->m_dwKhepraID));
+
+					if (pKilled)
+					{
+						pKilled->m_stScore.Hp = 0;
+						pKilled->Die();
+					}
+
+					static_cast<TMFieldScene*>(g_pCurrentScene)->m_dwKhepraID = 0;
+
+					for (int iSt = 0; iSt < 5; ++iSt)
+						pMsgPanel->String[iSt] = '_';
+				}
+
+				// goto LABEL_153
+			}
+
+			if (pMsgPanel->String[0] != '!' || pMsgPanel->String[1] != '!')
+			{
+				if (pMsgPanel->String[0] == '!')
+				{
+					SYSTEMTIME sysTime;
+					GetLocalTime(&sysTime);
+
+					if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+					{
+						auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+						auto pItem3 = new SListBoxItem(" ", 0xFFFFFFFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+						pFScene->m_pHelpList[3]->AddItem(pItem3);
+
+						char szTime[128] { 0 };
+						char _Buffer[128]{ 0 };
+
+						sprintf_s(szTime, "SMS [%02d:%02d:%02d]", sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
+						auto pItem = new SListBoxItem(szTime, 0xFFBBFFFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+						pFScene->m_pHelpList[3]->AddItem(pItem);
+
+						sprintf_s(_Buffer, "%s", &pMsgPanel->String[1]);
+
+						auto pItem2 = new SListBoxItem(_Buffer, 0xFFBBFFCC, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+						pFScene->m_pHelpList[3]->AddItem(pItem2);
+
+						if (pFScene->m_pHelpMemo)
+							pFScene->m_pHelpMemo->SetVisible(1);
+					}
+					else
+					{
+						for (int l = 0; l < 98; ++l)
+						{
+							if (!g_pObjectManager->m_stMemo[l].szString[0] && !g_pObjectManager->m_stMemo[l + 1].szString[0])
+							{
+								g_pObjectManager->m_stMemo[l].dwColor = -1;
+								sprintf_s(g_pObjectManager->m_stMemo[l].szString, "");
+								g_pObjectManager->m_stMemo[l + 1].dwColor = 0xFFBBFFFF;
+								sprintf_s(g_pObjectManager->m_stMemo[l + 1].szString, "SMS [%02d:%02d:%02d]", sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
+
+								g_pObjectManager->m_stMemo[l + 2].dwColor = 0xFFBBFFCC;
+								sprintf_s(g_pObjectManager->m_stMemo[l + 2].szString, "%s", &pMsgPanel->String[1]);
+							}
+						}
+					}
+
+					m_pMessagePanel->SetMessage(&pMsgPanel->String[1], 4000u);
+					m_pMessagePanel->SetVisible(1, 1);
+				}
+				else if (pMsgPanel->String[0] == '2' && pMsgPanel->String[1] == '0' && pMsgPanel->String[2] == '0')
+				{
+					char Msg[128]{ 0 };
+					if (m_pMyHuman)
+						sprintf_s(Msg, "%s %d %d,%d", pMsgPanel->String, g_pObjectManager->m_nServerIndex, m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_vecPosition.y);
+					else
+						sprintf_s(Msg, "%s %d", pMsgPanel->String, g_pObjectManager->m_nServerIndex);
+
+					m_pMessagePanel->SetMessage(Msg, 4000u);
+					m_pMessagePanel->SetVisible(1, 1);
+				}
+				else
+				{
+					m_pMessagePanel->SetMessage(pMsgPanel->String, 4000u);
+					m_pMessagePanel->SetVisible(1, 1);
+				}
+			}
+		}
+	}
 	return 1;
 }
 

@@ -447,7 +447,7 @@ public:
 class SListBoxItem : public SText
 {
 public:
-    SListBoxItem(char* istrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight,
+    SListBoxItem(const char* istrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight,
         int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SListBoxItem();
     void FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, int inParentLayer, int nFlag) override;
