@@ -81,7 +81,44 @@ int TMSelectCharScene::OnPacketEvent(unsigned int dwCode, char* buf)
 
 int TMSelectCharScene::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	TMScene::FrameMove(dwServerTime);
+
+	auto dwServerTimea = g_pTimerManager->GetServerTime();
+
+	if (dwServerTimea - m_dwLastClickLoginBtnTime > 3000 && m_pBtnLogin && !m_pBtnLogin->m_bEnable)
+	{
+		m_pBtnLogin->SetEnable(1);
+		m_pBtnCancel->SetEnable(1);
+		m_pBtnDelete->SetEnable(1);
+	}
+
+	if (dwServerTimea - m_dwLastClickCreateBtnTime > 2000 && m_pBtnCreate && !m_pBtnCreate->m_bEnable)
+		m_pBtnCreate->SetEnable(1);
+
+	if (m_bMovingNow == 1)
+	{
+		m_pBtnCreate->SetEnable(0);
+		m_pBtnLogin->SetEnable(0);
+		m_pBtnCancel->SetEnable(0);
+		m_pBtnDelete->SetEnable(0);
+	}
+
+	if (dwServerTimea - LastSendTime > 300000)
+	{
+		MSG_STANDARD stStandard{};
+		stStandard.ID = 0;
+		stStandard.Type = MSG_Ping_Opcode;
+
+		g_pSocketManager->SendOneMessage((char*)&stStandard, sizeof MSG_STANDARD);
+	}
+
+	if (m_bCriticalError == 1)
+	{
+		m_pMessagePanel->SetMessage("Critical Data Error In Client", 0);
+		m_pMessagePanel->SetVisible(1, 0);
+	}
+
+	return 1;
 }
 
 void TMSelectCharScene::VisibleSelectCreate(int bSelect)
