@@ -156,7 +156,7 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 	char szTexture[64]{};
 
 	unsigned short* look = (unsigned short*)&m_Look;
-	unsigned short* sanc = (unsigned short*)&m_Sanc;
+	unsigned char* sanc = (unsigned char*)&m_Sanc;
 
 	for (int i = 0; i < MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numParts; ++i)
 	{
@@ -294,8 +294,8 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 			if(tmpMesh == nullptr)
 				return 0x80004005;
 
-			short nSanc = (unsigned char)sanc[i];
-			short nLegnd = (unsigned char)sanc[i + 8];
+			unsigned char nSanc = (unsigned char)sanc[i];
+			unsigned char nLegnd = (unsigned char)sanc[i + 8];
 
 			if (nSanc > 15)
 				nSanc = 15;
