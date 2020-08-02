@@ -751,14 +751,6 @@ struct MSG_CAPSULEUSEITEM
 	char NewMobname[16];
 };
 
-struct MSG_MessageWhisper
-{
-	MSG_STANDARD Header;
-	char MobName[16];
-	char String[128];
-	short Color;
-};
-
 struct MSG_AutoTrade
 {
 	MSG_STANDARD Header;
