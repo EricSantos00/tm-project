@@ -38,16 +38,16 @@ int CMesh::Render(int nBright)
     if (!m_pParentSkin)
         return 0;
 
-    LPDIRECT3DTEXTURE9 pTex = g_pTextureManager->GetModelTexture(m_nTextureIndex, 10000);;
+    LPDIRECT3DTEXTURE9 pTex = g_pTextureManager->GetModelTexture(m_nTextureIndex, 10000);
  
     char cAlpha = 'A';
     if (m_nTextureIndex >= 0)
         cAlpha = g_pTextureManager->m_stModelTextureList[m_nTextureIndex].cAlpha;
 
-    g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHABLENDENABLE, 1);
+    g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 1);
 
     if (cAlpha == 'C')
-        g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHABLENDENABLE, 0);
+        g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 0);
 
     g_pDevice->SetTexture(0, pTex);
 
@@ -96,7 +96,7 @@ int CMesh::Render(int nBright)
     {
         g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 0);
 
-        TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 1200000);
+        TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 20_min);
         if (g_pDevice->m_pd3dDevice->SetStreamSource(0, pMesh->m_pVB, 0, pMesh->m_sizeVertex) < 0)
             return 1;
         if (g_pDevice->m_pd3dDevice->SetIndices(pMesh->m_pIB) < 0)
@@ -183,7 +183,7 @@ int CMesh::Render(int nBright)
     if (nPartIndex >= 2912 && nPartIndex <= 2923)
     {
         g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 0);
-        TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 1200000);
+        TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 20_min);
         if (g_pDevice->m_pd3dDevice->SetStreamSource(0, pMesh->m_pVB, 0, pMesh->m_sizeVertex) < 0)
             return 1;
         if (g_pDevice->m_pd3dDevice->SetIndices(pMesh->m_pIB) < 0)
@@ -212,6 +212,7 @@ int CMesh::Render(int nBright)
             g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAOP, D3DTEXTUREOP::D3DTOP_DISABLE);
             g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ALPHAARG1, D3DTEXTUREOP::D3DTOP_SELECTARG1);
         }
+        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 5u);
 
         unsigned int dwTime = g_pTimerManager->GetServerTime();
         float fProgress = (float)(dwTime % 10000) / 10000.0f;
@@ -474,13 +475,13 @@ int CMesh::RenderMesh(char cAlpha)
             else if (m_sMultiType < 7)
             {
                 g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE);
-                if (cAlpha != 67)
+                if (cAlpha != 'C')
                     g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_ADDSMOOTH);
             }
             else
             {
                 g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE2X);  
-                if (cAlpha != 67)
+                if (cAlpha != 'C')
                     g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_ADDSMOOTH);
             }
         }
@@ -511,15 +512,17 @@ int CMesh::RenderMesh(char cAlpha)
             if (m_sMultiType < 7)
             {
                 g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE);
-                if (cAlpha != 67)
+                if (cAlpha != 'C')
                     g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_ADDSMOOTH);
             }
             else
             {
                 g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE2X);
-                if (cAlpha != 67)
+                if (cAlpha != 'C')
                     g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_ADDSMOOTH);
             }
+
+            g_pDevice->SetRenderState(D3DRS_FOGVERTEXMODE, 0);
         }
         else
         {
@@ -530,7 +533,7 @@ int CMesh::RenderMesh(char cAlpha)
     }
     else
     {
-        g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE);
+        g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 4);
         g_pDevice->SetTexture(1, nullptr);
     }
 
@@ -574,21 +577,21 @@ int CMesh::RenderMesh(char cAlpha)
                 bMulti = 1;
 
             if (cAlpha == 'C')
-                g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHABLENDENABLE, 1);
+                g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_ALPHATESTENABLE, 1);
 
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, D3DCULL::D3DCULL_CW);
+            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, 2);
 
-            TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 1200000);
+            TMMesh* pMesh = g_pMeshManager->GetCommonMesh(nPartIndex, 0, 20_min);
             if (pMesh)
-                pMesh->Render(bMulti, 0);
+               pMesh->Render(bMulti, 0);
 
-            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, D3DCULL::D3DCULL_CCW);
+            g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, 3);
         }
-        if (m_sMultiType)
+        if (m_sMultiType > 0)
         {
-            g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_TEXCOORDINDEX, D3DTEXTUREOP::D3DTOP_DISABLE);
-            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_MODULATE);
-            g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, D3DTEXTUREOP::D3DTOP_DISABLE);
+            g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_TEXCOORDINDEX, 1);
+            g_pDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 4);
+            g_pDevice->SetTextureStageState(1, D3DTEXTURESTAGESTATETYPE::D3DTSS_COLOROP, 1);
         }
         return 1;
     }
@@ -601,7 +604,7 @@ int CMesh::RenderMesh(char cAlpha)
         if (g_pDevice->m_pd3dDevice->SetStreamSource(0, m_pMesh->m_pVB, 0, m_pMesh->m_sizeVertex) < 0)
             return 0;
         if (g_pDevice->m_pd3dDevice->SetIndices(m_pMesh->m_pIB) < 0)
-            return 1;        
+            return 0;        
         if (m_numFaceInflunce > 4 || m_numFaceInflunce < 1)
             return 0;
         if (m_pParentSkin->m_nBoneAniIndex == 61)
@@ -613,16 +616,16 @@ int CMesh::RenderMesh(char cAlpha)
         }
         else
         {
-            if (g_pDevice->m_pd3dDevice->SetVertexDeclaration(g_pDevice->m_pVertexDeclaration[m_numFaceInflunce]) < 0)
+            if (g_pDevice->m_pd3dDevice->SetVertexDeclaration(g_pDevice->m_pVertexDeclaration[m_numFaceInflunce - 1]) < 0)
                 return 0;
-            if (g_pDevice->m_pd3dDevice->SetVertexShader(g_pDevice->m_pVertexShader[m_numFaceInflunce]) < 0)
+            if (g_pDevice->m_pd3dDevice->SetVertexShader(g_pDevice->m_pVertexShader[m_numFaceInflunce - 1]) < 0)
                 return 0;
         }
 
         for (int i = 0; i < m_numPalette; ++i)
         {
             D3DXMATRIXA16 mat;
-            D3DXMatrixMultiply(&mat, &m_pBoneMatrix[i], &m_pBoneMatrix[i]);
+            D3DXMatrixMultiply(&mat, &m_pBoneMatrix[i], m_pBoneOffset[i]);
             D3DXMatrixMultiplyTranspose(&mat, &mat, &g_pDevice->m_matView);
             g_pDevice->m_pd3dDevice->SetVertexShaderConstantF(3 * i + 9, (const float*)&mat, 3);
         }
@@ -802,7 +805,7 @@ int CMesh::LoadMesh(char* file)
             if (g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].pMesh)
                 m_pMesh = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].pMesh;
 
-            sprintf_s(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].szFileName, "%s", file);
+            sprintf(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].szFileName, "%s", file);
         }
 
         if (m_nSkinMeshIndex < 0)
@@ -836,6 +839,8 @@ int CMesh::LoadMesh(char* file)
             g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_dwNames = (DWORD*)malloc(160);
             fread(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_pBoneMatrix, m_numPalette << 6, 1, handle);
             fread(g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_dwNames, 4, m_numPalette, handle);
+            m_pBoneMatrix = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_pBoneMatrix;
+            m_dwNames = g_pMeshManager->m_stSkinMeshList[m_nSkinMeshIndex].m_dwNames;
         }
         else
         {
@@ -845,7 +850,8 @@ int CMesh::LoadMesh(char* file)
         float* pVertex = nullptr;
         char* pIndices = nullptr;
 
-        g_pDevice->m_pd3dDevice->CreateVertexBuffer(m_pMesh->m_sizeVertex * m_pMesh->m_AttRange[0].VertexCount,
+        g_pDevice->m_pd3dDevice->CreateVertexBuffer(
+            m_pMesh->m_sizeVertex * m_pMesh->m_AttRange[0].VertexCount,
             0,
             m_pMesh->m_dwFVF,
             D3DPOOL_MANAGED,
@@ -873,9 +879,20 @@ int CMesh::LoadMesh(char* file)
                 m_pMesh->m_fMinZ = pVertex[nFloatCount * i + 2];
         }
 
-        std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinX, m_pMesh->m_fMaxX);
-        std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinY, m_pMesh->m_fMaxY);
-        std::clamp(m_pMesh->m_fRadius, m_pMesh->m_fMinZ, m_pMesh->m_fMaxZ);
+        if (fabsf(m_pMesh->m_fMaxX) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMaxX);
+        if (fabsf(m_pMesh->m_fMinX) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMinX);
+
+        if (fabsf(m_pMesh->m_fMaxY) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMaxY);
+        if (fabsf(m_pMesh->m_fMinY) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMinY);
+
+        if (fabsf(m_pMesh->m_fMaxZ) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMaxZ);
+        if (fabsf(m_pMesh->m_fMinZ) > m_pMesh->m_fRadius)
+            m_pMesh->m_fRadius = fabsf(m_pMesh->m_fMinZ);
 
         m_pMesh->m_pVB->Unlock();
 
@@ -921,7 +938,9 @@ int CMesh::InitEffect()
 
     for (int i = 0; i < 2; i++)
     {
-        if (m_pParentSkin && m_pParentSkin->m_nBoneAniIndex < 19 && m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][i])
+        if (m_pParentSkin && 
+            m_pParentSkin->m_nBoneAniIndex < 19 && 
+            m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][i])
         {
             TMEffectSWSwing* eff = new TMEffectSWSwing();
             if (eff != nullptr)
@@ -1021,7 +1040,7 @@ void CMesh::SetMaterial(char cAlpha)
 
         float fDistance = fEnd - g_pDevice->m_fFogStart;
         if (fDistance == 0.0f)
-            fDistance = 0.009f;
+            fDistance = 0.01f;
 
         float fFog[4] = {1.0f, fEnd, 1.0f / fDistance, 0.0f};
         g_pDevice->m_pd3dDevice->SetVertexShaderConstantF(

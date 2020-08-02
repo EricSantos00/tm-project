@@ -13,7 +13,7 @@ public:
 	int Render();
 	void AddFrame(CFrame* pframe);
 	void LinkBones(CFrame* root);
-	void UpdateFrames(const D3DXMATRIX& matCur);
+	void UpdateFrames(D3DXMATRIX* matCur);
 
 public:
 	DWORD m_dwID;

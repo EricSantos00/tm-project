@@ -148,8 +148,8 @@ int MeshManager::InitBoneAnimation()
 		{
 			MeshManager::m_BoneAnimationList[nCount].matQuaternion = (LPD3DXQUATERNION)malloc(
 				MeshManager::m_BoneAnimationList[nCount].numAniFrame
-				* sizeof(D3DXQUATERNION)
-				* nFullTickCount);
+				* (sizeof(D3DXQUATERNION)
+				* nFullTickCount));
 		}		
 		
 		dwFileIndex = 0;
@@ -167,6 +167,7 @@ int MeshManager::InitBoneAnimation()
 			unsigned int buffer;
 			_read(handle, &buffer, 4);
 			_read(handle, &MeshManager::m_BoneAnimationList[nCount].numAniFrame, 4);
+			MeshManager::m_BoneAnimationList[nCount].numAniCut[dwFileIndex] = buffer;
 			_read(handle, &MeshManager::m_BoneAnimationList[nCount].matAnimation[nOffset],
 				MeshManager::m_BoneAnimationList[nCount].numAniFrame * (buffer * sizeof(D3DXMATRIX)));
 

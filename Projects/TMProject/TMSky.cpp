@@ -187,7 +187,7 @@ int TMSky::Render()
        }
 
        g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
-       TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 1, 180000);
+       TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 1, 3_min);
        if (pMesh == nullptr)
            return 0;
 
@@ -231,7 +231,7 @@ int TMSky::FrameMove(unsigned int dwServerTime)
         return 0;
     }
 
-    TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 1, 180000);
+    TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 1, 3_min);
     if (g_pCurrentScene->m_pSun != nullptr)
     {
         g_pCurrentScene->m_pSun->m_bHide = m_nState && m_nState < 10 ? 1 : 0;
@@ -593,7 +593,7 @@ void TMSky::RestoreDeviceObjects()
 
 void TMSky::SetWeatherState(int nState)
 {
-    TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 1, 180000);
+    TMMesh* pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 1, 3_min);
     if (pMesh != nullptr)
     {
         if (!(nState / 10))

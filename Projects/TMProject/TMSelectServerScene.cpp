@@ -49,7 +49,7 @@ void SwapLauncher()
 int IsCastle(int nServerIndex)
 {
 	int iweek = BASE_GetWeekNumber();
-	return !(iweek % 7) && (signed int)(iweek / 7) & 2 != nServerIndex % 2;
+	return !(iweek % 7) && (int)((iweek / 7) & 2) != nServerIndex % 2;
 }
 
 TMSelectServerScene::TMSelectServerScene()
@@ -119,21 +119,21 @@ int TMSelectServerScene::InitializeScene()
 
 	InitializeUI();
 
-	m_pLoginPanel = static_cast<SPanel*>(m_pControlContainer->FindControl(65870u));
-	m_pLoginBtns[0] = static_cast<SButton*>(m_pControlContainer->FindControl(65873u));
-	m_pLoginBtns[2] = static_cast<SButton*>(m_pControlContainer->FindControl(65874u));
-	m_pLoginBtns[1] = static_cast<SButton*>(m_pControlContainer->FindControl(65875u));
+	m_pLoginPanel = static_cast<SPanel*>(m_pControlContainer->FindControl(P_LOGIN_BOX));
+	m_pLoginBtns[0] = static_cast<SButton*>(m_pControlContainer->FindControl(B_LOGIN_OK));
+	m_pLoginBtns[2] = static_cast<SButton*>(m_pControlContainer->FindControl(B_QUIT));
+	m_pLoginBtns[1] = static_cast<SButton*>(m_pControlContainer->FindControl(B_CREATE_ID));
 
-	m_pLogoPanels[0] = static_cast<SPanel*>(m_pControlContainer->FindControl(311u));
-	m_pLogoPanels[1] = static_cast<SPanel*>(m_pControlContainer->FindControl(312u));
+	m_pLogoPanels[0] = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_LOGO_PANEL1));
+	m_pLogoPanels[1] = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_LOGO_PANEL2));
 
 	m_pLogoPanels[0]->SetVisible(Game_grade == 0);
 	m_pLogoPanels[1]->SetVisible(Game_grade == 0);
 
 	g_nChannelWidth = 133;
 
-	m_pSelServerText = static_cast<SText*>(m_pControlContainer->FindControl(5635u));
-	m_pSelChannelText = static_cast<SText*>(m_pControlContainer->FindControl(5636u));
+	m_pSelServerText = static_cast<SText*>(m_pControlContainer->FindControl(TMT_SEL_SERVER_TEXT));
+	m_pSelChannelText = static_cast<SText*>(m_pControlContainer->FindControl(TMT_SEL_CHANNEL_TEXT));
 
 	if (m_pSelServerText)
 		m_pSelServerText->m_nPosY += 5.0f;
@@ -144,13 +144,13 @@ int TMSelectServerScene::InitializeScene()
 		m_pSelChannelText->m_nPosX += 5.0f;
 	}
 
-	m_pLoginPanelText = static_cast<SText*>(m_pControlContainer->FindControl(65876u));
-	m_pLoginIDText = static_cast<SText*>(m_pControlContainer->FindControl(65877u));
-	m_pLoginPasswordText = static_cast<SText*>(m_pControlContainer->FindControl(65878u));
+	m_pLoginPanelText = static_cast<SText*>(m_pControlContainer->FindControl(T_LOGIN_BOX_TEXT));
+	m_pLoginIDText = static_cast<SText*>(m_pControlContainer->FindControl(T_LOGIN_ID_TEXT));
+	m_pLoginPasswordText = static_cast<SText*>(m_pControlContainer->FindControl(T_LOGIN_PASSWORD_TEXT));
 
 	m_pLoginPanelText->m_nPosY += 5.0f;
 
-	SText* pText = static_cast<SText*>(m_pControlContainer->FindControl(769u));
+	SText* pText = static_cast<SText*>(m_pControlContainer->FindControl(TMT_SCENE_TEXT));
 
 	pText->SetPos(pText->m_nPosX, static_cast<float>(g_pDevice->m_dwScreenHeight) - 15.0f);
 	
@@ -179,8 +179,8 @@ int TMSelectServerScene::InitializeScene()
 		m_pLogoPanels[1]->SetPos(static_cast<float>(g_pDevice->m_dwScreenWidth) * 0.5f, 10.0f * RenderDevice::m_fHeightRatio + static_cast<float>(nAddHeight));
 	}
 
-	m_pEditID = static_cast<SEditableText*>(m_pControlContainer->FindControl(65871u));
-	m_pEditPW = static_cast<SEditableText*>(m_pControlContainer->FindControl(65872u));
+	m_pEditID = static_cast<SEditableText*>(m_pControlContainer->FindControl(E_LOGIN_ID));
+	m_pEditPW = static_cast<SEditableText*>(m_pControlContainer->FindControl(E_LOGIN_PASSWORD));
 
 	g_nServerGroupNum = m_nTextIndex + 1;
 	g_pObjectManager->m_cCharacterSlot = -1;
@@ -244,7 +244,7 @@ int TMSelectServerScene::InitializeScene()
 	sprintf_s(szMapPath, "env\\Field1616.trn");
 	sprintf_s(szDataPath, "env\\Field1616.dat");
 
-	m_nDemoType = rand() % 4;
+	m_nDemoType = 1;
 	if (m_nDemoType)
 	{
 		switch (m_nDemoType)
@@ -295,10 +295,10 @@ int TMSelectServerScene::InitializeScene()
 	m_pGround = m_pGroundList[0];
 
 	for (int nY = 0; nY < 128; ++nY)
-		memcpy(&m_HeightMapData[256 * nY], m_pGround->m_pMaskData[nY], 128);
+		memcpy(m_HeightMapData[nY], m_pGround->m_pMaskData[nY], 128);
 
-	g_HeightPosX = m_pGround->m_vecOffset.x;
-	g_HeightPosY = m_pGround->m_vecOffset.y;
+	g_HeightPosX = static_cast<int>(m_pGround->m_vecOffset.x);
+	g_HeightPosY = static_cast<int>(m_pGround->m_vecOffset.y);
 
 	m_pObjectContainerList[0] = new TMObjectContainer(m_pGround);
 	m_pGroundObjectContainer->AddChild(m_pObjectContainerList[0]);
@@ -336,7 +336,7 @@ int TMSelectServerScene::InitializeScene()
 
 		memset(m_pCheckHumanList, 0, sizeof m_pCheckHumanList);
 
-		g_pObjectManager->m_pCamera->m_vecCamPos = TMVector2(2112.55, 2088.0f);
+		g_pObjectManager->m_pCamera->m_vecCamPos = TMVector2(2112.55f, 2088.0f);
 		g_pObjectManager->m_pCamera->m_fHorizonAngle = 4.71f;
 		g_pObjectManager->m_pCamera->m_fVerticalAngle = 0.26f;
 
@@ -383,7 +383,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 	int nIndexN = g_nServerCountList[nMaxGroupN - idwEvent - 1] - 1;
 	switch (idwControlID)
 	{
-	case 65542u:
+	case L_SELECT_SERVERG:
 	{
 		char szStr[128] = { 0 };
 
@@ -578,7 +578,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 	SwapLauncher();
 
 	break;
-	case 65538u:
+	case B_SERVER_SEL_OK:
 	{
 		int nServerGroupIndex = g_nServerCountList[nIndexN - m_pNServerGroupList->GetSelectIndex() - 1] - 1;
 		int nServerIndex = m_pNServerList->GetSelectIndex() + 1;
@@ -617,10 +617,10 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 		return 1;
 	}
 	break;
-	case 4617u:
+	case TMM_MESSAGE_BOX:
 		if (idwEvent)
 			m_pMessageBox->SetVisible(0);
-		else if (m_pMessageBox->m_dwMessage == 65874)
+		else if (m_pMessageBox->m_dwMessage == B_QUIT)
 		{
 			if (m_cLogin == 1)
 			{
@@ -636,16 +636,16 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 			else
 				PostMessage(g_pApp->m_hWnd, 0x10u, 0, 0);
 		}
-		else if(m_pMessageBox->m_dwMessage == 65875)
+		else if(m_pMessageBox->m_dwMessage == B_CREATE_ID)
 			ShellExecute(0, 0, g_pMessageStringTable[263], 0, 0, 3);
 		break;
 	}
 
 	switch (idwControlID)
 	{
-		case 65873:
+		case B_LOGIN_OK:
 		{
-			int LiveTime = g_pTimerManager->GetServerTime();
+			unsigned int LiveTime = g_pTimerManager->GetServerTime();
 			if (LastSendMsgTime + 1500 > LiveTime)
 				return 1;
 
@@ -760,19 +760,19 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 			LastSendMsgTime = g_pTimerManager->GetServerTime();
 		}
 		break;
-		case 65875:
-			m_pMessageBox->SetMessage(g_pMessageStringTable[9], 65875u, g_pMessageStringTable[10]);
+		case B_CREATE_ID:
+			m_pMessageBox->SetMessage(g_pMessageStringTable[9], B_CREATE_ID, g_pMessageStringTable[10]);
 			m_pMessageBox->SetVisible(1);
 			break;
 		case 10152u:
-			m_pMessageBox->SetMessage(g_pMessageStringTable[11], 65875u, nullptr);
+			m_pMessageBox->SetMessage(g_pMessageStringTable[11], B_CREATE_ID, nullptr);
 			m_pMessageBox->SetVisible(1);
 			break;
 	}
 
-	if (idwControlID == 65539)
+	if (idwControlID == B_SERVER_SEL_EXIT)
 	{
-		m_pMessageBox->SetMessage(g_pMessageStringTable[22], 65874u, nullptr);
+		m_pMessageBox->SetMessage(g_pMessageStringTable[22], B_QUIT, nullptr);
 		m_pMessageBox->SetVisible(1);
 	}
 	return 1;
@@ -901,10 +901,14 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 	}
 
 	for (int nPerson = 0; nPerson < 50; ++nPerson)
-		if(m_pCheckHumanList[nPerson])
+	{
+		if (m_pCheckHumanList[nPerson])
+		{
 			m_pCheckHumanList[nPerson]->m_fWantHeight = -4.0f;
+		}
+	}	
 
-	if (dwServerTime - m_dwStartCamTime > 5000 && !m_cStartRun)
+	if ((int)(dwServerTime - m_dwStartCamTime) > 5000 && !m_cStartRun)
 	{
 		if (!m_nDemoType)
 		{
@@ -927,14 +931,14 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 			m_cStartRun = 1;
 		}
 	}
-	if (dwServerTime - m_dwStartCamTime > 7000 && m_cStartRun == 1)
+	if ((int)(dwServerTime - m_dwStartCamTime) > 7000 && m_cStartRun == 1)
 	{
 		if (!m_nDemoType)
 		{
 			MoveHuman(1);
 			m_cStartRun = 2;
 		}
-		else if (m_nDemoType == 2)
+		else if (m_nDemoType == 1)
 		{
 			if (g_pSoundManager)
 			{
@@ -947,20 +951,20 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 		}
 	}
 
-	if (m_nDemoType == 1 && dwServerTime - m_dwStartCamTime > 14000 && !m_bRemove)
+	if (m_nDemoType == 1 && (int)(dwServerTime - m_dwStartCamTime) > 14000 && !m_bRemove)
 	{
 		RemoveHuman();
 		m_bRemove = 1;
 	}
 
-	if (m_nDemoType == 3 && dwServerTime - m_dwStartCamTime > 12000 && !m_cStartRun)
+	if (m_nDemoType == 3 && (int)(dwServerTime - m_dwStartCamTime) > 12000 && !m_cStartRun)
 	{
 		if (m_pCheckHumanList[0])
 			m_pCheckHumanList[0]->SetAnimation(ECHAR_MOTION::ECMOTION_LEVELUP, 0);
 
 		m_cStartRun = 1;
 	}
-	if (m_nDemoType == 3 && dwServerTime - m_dwStartCamTime > 20000 && m_cStartRun == 1)
+	if (m_nDemoType == 3 && (int)(dwServerTime - m_dwStartCamTime) > 20000 && m_cStartRun == 1)
 	{
 		if (m_pCheckHumanList[0])
 			m_pCheckHumanList[0]->SetAnimation(ECHAR_MOTION::ECMOTION_LEVELUP, 0);
@@ -968,7 +972,7 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 		m_cStartRun = 2;
 	}
 
-	if (dwServerTime - m_dwLastClickLoginBtnTime > 6000)
+	if ((int)(dwServerTime - m_dwStartCamTime) > 6000)
 	{
 		auto pEditPassword = m_pEditPW;
 		m_pLoginBtns[0]->SetEnable(1);
@@ -980,7 +984,6 @@ int TMSelectServerScene::FrameMove(unsigned int dwServerTime)
 
 void TMSelectServerScene::ResetDemoPlayer()
 {
-	return;
 	for (int nPerson = 0; nPerson < 50; ++nPerson)
 	{
 		if (m_pCheckHumanList[nPerson])
@@ -1048,7 +1051,7 @@ void TMSelectServerScene::ResetDemoPlayer()
 			stSancInfo.Sanc4 = stSancInfo.Sanc7;
 			stSancInfo.Sanc3 = stSancInfo.Sanc7;
 			stSancInfo.Sanc2 = stSancInfo.Sanc7;
-			stSancInfo.Legend7 = g_pItemList[m_stDemoHuman[i].Body].nGrade;
+			stSancInfo.Legend7 = static_cast<char>(g_pItemList[m_stDemoHuman[i].Body].nGrade);
 			stSancInfo.Legend6 = stSancInfo.Legend7;
 			stSancInfo.Legend5 = stSancInfo.Legend7;
 			stSancInfo.Legend4 = stSancInfo.Legend7;
@@ -1124,7 +1127,7 @@ void TMSelectServerScene::ResetDemoPlayer()
 				m_pCheckHumanList[i]->m_cMantua = 1;
 				m_pCheckHumanList[i]->m_wMantuaSkin = g_pItemList[m_stDemoHuman[i].Mantua].nIndexTexture;
 				m_pCheckHumanList[i]->m_ucMantuaSanc = m_stDemoHuman[i].nSanc;
-				m_pCheckHumanList[i]->m_ucMantuaLegend = g_pItemList[m_stDemoHuman[i].Mantua].nGrade;
+				m_pCheckHumanList[i]->m_ucMantuaLegend = static_cast<char>(g_pItemList[m_stDemoHuman[i].Mantua].nGrade);
 			}
 
 			m_vecMoveToPos[i].x = (int)m_stDemoHuman[i].fTX;
@@ -1159,7 +1162,6 @@ void TMSelectServerScene::ResetDemoPlayer()
 
 void TMSelectServerScene::AniDemoPlayer()
 {
-	return;
 	for (int nPerson = 0; nPerson < 50; ++nPerson)
 	{
 		if (m_pCheckHumanList[nPerson])
@@ -1205,8 +1207,12 @@ void TMSelectServerScene::MoveHuman(int nIndex)
 	if (nIndex < 0)
 	{
 		for (int nPerson = 0; nPerson < 50; ++nPerson)
+		{
 			if (m_pCheckHumanList[nPerson])
+			{
 				m_pCheckHumanList[nPerson]->GetRoute(m_vecMoveToPos[nPerson], 32, 0);
+			}
+		}
 	}
 	else if (m_pCheckHumanList[nIndex])
 		m_pCheckHumanList[nIndex]->GetRoute(m_vecMoveToPos[nIndex], 32, 0);
@@ -1214,9 +1220,23 @@ void TMSelectServerScene::MoveHuman(int nIndex)
 
 void TMSelectServerScene::RemoveHuman()
 {
-	for (int nPerson = 0; nPerson < 50; ++nPerson)
+	for (int nPerson = 0; nPerson < 18; ++nPerson)
+	{
 		if (m_pCheckHumanList[nPerson])
+		{
 			g_pObjectManager->DeleteObject(m_pCheckHumanList[nPerson]);
+			m_pCheckHumanList[nPerson] = 0;
+		}
+	}
+	
+	for (int nPerson = 26; nPerson < 40; ++nPerson)
+	{
+		if (m_pCheckHumanList[nPerson])
+		{
+			g_pObjectManager->DeleteObject(m_pCheckHumanList[nPerson]);
+			m_pCheckHumanList[nPerson] = 0;
+		}
+	}
 }
 
 void TMSelectServerScene::SetAlphaServer(unsigned int dwStartTime, unsigned int dwServerTime, unsigned int dwTerm, int bFade)
@@ -1324,11 +1344,11 @@ void TMSelectServerScene::SetAlphaVirtualkey(unsigned int dwStartTime, unsigned 
 void TMSelectServerScene::InitializeUI()
 {
 	SListBoxItem* pGroupItem[11];
-	m_pNServerSelect = (SPanel*)m_pControlContainer->FindControl(65537);
+	m_pNServerSelect = (SPanel*)m_pControlContainer->FindControl(P_SERVER_SEL);
 	m_pNServerSelect->SetVisible(0);
 
-	m_pNServerGroupList = (SListBox*)m_pControlContainer->FindControl(65542);
-	m_pNServerList = (SListBox*)m_pControlContainer->FindControl(65543u);
+	m_pNServerGroupList = (SListBox*)m_pControlContainer->FindControl(L_SELECT_SERVERG);
+	m_pNServerList = (SListBox*)m_pControlContainer->FindControl(L_SELECT_SERVER);
 
 	if (m_pNServerList)
 		m_pNServerList->SetVisible(0);

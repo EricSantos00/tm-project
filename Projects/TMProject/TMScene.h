@@ -131,8 +131,8 @@ public:
     SText* m_pTextBillMsg;
     SMessageBox* m_pMessageBox;
     SMessageBox* m_pMessageBox2;
-    char m_HeightMapData[65536];
-    char m_GateMapData[65536];
+    char m_HeightMapData[256][256];
+    char m_GateMapData[256][256];
     int n_bPrtScreen;
     short m_sPlayDemo;
     unsigned int m_dwStartCamTime;
