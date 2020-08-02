@@ -806,7 +806,7 @@ constexpr auto MSG_AccountLogin_Opcode = 0x784	;
 struct MSG_AccountLogin
 {
 	MSG_STANDARD Header;
-	char AccountPass[16];
+	char AccountPass[12];
 	char AccountName[16];
 	char TID[52];
 	int Version;
