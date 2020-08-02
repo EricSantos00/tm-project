@@ -1092,10 +1092,46 @@ int BASE_GetSubGuild(int item)
 
 unsigned int BASE_GetItemTenColor(STRUCT_ITEM* pItem)
 {
-    return 0;
+    if (BASE_GetItemSanc(pItem) <= 9)
+        return 0;
+
+    unsigned char sanc{};
+
+    if (pItem->stEffect[0].cEffect == EF_SANC || (pItem->stEffect[0].cEffect >= 115 && pItem->stEffect[0].cEffect <= 126))
+        sanc = pItem->stEffect[0].cValue;
+
+    else if (pItem->stEffect[1].cEffect == EF_SANC || (pItem->stEffect[1].cEffect >= 115 && pItem->stEffect[1].cEffect <= 126))
+        sanc = pItem->stEffect[1].cValue;
+
+    else if (pItem->stEffect[2].cEffect == EF_SANC || (pItem->stEffect[2].cEffect >= 115 && pItem->stEffect[2].cEffect <= 126))
+        sanc = pItem->stEffect[2].cValue;
+
+    return (sanc - 230) % 4 + 5;
 }
 
 int BASE_GetItemColorEffect(STRUCT_ITEM* item)
 {
-    return 0;
+    int effect{};
+
+    if (item->stEffect[0].cEffect != EF_SANC && item->stEffect[1].cEffect != EF_SANC && item->stEffect[2].cEffect != EF_SANC)
+    {
+        if (item->stEffect[0].cEffect >= 115 && item->stEffect[0].cEffect <= 126)
+            effect = item->stEffect[0].cEffect;
+
+        else if (item->stEffect[1].cEffect >= 115 && item->stEffect[1].cEffect <= 126)
+            effect = item->stEffect[1].cEffect;
+
+        else if (item->stEffect[2].cEffect >= 115 && item->stEffect[2].cEffect <= 126)
+            effect = item->stEffect[2].cEffect;
+    }
+    else if (item->stEffect[0].cEffect == EF_SANC)
+        effect = item->stEffect[0].cEffect;
+
+    else if (item->stEffect[1].cEffect == EF_SANC)
+        effect = item->stEffect[1].cEffect;
+
+    else
+        effect = item->stEffect[2].cEffect;
+
+    return effect;
 }
