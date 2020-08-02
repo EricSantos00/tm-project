@@ -746,12 +746,8 @@ void TMSelectCharScene::VisibleSelectCreate(int bSelect)
 		if (pSelTitle)
 			pSelTitle->SetVisible(1);
 
-		m_pNewCharPanel->SetVisible(1);
-		m_pDelCharPanel->SetVisible(1);
-
-		m_pNewCharPanel->SetPos(27.0f * RenderDevice::m_fWidthRatio + m_pSelbackpanel->m_nPosX, 13.0f * RenderDevice::m_fHeightRatio + m_pSelbackpanel->m_nPosY);
-		m_pNewCharPanel->SetPos(27.0f * RenderDevice::m_fWidthRatio + m_pSelbackpanel->m_nPosX, 39.0f * RenderDevice::m_fHeightRatio + m_pSelbackpanel->m_nPosY);
-		m_pNewCharPanel->SetPos(27.0f * RenderDevice::m_fWidthRatio + m_pSelbackpanel->m_nPosX, 64.0f * RenderDevice::m_fHeightRatio + m_pSelbackpanel->m_nPosY);
+		m_pNewCharPanel->SetVisible(0);
+		m_pDelCharPanel->SetVisible(0);
 
 		pSelChar->SetPos(RenderDevice::m_fWidthRatio * 514.0f, RenderDevice::m_fHeightRatio * 35.0f);
 
@@ -766,17 +762,21 @@ void TMSelectCharScene::VisibleSelectCreate(int bSelect)
 		auto pCreWin = m_pControlContainer->FindControl(1542u);
 
 		if (pCreTitle)
-			pCreTitle->SetVisible(0);
+			pCreTitle->SetVisible(1);
 		if (pCreBG1)
-			pCreBG1->SetVisible(0);
+			pCreBG1->SetVisible(1);
 		if (pCreBG2)
-			pCreBG2->SetVisible(0);
+			pCreBG2->SetVisible(1);
 		if (pCreBG3)
-			pCreBG3->SetVisible(0);
+			pCreBG3->SetVisible(1);
 		if (pCreBG4)
-			pCreBG4->SetVisible(0);
+			pCreBG4->SetVisible(1);
 		if (pCreWin)
-			pCreWin->SetVisible(0);
+			pCreWin->SetVisible(1);
+
+		auto pEdit = m_pControlContainer->FindControl(4626u);
+		if (pEdit)
+			m_pControlContainer->SetFocusedControl(pEdit);
 	}
 	else
 	{
@@ -794,6 +794,10 @@ void TMSelectCharScene::VisibleSelectCreate(int bSelect)
 		if (pSelChar)
 			pSelChar->SetVisible(0);
 
+		m_pNewCharPanel->SetPos(27.0f * RenderDevice::m_fWidthRatio + m_pSelbackpanel->m_nPosX, 13.0f * RenderDevice::m_fHeightRatio + m_pSelbackpanel->m_nPosY);
+		m_pDelCharPanel->SetPos(27.0f * RenderDevice::m_fWidthRatio + m_pSelbackpanel->m_nPosX, 39.0f * RenderDevice::m_fHeightRatio + m_pSelbackpanel->m_nPosY);
+		m_pReturnSvrSelPanel->SetPos(27.0f * RenderDevice::m_fWidthRatio + m_pSelbackpanel->m_nPosX, 64.0f * RenderDevice::m_fHeightRatio + m_pSelbackpanel->m_nPosY);
+
 		auto pCreTitle = m_pControlContainer->FindControl(1537u);
 		auto pCreBG1 = m_pControlContainer->FindControl(1538u);
 		auto pCreBG2 = m_pControlContainer->FindControl(1539u);
@@ -806,21 +810,17 @@ void TMSelectCharScene::VisibleSelectCreate(int bSelect)
 
 		pCreWin->SetPos(RenderDevice::m_fWidthRatio * 514.0f, RenderDevice::m_fHeightRatio * 35.0f);
 		if (pCreTitle)
-			pCreTitle->SetVisible(1);
+			pCreTitle->SetVisible(0);
 		if (pCreBG1)
-			pCreBG1->SetVisible(1);
+			pCreBG1->SetVisible(0);
 		if (pCreBG2)
-			pCreBG2->SetVisible(1);
+			pCreBG2->SetVisible(0);
 		if (pCreBG3)
-			pCreBG3->SetVisible(1);
+			pCreBG3->SetVisible(0);
 		if (pCreBG4)
-			pCreBG4->SetVisible(1);
+			pCreBG4->SetVisible(0);
 		if (pCreWin)
-			pCreWin->SetVisible(1);
-
-		auto pEdit = m_pControlContainer->FindControl(4626u);
-		if (pEdit)
-			m_pControlContainer->SetFocusedControl(pEdit);
+			pCreWin->SetVisible(0);
 	}
 }
 
