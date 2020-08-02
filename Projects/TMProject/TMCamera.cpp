@@ -77,14 +77,14 @@ TMVector3 TMCamera::GetCameraPos()
 
         m_cameraPos.x = (m_vecCamPos.x - g_fWide) - (((cosf(m_fVerticalAngle) * cosf(fHorizonAngle)) * m_fSightLength) * 1.2f);
         m_cameraPos.z = (m_vecCamPos.y + g_fWide) - (((cosf(m_fVerticalAngle) * sinf(fHorizonAngle)) * m_fSightLength) * 1.2f);
-        m_cameraPos.y = ((sinf(m_fVerticalAngle) * m_fSightLength) + m_fSightTarget + fHeight + m_fCamHeight) - 2.0f;
+        m_cameraPos.y = ((-sinf(m_fVerticalAngle) * m_fSightLength) + m_fSightTarget + fHeight + m_fCamHeight) - 2.0f;
     }
 
     if (m_bStandAlone > 1)
     {
         m_cameraPos.x = (m_vecCamPos.x - g_fWide) - (((cosf(m_fVerticalAngle) * cosf(fHorizonAngle)) * m_fSightLength) * 1.2f);
         m_cameraPos.z = (m_vecCamPos.y + g_fWide) - (((cosf(m_fVerticalAngle) * sinf(fHorizonAngle)) * m_fSightLength) * 1.2f);
-        m_cameraPos.y = ((sinf(m_fVerticalAngle) * m_fSightLength) + m_fSightTarget + fHeight + m_fCamHeight) - 2.0f;
+        m_cameraPos.y = ((-sinf(m_fVerticalAngle) * m_fSightLength) + m_fSightTarget + fHeight + m_fCamHeight) - 2.0f;
     }
 
     float fSightLength = m_fSightLength;

@@ -450,6 +450,9 @@
     <ClInclude Include="TMDrop.h">
       <Filter>Header Files\Effects</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceControl.h">
+      <Filter>Header Files\Engine\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TMProject.cpp">

@@ -12,6 +12,7 @@
 #include "dsutil.h"
 #include "SControl.h"
 #include "TMPaths.h"
+#include "ResourceControl.h"
 
 constexpr unsigned int WYDCOLOR_ALPHA(unsigned int color) { return color & 0xFF000000; }
 constexpr unsigned int WYDCOLOR_RED(unsigned int color) { return (((unsigned int)0xFF0000 & color) >> 16); }
@@ -19,6 +20,16 @@ constexpr unsigned int WYDCOLOR_GREEN(unsigned int color) { return (((unsigned s
 constexpr unsigned int WYDCOLOR_BLUE(unsigned int color) { return ((unsigned char)0xFF & color); }
 constexpr unsigned int WYD_RGBA(unsigned int r, unsigned int  g, unsigned int  b, unsigned int  a) { 
     return ((DWORD)((a | 0xFF000000) | (b & 0xFF) | ((g << 8) & 0xFF00) | ((r << 16) & 0xFF0000))); 
+}
+
+constexpr DWORD operator""_min(unsigned long long min)
+{
+    return static_cast<DWORD>(min) * 60000;
+}
+
+constexpr DWORD operator""_sec(unsigned long long sec)
+{
+    return static_cast<DWORD>(sec) * 1000;
 }
 
 extern NewApp* g_pApp;
@@ -73,6 +84,8 @@ extern int g_nCurrentPos;
 extern int g_nDumpPacketSize;
 extern FILE* g_hPacketDump;
 extern char* g_pDumpPacket;
+extern unsigned short g_usLastPacketType;
+extern int g_bLastStop;
 
 extern int g_bEndGame;
 
@@ -112,6 +125,11 @@ extern char g_pAttribute[1024][1024];
 
 extern int g_bHideBackground;
 
+extern int g_nMobCount;
+extern int g_nWeather;
+
+extern int g_nMyHumanSpeed;
+
 static unsigned int g_dwHandIndex[101][2] =
 {
     {19,25},{18,24},{15,21},{15,21},{12,18},{22,28},{23,29},
@@ -127,5 +145,3 @@ static unsigned int g_dwHandIndex[101][2] =
     {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
     {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}
 };
-
-extern unsigned int CurrentTime;

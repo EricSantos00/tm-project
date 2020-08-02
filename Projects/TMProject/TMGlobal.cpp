@@ -51,7 +51,9 @@ unsigned int g_dwStartPacketTime;
 int g_nCurrentPos;
 int g_nDumpPacketSize;
 FILE* g_hPacketDump;
-char* g_pDumpPacket;
+char* g_pDumpPacket; 
+unsigned short g_usLastPacketType;
+int g_bLastStop;
 
 unsigned int g_dwStartQuitGameTime;
 
@@ -61,7 +63,6 @@ unsigned int g_dwServerTime;
 unsigned int g_dwClientTime;
 unsigned int g_pLastFixTime;
 
-unsigned int CurrentTime;
 unsigned int LastSendTime;
 
 int g_nUnDelMobCount;
@@ -98,5 +99,5 @@ int g_bHideBackground = FALSE;
 int g_nMobCount;
 int g_nWeather;
 
-int g_nMyHumanSpeed = 3;
 unsigned int CurrentTime;
+int g_nMyHumanSpeed = 3;

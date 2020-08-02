@@ -522,6 +522,7 @@ int CPSock::AddMessage(char* pMsg, int Size, int FixedKeyWord)
 			else if (mod == 3)
 				pSendBuffer[i + nSendPosition] = pMsg[i] - ((int)Trans >> 5);
 
+			Sum2 += pSendBuffer[i++ + nSendPosition];
 			++pos;
 		}
 

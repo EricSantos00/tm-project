@@ -136,8 +136,8 @@ public:
     int ChangeRouteBuffer(int nSX, int nSY, TMVector2* pRouteTable, int* pMaxRouteIndex);
     void SetHandEffect(int nHandEffect);
     void CheckAffect();
-    void SetChatMessage(char* szString);
-    int GetChatLen(char* szString, int* pHeight);
+    void SetChatMessage(const char* szString);
+    int GetChatLen(const char* szString, int* pHeight);
     void SetPacketMOBItem(STRUCT_MOB* pMobData);
     void SetPacketEquipItem(unsigned short* sEquip);
     void SetColorItem(char* sEquip2);
@@ -159,7 +159,7 @@ public:
     int IAmkhepra();
     void CreateControl();
     void DestroyControl();
-    int StrByteCheck(char* szString);
+    int StrByteCheck(const char* szString);
 
     void SetMantua(int nTexture);
     int SetCitizenMantle(int BaseSkin);
@@ -427,4 +427,96 @@ public:
     TMVector2 m_vecAirMove;
     unsigned int _dwAttackDelay;
     int m_bCritical;
+};
+
+static float fMantuaList[4][20] =
+{
+  {
+     0.090000004f,
+     0.079999998f,
+     0.059999999f,
+     0.07f,
+     0.079999998f,
+     0.079999998f,
+     0.079999998f,
+     0.064999998f,
+     0.064999998f,
+     0.055f,
+     0.055f,
+     0.0099999998f,
+     0.079999998f,
+     0.0f,
+     0.02f,
+     0.0099999998f,
+     0.0099999998f,
+     0.035f,
+     0.1f,
+     0.029999999
+  },
+  {
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.079999998f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.11f,
+     0.1f,
+     0.079999998f,
+     0.090000004f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.079999998
+  },
+  {
+     0.079999998f,
+     0.059999999f,
+     0.050000001f,
+     0.07f,
+     0.050000001f,
+     0.079999998f,
+     0.079999998f,
+     0.050000001f,
+     0.0f,
+     0.11f,
+     0.079999998f,
+     0.059999999f,
+     0.055f,
+     0.0f,
+     0.0f,
+     0.0f,
+     0.0f,
+     0.0f,
+     0.1f,
+     0.0099999998
+  },
+  {
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.079999998f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.1f,
+     0.079999998
+  }
 };

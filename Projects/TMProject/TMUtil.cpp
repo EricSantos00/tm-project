@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TMUtil.h"
+#include "TMGlobal.h"
 
 TMVector3 ComputeNormalVector(TMVector3 v1, TMVector3 v2, TMVector3 v3)
 {
@@ -21,4 +22,25 @@ TMVector3 TMVector3Cross(const TMVector3* pV1, const TMVector3* pV2)
     v.z = (float)(pV1->x * pV2->y) - (float)(pV1->y * pV2->x);
     
     return v;
+}
+
+float disTanceSq(float stX, float stY, float taX, float taY)
+{
+    return (((taX - stX) * (taX - stX)) 
+         + ((taY - stY) * (taY - stY)));
+}
+
+void SendOneMessage(char* Msg, int Size)
+{
+    MSG_STANDARD* pMsgStandard = (MSG_STANDARD*)Msg;
+    if (pMsgStandard->Type == 0x36C)
+        return;
+    if (Msg != nullptr 
+        && (LastSendTime + 1000 < CurrentTime || pMsgStandard->Type != MSG_Action_Opcode || g_usLastPacketType != MSG_Action_Opcode)
+        && (LastSendTime + 1000 <= CurrentTime || pMsgStandard->Type != MSG_Attack_Multi && pMsgStandard->Type != MSG_Attack_One 
+        && pMsgStandard->Type != MSG_Attack_Two || g_usLastPacketType != MSG_Attack_Multi && g_usLastPacketType != MSG_Attack_One && g_usLastPacketType != MSG_Attack_Two))
+    {
+        g_pSocketManager->SendOneMessage(Msg, Size);
+        g_usLastPacketType = pMsgStandard->Type;
+    }
 }

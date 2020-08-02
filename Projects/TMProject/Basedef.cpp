@@ -2,6 +2,7 @@
 #include "Basedef.h"
 #include "TMGlobal.h"
 #include "TMLog.h"
+#include "ItemEffect.h"
 
 HWND hWndMain;
 char EncodeByte[4];
@@ -11,6 +12,15 @@ char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
 int g_nSelServerWeather;
 char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
 STRUCT_ITEMLIST g_pItemList[6500];
+
+STRUCT_GUILDZONE g_pGuildZone[MAX_GUILDZONE] =
+{
+    {0, 0, 2088, 2148, 2086, 2093, 2052, 2052, 2171, 2163, 197, 213, 238, 230, 205, 220, 228, 220, 5, 0}, // Armia
+    {0, 0, 2531, 1700, 2494, 1707, 2432, 1672, 2675, 1767, 197, 149, 238, 166, 205, 157, 228, 157, 5, 0}, // Azran
+    {0, 0, 2460, 1976, 2453, 2000, 2448, 1966, 2476, 2024, 141, 213, 182, 230, 146, 220, 173, 220, 5, 0}, // Erion
+    {0, 0, 3614, 3124, 3652, 3122, 3605, 3090, 3690, 3260, 141, 149, 182, 166, 146, 157, 173, 157, 5, 0}, // Nippleheim
+    {0, 0, 1066, 1760, 1050, 1706, 1036, 1700, 1072, 1760, 4000, 4000, 4010, 4010, 4005, 4005, 4005, 4005, 5, 0} // Noatum
+};
 
 float BASE_ScreenResize(float size)
 {
@@ -23,6 +33,32 @@ void BASE_InitModuleDir()
 
 void BASE_InitializeHitRate()
 {
+}
+
+int BASE_InitializeAttribute()
+{
+    char FileName[256]{};
+    strcpy(FileName, "./Env/AttributeMap.dat");
+
+    FILE* fp = nullptr;
+    fopen_s(&fp, FileName, "rb");
+    if (fp == nullptr)
+        fopen_s(&fp, "../../TMSRV/Run/AttributeMap.dat", "rb");
+
+    if (fp == nullptr)
+    {
+        MessageBox(0, "There is no file", "Attributemap.dat", MB_OK);
+        return 0;
+    }
+
+    fread(g_pAttribute, 1024, 1024, fp);
+    int tsum = 0;
+    fread(&tsum, 4, 1, fp);
+    fclose(fp);
+
+    int sum = BASE_GetSum((char*)g_pAttribute, sizeof(g_pAttribute));
+
+    return sum == tsum;
 }
 
 void BASE_ApplyAttribute(char* pHeight, int size)
@@ -127,6 +163,32 @@ int BASE_GetSum(char* p, int size)
 	return sum;
 }
 
+int BASE_GetSum2(char* p, int size)
+{
+    int sum = 0;
+
+    for (int i = 0; i < size; ++i)
+    {
+        int mod = i % 9;
+        if (mod == 0)
+            sum += 2 * p[i];
+        if (mod == 1)
+            sum += p[i] ^ 0xFF;
+        if (mod == 2)
+            sum += p[i] / 3;
+        if (mod == 3)
+            sum += 2 * p[i];
+        if (mod == 4)
+            sum -= p[i] ^ 0x5A;
+        if (mod == 5)
+            sum -= p[i];
+        else
+            sum += p[i] / 5;
+    }
+
+    return sum;
+}
+
 int BASE_ReadMessageBin()
 {
 	memset(g_pMessageStringTable, 0, sizeof g_pMessageStringTable);
@@ -159,9 +221,12 @@ void BASE_InitEffectString()
 
 int BASE_InitializeBaseDef()
 {
-	BASE_InitializeServerList();
+    int ret = 0;
+	ret = BASE_InitializeServerList() & 1;
+    ret = BASE_ReadItemList() & ret;
+    ret = BASE_InitializeAttribute() & ret;
 
-	return 1;
+	return ret;
 }
 
 void BASE_ReadItemPrice()
@@ -193,9 +258,279 @@ int BASE_GetWeekNumber()
 	return (int)(now / week - 3);
 
 }
+
+int BASE_GetItemSanc(STRUCT_ITEM* item)
+{
+    if (item->sIndex >= 2330 && item->sIndex < 2390)
+        return 0;
+
+    if (item->sIndex >= 3200 && item->sIndex < 3300)
+        return 0;
+
+    if (item->sIndex >= 3980 && item->sIndex < 4000)
+        return 0;
+
+    int sanc{};
+
+    if (item->stEffect[0].cEffect != EF_SANC && item->stEffect[1].cEffect != EF_SANC && item->stEffect[2].cEffect != EF_SANC)
+    {
+        if (item->stEffect[0].cEffect >= 115 && item->stEffect[0].cEffect <= 126)
+            sanc = item->stEffect[0].cValue;
+
+        else if (item->stEffect[1].cEffect >= 115 && item->stEffect[1].cEffect <= 126)
+            sanc = item->stEffect[1].cValue;
+
+        else if (item->stEffect[2].cEffect >= 115 && item->stEffect[2].cEffect <= 126)
+            sanc = item->stEffect[2].cValue;
+    }
+    else if (item->stEffect[0].cEffect == EF_SANC)
+        sanc = item->stEffect[0].cValue;
+
+    else if (item->stEffect[1].cEffect == EF_SANC)
+        sanc = item->stEffect[1].cValue;
+
+    else
+        sanc = item->stEffect[2].cValue;
+
+    if (item->sIndex != 786 && item->sIndex != 1936 && item->sIndex != 1937)
+    {
+        if (sanc < 230)
+            sanc %= 10;
+        else
+            sanc -= 220;
+
+        if (sanc >= 10 && sanc <= 35)
+            sanc = (sanc - 10) / 4 + 10;
+    }
+
+    return sanc;
+}
+
 int BASE_GetItemAbility(STRUCT_ITEM* item, char Type)
 {
-	return 0;
+    int value = 0;
+    int idx = item->sIndex;
+
+    if (idx <= 0 || idx > MAX_ITEMLIST)
+        return 0;
+
+    int nUnique = g_pItemList[idx].nUnique;
+    int nPos = g_pItemList[idx].nPos;
+
+    if ((Type == EF_DAMAGEADD || Type == EF_MAGICADD) && (nUnique < 41 || nUnique > 50))
+        return 0;
+
+    if (Type == EF_CRITICAL && (item->stEffect[1].cEffect == EF_CRITICAL2 || item->stEffect[2].cEffect == EF_CRITICAL2))
+        Type = EF_CRITICAL2;
+
+    if (Type == EF_DAMAGE && nPos == 32 && (item->stEffect[1].cEffect == EF_DAMAGE2 || item->stEffect[2].cEffect == EF_DAMAGE2))
+        Type = EF_DAMAGE2;
+
+    if (Type == EF_MPADD && (item->stEffect[1].cEffect == EF_MPADD2 || item->stEffect[2].cEffect == EF_MPADD2))
+        Type = EF_MPADD2;
+
+    if (Type == EF_HPADD && (item->stEffect[1].cEffect == EF_HPADD2 || item->stEffect[2].cEffect == EF_HPADD2))
+        Type = EF_HPADD2;
+
+    if (Type == EF_ACADD && (item->stEffect[1].cEffect == EF_ACADD2 || item->stEffect[2].cEffect == EF_ACADD2))
+        Type = EF_ACADD2;
+
+    if (Type == EF_LEVEL)
+        value = g_pItemList[idx].nReqLvl;
+
+    if (Type == EF_REQ_STR)
+        value += g_pItemList[idx].nReqStr;
+
+    if (Type == EF_REQ_INT)
+        value += g_pItemList[idx].nReqInt;
+
+    if (Type == EF_REQ_DEX)
+        value += g_pItemList[idx].nReqDex;
+
+    if (Type == EF_REQ_CON)
+        value += g_pItemList[idx].nReqCon;
+
+    if (Type == EF_POS)
+        value += g_pItemList[idx].nPos;
+
+    if (Type != EF_INCUBATE)
+    {
+        for (int i = 0; i < 12; ++i)
+        {
+            if (g_pItemList[idx].stEffect[i].sEffect == Type ||
+                g_pItemList[idx].stEffect[i].sEffect == EF_HPADD && Type == EF_HPADD2)
+            {
+                int tvalue = g_pItemList[idx].stEffect[i].sValue;
+
+                if (Type == EF_ATTSPEED && tvalue == 1)
+                    tvalue = 10;
+
+                value += tvalue;
+            }
+        }
+    }
+
+    if (item->sIndex >= 2330 && item->sIndex < 2390)
+    {
+        switch (Type)
+        {
+        case EF_MOUNTHP:
+            return item->stEffect[0].sValue;
+        case EF_MOUNTSANC:
+            return item->stEffect[1].cEffect;
+        case EF_MOUNTLIFE:
+            return item->stEffect[1].cValue;
+        case EF_MOUNTFEED:
+            return item->stEffect[2].cEffect;
+        case EF_MOUNTKILL:
+            return item->stEffect[2].cValue;
+        }
+
+        if (item->sIndex < 2362 || item->sIndex >= 2390 || item->stEffect[0].sValue <= 0)
+            return value;
+
+        int lv = item->stEffect[1].cEffect;
+        int cd = item->sIndex - 2360;
+
+        switch (Type)
+        {
+        case EF_DAMAGE:
+            value = g_pMountBonus[cd][0] * (lv + 20) / 100;
+            break;
+        case EF_MAGIC:
+            value = g_pMountBonus[cd][1] * (lv + 15) / 100;
+            break;
+        case EF_PARRY:
+            value = g_pMountBonus[cd][2];
+            break;
+        case EF_RESISTALL:
+            value = g_pMountBonus[cd][3];
+            break;
+        default:
+            break;
+        }
+    }
+    else if (item->sIndex >= 3980 && item->sIndex < 4000)
+    {
+        int cd = item->sIndex - 3980;
+
+        switch (Type)
+        {
+        case EF_DAMAGE:
+            value = g_pMountBonus2[cd][0];
+            break;
+        case EF_MAGIC:
+            value = g_pMountBonus2[cd][1];
+            break;
+        case EF_PARRY:
+            value = g_pMountBonus2[cd][2];
+            break;
+        case EF_RESISTALL:
+            value = g_pMountBonus2[cd][3];
+            break;
+        default:
+            break;
+        }
+    }
+    else
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            if (item->stEffect[j].cEffect == Type)
+            {
+                int tvalue = item->stEffect[j].cValue;
+
+                if (Type == EF_ATTSPEED && tvalue == 1)
+                    tvalue = 10;
+
+                value += tvalue;
+            }
+        }
+
+        int sanc = BASE_GetItemSanc(item);
+
+        if (item->sIndex <= 40)
+            sanc = 0;
+
+        if (sanc >= 9 && nPos & 0xF00)
+            sanc++;
+
+        if (sanc
+            && Type != EF_GRID
+            && Type != EF_CLASS
+            && Type != EF_POS
+            && Type != EF_WTYPE
+            && Type != EF_RANGE
+            && Type != EF_LEVEL
+            && Type != EF_REQ_STR
+            && Type != EF_REQ_INT
+            && Type != EF_REQ_DEX
+            && Type != EF_REQ_CON
+            && Type != EF_VOLATILE
+            && Type != EF_INCUBATE
+            && Type != EF_INCUDELAY
+            && Type != EF_PREVBONUS
+            && Type != EF_TRANS
+            && Type != EF_REFLEVEL
+            && Type != EF_GAMEROOM
+            && Type != EF_REGENMP
+            && Type != EF_REGENHP
+            && Type != EF_FAME)
+        {
+            if (sanc > 10)
+            {
+                int UpSanc = sanc - 10;
+
+                switch (UpSanc)
+                {
+                case 1:
+                    UpSanc = 220;
+                    break;
+                case 2:
+                    UpSanc = 250;
+                    break;
+                case 3:
+                    UpSanc = 280;
+                    break;
+                case 4:
+                    UpSanc = 320;
+                    break;
+                case 5:
+                    UpSanc = 370;
+                    break;
+                case 6:
+                    UpSanc = 400;
+                    break;
+                }
+
+                value = UpSanc * 10 * value / 100 / 10;
+            }
+            else
+            {
+                value = value * (sanc + 10) / 10;
+            }
+        }
+
+        if (Type == EF_RUNSPEED)
+        {
+            if (value >= 3)
+                value = 2;
+
+            if (value > 0 && sanc >= 9)
+                value++;
+        }
+
+       /* if (Type == EF_HWORDGUILD || Type == EF_LWORDGUILD)
+            value = value;*/
+
+        if (Type == EF_REGENMP || Type == EF_REGENHP)
+            value *= sanc;
+
+        if (Type == EF_GRID && (value < 0 || value > 7))
+            value = 0;
+    }
+
+	return value;
 }
 int BASE_DefineSkinMeshType(int nClass)
 {
@@ -350,6 +685,269 @@ float BASE_GetMountScale(int nSkinMeshType, int nMeshIndex)
     return fSize;
 }
 
+int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int distance, char* pHeight, int MH)
+{
+    int lastx = x;
+    int lasty = y;
+    int tx = *targetx;
+    int ty = *targety;
+    memset(Route, 0, 24);
+
+    for (int i = 0; i < distance && i < 23; ++i)
+    {
+        if (x - g_HeightPosX < 1 || y - g_HeightPosY < 1 || x - g_HeightPosX > g_HeightWidth - 2 || y - g_HeightPosY > g_HeightHeight - 2)
+        {
+            Route[i] = 0;
+            break;
+        }
+
+        int cul = pHeight[x + g_HeightWidth * (y - g_HeightPosY) - g_HeightPosX];
+        int n = pHeight[x + g_HeightWidth * (y - g_HeightPosY - 1) - g_HeightPosX];
+        int ne = pHeight[x + g_HeightWidth * (y - g_HeightPosY - 1) - g_HeightPosX + 1];
+        int e = pHeight[x + g_HeightWidth * (y - g_HeightPosY) - g_HeightPosX + 1];
+        int se = pHeight[x + g_HeightWidth * (y - g_HeightPosY + 1) - g_HeightPosX + 1];
+        int s = pHeight[x + g_HeightWidth * (y - g_HeightPosY + 1) - g_HeightPosX];
+        int sw = pHeight[x + g_HeightWidth * (y - g_HeightPosY + 1) - g_HeightPosX - 1];
+        int w = pHeight[x + g_HeightWidth * (y - g_HeightPosY) - g_HeightPosX - 1];
+        int nw = pHeight[x + g_HeightWidth * (y - g_HeightPosY - 1) - g_HeightPosX - 1];
+
+        if (tx == x && ty > y && s < MH + cul && s > cul - MH)
+        {
+            Route[i] = '8';
+            ++y;
+        }
+        else if (tx == x && ty < y && n < MH + cul && n > cul - MH)
+        {
+            Route[i] = '2';
+            --y;
+        }
+        else if (tx > x
+            && ty < y
+            && ne < MH + cul
+            && ne > cul - MH
+            && (n < MH + cul && n > cul - MH || e < MH + cul && e > cul - MH))
+        {
+            Route[i] = '3';
+            ++x;
+            --y;
+        }
+        else if (tx > x && ty == y && e < MH + cul && e > cul - MH)
+        {
+            Route[i] = '6';
+            ++x;
+        }
+        else if (tx > x
+            && ty > y
+            && se < MH + cul
+            && se > cul - MH
+            && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
+        {
+            Route[i] = '9';
+            ++x;
+            ++y;
+        }
+        else if (tx < x
+            && ty > y
+            && sw < MH + cul
+            && sw > cul - MH
+            && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
+        {
+            Route[i] = '7';
+            --x;
+            ++y;
+        }
+        else if (tx < x && ty == y && w < MH + cul && w > cul - MH)
+        {
+            Route[i] = '4';
+            --x;
+        }
+        else if (tx < x
+            && ty < y
+            && nw < MH + cul
+            && nw > cul - MH
+            && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
+        {
+            Route[i] = '1';
+            --x;
+            --y;
+        }
+        else if (tx > x && ty < y && e < MH + cul && e > cul - MH)
+        {
+            Route[i] = '6';
+            ++x;
+        }
+        else if (tx > x && ty < y && n < MH + cul && n > cul - MH)
+        {
+            Route[i] = '2';
+            --y;
+        }
+        else if (tx > x && ty > y && e < MH + cul && e > cul - MH)
+        {
+            Route[i] = '6';
+            ++x;
+        }
+        else if (tx > x && ty > y && s < MH + cul && s > cul - MH)
+        {
+            Route[i] = '8';
+            ++y;
+        }
+        else if (tx < x && ty > y && w < MH + cul && w > cul - MH)
+        {
+            Route[i] = '4';
+            --x;
+        }
+        else if (tx < x && ty > y && s < MH + cul && s > cul - MH)
+        {
+            Route[i] = '8';
+            ++y;
+        }
+        else if (tx < x && ty < y && w < MH + cul && w > cul - MH)
+        {
+            Route[i] = '4';
+            --x;
+        }
+        else if (tx < x && ty < y && n < MH + cul && n > cul - MH)
+        {
+            Route[i] = '2';
+            --y;
+        }
+        else
+        {
+            if (tx == x + 1 || ty == y + 1 || tx == x - 1 || ty == y - 1)
+            {
+                Route[i] = 0;
+                break;
+            }
+            if (tx == x
+                && ty > y
+                && se < MH + cul
+                && se > cul - MH
+                && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
+            {
+                Route[i] = '9';
+                ++x;
+                ++y;
+            }
+            else if (tx == x
+                && ty > y
+                && sw < MH + cul
+                && sw > cul - MH
+                && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
+            {
+                Route[i] = '7';
+                --x;
+                ++y;
+            }
+            else if (tx == x
+                && ty < y
+                && ne < MH + cul
+                && ne > cul - MH
+                && (n < MH + cul && n > cul - MH || e < MH + cul && e > cul - MH))
+            {
+                Route[i] = '3';
+                ++x;
+                --y;
+            }
+            else if (tx == x
+                && ty < y
+                && nw < MH + cul
+                && nw > cul - MH
+                && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
+            {
+                Route[i] = '1';
+                --x;
+                --y;
+            }
+            else if (tx < x
+                && ty == y
+                && sw < MH + cul
+                && sw > cul - MH
+                && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
+            {
+                Route[i] = '7';
+                --x;
+                ++y;
+            }
+            else if (tx < x
+                && ty == y
+                && nw < MH + cul
+                && nw > cul - MH
+                && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
+            {
+                Route[i] = '1';
+                --x;
+                --y;
+            }
+            else if (tx > x
+                && ty == y
+                && se < MH + cul
+                && se > cul - MH
+                && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
+            {
+                Route[i] = '9';
+                ++x;
+                ++y;
+            }
+            else
+            {
+                if (tx <= x
+                    || ty != y
+                    || ne >= MH + cul
+                    || ne <= cul - MH
+                    || (n >= MH + cul || n <= cul - MH) && (e >= MH + cul || e <= cul - MH))
+                {
+                    Route[i] = 0;
+                    break;
+                }
+
+                Route[i] = '3';
+                ++x;
+                --y;
+            }
+        }
+    }
+
+    if (lastx == x && lasty == y)
+        return 0;
+
+    *targetx = x;
+    *targety = y;
+    return lastx != x || lasty != y;
+}
+
+int BASE_GetDistance(int x1, int y1, int x2, int y2)
+{
+    int dy;
+    int dx;
+    if (x1 <= x2)
+        dx = x2 - x1;
+    else
+        dx = x1 - x2;
+    if (y1 <= y2)
+        dy = y2 - y1;
+    else
+        dy = y1 - y2;
+    if (dx <= 6 && dy <= 6)
+        return g_pDistanceTable[dy][dx];
+    if (dx <= dy)
+        return dy + 1;
+
+    return dx + 1;
+}
+
+int BASE_GetSpeed(STRUCT_SCORE* score)
+{
+    int Run;
+
+    Run = score->AttackRun & 0xF;
+    if (Run < 1)
+        Run = 1;
+    if (Run > 7)
+        Run = 7;
+
+    return Run;
+}
+
 int ReadItemicon()
 {
 	return 0;
@@ -469,4 +1067,25 @@ int BASE_InitializeServerList()
 	}
 
 	return 0;
+}
+
+int BASE_GetVillage(int x, int y)
+{
+    for (int i = 0; i < 5; ++i)
+    {
+        if (x >= g_pGuildZone[i].vx1 && g_pGuildZone[i].vx2 && g_pGuildZone[i].vy1 && g_pGuildZone[i].vy2)
+            return i;
+    }
+
+    return MAX_GUILDZONE;
+}
+
+int BASE_GetSubGuild(int item)
+{
+    int ret = 0;
+    if (item >= 3 && item <= 8)
+        ret = item % 3 + 1;
+
+    return ret;
+	
 }

@@ -215,7 +215,7 @@ void SControlContainer::SetFocusedControl(SControl* pControl)
 				g_pCurrentScene->m_pAlphaNative->SetVisible(1);
 				g_pEventTranslator->UpdateCompositionPos();
 
-				SPanel* panel = static_cast<SPanel*>(g_pCurrentScene->m_pControlContainer->FindControl(65670u));
+				SPanel* panel = static_cast<SPanel*>(g_pCurrentScene->m_pControlContainer->FindControl(P_CHAT));
 				if (panel && panel->m_bVisible && pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
 					static_cast<TMFieldScene*>(pScene)->m_pChatSelectPanel->SetVisible(1);
 			}

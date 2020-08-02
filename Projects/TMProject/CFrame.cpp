@@ -76,7 +76,7 @@ int CFrame::Render()
 			D3DXMATRIX matTrans;
 			if (m_pParentSkin->m_cRotate[0] == 1)
 			{
-				D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, 0.009f, 0.0f);
+				D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail, 0.01f, 0.0f);
 				D3DXMatrixRotationYawPitchRoll(&matrix, 0, 0, D3DXToRadian(180));
 			}
 			else
@@ -88,7 +88,7 @@ int CFrame::Render()
 					fShield = -0.05f;
 				}
 
-				D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, fShield + 0.009f, 0);
+				D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail, fShield + 0.01f, 0);
 				D3DXMatrixRotationYawPitchRoll(&matrix, D3DXToRadian(180), 0, 0);
 			}
 
@@ -111,39 +111,40 @@ int CFrame::Render()
 		if (m_pParentSkin->m_nBoneAniIndex < 19
 			&& m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][1])
 		{
-			D3DXMATRIX mat;
-			D3DXMATRIX matTrans;
+			D3DXMATRIX mat{};
+			D3DXMATRIX matTrans{};
 
 			if (m_pParentSkin->m_cRotate[1] == 1)
 			{
-				D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, 0.009f, 0.0f);
-				D3DXMatrixRotationYawPitchRoll(&mat, D3DXToRadian(180), 0.0f, 0.0f);
-			}			
+				D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail, 0.01f, 0.0f);
+				D3DXMatrixRotationYawPitchRoll(&mat, 3.1415927f, 0.0f, 0.0f);
+			}
 			else
 			{
 				if (m_pParentSkin->m_nBoneAniIndex == 6)
 				{
-					D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail * 0.5f, -0.009f, 0.0f);
+					D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail * 0.5f, -0.01f, 0.0f);
 				}
 				else if (m_pParentSkin->m_nBoneAniIndex == 9)
 				{
-					D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail * 1.6f, 0.029f, 0.0f);
+					D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail * 1.6f, 0.03f, 0.0f);
 				}
 				else
 				{
-					D3DXMatrixTranslation(&matTrans, m_pParentSkin->m_fLenDetail, -0.009f, 0.0f);
+					D3DXMatrixTranslation(&matTrans, -m_pParentSkin->m_fLenDetail, -0.01f, 0.0f);
 				}
+
 				if (m_pParentSkin->m_nBoneAniIndex == 1)
 				{
-					D3DXMatrixRotationYawPitchRoll(&mat, -D3DXToRadian(15), -D3DXToRadian(10), D3DXToRadian(180));
+					D3DXMatrixRotationYawPitchRoll(&mat, -0.2617994f, -0.17453294f, 3.1415927f);
 				}
 				else if (m_pParentSkin->m_nBoneAniIndex == 6)
-				{				
-					D3DXMatrixRotationYawPitchRoll(&mat, -D3DXToRadian(20), D3DXToRadian(0), D3DXToRadian(180));
+				{
+					D3DXMatrixRotationYawPitchRoll(&mat, -0.34906587f, 0.0f, 3.1415927f);
 				}
 				else
 				{
-					D3DXMatrixRotationYawPitchRoll(&mat, D3DXToRadian(0), D3DXToRadian(0), D3DXToRadian(180));
+					D3DXMatrixRotationYawPitchRoll(&mat, 0, 0, 3.1415927f);
 				}
 			}
 			D3DXMatrixMultiply(&mat, &matTrans, &mat);
@@ -159,79 +160,73 @@ int CFrame::Render()
 
 				TMHuman* pHuman = (TMHuman*)m_pParentSkin->m_pOwner;
 				if (pHuman)
-					m_pParentSkin->m_pSwingEffect[1]->m_nWeaponType = pHuman->m_nWeaponTypeR;
+					m_pParentSkin->m_pSwingEffect[1]->m_nWeaponType = pHuman->m_nWeaponTypeL;
 			}
 		}
-		if (m_pParentSkin->m_pOwner != nullptr)
+		if (m_pParentSkin->m_pOwner != nullptr &&
+			(m_pParentSkin->m_nBoneAniIndex == 0 || m_pParentSkin->m_nBoneAniIndex == 1 ||
+			 m_pParentSkin->m_nBoneAniIndex == 2 || m_pParentSkin->m_nBoneAniIndex == 4) 
+			&& m_pParentSkin->m_pOwner->m_cWeapon == 1 
+			&& (m_pMesh->m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][0] ||
+				m_pMesh->m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][1]))
 		{
-			if (m_pParentSkin->m_nBoneAniIndex == 0 || m_pParentSkin->m_nBoneAniIndex == 1 ||
-				m_pParentSkin->m_nBoneAniIndex == 2 || m_pParentSkin->m_nBoneAniIndex == 4)
+			if (m_pParentSkin->m_cDefaultAlpha == 1)
 			{
-				if (m_pParentSkin->m_pOwner->m_cWeapon == 1)
-				{
-					if (m_pMesh->m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][0]	||
-						m_pMesh->m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][1])
-					{
-						if (m_pParentSkin->m_cDefaultAlpha == 1)
-						{
-							g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_SRCBLEND, D3DBLEND::D3DBLEND_SRCCOLOR);
-							g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_DESTBLEND, D3DBLEND::D3DBLEND_DESTCOLOR);
-						}
+				g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_SRCBLEND, D3DBLEND::D3DBLEND_SRCCOLOR);
+				g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_DESTBLEND, D3DBLEND::D3DBLEND_DESTCOLOR);
+			}
 
-						D3DCOLORVALUE color;
-						color.r = 0.5f;
-						color.g = 0.5f;
-						color.b = 0.5f;
-						color.a = 0.5f;
+			D3DCOLORVALUE color;
+			color.r = 0.5f;
+			color.g = 0.5f;
+			color.b = 0.5f;
+			color.a = 0.5f;
 
-						D3DMATERIAL9 materials{};
-						materials.Specular.r = 0.5f;
-						materials.Specular.g = 0.5f;
-						materials.Specular.b = 0.5f;
-						materials.Specular.a = 0.5f;
-						materials.Diffuse.r = 0.5f;
-						materials.Diffuse.g = 0.5f;
-						materials.Diffuse.b = 0.5f;
-						materials.Diffuse.a = 0.5f;
-						materials.Emissive.r = 0.5f;
-						materials.Emissive.g = 0.5f;
-						materials.Emissive.b = 0.5f;
-						materials.Emissive.a = 0.5f;
-						materials.Ambient.r = 0.5f;
-						materials.Ambient.g = 0.5f;
-						materials.Ambient.b = 0.5f;
-						materials.Ambient.a = 0.5f;
+			D3DMATERIAL9 materials{};
+			materials.Specular.r = 0.5f;
+			materials.Specular.g = 0.5f;
+			materials.Specular.b = 0.5f;
+			materials.Specular.a = 0.5f;
+			materials.Diffuse.r = 0.5f;
+			materials.Diffuse.g = 0.5f;
+			materials.Diffuse.b = 0.5f;
+			materials.Diffuse.a = 0.5f;
+			materials.Emissive.r = 0.5f;
+			materials.Emissive.g = 0.5f;
+			materials.Emissive.b = 0.5f;
+			materials.Emissive.a = 0.5f;
+			materials.Ambient.r = 0.5f;
+			materials.Ambient.g = 0.5f;
+			materials.Ambient.b = 0.5f;
+			materials.Ambient.a = 0.5f;
 
-						g_pDevice->m_pd3dDevice->SetMaterial(&materials);
-						g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &matrixComb);
+			g_pDevice->m_pd3dDevice->SetMaterial(&materials);
+			g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &matrixComb);
 
-						m_pMesh->Render(1);
+			m_pMesh->Render(1);
 
-						materials.Specular = color;
-						materials.Diffuse = color;
-						materials.Emissive = color;
-						materials.Ambient = color;
+			materials.Specular = color;
+			materials.Diffuse = color;
+			materials.Emissive = color;
+			materials.Ambient = color;
 
-						g_pDevice->m_pd3dDevice->SetMaterial(&materials);
+			g_pDevice->m_pd3dDevice->SetMaterial(&materials);
 
-						D3DXMATRIX matrixScale;
-						D3DXMatrixScaling(&matrixScale,
-							m_pParentSkin->m_pOwner->m_fScale + 0.05f,
-							m_pParentSkin->m_pOwner->m_fScale + 0.05f,
-							m_pParentSkin->m_pOwner->m_fScale + 0.05f);
+			D3DXMATRIX matrixScale;
+			D3DXMatrixScaling(&matrixScale,
+				m_pParentSkin->m_pOwner->m_fScale + 0.05f,
+				m_pParentSkin->m_pOwner->m_fScale + 0.05f,
+				m_pParentSkin->m_pOwner->m_fScale + 0.05f);
 
-						D3DXMatrixMultiply(&matrixScale, &matrixScale, &matrixComb);
+			D3DXMatrixMultiply(&matrixScale, &matrixScale, &matrixComb);
 
-						g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &matrixScale);
-						m_pMesh->Render(1);
+			g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLDMATRIX(0), &matrixScale);
+			m_pMesh->Render(1);
 
-						if (m_pParentSkin->m_cDefaultAlpha == 1)
-						{
-							g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_SRCBLEND, D3DBLEND::D3DBLEND_ONE);
-							g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_DESTBLEND, D3DBLEND::D3DBLEND_INVSRCALPHA);
-						}
-					}
-				}
+			if (m_pParentSkin->m_cDefaultAlpha == 1)
+			{
+				g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_SRCBLEND, D3DBLEND::D3DBLEND_ONE);
+				g_pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_DESTBLEND, D3DBLEND::D3DBLEND_INVSRCALPHA);
 			}
 		}
 		else
@@ -281,10 +276,10 @@ void CFrame::LinkBones(CFrame* root)
 
 // NOTE: apparently, instead of switch is used if/else if/else
 // and the numbers on the "in" vectors is radian angles?
-void CFrame::UpdateFrames(const D3DXMATRIX& matCur)
+void CFrame::UpdateFrames(D3DXMATRIX* matCur)
 {
-	m_matCombined = matCur;
-	D3DXMatrixMultiply(&m_matCombined, &m_matRot, &matCur);
+	m_matCombined = *matCur;
+	D3DXMatrixMultiply(&m_matCombined, &m_matRot, matCur);
 
 	if (m_pParentSkin != nullptr && m_pParentSkin->m_pOwner != nullptr)
 	{
@@ -351,8 +346,7 @@ void CFrame::UpdateFrames(const D3DXMATRIX& matCur)
 				m_pParentSkin->m_OutMatrix = m_matCombined;
 			}
 		}
-		else if (m_pParentSkin->m_nBoneAniIndex == 0 || m_pParentSkin->m_nBoneAniIndex == 1 || 
-				 m_pParentSkin->m_nBoneAniIndex == 56 || m_pParentSkin->m_nBoneAniIndex == 57 || m_pParentSkin->m_nBoneAniIndex == 54)
+		else if (m_pParentSkin->m_nBoneAniIndex == 0 || m_pParentSkin->m_nBoneAniIndex == 1)
 		{
 			D3DXVECTOR4 vecOut(0.0f, 0.0f, 0.0f, 0.0f);
 			D3DXVECTOR3 vecIn(0.0f, 0.0f, 0.0f);
@@ -379,28 +373,26 @@ void CFrame::UpdateFrames(const D3DXMATRIX& matCur)
 			}
 			else if (m_dwID == 7)
 				nIndex = 1;
-			else if (m_dwID == 6)
-				m_pParentSkin->m_OutMatrix = m_matCombined;
-			else
+			else if (m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][0])
 			{
-				if (m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][0])
-				{
-					nIndex = 6;
-				}
-				else if (m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][1])
-				{
-					nIndex = 7;
-				}
-				else if (m_dwID == 29)
-				{
-					nIndex = 2;
-				}
-				else if (m_dwID == 34)
-				{
-					nIndex = 3;
-				}
+				nIndex = 6;
+			}
+			else if (m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][1])
+			{
+				nIndex = 7;
+			}
+			else if (m_dwID == 29)
+			{
+				nIndex = 2;
+			}
+			else if (m_dwID == 34)
+			{
+				nIndex = 3;
 			}
 
+			if (m_dwID == 6)
+				m_pParentSkin->m_OutMatrix = m_matCombined;
+			
 			if (nIndex >= 0 && nIndex < 10)
 			{
 				D3DXVec3Transform(&vecOut, &vecIn, &m_matCombined);
@@ -470,6 +462,10 @@ void CFrame::UpdateFrames(const D3DXMATRIX& matCur)
 
 				// is setted on m_vecTempPos[10]
 			}
+		}
+		else if (m_pParentSkin->m_nBoneAniIndex == 56 || m_pParentSkin->m_nBoneAniIndex == 57 || m_pParentSkin->m_nBoneAniIndex == 54)
+		{
+			// TODO:
 		}
 		else if (m_pParentSkin->m_nBoneAniIndex == 3)
 		{
@@ -707,12 +703,13 @@ void CFrame::UpdateFrames(const D3DXMATRIX& matCur)
 				m_pParentSkin->m_OutMatrix = m_matCombined;
 
 			D3DXVECTOR4 vecOut(0.0f, 0.0f, 0.0f, 0.0f);
-			D3DXVECTOR3 vecIn(0.0f, 0.00f, -0.40f);
+			D3DXVECTOR3 vecIn(0.3f, 0.1f, 0.0f);
 
 			// this is actualy a switch
 			switch (m_dwID - 10)
 			{
 			case 0:
+				vecIn = D3DXVECTOR3(-0.5f, -0.25f, 0.1f);
 				D3DXVec3Transform(&vecOut, &vecIn, &m_matCombined);
 				m_pParentSkin->m_pOwner->m_vecTempPos[4].x = vecOut.x;
 				m_pParentSkin->m_pOwner->m_vecTempPos[4].y = vecOut.y;
@@ -839,7 +836,7 @@ void CFrame::UpdateFrames(const D3DXMATRIX& matCur)
 	{
 		if (m_matCombined.m[0][0] <= 1000.0f && m_matCombined.m[0][0] >= -1000.0f)
 		{
-			m_pFirstChild->UpdateFrames(m_matCombined);
+			m_pFirstChild->UpdateFrames(&m_matCombined);
 		}
 	}
 

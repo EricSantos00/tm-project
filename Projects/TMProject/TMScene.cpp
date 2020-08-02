@@ -244,10 +244,10 @@ TMScene::TMScene() : TreeNode(0)
 		}
 	}
 
-	memset(m_HeightMapData, 0, sizeof(m_HeightMapData));
-	memset(m_GateMapData, 0, sizeof(m_GateMapData));
+	memset(&m_HeightMapData, 0, sizeof(m_HeightMapData));
+	memset(&m_GateMapData, 0, sizeof(m_GateMapData));
 
-	BASE_ApplyAttribute(m_HeightMapData, 256);
+	BASE_ApplyAttribute((char*)m_HeightMapData, 256);
 
 	for (int i = 0; i < 32; ++i)
 		m_TargetAffect[i] = 0;
@@ -840,7 +840,7 @@ int TMScene::InitializeScene()
 
 int TMScene::OnPacketEvent(unsigned int dwCode, char* pSBuffer)
 {
-	return 0;
+	return 1;
 }
 
 int TMScene::OnKeyDownEvent(unsigned int iKeyCode)
@@ -1089,31 +1089,31 @@ int TMScene::GroundNewAttach(EDirection eDir)
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+				memcpy(heightMapData[i], m_HeightMapData[i], 128);
 		}
 		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x &&
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y + 1)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+				memcpy(heightMapData[i], m_HeightMapData[i], 128);
 		}
 		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x - 1 &&
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * i + 128], 128);
+				memcpy(heightMapData[i], &m_HeightMapData[i][128], 128);
 		}
 		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x &&
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y - 1)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * (i + 128)], 128);
+				memcpy(heightMapData[i], &m_HeightMapData[i][128], 128);
 		}
 	}
 	else
 	{
 		for (int i = 0; i < 128; ++i)
-			memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+			memcpy(heightMapData[i], m_HeightMapData[i], 128);
 	}
 	
 	auto pGround = new TMGround();
@@ -1182,8 +1182,8 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_LEFT:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i], m_pGround->m_pLeftGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i + 128], &heightMapData[i], 128);
+			memcpy(m_HeightMapData[i], m_pGround->m_pLeftGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[i][128], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_pLeftGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_pLeftGround->m_vecOffset.y;
@@ -1191,8 +1191,8 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_RIGHT:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i + 128], m_pGround->m_pRightGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i], &heightMapData[i], 128);
+			memcpy(&m_HeightMapData[i][128], m_pGround->m_pRightGround->m_pMaskData[i], 128);
+			memcpy(m_HeightMapData[i], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_vecOffset.y;
@@ -1200,8 +1200,8 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_UP:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i], m_pGround->m_pUpGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i + 128], &heightMapData[i], 128);
+			memcpy(&m_HeightMapData[i], m_pGround->m_pUpGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[i][128], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_pUpGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_pUpGround->m_vecOffset.y;
@@ -1209,15 +1209,15 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_DOWN:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i + 128], m_pGround->m_pDownGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i], &heightMapData[i], 128);
+			memcpy(&m_HeightMapData[i][128], m_pGround->m_pDownGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[i], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_vecOffset.y;
 		break;
 	}
 
-	BASE_ApplyAttribute(m_HeightMapData, 256);
+	BASE_ApplyAttribute((char*)m_HeightMapData, 256);
 
 	memcpy(m_GateMapData, m_HeightMapData, sizeof(m_HeightMapData));
 
@@ -1251,17 +1251,17 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 
 	vPickTempPos = m_pGround->GetPickPos();
 
-	if ((vFocusePos.y - vPickTempPos.y) < 4.0f)
+	if (fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 		vPickPos = vPickTempPos;
 
-	if (vPickPos.y >= -5000.0f && (vFocusePos.y - vPickPos.y) < 2.0f)
+	if (vPickPos.y >= -5000.0f && fabsf(vFocusePos.y - vPickPos.y) < 2.0f)
 		return vPickPos;
 
 	if (m_pGround->m_pLeftGround)
 	{
 		vPickTempPos = m_pGround->m_pLeftGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y) || (vFocusePos.y - vPickTempPos.y) < 4.0f)
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y) || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 		{
 			vPickPos = vPickTempPos;
 
@@ -1274,11 +1274,11 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 	{
 		vPickTempPos = m_pGround->m_pRightGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y))
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y))
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0f && (vFocusePos.y - vPickPos.y) < 2.0f || (vFocusePos.y - vPickTempPos.y < 4.0f))
+			if (vPickTempPos.y > -5000.0f && fabsf(vFocusePos.y - vPickPos.y) < 2.0f || fabsf(vFocusePos.y - vPickTempPos.y < 4.0f))
 				return vPickPos;
 		}
 	}
@@ -1287,11 +1287,11 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 	{
 		vPickTempPos = m_pGround->m_pUpGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y))
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y))
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0f && (vFocusePos.y - vPickPos.y) < 2.0f || (vFocusePos.y - vPickTempPos.y) < 4.0f)
+			if (vPickTempPos.y > -5000.0f && fabsf(vFocusePos.y - vPickPos.y) < 2.0f || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 				return vPickPos;
 		}
 	}
@@ -1300,11 +1300,11 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 	{
 		vPickTempPos = m_pGround->m_pDownGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y) || (vFocusePos.y - vPickTempPos.y) < 4.0f)
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y) || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0 && (vFocusePos.y - vPickPos.y) < 2.0f)
+			if (vPickTempPos.y > -5000.0 && fabsf(vFocusePos.y - vPickPos.y) < 2.0f)
 				return vPickPos;
 		}
 	}
@@ -1379,7 +1379,7 @@ int TMScene::GroundGetMask(TMVector2 vecPosition)
 	if (nYIndex > 256)
 		nYIndex = 255;
 
-	return m_HeightMapData[nXIndex + g_HeightWidth * nYIndex];
+	return m_HeightMapData[0][nXIndex + g_HeightWidth * nYIndex];
 }
 
 int TMScene::GroundGetMask(IVector2 vecPosition)
@@ -1399,7 +1399,7 @@ int TMScene::GroundGetMask(IVector2 vecPosition)
 	if (nYIndex > 256)
 		nYIndex = 255;
 
-	return m_HeightMapData[nXIndex + g_HeightWidth * nYIndex];
+	return m_HeightMapData[0][nXIndex + g_HeightWidth * nYIndex];
 }
 
 float TMScene::GroundGetHeight(TMVector2 vecPosition)
@@ -1571,7 +1571,7 @@ int TMScene::GetMask2(TMVector2 vecPosition)
 	int nMaskY = (int)(vecPosition.y - (float)g_HeightPosY);
 
 	if (nMaskX >= 0 && nMaskY >= 0 && nMaskX < 256 && nMaskY < 256)
-		return m_GateMapData[256 * nMaskY + nMaskX];
+		return m_GateMapData[nMaskY][nMaskX];
 
 	return -10000;
 }
@@ -1677,7 +1677,7 @@ void TMScene::CameraAction()
 	}
 }
 
-void TMScene::ReadCameraPos(char* szFileName)
+void TMScene::ReadCameraPos(const char* szFileName)
 {
 	m_nCameraLoop = 0;
 
