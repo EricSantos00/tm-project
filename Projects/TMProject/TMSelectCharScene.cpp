@@ -61,7 +61,31 @@ int TMSelectCharScene::OnControlEvent(unsigned int idwControlID, unsigned int id
 
 int TMSelectCharScene::OnCharEvent(char iCharCode, int lParam)
 {
-	return 0;
+	auto pEditChar = m_pControlContainer->FindControl(4626u);
+
+	if (iCharCode == VK_RETURN)
+	{
+		if (pEditChar->IsFocused() == 1)
+			OnControlEvent(1545u, 0);
+
+		return TMScene::OnCharEvent(iCharCode, lParam);
+	}
+
+	if (iCharCode != VK_ESCAPE)
+		return TMScene::OnCharEvent(iCharCode, lParam);
+
+	auto pSelChar = m_pControlContainer->FindControl(1282u);
+	if (pSelChar->IsVisible() != 1)
+	{
+		if (m_pCreateWin->IsVisible() == 1)
+			OnControlEvent(1552u, 0);
+		else
+			OnControlEvent(5673u, 0);
+	}
+	else
+		OnControlEvent(4616u, 0);
+
+	return 1;
 }
 
 int TMSelectCharScene::OnKeyDownEvent(unsigned int iKeyCode)
