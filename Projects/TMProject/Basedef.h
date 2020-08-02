@@ -802,7 +802,7 @@ struct MSG_SendItem
 };
 
 
-constexpr auto MSG_AccountLogin_Opcode = 0x784	;
+constexpr auto MSG_AccountLogin_Opcode = 0x20D;
 struct MSG_AccountLogin
 {
 	MSG_STANDARD Header;

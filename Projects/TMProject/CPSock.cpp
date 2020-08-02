@@ -376,8 +376,8 @@ char* CPSock::ReadMessage(int* ErrorCode, int* ErrorType)
 		nProcPosition = 0;
 	}
 
-	char Sum1 = 0;
-	char Sum2 = 0;
+	unsigned char Sum1 = 0;
+	unsigned char Sum2 = 0;
 	int pos = KeyWord;
 	for (int i = sizeof(int); i < Size; i++, pos++)
 	{
@@ -389,18 +389,18 @@ char* CPSock::ReadMessage(int* ErrorCode, int* ErrorType)
 		int mod = i & 0x3;
 
 		if (mod == 0) 
-			pMsg[i] = pMsg[i] - (Trans << 2);
-		if (mod == 1) 
-			pMsg[i] = pMsg[i] + (Trans >> 1);
-		if (mod == 2) 
 			pMsg[i] = pMsg[i] - (Trans << 1);
+		if (mod == 1) 
+			pMsg[i] = pMsg[i] + (Trans >> 3);
+		if (mod == 2) 
+			pMsg[i] = pMsg[i] - (Trans << 2);
 		if (mod == 3) 
-			pMsg[i] = pMsg[i] + (Trans >> 2);
+			pMsg[i] = pMsg[i] + (Trans >> 5);
 
 		Sum1 += pMsg[i];
 	}
 
-	if (Sum2 - Sum1 != CheckSum)
+	if ((unsigned char)(Sum2 - Sum1) != CheckSum)
 	{
 		*ErrorCode = 1;
 		*ErrorType = Size;

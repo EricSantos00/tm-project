@@ -685,7 +685,7 @@ int TMSelectCharScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, i
 
 int TMSelectCharScene::OnPacketEvent(unsigned int dwCode, char* buf)
 {
-	return 0;
+	return 1;
 }
 
 int TMSelectCharScene::FrameMove(unsigned int dwServerTime)

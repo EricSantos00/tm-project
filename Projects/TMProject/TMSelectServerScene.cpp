@@ -18,7 +18,6 @@
 
 void SwapLauncher()
 {
-
 	char szNewFileName[MAX_PATH] = { 0 };
 	char szOldFileName[MAX_PATH] = { 0 };
 	struct _stat64i32 buf0 {};
