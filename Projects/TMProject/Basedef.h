@@ -50,8 +50,11 @@ struct STRUCT_SCORE
 
 union STRUCT_BONUSEFFECT
 {
-	char cEffect;
-	char cValue;
+	struct
+	{
+		unsigned char cEffect;
+		unsigned char cValue;
+	};
 	short sValue;
 };
 

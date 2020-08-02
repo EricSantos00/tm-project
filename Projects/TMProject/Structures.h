@@ -262,22 +262,22 @@ struct LOOK_INFO
 
 struct SANC_INFO
 {
-	char Sanc0;
-	char Sanc1;
-	char Sanc2;
-	char Sanc3;
-	char Sanc4;
-	char Sanc5;
-	char Sanc6;
-	char Sanc7;
-	char Legend0;
-	char Legend1;
-	char Legend2;
-	char Legend3;
-	char Legend4;
-	char Legend5;
-	char Legend6;
-	char Legend7;
+	unsigned char Sanc0;
+	unsigned char Sanc1;
+	unsigned char Sanc2;
+	unsigned char Sanc3;
+	unsigned char Sanc4;
+	unsigned char Sanc5;
+	unsigned char Sanc6;
+	unsigned char Sanc7;
+	unsigned char Legend0;
+	unsigned char Legend1;
+	unsigned char Legend2;
+	unsigned char Legend3;
+	unsigned char Legend4;
+	unsigned char Legend5;
+	unsigned char Legend6;
+	unsigned char Legend7;
 };
 
 struct HUMAN_LOOKINFO
