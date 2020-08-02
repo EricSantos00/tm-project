@@ -684,7 +684,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 
 			m_pMessagePanel->SetMessage(g_pMessageStringTable[7], 4000);
 
-			if (!g_pSocketManager->ConnectServer(g_pApp->m_szServerIP, 8174, 0, 1124))
+			if (!g_pSocketManager->ConnectServer(g_pApp->m_szServerIP, 8281, 0, 1124))
 			{
 				pLoginOK->SetEnable(1);
 
