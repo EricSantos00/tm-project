@@ -66,7 +66,21 @@ int TMSelectCharScene::OnCharEvent(char iCharCode, int lParam)
 
 int TMSelectCharScene::OnKeyDownEvent(unsigned int iKeyCode)
 {
-	return 0;
+	if (TMScene::OnKeyDownEvent(iKeyCode) == 1)
+		return 1;
+
+	if (iKeyCode == VK_INSERT)
+	{
+		MSG_MessageWhisper stWhisper{};
+		stWhisper.Header.ID = g_pObjectManager->m_dwCharID;
+		stWhisper.Header.Type = MSG_MessageWhisper_Opcode;
+
+		sprintf_s(stWhisper.MobName, "time");
+
+		g_pSocketManager->SendOneMessage((char*)&stWhisper, sizeof stWhisper);
+	}
+
+	return 1;
 }
 
 int TMSelectCharScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
@@ -84,7 +98,6 @@ int TMSelectCharScene::FrameMove(unsigned int dwServerTime)
 	TMScene::FrameMove(dwServerTime);
 
 	auto dwServerTimea = g_pTimerManager->GetServerTime();
-
 	if (dwServerTimea - m_dwLastClickLoginBtnTime > 3000 && m_pBtnLogin && !m_pBtnLogin->m_bEnable)
 	{
 		m_pBtnLogin->SetEnable(1);
