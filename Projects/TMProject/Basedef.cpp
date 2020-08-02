@@ -1089,3 +1089,13 @@ int BASE_GetSubGuild(int item)
     return ret;
 	
 }
+
+unsigned int BASE_GetItemTenColor(STRUCT_ITEM* pItem)
+{
+    return 0;
+}
+
+int BASE_GetItemColorEffect(STRUCT_ITEM* item)
+{
+    return 0;
+}

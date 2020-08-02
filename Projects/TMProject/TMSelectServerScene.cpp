@@ -789,7 +789,7 @@ int TMSelectServerScene::OnCharEvent(char iCharCode, int lParam)
 		if (pEditID->IsFocused())
 			m_pControlContainer->SetFocusedControl(pEditPassword);
 		else if(pEditPassword->IsFocused())
-			m_pControlContainer->SetFocusedControl(pEditPassword);
+			m_pControlContainer->SetFocusedControl(pEditID);
 
 		break;
 	case VK_RETURN:

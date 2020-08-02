@@ -931,6 +931,8 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
 int BASE_GetDistance(int x1, int y1, int x2, int y2);
 int BASE_GetSpeed(STRUCT_SCORE* score);
 int BASE_GetSubGuild(int item);
+unsigned int BASE_GetItemTenColor(STRUCT_ITEM* pItem);
+int BASE_GetItemColorEffect(STRUCT_ITEM* item);
 
 /* Read Functions */
 int ReadItemicon();

@@ -4,7 +4,13 @@
 #include "TMGlobal.h"
 #include "ObjectManager.h"
 #include "TMHuman.h"
+#include "TMGround.h"
+#include "TMSky.h"
+#include "SControl.h"
+#include "DirShow.h"
 #include "SControlContainer.h"
+#include "TMObjectContainer.h"
+#include "TMLog.h"
 
 TMSelectCharScene::TMSelectCharScene() :
 	m_vecSelPos{},
@@ -777,13 +783,13 @@ void TMSelectCharScene::VisibleSelectCreate(int bSelect)
 		if (m_pBtnDelete->m_bVisible == 1)
 			m_pBtnDelete->SetVisible(0);
 
-		CamAction("UI\\CreCamAction");
+		CamAction("UI\\SelCamAction");
 
 		auto pSelTitle = m_pControlContainer->FindControl(1281u);
 		auto pSelChar = m_pControlContainer->FindControl(1282u);
 
 		if (pSelTitle)
-			pSelTitle->SetVisible(0);
+			pSelTitle->SetVisible(1);
 
 		if (pSelChar)
 			pSelChar->SetVisible(0);
@@ -795,8 +801,8 @@ void TMSelectCharScene::VisibleSelectCreate(int bSelect)
 		auto pCreBG4 = m_pControlContainer->FindControl(1541u);
 		auto pCreWin = m_pControlContainer->FindControl(1542u);
 
-		m_pNewCharPanel->SetVisible(0);
-		m_pDelCharPanel->SetVisible(0);
+		m_pNewCharPanel->SetVisible(1);
+		m_pDelCharPanel->SetVisible(1);
 
 		pCreWin->SetPos(RenderDevice::m_fWidthRatio * 514.0f, RenderDevice::m_fHeightRatio * 35.0f);
 		if (pCreTitle)
@@ -895,7 +901,7 @@ void TMSelectCharScene::LookSampleHuman(int nIndex, int bLook, int bSelect)
 
 void TMSelectCharScene::SetvirtualKey()
 {
-	char Keylist[10];
+	char Keylist[10] = { 0 };
 	Keylist[0] = 1;
 	Keylist[1] = 2;
 	Keylist[2] = 3;
@@ -911,7 +917,7 @@ void TMSelectCharScene::SetvirtualKey()
 
 	for (int i = 0; i < 10; ++i)
 	{
-		auto key = rand() % 10 - i;
+		auto key = rand() % (10 - i);
 		keybuf[i] = Keylist[key];
 
 		for (int j = key; j < 9; ++j)
