@@ -253,7 +253,7 @@ int TMSelectCharScene::InitializeScene()
 			m_pHuman[i]->m_nCurrentKill = 0;
 			m_pHuman[i]->m_nTotalKill = 0;
 
-			sprintf_s(m_pHuman[i]->m_szName, "%s", pSelChar->MobName[i]);
+			strncpy(m_pHuman[i]->m_szName, pSelChar->MobName[i], 15);
 
 			memcpy(&m_pHuman[i]->m_stScore, &pSelChar->Score[i], sizeof(STRUCT_SCORE));
 
