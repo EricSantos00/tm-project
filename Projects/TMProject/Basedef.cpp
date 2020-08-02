@@ -136,6 +136,32 @@ int BASE_GetSum(char* p, int size)
 	return sum;
 }
 
+int BASE_GetSum2(char* p, int size)
+{
+    int sum = 0;
+
+    for (int i = 0; i < size; ++i)
+    {
+        int mod = i % 9;
+        if (mod == 0)
+            sum += 2 * p[i];
+        if (mod == 1)
+            sum += p[i] ^ 0xFF;
+        if (mod == 2)
+            sum += p[i] / 3;
+        if (mod == 3)
+            sum += 2 * p[i];
+        if (mod == 4)
+            sum -= p[i] ^ 0x5A;
+        if (mod == 5)
+            sum -= p[i];
+        else
+            sum += p[i] / 5;
+    }
+
+    return sum;
+}
+
 int BASE_ReadMessageBin()
 {
 	memset(g_pMessageStringTable, 0, sizeof g_pMessageStringTable);
