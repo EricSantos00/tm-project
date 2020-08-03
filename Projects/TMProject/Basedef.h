@@ -30,6 +30,13 @@ struct MSG_STANDARDPARM
 	int Parm;
 };
 
+struct MSG_STANDARDPARM2
+{
+	MSG_STANDARD Header;
+	int Parm1;
+	int Parm2;
+};
+
 struct STRUCT_SCORE
 {
 	short Level;
@@ -890,6 +897,43 @@ struct MSG_DeleteCharacter
 	int Slot;
 	char MobName[16];
 	char Password[16];
+};
+
+constexpr auto MSG_CNFNewCharacter_Opcode = 0x110;
+struct MSG_CNFNewCharacter
+{
+	MSG_STANDARD Header;
+	STRUCT_SELCHAR SelChar;
+};
+
+constexpr auto MSG_CNFDeleteCharacter_Opcode = 0x112;
+struct MSG_CNFDeleteCharacter
+{
+	MSG_STANDARD Header;
+	STRUCT_SELCHAR SelChar;
+};
+
+constexpr auto MSG_CNFCharacterLogin_Opcode = 0x114;
+struct MSG_CNFCharacterLogin
+{
+	MSG_STANDARD Header;
+	short PosX;
+	short PosY;
+	STRUCT_MOB MOB;
+	unsigned short Slot;
+	unsigned short ClientID;
+	unsigned short Weather;
+	char ShortSkill[16];
+	STRUCT_EXT1 Ext1;
+	STRUCT_EXT2 Ext2;
+};
+
+constexpr auto MSG_InitGuldName_Opcode = 0x1D6;
+struct MSG_INITGULDNAME
+{
+	MSG_STANDARD Header;
+	int Parm;
+	char GuildName[12];
 };
 
 constexpr auto MSG_Attack_Multi = 0x367;

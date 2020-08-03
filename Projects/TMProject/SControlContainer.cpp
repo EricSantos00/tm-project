@@ -87,11 +87,14 @@ int SControlContainer::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, i
 			}
 
 			pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pTop);
+
+			if (pCurrentControl == nullptr)
+				break;
+
 			ParentPosX -= static_cast<int>(pCurrentControl->m_nPosX);
 			ParentPosY -= static_cast<int>(pCurrentControl->m_nPosY);
-
 			++b;
-		} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
+		} while (pCurrentControl != pRootControl);
 	} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
 
 	if (!bProcessed)
@@ -273,7 +276,7 @@ int SControlContainer::FrameMove(unsigned int dwServerTime)
 			{
 				pCurrentControl->FrameMove2(m_pDrawControl, vParentPos, vControlLayer, 0);
 
-				if (m_pDown)
+				if (pCurrentControl->m_pDown)
 				{
 					vParentPos.x += pCurrentControl->m_nPosX;
 					vParentPos.y += pCurrentControl->m_nPosY;

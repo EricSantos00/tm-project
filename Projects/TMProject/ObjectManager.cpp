@@ -99,8 +99,9 @@ void ObjectManager::OnPacketEvent(unsigned int dwCode, char* buf)
 			{
 				if (pMsg->DestType == 2)
 					memcpy(&m_stItemCargo[pMsg->DestPos], &pMsg->Item, sizeof(pMsg->Item));
+
+				return;
 			}
-			return;
 		}
 
 		do

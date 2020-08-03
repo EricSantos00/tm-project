@@ -12,6 +12,8 @@
 #include "SControlContainer.h"
 #include "TMObjectContainer.h"
 #include "TMLog.h"
+#include "TMSkillJudgement.h"
+#include "TMEffectSkinMesh.h"
 
 TMSelectCharScene::TMSelectCharScene() :
 	TMScene(),
@@ -1189,7 +1191,7 @@ int TMSelectCharScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, i
 
 		m_pHuman[i]->m_bSelected = 1;
 
-		if (pSelChar->m_nPosY == (547.0f * RenderDevice::m_fHeightRatio))
+		if (pSelChar->m_nPosY == (int)(547.0f * RenderDevice::m_fHeightRatio))
 		{
 			if (g_pSoundManager)
 			{
@@ -1384,7 +1386,6 @@ int TMSelectCharScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, i
 		LookSampleHuman(i, 1, 1);
 
 		auto pPanel = static_cast<SPanel*>(m_pControlContainer->FindControl(1282u));
-
 		pPanel->SetVisible(1);
 
 		if (!m_pHuman[i]->m_pMantua)
@@ -1437,159 +1438,629 @@ int TMSelectCharScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, i
 			m_pMessageBox->SetMessage(szName, 1u, g_pMessageStringTable[200]);
 			m_pMessageBox->SetVisible(1);
 		}
+		return 1;
 	}
-	else if (m_pCreateWin->IsVisible() == 1)
+	if (m_pCreateWin->IsVisible() == 1)
 	{
 		return 1;
 	}
-	else
+
+	for (int nIndex = 0; nIndex < 4; ++nIndex)
 	{
-		for (int nIndex = 0; nIndex < 4; ++nIndex)
-		{
-			if (m_pSampleHuman[nIndex])
-				m_pSampleHuman[nIndex]->m_bSelected = 0;
-		}
-
-		char* szStr[4]{};
-		char* szInt[4]{};
-		char* szDex[4]{};
-		char* szCon[4]{};
-
-		for (int nIndex = 0; nIndex < 4; ++nIndex)
-		{
-			if (pOver && m_pSampleHuman[nIndex] && m_pSampleHuman[nIndex] == pOver && pOver->m_bMouseOver == 1)
-			{
-				m_pSampleHuman[nIndex]->m_bSelected = 1;
-
-				g_pObjectManager->m_pTargetObject = static_cast<TMObject*>(m_pSampleHuman[nIndex]);
-
-				// Oh my god, this must be like this temporarily
-				szStr[0] = (char*)"8";
-				szStr[1] = (char*)"5";
-				szStr[2] = (char*)"6";
-				szStr[3] = (char*)"8";
-				szInt[0] = (char*)"4";
-				szInt[1] = (char*)"8";
-				szInt[2] = (char*)"6";
-				szInt[3] = (char*)"9";
-				szDex[0] = (char*)"7";
-				szDex[1] = (char*)"5";
-				szDex[2] = (char*)"9";
-				szDex[3] = (char*)"13";
-				szCon[0] = (char*)"6";
-				szCon[1] = (char*)"5";
-				szCon[2] = (char*)"5";
-				szCon[3] = (char*)"6";
-
-				float fHeight[4]{ 1.8f, 1.6f, 0.80000001f, 0.60000002f };
-
-				auto pStrText = static_cast<SText*>(m_pControlContainer->FindControl(1562u));
-				auto pIntText = static_cast<SText*>(m_pControlContainer->FindControl(1563u));
-				auto pDexText = static_cast<SText*>(m_pControlContainer->FindControl(1564u));
-				auto pConText = static_cast<SText*>(m_pControlContainer->FindControl(1565u));
-
-				pStrText->SetText(szStr[nIndex], 0);
-				pIntText->SetText(szInt[nIndex], 0);
-				pDexText->SetText(szDex[nIndex], 0);
-				pConText->SetText(szCon[nIndex], 0);
-
-				m_fFocusHeight = fHeight[nIndex];
-
-				LookSampleHuman(nIndex, 1, 0);
-
-				float fStrWidth[4]{ 80.0f, 50.0f, 60.0f, 80.0f };
-				float fIntWidth[4]{ 40.0f, 80.0f, 60.0f, 90.0f };
-				float fDexWidth[4]{ 70.0f, 50.0f, 90.0f, 130.0f };
-				float fConWidth[4]{ 60.0f, 50.0f, 50.0f, 60.0f };
-
-				SPanel* pStat[4]{};
-
-				pStat[0] = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_CREATE_CHAR_STAT_BAR1));
-				pStat[1] = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_CREATE_CHAR_STAT_BAR2));
-				pStat[2] = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_CREATE_CHAR_STAT_BAR3));
-				pStat[3] = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_CREATE_CHAR_STAT_BAR4));
-
-				auto pListBox = static_cast<SListBox*>(m_pControlContainer->FindControl(TMP_CREATE_CHAR_DESC));
-
-				if (nIndex >= 0 && nIndex < 4)
-				{
-					pStat[0]->m_nWidth = fStrWidth[nIndex];
-					pStat[1]->m_nWidth = fIntWidth[nIndex];
-					pStat[2]->m_nWidth = fDexWidth[nIndex];
-					pStat[3]->m_nWidth = fConWidth[nIndex];
-
-					static_cast<SPanel*>(m_pControlContainer->FindControl(1542u))->SetVisible(1);
-				}
-
-				switch (nIndex)
-				{
-				case 0:
-					static_cast<SText*>(m_pControlContainer->FindControl(TMT_CREATE_CLASS))->SetText(g_pMessageStringTable[121], 0);
-					pListBox->Empty();
-					TMScene::LoadMsgText(pListBox, (char*)"UI\\chardesctrans.txt");
-					break;
-				case 1:
-					static_cast<SText*>(m_pControlContainer->FindControl(TMT_CREATE_CLASS))->SetText(g_pMessageStringTable[122], 0);
-					pListBox->Empty();
-					TMScene::LoadMsgText(pListBox, (char*)"UI\\chardescfoema.txt");
-					break;
-				case 2:
-					static_cast<SText*>(m_pControlContainer->FindControl(TMT_CREATE_CLASS))->SetText(g_pMessageStringTable[123], 0);
-					pListBox->Empty();
-					TMScene::LoadMsgText(pListBox, (char*)"UI\\chardescbeast.txt");
-					break;
-				case 3:
-					static_cast<SText*>(m_pControlContainer->FindControl(TMT_CREATE_CLASS))->SetText(g_pMessageStringTable[124], 0);
-					pListBox->Empty();
-					TMScene::LoadMsgText(pListBox, (char*)"UI\\chardeschunter.txt");
-					break;
-				}
-
-				if (g_pSoundManager)
-				{
-					auto pSoundData = g_pSoundManager->GetSoundData(57);
-
-					if (pSoundData)
-						pSoundData->Play(0, 0);
-				}
-
-				switch (nIndex)
-				{
-				case 0:
-					m_pSampleHuman[nIndex]->SetAnimation(ECHAR_MOTION::ECMOTION_ATTACK02, 0);
-					break;
-				case 1:
-					m_pSampleHuman[nIndex]->SetAnimation(ECHAR_MOTION::ECMOTION_ATTACK06, 0);
-					break;
-				case 2:
-					m_pSampleHuman[nIndex]->SetAnimation(ECHAR_MOTION::ECMOTION_ATTACK05, 0);
-					break;
-				case 3:
-					m_pSampleHuman[nIndex]->SetAnimation(ECHAR_MOTION::ECMOTION_ATTACK05, 0);
-					break;
-				}
-
-				if (nIndex == 3 && g_pSoundManager)
-				{
-					auto pSoundData = g_pSoundManager->GetSoundData(134);
-
-					if (pSoundData)
-						pSoundData->Play(0, 0);
-				}
-
-				return 1;
-			}
-		}
-
-		m_pMouseOverHuman = nullptr;
+		if (m_pSampleHuman[nIndex])
+			m_pSampleHuman[nIndex]->m_bSelected = 0;
 	}
+
+	char* szStr[4]{};
+	char* szInt[4]{};
+	char* szDex[4]{};
+	char* szCon[4]{};
+
+	for (int nIndex = 0; nIndex < 4; ++nIndex)
+	{
+		if (pOver && m_pSampleHuman[nIndex] && m_pSampleHuman[nIndex] == pOver && pOver->m_bMouseOver == 1)
+		{
+			m_pSampleHuman[nIndex]->m_bSelected = 1;
+
+			g_pObjectManager->m_pTargetObject = static_cast<TMObject*>(m_pSampleHuman[nIndex]);
+
+			// Oh my god, this must be like this temporarily
+			szStr[0] = (char*)"8";
+			szStr[1] = (char*)"5";
+			szStr[2] = (char*)"6";
+			szStr[3] = (char*)"8";
+			szInt[0] = (char*)"4";
+			szInt[1] = (char*)"8";
+			szInt[2] = (char*)"6";
+			szInt[3] = (char*)"9";
+			szDex[0] = (char*)"7";
+			szDex[1] = (char*)"5";
+			szDex[2] = (char*)"9";
+			szDex[3] = (char*)"13";
+			szCon[0] = (char*)"6";
+			szCon[1] = (char*)"5";
+			szCon[2] = (char*)"5";
+			szCon[3] = (char*)"6";
+
+			float fHeight[4]{ 1.8f, 1.6f, 0.80000001f, 0.60000002f };
+
+			auto pStrText = static_cast<SText*>(m_pControlContainer->FindControl(1562u));
+			auto pIntText = static_cast<SText*>(m_pControlContainer->FindControl(1563u));
+			auto pDexText = static_cast<SText*>(m_pControlContainer->FindControl(1564u));
+			auto pConText = static_cast<SText*>(m_pControlContainer->FindControl(1565u));
+
+			pStrText->SetText(szStr[nIndex], 0);
+			pIntText->SetText(szInt[nIndex], 0);
+			pDexText->SetText(szDex[nIndex], 0);
+			pConText->SetText(szCon[nIndex], 0);
+
+			m_fFocusHeight = fHeight[nIndex];
+
+			LookSampleHuman(nIndex, 1, 0);
+
+			float fStrWidth[4]{ 80.0f, 50.0f, 60.0f, 80.0f };
+			float fIntWidth[4]{ 40.0f, 80.0f, 60.0f, 90.0f };
+			float fDexWidth[4]{ 70.0f, 50.0f, 90.0f, 130.0f };
+			float fConWidth[4]{ 60.0f, 50.0f, 50.0f, 60.0f };
+
+			SPanel* pStat[4]{};
+
+			pStat[0] = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_CREATE_CHAR_STAT_BAR1));
+			pStat[1] = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_CREATE_CHAR_STAT_BAR2));
+			pStat[2] = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_CREATE_CHAR_STAT_BAR3));
+			pStat[3] = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_CREATE_CHAR_STAT_BAR4));
+
+			auto pListBox = static_cast<SListBox*>(m_pControlContainer->FindControl(TMP_CREATE_CHAR_DESC));
+
+			if (nIndex >= 0 && nIndex < 4)
+			{
+				pStat[0]->m_nWidth = fStrWidth[nIndex];
+				pStat[1]->m_nWidth = fIntWidth[nIndex];
+				pStat[2]->m_nWidth = fDexWidth[nIndex];
+				pStat[3]->m_nWidth = fConWidth[nIndex];
+
+				static_cast<SPanel*>(m_pControlContainer->FindControl(1542u))->SetVisible(1);
+			}
+
+			switch (nIndex)
+			{
+			case 0:
+				static_cast<SText*>(m_pControlContainer->FindControl(TMT_CREATE_CLASS))->SetText(g_pMessageStringTable[121], 0);
+				pListBox->Empty();
+				TMScene::LoadMsgText(pListBox, (char*)"UI\\chardesctrans.txt");
+				break;
+			case 1:
+				static_cast<SText*>(m_pControlContainer->FindControl(TMT_CREATE_CLASS))->SetText(g_pMessageStringTable[122], 0);
+				pListBox->Empty();
+				TMScene::LoadMsgText(pListBox, (char*)"UI\\chardescfoema.txt");
+				break;
+			case 2:
+				static_cast<SText*>(m_pControlContainer->FindControl(TMT_CREATE_CLASS))->SetText(g_pMessageStringTable[123], 0);
+				pListBox->Empty();
+				TMScene::LoadMsgText(pListBox, (char*)"UI\\chardescbeast.txt");
+				break;
+			case 3:
+				static_cast<SText*>(m_pControlContainer->FindControl(TMT_CREATE_CLASS))->SetText(g_pMessageStringTable[124], 0);
+				pListBox->Empty();
+				TMScene::LoadMsgText(pListBox, (char*)"UI\\chardeschunter.txt");
+				break;
+			}
+
+			if (g_pSoundManager)
+			{
+				auto pSoundData = g_pSoundManager->GetSoundData(57);
+
+				if (pSoundData)
+					pSoundData->Play(0, 0);
+			}
+
+			switch (nIndex)
+			{
+			case 0:
+				m_pSampleHuman[nIndex]->SetAnimation(ECHAR_MOTION::ECMOTION_ATTACK02, 0);
+				break;
+			case 1:
+				m_pSampleHuman[nIndex]->SetAnimation(ECHAR_MOTION::ECMOTION_ATTACK06, 0);
+				break;
+			case 2:
+				m_pSampleHuman[nIndex]->SetAnimation(ECHAR_MOTION::ECMOTION_ATTACK05, 0);
+				break;
+			case 3:
+				m_pSampleHuman[nIndex]->SetAnimation(ECHAR_MOTION::ECMOTION_ATTACK05, 0);
+				break;
+			}
+
+			if (nIndex == 3 && g_pSoundManager)
+			{
+				auto pSoundData = g_pSoundManager->GetSoundData(134);
+
+				if (pSoundData)
+					pSoundData->Play(0, 0);
+			}
+
+			return 1;
+		}
+	}
+
+	m_pMouseOverHuman = nullptr;
 
 	return 1;
 }
 
 int TMSelectCharScene::OnPacketEvent(unsigned int dwCode, char* buf)
 {
+	if (TMScene::OnPacketEvent(dwCode, buf) == 1)
+		return 1;
+
+	MSG_STANDARD* pStd = reinterpret_cast<MSG_STANDARD*>(buf);
+
+	if (buf == nullptr)
+		return 0;
+
+	switch (pStd->Type)
+	{
+	case 0x3B4:
+	{
+		MSG_STANDARDPARM2* pParm2 = reinterpret_cast<MSG_STANDARDPARM2*>(pStd);
+		int nIndex = pParm2->Parm1;
+
+		if (nIndex < 0 || nIndex > 3)
+			return 1;
+
+		TMVector3 vec{};
+		if (nIndex < 2)
+			vec = TMVector3(m_vecSelPos.x, 0.0f, (float)(m_vecSelPos.y - 2.8f) + (float)((float)nIndex * 1.4f));
+		else
+			vec = TMVector3(m_vecSelPos.x - (float)((float)(nIndex - 1) * 1.4f), 0.0f, m_vecSelPos.y);
+
+		if (m_pEffectContainer)
+		{
+			TMSkillJudgement* pEffect = new TMSkillJudgement(vec, 1, 0.1f);
+			m_pEffectContainer->AddChild(pEffect);
+		}
+	}
 	return 1;
+	case 0xFDE:
+	{
+		MSG_CHARPASSWORD* pCnfNewChar = reinterpret_cast<MSG_CHARPASSWORD*>(pStd);
+
+		if (g_AccountLock == 2)
+		{
+			g_AccountLock = 1;
+			return 1;
+		}
+		if (g_AccountLock == 3)
+		{
+			memset(keypass, 0, sizeof(keypass));
+			memset(keypasschage, 0, sizeof(keypasschage));
+			m_pAccountLockDlgTitle->SetText((char*)"", 0);
+			g_AccountLock = 4;
+			m_pAccountLockDlgTitle->SetText(g_UIString[238], 0);
+			SetvirtualKey();
+			m_pAccountLockDlg->SetVisible(1);
+			return 1;
+		}
+	}
+	return 1;
+	case 0xFDF:
+	{
+		m_pAccountLockDlg->SetVisible(1);
+		g_AccountLock = 0;
+		SetvirtualKey();
+		m_pAccountLockDlgTitle->SetText(g_UIString[236], 0);
+	}
+	return 1;
+	case MSG_CNFNewCharacter_Opcode:
+	{
+		m_pMessagePanel->SetVisible(0, 1);
+		MSG_CNFNewCharacter* pNewCharacter = reinterpret_cast<MSG_CNFNewCharacter*>(pStd);
+
+		memcpy(&g_pObjectManager->m_stSelCharData, &pNewCharacter->SelChar, sizeof(pNewCharacter->SelChar));
+
+		STRUCT_SELCHAR* pSelChar = &g_pObjectManager->m_stSelCharData;
+		for (int i = 0; i < 4; ++i)
+		{
+			if (pSelChar && pSelChar->MobName[i][0])
+			{
+				if (m_pHuman[i] && m_pHuman[i]->m_pFamiliar)
+					m_pHuman[i]->m_pFamiliar->m_pOwner = 0;
+
+				g_pObjectManager->DeleteObject(m_pHuman[i]);
+				m_pHuman[i] = nullptr;
+				m_pHuman[i] = new TMHuman(this);
+
+				sprintf(m_pHuman[i]->m_szName, "%s", pSelChar->MobName[i]);
+				memcpy(&m_pHuman[i]->m_stScore, &pSelChar->Score[i], sizeof(pSelChar->Score[i]));
+				m_pHuman[i]->m_stLookInfo.FaceMesh = g_pItemList[pSelChar->Equip[i][0].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.FaceSkin = g_pItemList[pSelChar->Equip[i][0].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.HelmMesh = g_pItemList[pSelChar->Equip[i][1].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.HelmSkin = g_pItemList[pSelChar->Equip[i][1].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.CoatMesh = g_pItemList[pSelChar->Equip[i][2].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.CoatSkin = g_pItemList[pSelChar->Equip[i][2].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.PantsMesh = g_pItemList[pSelChar->Equip[i][3].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.PantsSkin = g_pItemList[pSelChar->Equip[i][3].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.GlovesMesh = g_pItemList[pSelChar->Equip[i][4].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.GlovesSkin = g_pItemList[pSelChar->Equip[i][4].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.BootsMesh = g_pItemList[pSelChar->Equip[i][5].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.BootsSkin = g_pItemList[pSelChar->Equip[i][5].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.LeftMesh = g_pItemList[pSelChar->Equip[i][6].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.LeftSkin = g_pItemList[pSelChar->Equip[i][6].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.RightMesh = g_pItemList[pSelChar->Equip[i][7].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.RightSkin = g_pItemList[pSelChar->Equip[i][7].sIndex].nIndexTexture;
+				m_pHuman[i]->m_sFamiliar = pSelChar->Equip[i][13].sIndex;
+				m_pHuman[i]->m_sCostume = pSelChar->Equip[i][12].sIndex;
+				m_pHuman[i]->m_wMantuaSkin = g_pItemList[pSelChar->Equip[i][15].sIndex].nIndexTexture;
+
+				m_pHuman[i]->m_stSancInfo.Sanc0 = BASE_GetItemSanc(pSelChar->Equip[i]);
+				m_pHuman[i]->m_stSancInfo.Sanc1 = BASE_GetItemSanc(&pSelChar->Equip[i][1]);
+				m_pHuman[i]->m_stSancInfo.Sanc2 = BASE_GetItemSanc(&pSelChar->Equip[i][2]);
+				m_pHuman[i]->m_stSancInfo.Sanc3 = BASE_GetItemSanc(&pSelChar->Equip[i][3]);
+				m_pHuman[i]->m_stSancInfo.Sanc4 = BASE_GetItemSanc(&pSelChar->Equip[i][4]);
+				m_pHuman[i]->m_stSancInfo.Sanc5 = BASE_GetItemSanc(&pSelChar->Equip[i][5]);
+				m_pHuman[i]->m_stSancInfo.Sanc7 = BASE_GetItemSanc(&pSelChar->Equip[i][6]);
+				m_pHuman[i]->m_stSancInfo.Sanc6 = BASE_GetItemSanc(&pSelChar->Equip[i][7]);
+				m_pHuman[i]->m_ucMantuaSanc = BASE_GetItemSanc(&pSelChar->Equip[i][15]);
+
+				m_pHuman[i]->m_stSancInfo.Legend0 = g_pItemList[pSelChar->Equip[i][0].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend1 = g_pItemList[pSelChar->Equip[i][1].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend2 = g_pItemList[pSelChar->Equip[i][2].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend3 = g_pItemList[pSelChar->Equip[i][3].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend4 = g_pItemList[pSelChar->Equip[i][4].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend5 = g_pItemList[pSelChar->Equip[i][5].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend7 = g_pItemList[pSelChar->Equip[i][6].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend6 = g_pItemList[pSelChar->Equip[i][7].sIndex].nGrade;
+				m_pHuman[i]->m_ucMantuaLegend = g_pItemList[pSelChar->Equip[i][15].sIndex].nGrade;
+
+				m_pHuman[i]->m_stColorInfo.Sanc0 = BASE_GetItemColorEffect(pSelChar->Equip[i]);
+				m_pHuman[i]->m_stColorInfo.Sanc1 = BASE_GetItemColorEffect(&pSelChar->Equip[i][1]);
+				m_pHuman[i]->m_stColorInfo.Sanc2 = BASE_GetItemColorEffect(&pSelChar->Equip[i][2]);
+				m_pHuman[i]->m_stColorInfo.Sanc3 = BASE_GetItemColorEffect(&pSelChar->Equip[i][3]);
+				m_pHuman[i]->m_stColorInfo.Sanc4 = BASE_GetItemColorEffect(&pSelChar->Equip[i][4]);
+				m_pHuman[i]->m_stColorInfo.Sanc5 = BASE_GetItemColorEffect(&pSelChar->Equip[i][5]);
+				m_pHuman[i]->m_stColorInfo.Sanc7 = BASE_GetItemColorEffect(&pSelChar->Equip[i][6]);
+				m_pHuman[i]->m_stColorInfo.Sanc6 = BASE_GetItemColorEffect(&pSelChar->Equip[i][7]);
+
+				m_pHuman[i]->m_cMantua = pSelChar->Equip[i][15].sIndex > 0;
+				float fCon = (float)m_pHuman[i]->m_stScore.Con;
+				m_pHuman[i]->SetCharHeight(fCon);
+				m_pHuman[i]->SetRace(pSelChar->Equip[i][0].sIndex);
+				m_pHuman[i]->m_stScore.Hp = 1;
+
+				int nWeaponTypeL = BASE_GetItemAbility(&pSelChar->Equip[i][6], 21);
+				if (nWeaponTypeL == 41)
+				{
+					m_pHuman[i]->m_stLookInfo.RightMesh = m_pHuman[i]->m_stLookInfo.LeftMesh;
+					m_pHuman[i]->m_stLookInfo.RightSkin = m_pHuman[i]->m_stLookInfo.LeftSkin;
+				}
+
+				m_pHuman[i]->InitObject();
+				m_pHuman[i]->CheckWeapon(pSelChar->Equip[i][6].sIndex, pSelChar->Equip[i][7].sIndex);
+				m_pHuman[i]->InitAngle(0.0f, -45.0f, 0.0f);
+
+				D3DXVECTOR3 vecPos;
+				D3DXVECTOR3 vecStartPos = D3DXVECTOR3(2053.0f, 0.0f, 2048.2f);
+				D3DXVECTOR3 vecEndPos = D3DXVECTOR3(2048.2f, 0.0f, 2053.0f);
+
+				D3DXVec3Lerp(&vecPos, &vecStartPos, &vecEndPos, i * 0.333f);
+
+				m_pHuman[i]->InitPosition(vecPos.x, vecPos.y, vecPos.z);
+
+				m_pHumanContainer->AddChild(m_pHuman[i]);
+			}
+		}
+
+		auto pSoundManager = g_pSoundManager;
+		if (pSoundManager)
+		{
+			auto pSoundData = pSoundManager->GetSoundData(57);
+			if (pSoundData)
+			{
+				pSoundData->Play();
+			}
+		}
+
+		VisibleSelectCreate(1);
+
+		bool bHasEmpty = false;
+		for (int i = 0; i < 4; ++i)
+		{
+			if (!pSelChar->MobName[i][0])
+			{
+				bHasEmpty = true;
+				break;
+			}
+		}
+
+		SButton* pButton = (SButton*)m_pControlContainer->FindControl(4613);
+		if (bHasEmpty)
+		{
+			m_pNewCharPanel->SetVisible(1);
+			pButton->SetEnable(1);
+		}
+		else
+		{
+			m_pNewCharPanel->SetVisible(0);
+			pButton->SetEnable(0);
+		}
+	}
+	return 1;
+	case 0x11A:
+	{
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[19], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+	}
+	return 1;
+	case MSG_CNFDeleteCharacter_Opcode:
+	{
+		m_pMessagePanel->SetVisible(0, 1);
+		MSG_CNFNewCharacter* pNewCharacter = reinterpret_cast<MSG_CNFNewCharacter*>(pStd);
+
+		memcpy(&g_pObjectManager->m_stSelCharData, &pNewCharacter->SelChar, sizeof(pNewCharacter->SelChar));
+
+		STRUCT_SELCHAR* pSelChar = &g_pObjectManager->m_stSelCharData;
+		for (int i = 0; i < 4; ++i)
+		{
+			if (pSelChar && !pSelChar->MobName[i][0])
+			{
+				if (m_pHuman[i] && m_pHuman[i]->m_pFamiliar)
+					m_pHuman[i]->m_pFamiliar->m_pOwner = 0;
+
+				g_pObjectManager->DeleteObject(m_pHuman[i]);
+				m_pHuman[i] = nullptr;
+				continue;
+			}
+			if (pSelChar && pSelChar->MobName[i][0])
+			{
+				if (m_pHuman[i] && m_pHuman[i]->m_pFamiliar)
+					m_pHuman[i]->m_pFamiliar->m_pOwner = 0;
+
+				g_pObjectManager->DeleteObject(m_pHuman[i]);
+				m_pHuman[i] = nullptr;
+				m_pHuman[i] = new TMHuman(this);
+
+				sprintf(m_pHuman[i]->m_szName, "%s", pSelChar->MobName[i]);
+				memcpy(&m_pHuman[i]->m_stScore, &pSelChar->Score[i], sizeof(pSelChar->Score[i]));
+				m_pHuman[i]->m_stLookInfo.FaceMesh = g_pItemList[pSelChar->Equip[i][0].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.FaceSkin = g_pItemList[pSelChar->Equip[i][0].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.HelmMesh = g_pItemList[pSelChar->Equip[i][1].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.HelmSkin = g_pItemList[pSelChar->Equip[i][1].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.CoatMesh = g_pItemList[pSelChar->Equip[i][2].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.CoatSkin = g_pItemList[pSelChar->Equip[i][2].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.PantsMesh = g_pItemList[pSelChar->Equip[i][3].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.PantsSkin = g_pItemList[pSelChar->Equip[i][3].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.GlovesMesh = g_pItemList[pSelChar->Equip[i][4].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.GlovesSkin = g_pItemList[pSelChar->Equip[i][4].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.BootsMesh = g_pItemList[pSelChar->Equip[i][5].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.BootsSkin = g_pItemList[pSelChar->Equip[i][5].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.LeftMesh = g_pItemList[pSelChar->Equip[i][6].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.LeftSkin = g_pItemList[pSelChar->Equip[i][6].sIndex].nIndexTexture;
+				m_pHuman[i]->m_stLookInfo.RightMesh = g_pItemList[pSelChar->Equip[i][7].sIndex].nIndexMesh;
+				m_pHuman[i]->m_stLookInfo.RightSkin = g_pItemList[pSelChar->Equip[i][7].sIndex].nIndexTexture;
+				m_pHuman[i]->m_sFamiliar = pSelChar->Equip[i][13].sIndex;
+				m_pHuman[i]->m_sCostume = pSelChar->Equip[i][12].sIndex;
+				m_pHuman[i]->m_wMantuaSkin = g_pItemList[pSelChar->Equip[i][15].sIndex].nIndexTexture;
+
+				m_pHuman[i]->m_stSancInfo.Sanc0 = BASE_GetItemSanc(pSelChar->Equip[i]);
+				m_pHuman[i]->m_stSancInfo.Sanc1 = BASE_GetItemSanc(&pSelChar->Equip[i][1]);
+				m_pHuman[i]->m_stSancInfo.Sanc2 = BASE_GetItemSanc(&pSelChar->Equip[i][2]);
+				m_pHuman[i]->m_stSancInfo.Sanc3 = BASE_GetItemSanc(&pSelChar->Equip[i][3]);
+				m_pHuman[i]->m_stSancInfo.Sanc4 = BASE_GetItemSanc(&pSelChar->Equip[i][4]);
+				m_pHuman[i]->m_stSancInfo.Sanc5 = BASE_GetItemSanc(&pSelChar->Equip[i][5]);
+				m_pHuman[i]->m_stSancInfo.Sanc7 = BASE_GetItemSanc(&pSelChar->Equip[i][6]);
+				m_pHuman[i]->m_stSancInfo.Sanc6 = BASE_GetItemSanc(&pSelChar->Equip[i][7]);
+				m_pHuman[i]->m_ucMantuaSanc = BASE_GetItemSanc(&pSelChar->Equip[i][15]);
+
+				m_pHuman[i]->m_stSancInfo.Legend0 = g_pItemList[pSelChar->Equip[i][0].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend1 = g_pItemList[pSelChar->Equip[i][1].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend2 = g_pItemList[pSelChar->Equip[i][2].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend3 = g_pItemList[pSelChar->Equip[i][3].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend4 = g_pItemList[pSelChar->Equip[i][4].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend5 = g_pItemList[pSelChar->Equip[i][5].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend7 = g_pItemList[pSelChar->Equip[i][6].sIndex].nGrade;
+				m_pHuman[i]->m_stSancInfo.Legend6 = g_pItemList[pSelChar->Equip[i][7].sIndex].nGrade;
+				m_pHuman[i]->m_ucMantuaLegend = g_pItemList[pSelChar->Equip[i][15].sIndex].nGrade;
+
+				m_pHuman[i]->m_stColorInfo.Sanc0 = BASE_GetItemColorEffect(pSelChar->Equip[i]);
+				m_pHuman[i]->m_stColorInfo.Sanc1 = BASE_GetItemColorEffect(&pSelChar->Equip[i][1]);
+				m_pHuman[i]->m_stColorInfo.Sanc2 = BASE_GetItemColorEffect(&pSelChar->Equip[i][2]);
+				m_pHuman[i]->m_stColorInfo.Sanc3 = BASE_GetItemColorEffect(&pSelChar->Equip[i][3]);
+				m_pHuman[i]->m_stColorInfo.Sanc4 = BASE_GetItemColorEffect(&pSelChar->Equip[i][4]);
+				m_pHuman[i]->m_stColorInfo.Sanc5 = BASE_GetItemColorEffect(&pSelChar->Equip[i][5]);
+				m_pHuman[i]->m_stColorInfo.Sanc7 = BASE_GetItemColorEffect(&pSelChar->Equip[i][6]);
+				m_pHuman[i]->m_stColorInfo.Sanc6 = BASE_GetItemColorEffect(&pSelChar->Equip[i][7]);
+
+				m_pHuman[i]->m_cMantua = pSelChar->Equip[i][15].sIndex > 0;
+				float fCon = (float)m_pHuman[i]->m_stScore.Con;
+				m_pHuman[i]->SetCharHeight(fCon);
+				m_pHuman[i]->SetRace(pSelChar->Equip[i][0].sIndex);
+				m_pHuman[i]->m_stScore.Hp = 1;
+
+				int nWeaponTypeL = BASE_GetItemAbility(&pSelChar->Equip[i][6], 21);
+				if (nWeaponTypeL == 41)
+				{
+					m_pHuman[i]->m_stLookInfo.RightMesh = m_pHuman[i]->m_stLookInfo.LeftMesh;
+					m_pHuman[i]->m_stLookInfo.RightSkin = m_pHuman[i]->m_stLookInfo.LeftSkin;
+				}
+
+				m_pHuman[i]->InitObject();
+				m_pHuman[i]->CheckWeapon(pSelChar->Equip[i][6].sIndex, pSelChar->Equip[i][7].sIndex);
+				m_pHuman[i]->InitAngle(0.0f, -45.0f, 0.0f);
+
+				D3DXVECTOR3 vecPos;
+				D3DXVECTOR3 vecStartPos = D3DXVECTOR3(2053.0f, 0.0f, 2048.2f);
+				D3DXVECTOR3 vecEndPos = D3DXVECTOR3(2048.2f, 0.0f, 2053.0f);
+
+				D3DXVec3Lerp(&vecPos, &vecStartPos, &vecEndPos, i * 0.333f);
+
+				m_pHuman[i]->InitPosition(vecPos.x, vecPos.y, vecPos.z);
+
+				m_pHumanContainer->AddChild(m_pHuman[i]);
+			}
+		}
+
+		bool bHasEmpty = false;
+		for (int i = 0; i < 4; ++i)
+		{
+			if (!pSelChar->MobName[i][0])
+			{
+				bHasEmpty = true;
+				break;
+			}
+		}
+
+		SButton* pButton = (SButton*)m_pControlContainer->FindControl(4613);
+		if (bHasEmpty)
+		{
+			m_pNewCharPanel->SetVisible(1);
+			pButton->SetEnable(1);
+		}
+		else
+		{
+			m_pNewCharPanel->SetVisible(0);
+			pButton->SetEnable(0);
+		}
+	}
+	return 1;
+	case 0x11B:
+	{
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[20], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+	}
+	return 1;
+	case MSG_CNFCharacterLogin_Opcode:
+	{
+		g_pTimerManager->SetServerTime(pStd->Tick);
+		MSG_CNFCharacterLogin* pCharLogin = (MSG_CNFCharacterLogin*)pStd;
+
+		g_pObjectManager->m_dwCharID = pCharLogin->ClientID;
+		memcpy(&g_pObjectManager->m_stMobData, &pCharLogin->MOB, sizeof(pCharLogin->MOB));
+		g_pObjectManager->m_nFakeExp = pCharLogin->Ext1.Data[0];
+		g_pObjectManager->m_stMobData.HomeTownX = pCharLogin->PosX;
+		g_pObjectManager->m_stMobData.HomeTownY = pCharLogin->PosY;
+		memcpy(g_pObjectManager->m_cShortSkill, g_pObjectManager->m_stMobData.ShortSkill, 4);
+		memcpy(&g_pObjectManager->m_cShortSkill[4], pCharLogin->ShortSkill, sizeof(pCharLogin->ShortSkill));
+
+		for (int k = 0; k < 20; ++k)
+		{
+			if ((unsigned char)g_pObjectManager->m_cShortSkill[k] < 24)
+				g_pObjectManager->m_cShortSkill[k] += 24 * g_pObjectManager->m_stMobData.Class;
+		}
+
+		g_nWeather = pCharLogin->Weather;
+		g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_FIELD_STATE);
+	}
+	return 1;
+	case 0x119:
+	{
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[21], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+	}
+	return 1;
+	case 0x7A9:
+	{
+		g_bMoveServer = 1;
+	}
+	return 1;
+	case MSG_ReqTransper_Opcode:
+	{
+		MSG_ReqTransper* pReqTransper = (MSG_ReqTransper*)pStd;
+		m_bMovingNow = 0;
+
+		if (pReqTransper->Slot < 0)
+			return 1;
+
+		if (!pReqTransper->Result)
+		{
+			char szCharName[128]{};
+			if (!strcmp(m_pEditRename->GetText(), ""))
+				sprintf(szCharName, g_pMessageStringTable[201], m_pHuman[pReqTransper->Slot]->m_szName);
+			else
+			{
+				sprintf(szCharName, g_pMessageStringTable[201], m_pEditRename->GetText());
+				m_pEditRename->SetText((char*)"");
+			}
+
+			m_pMessagePanel->SetMessage(szCharName, 3500);
+			m_pMessagePanel->SetVisible(1, 1);
+
+			int _idx = 0;
+			for (_idx = 0; _idx < 4; _idx++)
+			{
+				if (m_pHuman[_idx] && m_pHuman[_idx]->m_bSelected)
+					break;
+			}
+
+			if (_idx == 4)
+			{
+				VisibleSelectCreate(1);
+			}
+			else
+			{
+				LookSampleHuman(_idx, 0, 1);
+				m_pHuman[_idx]->m_bSelected = 0;
+			}
+
+			m_pControlContainer->FindControl(1282)->SetVisible(0);
+
+			m_pBtnDelete->SetVisible(0);
+			m_pNewCharPanel->SetVisible(1);
+
+			m_pControlContainer->FindControl(4613)->SetEnable(1);
+
+			g_pObjectManager->m_stSelCharData.HomeTownX[pReqTransper->Slot] = 0;
+			g_pObjectManager->m_stSelCharData.HomeTownY[pReqTransper->Slot] = 0;
+			g_pObjectManager->m_stSelCharData.Guild[pReqTransper->Slot] = 0;
+			g_pObjectManager->m_stSelCharData.Coin[pReqTransper->Slot] = 0;
+			g_pObjectManager->m_stSelCharData.Exp[pReqTransper->Slot] = 0;
+
+			memset(g_pObjectManager->m_stSelCharData.MobName[pReqTransper->Slot], 0, sizeof(g_pObjectManager->m_stSelCharData.MobName[pReqTransper->Slot]));
+			memset(g_pObjectManager->m_stSelCharData.Equip[pReqTransper->Slot], 0, sizeof(g_pObjectManager->m_stSelCharData.Equip[pReqTransper->Slot]));
+			memset(&g_pObjectManager->m_stSelCharData.Score[pReqTransper->Slot], 0, sizeof(g_pObjectManager->m_stSelCharData.Score[pReqTransper->Slot]));
+
+			g_pObjectManager->DeleteObject(m_pHuman[pReqTransper->Slot]);
+			m_pHuman[pReqTransper->Slot] = nullptr;
+			g_pObjectManager->m_cCharacterSlot = -1;
+		}
+		else if (pReqTransper->Result == 1)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[202], 3500);
+			m_pMessagePanel->SetVisible(1, 1);
+			m_pRename->SetVisible(1);
+
+			SEditableText* pEdit = (SEditableText*)m_pControlContainer->FindControl(1569);
+			if (pEdit)
+				m_pControlContainer->SetFocusedControl(pEdit);
+		}
+		else if (pReqTransper->Result == 2)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[203], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+		else if (pReqTransper->Result == 3)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[205], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+		else
+		{
+			if (pReqTransper->Result == 4)
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[1131], 2000);
+			else
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[204], 2000);
+
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+	}
+	return 1;
+	case MSG_InitGuldName_Opcode:
+	{
+		MSG_INITGULDNAME* pGuildName = (MSG_INITGULDNAME*)pStd;
+		memcpy(g_pObjectManager->m_strGuildName[pGuildName->Parm], pGuildName->GuildName, sizeof(pGuildName->GuildName));
+	}
+	return 1;
+	}
+
+	return 0;
 }
 
 int TMSelectCharScene::FrameMove(unsigned int dwServerTime)
