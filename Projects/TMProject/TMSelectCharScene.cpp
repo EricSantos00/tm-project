@@ -1534,7 +1534,7 @@ void TMSelectCharScene::LookSampleHuman(int nIndex, int bLook, int bSelect)
 
 	m_stCameraTick[nEnd].fX = vecLastPos.x - (vecCamDir.x * 4.0f) + (g_pDevice->m_matView._11 * 0.5f);
 	m_stCameraTick[nEnd].fY = fEndHeight;
-	m_stCameraTick[nEnd].fX = vecLastPos.z - (vecCamDir.z * 4.0f) + (g_pDevice->m_matView._11 * 0.5f);
+	m_stCameraTick[nEnd].fZ = vecLastPos.z - (vecCamDir.z * 4.0f) + (g_pDevice->m_matView._31 * 0.5f);
 
 	m_sPlayDemo = 1;
 }
