@@ -4467,7 +4467,7 @@ void TMHuman::SetColorMaterial()
 
                     if (pBill2)
                     {
-                        pBill2->m_vecPosition = TMVector3(m_vecPosition.x, m_fHeight + 0.2, m_vecPosition.y);
+                        pBill2->m_vecPosition = TMVector3(m_vecPosition.x, m_fHeight + 0.2f, m_vecPosition.y);
                         pBill2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
                         g_pCurrentScene->m_pEffectContainer->AddChild(pBill2);
                         m_dwLastHaste = dwServerTime;
@@ -5933,12 +5933,12 @@ int TMHuman::GetChatLen(const char* szString, int* pHeight)
     int nLen = 0;
     if (len >= 41)
     {
-        nLen = 256 * 1.0f;
+        nLen = 256 * 1;
         *pHeight = 50;
     }
     else
     {
-        nLen = (6 * 1.0f) + 20;
+        nLen = static_cast<int>((6 * 1.0f)) + 20;
         *pHeight = 40;
     }
 

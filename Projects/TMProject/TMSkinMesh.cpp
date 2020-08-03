@@ -130,7 +130,7 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 	m_pframeToAnimate[0] = m_pRoot;
 	m_pRoot->m_pParentSkin = this;
 
-	for (int i = 0; i < MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numBone; ++i)
+	for (size_t i = 0; i < MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numBone; ++i)
 	{
 		unsigned int parent_ID = MeshManager::m_BoneAnimationList[m_nBoneAniIndex].pBone[2 * i];
 		unsigned int parent_temp = parent_ID;
@@ -158,7 +158,7 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 	unsigned short* look = (unsigned short*)&m_Look;
 	unsigned char* sanc = (unsigned char*)&m_Sanc;
 
-	for (int i = 0; i < MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numParts; ++i)
+	for (size_t i = 0; i < MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numParts; ++i)
 	{
 		bool god2cos = false;
 		if (look[2 * i] == '_' || look[2 * i] == 'a' || look[2 * i] == 'N' || look[2 * i] == 'L')
@@ -455,7 +455,7 @@ void TMSkinMesh::FrameMove(unsigned int dwServerTime)
 
 		if (dwMod == 1 || !TMSkinMesh::m_nSmooth || g_pDevice->m_fFPS < 10.0f)
 		{
-			for (int Frame = 0; Frame < numAniFrame; ++Frame)
+			for (size_t Frame = 0; Frame < numAniFrame; ++Frame)
 			{
 				if (m_pframeToAnimate[Frame] != nullptr)
 				{
@@ -469,8 +469,8 @@ void TMSkinMesh::FrameMove(unsigned int dwServerTime)
 
 		float* before;
 		float* ori;
-		int EndEdge = 4 * dwMod - 3;
-		for (int j = 0; j < numAniFrame; ++j)
+		unsigned int EndEdge = 4 * dwMod - 3;
+		for (size_t j = 0; j < numAniFrame; ++j)
 		{
 			if (m_pframeToAnimate[j] == nullptr)
 				continue;
@@ -725,7 +725,7 @@ HRESULT TMSkinMesh::InvalidateDeviceObjects()
 
 int TMSkinMesh::SetAnimation(int nIndex)
 {
-	if (MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniTypeCount <= nIndex)
+	if (MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numAniTypeCount <= static_cast<unsigned int>(nIndex))
 		return 0;
 
 	if (m_nAniIndex == nIndex)
@@ -797,14 +797,14 @@ void TMSkinMesh::SetSwingMatrix()
 	LPD3DXMATRIX pmatStart = &MeshManager::m_BoneAnimationList[m_nBoneAniIndex].matAnimation[addr];
 	if (pSW[0])
 	{
-		for (int i = 0; i < 48; ++i)
+		for (size_t i = 0; i < 48; ++i)
 			D3DXMatrixIdentity(&pSW[0]->m_matRot[i]);
 
-		for (int i = 0; i < dwNumTick && i <= 47; ++i)
+		for (size_t i = 0; i < dwNumTick && i <= 47; ++i)
 		{
 			matTrans = pmatStart[dwHandIndex[0] + dwNumBones * i];
 
-			for (int j = 0; j < pSW[0]->m_dwNumIndex - 1; ++j)
+			for (size_t j = 0; j < pSW[0]->m_dwNumIndex - 1; ++j)
 			{
 				matTrans = matTrans * pmatStart[pSW[0]->m_dwIndices[j] + dwNumBones * i];
 			}
@@ -816,13 +816,13 @@ void TMSkinMesh::SetSwingMatrix()
 
 	if (pSW[1])
 	{
-		for (int i = 0; i < 48; ++i)
+		for (size_t i = 0; i < 48; ++i)
 			D3DXMatrixIdentity(&pSW[1]->m_matRot[i]);
-		for (int i = 0; i < dwNumTick && i <= 47; ++i)
+		for (size_t i = 0; i < dwNumTick && i <= 47; ++i)
 		{
 			matTrans = pmatStart[dwHandIndex[1] + dwNumBones * i];
 
-			for (int j = 0; j < pSW[1]->m_dwNumIndex - 1; ++j)
+			for (size_t j = 0; j < pSW[1]->m_dwNumIndex - 1; ++j)
 			{
 				matTrans = matTrans * pmatStart[pSW[1]->m_dwIndices[j] + dwNumBones * i];
 			}

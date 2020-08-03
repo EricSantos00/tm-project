@@ -151,7 +151,7 @@ int CMesh::Render(int nBright)
         if (pMesh->m_pVB->Lock(0, 0, (void**)&pVertex, 0) < 0)
             return 1;
 
-        for (int k = 0; k < pMesh->m_dwAttCount; ++k)
+        for (size_t k = 0; k < pMesh->m_dwAttCount; ++k)
         {
             int nStartIndex = pMesh->m_AttRange[k].VertexStart;
             int nCount = pMesh->m_AttRange[k].VertexCount;
@@ -221,7 +221,7 @@ int CMesh::Render(int nBright)
         if (pMesh->m_pVB->Lock(0, 0, (void**)&pVertex, 0) < 0)
             return 1;
 
-        for (int k = 0; k < pMesh->m_dwAttCount; ++k)
+        for (size_t k = 0; k < pMesh->m_dwAttCount; ++k)
         {
             int nStartIndex = pMesh->m_AttRange[k].VertexStart;
             int nCount = pMesh->m_AttRange[k].VertexCount;
@@ -622,7 +622,7 @@ int CMesh::RenderMesh(char cAlpha)
                 return 0;
         }
 
-        for (int i = 0; i < m_numPalette; ++i)
+        for (size_t i = 0; i < m_numPalette; ++i)
         {
             D3DXMATRIXA16 mat;
             D3DXMatrixMultiply(&mat, &m_pBoneMatrix[i], m_pBoneOffset[i]);
@@ -688,7 +688,7 @@ int CMesh::RenderMesh(char cAlpha)
             else
                 D3DXMatrixScaling(&matScale, fDist + 1.0f, fDist + 1.0f, fDist + 1.0f);
 
-            for (int l = 0; l < m_numPalette; ++l)
+            for (size_t l = 0; l < m_numPalette; ++l)
             {
                 D3DXMATRIX* fy = m_pBoneOffset[l];
                 D3DXMATRIX rMatrix = (((m_pBoneMatrix[l] * matScale) * *fy) * matMove) * g_pDevice->m_matView;

@@ -293,7 +293,7 @@ void RenderDevice::Finalize()
 
 	for (int i = 0; i < 256; i++)
 	{
-		int nVal = ((((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f);
+		int nVal = static_cast<int>(((((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f));
 		if (nVal > 0xFFFF)
 			nVal = 0xFFFF;
 
@@ -722,7 +722,7 @@ void RenderDevice::SetGamma()
 
 		for (int i = 0; i < 256; i++)
 		{
-			int nVal = ((((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f);
+			int nVal = static_cast<int>(((((float)RenderDevice::m_nBright * 0.02f) * (float)i) * 256.0f));
 			if (nVal > 0xFFFF)
 				nVal = 0xFFFF;
 

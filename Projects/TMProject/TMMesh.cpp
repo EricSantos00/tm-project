@@ -82,7 +82,7 @@ int TMMesh::Render(char cMulti, int nTexOffset)
 	if (FAILED(m_pVB->Lock(0, 0, (void**)&pVertex, 0)))
 		return 1;
 
-	for (int k = 0; k < m_dwAttCount; ++k)
+	for (size_t k = 0; k < m_dwAttCount; ++k)
 	{
 		int nStartIndex = m_AttRange[k].VertexStart;
 		int nCount = m_AttRange[k].VertexCount;
@@ -216,7 +216,7 @@ void TMMesh::SetTexture(int nIndex)
 
 HRESULT TMMesh::RenderDraw(int nTexOffset)
 {
-	for (int i = 0; i < m_dwAttCount; ++i)
+	for (size_t i = 0; i < m_dwAttCount; ++i)
 	{
 		SetTexture(nTexOffset + m_nTextureIndex[i]);
 
@@ -512,7 +512,7 @@ int TMMesh::LoadMsa(const char* szFileName)
 	char szTemp[24] = { 0, };
 	char szTex[64] = { 0, };
 
-	for (int i = 0; i < m_dwAttCount; ++i)
+	for (size_t i = 0; i < m_dwAttCount; ++i)
 	{
 		if (szTmpFileName[0] != 'a' || szTmpFileName[1] != 'a')
 		{

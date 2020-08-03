@@ -1166,7 +1166,7 @@ char* BASE_TransCurse(char* sz)
     do
     {
         bFind = false;
-        for (int i = 0; i < g_pCurseList.dnum; ++i)
+        for (size_t i = 0; i < g_pCurseList.dnum; ++i)
         {
             if (strlen(g_pCurseList.pCurseList[i].szOriginal) == 0)
                 return sz;

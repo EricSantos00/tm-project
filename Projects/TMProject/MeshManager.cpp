@@ -122,7 +122,7 @@ int MeshManager::InitBoneAnimation()
 
 		MeshManager::m_BoneAnimationList[nCount].numBone = sz / 8;
 		unsigned int dwFileIndex = 0;
-		for (int nFI = 0; nFI < MeshManager::m_BoneAnimationList[nCount].numAniTypeCount; ++nFI)
+		for (size_t nFI = 0; nFI < MeshManager::m_BoneAnimationList[nCount].numAniTypeCount; ++nFI)
 		{
 			sprintf(szTemp,	"%s%04d.ani", MeshManager::m_BoneAnimationList[nCount].szAniName, m_stValidAniList[nCount][nFI].nI + 1);
 			handle = _open(szTemp, _O_BINARY, 0);
@@ -156,7 +156,7 @@ int MeshManager::InitBoneAnimation()
 		int nOffset = 0;
 
 		// This loop is related with weapon animations
-		for (int nFI = 0; nFI < MeshManager::m_BoneAnimationList[nCount].numAniTypeCount; ++nFI)
+		for (size_t nFI = 0; nFI < MeshManager::m_BoneAnimationList[nCount].numAniTypeCount; ++nFI)
 		{
 			sprintf(szTemp,	"%s%04d.ani", MeshManager::m_BoneAnimationList[nCount].szAniName, m_stValidAniList[nCount][nFI].nI + 1);
 			handle = _open(szTemp, _O_BINARY, 0);
@@ -173,7 +173,7 @@ int MeshManager::InitBoneAnimation()
 
 			if (nCount == 0 || nCount == 1)
 			{
-				for (int j = 0; j < MeshManager::m_BoneAnimationList[nCount].numAniFrame * buffer; ++j)
+				for (size_t j = 0; j < MeshManager::m_BoneAnimationList[nCount].numAniFrame * buffer; ++j)
 				{
 					D3DXQuaternionRotationMatrix(
 						&MeshManager::m_BoneAnimationList[nCount].matQuaternion[j + nOffset],

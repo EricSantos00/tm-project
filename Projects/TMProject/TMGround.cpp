@@ -61,7 +61,7 @@ float TMGround::BackTileCoordList[32][4][2] =
 int TMGround::m_nCheckSum[64][32] =
 {
   {
-    4294967295,
+    -1,
     0,
     0,
     0,
@@ -2926,6 +2926,7 @@ int TMGround::Render()
 
                     if (g_pDevice->m_bVoodoo == 1)
                     {
+                        // TODO: THIS CODE NEED TO BE REVIEW =)
                         for (int nVertexIndex = 0; nVertexIndex < 4; ++nVertexIndex)
                         {
                             m_vertexVoodoo[nVertexIndex].tu = TMGround::TileCoordList[(unsigned char)bCoordIndex][nVertexIndex][0];
@@ -2966,10 +2967,10 @@ int TMGround::Render()
                             m_vertex[2].diffuse = m_TileMapData[(nY << 6) + nTickX + nX].dwColor;
                             m_vertex[3].diffuse = m_TileMapData[((nTickY + nY) << 6) + nTickX + nX].dwColor;
 
-                            m_vertexVoodoo[0].position = TMVector3(nX, m_TileMapData[nX + (nY << 6)].cHeight, nY);
-                            m_vertexVoodoo[1].position = TMVector3(nX, m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight, nY);
-                            m_vertexVoodoo[2].position = TMVector3(nX, m_TileMapData[(nY << 6) + nTickX + nX].cHeight, nY);
-                            m_vertexVoodoo[3].position = TMVector3(nX, m_TileMapData[((nTickY + nY) << 6) + nTickX + nX].cHeight, nY);
+                            m_vertexVoodoo[0].position = TMVector3((float)nX, (float)m_TileMapData[nX + (nY << 6)].cHeight, (float)nY);
+                            m_vertexVoodoo[1].position = TMVector3((float)nX, (float)m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight, (float)nY);
+                            m_vertexVoodoo[2].position = TMVector3((float)nX, (float)m_TileMapData[(nY << 6) + nTickX + nX].cHeight, (float)nY);
+                            m_vertexVoodoo[3].position = TMVector3((float)nX, (float)m_TileMapData[((nTickY + nY) << 6) + nTickX + nX].cHeight, (float)nY);
                         }
                         else if (nX == 63 && nY < 63)
                         {
@@ -2978,10 +2979,10 @@ int TMGround::Render()
                             m_vertex[2].diffuse = m_TileMapData[nX + (nY << 6)].dwColor;
                             m_vertex[3].diffuse = m_TileMapData[nX + ((nTickY + nY) << 6)].dwColor;
 
-                            m_vertexVoodoo[0].position = TMVector3(nX, m_TileMapData[nX + (nY << 6)].cHeight, nY);
-                            m_vertexVoodoo[1].position = TMVector3(nX, m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight, nY);
-                            m_vertexVoodoo[2].position = TMVector3(nX, m_TileMapData[nX + (nY << 6)].cHeight, nY);
-                            m_vertexVoodoo[3].position = TMVector3(nX, m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight, nY);
+                            m_vertexVoodoo[0].position = TMVector3((float)nX, (float)m_TileMapData[nX + (nY << 6)].cHeight, (float)nY);
+                            m_vertexVoodoo[1].position = TMVector3((float)nX, (float)m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight, (float)nY);
+                            m_vertexVoodoo[2].position = TMVector3((float)nX, (float)m_TileMapData[nX + (nY << 6)].cHeight, (float)nY);
+                            m_vertexVoodoo[3].position = TMVector3((float)nX, (float)m_TileMapData[nX + ((nTickY + nY) << 6)].cHeight, (float)nY);
                         }
                         else if (nY == 63 && nX < 63)
                         {
@@ -2990,10 +2991,10 @@ int TMGround::Render()
                             m_vertex[2].diffuse = m_TileMapData[(nY << 6) + nTickX + nX].dwColor;
                             m_vertex[3].diffuse = m_TileMapData[(nY << 6) + nTickX + nX].dwColor;
 
-                            m_vertexVoodoo[0].position = TMVector3(nX, m_TileMapData[nX + (nY << 6)].cHeight, nY);
-                            m_vertexVoodoo[1].position = TMVector3(nX, m_TileMapData[nX + (nY << 6)].cHeight, nY);
-                            m_vertexVoodoo[2].position = TMVector3(nX, m_TileMapData[(nY << 6) + nTickX + nX].cHeight, nY);
-                            m_vertexVoodoo[3].position = TMVector3(nX, m_TileMapData[(nY << 6) + nTickX + nX].cHeight, nY);
+                            m_vertexVoodoo[0].position = TMVector3((float)nX, m_TileMapData[nX + (nY << 6)].cHeight, (float)nY);
+                            m_vertexVoodoo[1].position = TMVector3((float)nX, m_TileMapData[nX + (nY << 6)].cHeight, (float)nY);
+                            m_vertexVoodoo[2].position = TMVector3((float)nX, m_TileMapData[(nY << 6) + nTickX + nX].cHeight, (float)nY);
+                            m_vertexVoodoo[3].position = TMVector3((float)nX, m_TileMapData[(nY << 6) + nTickX + nX].cHeight, (float)nY);
                         }
 
                         if (m_dwEffStart && m_dwServertime < (m_dwEffStart + 2000))

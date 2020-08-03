@@ -875,7 +875,7 @@ void ObjectManager::InitAniSoundTable()
 			{
 				fscanf(
 					fp,
-					"%s %d %d %d %d %d %d %d %d %d %d %d\n",
+					"%s %d %d %d %d %d %d %d %d %d\n",
 					szDummy,
 					&g_MobAniTableEx[0][nObjType].dwAniTable[i],
 					&g_MobAniTableEx[0][nObjType].dwSpeed[i],
@@ -919,7 +919,7 @@ void ObjectManager::InitCurseList()
 	fread(&g_pCurseList.dnum, 4, 1, fpBin);
 
 	g_pCurseList.pCurseList = new stCurse[g_pCurseList.dnum * sizeof(stCurse)];
-	for (int i = 0; i < g_pCurseList.dnum - 1; ++i)
+	for (size_t i = 0; i < g_pCurseList.dnum - 1; ++i)
 	{
 		fread(&g_pCurseList.pCurseList[i], sizeof(stCurse), 1, fpBin);
 		fread(g_pCurseList.pCurseList[i].szTrans, sizeof(stCurse), 1, fpBin);

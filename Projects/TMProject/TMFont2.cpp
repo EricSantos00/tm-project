@@ -485,7 +485,7 @@ int TMFont2::StrByteCheck(char* szString)
 {
 	int value = 0;
 	bool byteCheck = false;
-	for (int i = 0; ; ++i)
+	for (size_t i = 0; ; ++i)
 	{
 		if (i >= strlen(szString))
 			break;

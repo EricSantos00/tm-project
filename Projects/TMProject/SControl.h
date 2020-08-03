@@ -235,7 +235,7 @@ public:
     };
 
 public:
-    SEditableText(int inTextureSetIndex, const char* istrText, int inMaxStringLen, int ibPasswd, 
+    SEditableText(int inTextureSetIndex, const char* istrText, size_t inMaxStringLen, int ibPasswd, 
         unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, 
         unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SEditableText();
@@ -258,7 +258,7 @@ public:
     char m_strComposeText[256];
     char m_cTempChar;
     char m_cReserved;
-    int m_nMaxStringLen;
+    size_t m_nMaxStringLen;
     int m_nCursorVisible;
     int m_bPasswd;
     int m_bEncrypt;

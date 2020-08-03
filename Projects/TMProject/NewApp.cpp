@@ -964,7 +964,7 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 	case WM_CHAR:
 	{
 		if (m_pEventTranslator != nullptr && !m_pEventTranslator->m_bCtrl)
-			m_pEventTranslator->OnChar(wParam, lParam);
+			m_pEventTranslator->OnChar(static_cast<char>(wParam), static_cast<char>(lParam));
 	}
 	break;
 	case WM_SYSKEYDOWN:
@@ -1007,7 +1007,7 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 		if (m_pEventTranslator == nullptr)
 			break;
 
-		m_pEventTranslator->OnIME(wParam, lParam);
+		m_pEventTranslator->OnIME(static_cast<char>(wParam), static_cast<char>(lParam));
 	}
 	break;
 	case WM_COMMAND:

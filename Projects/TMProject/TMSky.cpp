@@ -471,12 +471,12 @@ int TMSky::FrameMove(unsigned int dwServerTime)
                     g_pCurrentScene->m_pSun->m_fDefSize = 1.0f - fProgress;
                 
                 // TODO: this code maybe crash. The -264 maybe is - 67.
-                unsigned int dwR = (unsigned char)((float)m_dwR[pMesh->m_nTextureIndex[0] - 67] * (float)(1.0f - fProgress)) +
-                    (float)((float)m_dwR[m_nTextureIndex - 67] * fProgress);
-                unsigned int dwG = (unsigned char)((float)m_dwG[pMesh->m_nTextureIndex[0] - 67] * (float)(1.0f - fProgress)) +
-                    (float)((float)m_dwG[m_nTextureIndex - 67] * fProgress);
-                unsigned int dwB = (unsigned char)((float)m_dwB[pMesh->m_nTextureIndex[0] - 67] * (float)(1.0f - fProgress)) +
-                    (float)((float)m_dwB[m_nTextureIndex - 67] * fProgress);
+                unsigned int dwR = static_cast<unsigned int>((unsigned char)((float)m_dwR[pMesh->m_nTextureIndex[0] - 67] * (float)(1.0f - fProgress)) +
+                    (float)((float)m_dwR[m_nTextureIndex - 67] * fProgress));
+                unsigned int dwG = static_cast<unsigned int>((unsigned char)((float)m_dwG[pMesh->m_nTextureIndex[0] - 67] * (float)(1.0f - fProgress)) +
+                    (float)((float)m_dwG[m_nTextureIndex - 67] * fProgress));
+                unsigned int dwB = static_cast<unsigned int>((unsigned char)((float)m_dwB[pMesh->m_nTextureIndex[0] - 67] * (float)(1.0f - fProgress)) +
+                    (float)((float)m_dwB[m_nTextureIndex - 67] * fProgress));
 
                 g_pDevice->m_dwClearColor = dwB | (dwG << 8) | (dwR << 16);
 

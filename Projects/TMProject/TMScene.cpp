@@ -901,7 +901,7 @@ int TMScene::OnPacketEvent(unsigned int dwCode, char* pSBuffer)
 			if (type == 1)
 				pStd->Type = 0x13BD;
 			else if (type == 2)
-				pStd->Type == 0x7BE;
+				pStd->Type = 0x7BE;
 		}
 		else
 			pStd->Type = 0xFBC;
@@ -1147,7 +1147,8 @@ int TMScene::OnPacketEvent(unsigned int dwCode, char* pSBuffer)
 		{
 			char Msg[128]{ 0 };
 			if (m_pMyHuman)
-				sprintf_s(Msg, "%s %d %d,%d", pMsgPanel->String, g_pObjectManager->m_nServerIndex, m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_vecPosition.y);
+				sprintf_s(Msg, "%s %d %d %d", pMsgPanel->String, g_pObjectManager->m_nServerIndex, static_cast<int>(m_pMyHuman->m_vecPosition.x), 
+					static_cast<int>(m_pMyHuman->m_vecPosition.y));
 			else
 				sprintf_s(Msg, "%s %d", pMsgPanel->String, g_pObjectManager->m_nServerIndex);
 
@@ -2059,19 +2060,19 @@ int TMScene::GroundIsInWater2(TMVector2 vecPosition, float* pfWaterHeight)
 		vecPosition.x >= m_pGround->m_pLeftGround->m_vecOffset.x && (float)(m_pGround->m_pLeftGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
 		vecPosition.y >= m_pGround->m_pLeftGround->m_vecOffset.y && (float)(m_pGround->m_pLeftGround->m_vecOffset.y + 128.0f) > vecPosition.y)
 	{
-		return m_pGround->m_pLeftGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1, pfWaterHeight);
+		return m_pGround->m_pLeftGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1f, pfWaterHeight);
 	}
 	if (m_pGround->m_pRightGround && 
 		vecPosition.x >= m_pGround->m_pRightGround->m_vecOffset.x && (float)(m_pGround->m_pRightGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
 		vecPosition.y >= m_pGround->m_pRightGround->m_vecOffset.y && (float)(m_pGround->m_pRightGround->m_vecOffset.y + 128.0f) > vecPosition.y)
 	{
-		return m_pGround->m_pRightGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1, pfWaterHeight);
+		return m_pGround->m_pRightGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1f, pfWaterHeight);
 	}
 	if (m_pGround->m_pUpGround && 
 		vecPosition.x >= m_pGround->m_pUpGround->m_vecOffset.x && (float)(m_pGround->m_pUpGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
 		vecPosition.y >= m_pGround->m_pUpGround->m_vecOffset.y && (float)(m_pGround->m_pUpGround->m_vecOffset.y + 128.0f) > vecPosition.y)
 	{
-		return m_pGround->m_pUpGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1, pfWaterHeight);
+		return m_pGround->m_pUpGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1f, pfWaterHeight);
 	}
 	if (!m_pGround->m_pDownGround || 
 		vecPosition.x < m_pGround->m_pDownGround->m_vecOffset.x || (float)(m_pGround->m_pDownGround->m_vecOffset.x + 128.0f) <= vecPosition.x || 

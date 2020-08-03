@@ -213,7 +213,7 @@ int TMSelectServerScene::InitializeScene()
 
 	BASE_GetHttpRequest((char*)&g_pServerList, szUserCount, 1024);
 
-	sscanf_s(szUserCount, "%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n",
+	sscanf_s(szUserCount, "%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n",
 		&nUserCount[0], &nUserCount[1], &nUserCount[2], &nUserCount[3], &nUserCount[4], &nUserCount[5],
 		&nUserCount[6], &nUserCount[7], &nUserCount[8], &nUserCount[9], &nUserCount[10]);
 
@@ -408,7 +408,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 				memset(nUserCount2, -1, sizeof nUserCount2);
 				BASE_GetHttpRequest(g_pServerList[i][0], szUserCount, sizeof szUserCount);
 
-				sscanf_s(szUserCount, "%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n",
+				sscanf_s(szUserCount, "%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n%d\\n",
 					&nUserCount2[0], &nUserCount2[1], &nUserCount2[2], &nUserCount2[3], &nUserCount2[4], &nUserCount2[5],
 					&nUserCount2[6], &nUserCount2[7], &nUserCount2[8], &nUserCount2[9], &nUserCount2[10]);
 
@@ -492,7 +492,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 						nCastle = IsCastle(m_nDay[nGIndex] - 1);
 
 						if (g_szServerName[nGIndex][m_nDay[nGIndex]][0])
-							sprintf_s(szStr, "%s-%s", g_szServerNameList[nGIndex], g_szServerName[nGIndex][m_nDay[nGIndex] - 1][0]);
+							sprintf_s(szStr, "%s-%s", g_szServerNameList[nGIndex], g_szServerName[nGIndex][m_nDay[nGIndex] - 1]);
 						else
 						{
 							sprintf_s(szStr, "%s-%d", g_szServerNameList[nGIndex], m_nDay[nGIndex]);
@@ -552,7 +552,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 						nTextureSet = -2;
 
 					// -1??
-					pServerItem[num] = new SListBoxServerItem(nTextureSet, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nCount, nCastle, 0, nServerAge);
+					pServerItem[num] = new SListBoxServerItem(nTextureSet, szStr, 0xFFFFFFFF, 0.0f, 0.0f, static_cast<float>(g_nChannelWidth), 16.0f, nCount, nCastle, 0, nServerAge);
 					
 					if (nUserCount[num] < 0)
 						pServerItem[num]->m_cConnected = 0;
@@ -563,7 +563,7 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 				{
 					sprintf_s(szStr, g_pMessageStringTable[70]);
 
-					pServerItem[num - 1] = new SListBoxServerItem(6, szStr, 0xFFFFFFFF, 0.0f, 0.0f, g_nChannelWidth, 16.0f, nUserCount2[num], 0, 0, 0);
+					pServerItem[num - 1] = new SListBoxServerItem(6, szStr, 0xFFFFFFFF, 0.0f, 0.0f, static_cast<float>(g_nChannelWidth), 16.0f, nUserCount2[num], 0, 0, 0);
 
 					if (nUserCount[num] < 0)
 						pServerItem[num - 1]->m_cConnected = 0;

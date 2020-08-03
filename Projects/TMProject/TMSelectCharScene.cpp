@@ -299,13 +299,13 @@ int TMSelectCharScene::InitializeScene()
 				stSancInfo.Sanc3 = nSanc;
 				stSancInfo.Sanc2 = nSanc;
 				stSancInfo.Sanc1 = nSanc;
-				stSancInfo.Legend5 = g_pItemList[Body].nGrade;
+				stSancInfo.Legend5 = static_cast<unsigned char>(g_pItemList[Body].nGrade);
 				stSancInfo.Legend4 = stSancInfo.Legend5;
 				stSancInfo.Legend3 = stSancInfo.Legend5;
 				stSancInfo.Legend2 = stSancInfo.Legend5;
 				stSancInfo.Legend1 = stSancInfo.Legend5;
-				stSancInfo.Legend6 = g_pItemList[Right].nGrade;
-				stSancInfo.Legend7 = g_pItemList[Left].nGrade;
+				stSancInfo.Legend6 = static_cast<unsigned char>(g_pItemList[Right].nGrade);
+				stSancInfo.Legend7 = static_cast<unsigned char>(g_pItemList[Left].nGrade);
 
 				if (Body == Helm)
 				{
@@ -329,7 +329,7 @@ int TMSelectCharScene::InitializeScene()
 					m_pSampleHuman[i]->m_cMantua = 1;
 					m_pSampleHuman[i]->m_wMantuaSkin = g_pItemList[Mantua].nIndexTexture;
 					m_pSampleHuman[i]->m_ucMantuaSanc = nSanc;
-					m_pSampleHuman[i]->m_ucMantuaLegend = g_pItemList[Mantua].nGrade;
+					m_pSampleHuman[i]->m_ucMantuaLegend = static_cast<char>(g_pItemList[Mantua].nGrade);
 				}
 
 				m_pSampleHuman[i]->m_stScore.Hp = 1;
@@ -542,7 +542,7 @@ int TMSelectCharScene::OnControlEvent(unsigned int idwControlID, unsigned int id
 			return 1;
 		}
 		char* szName = BASE_TransCurse(pEditID->GetText());
-		for (int i = 0; i < strlen(szName) - 1; i++)
+		for (size_t i = 0; i < strlen(szName) - 1; i++)
 		{
 			if (szName[i] == -95 && szName[i + 1] == -95)
 			{
@@ -679,7 +679,7 @@ int TMSelectCharScene::OnControlEvent(unsigned int idwControlID, unsigned int id
 		}
 
 		char* buf = m_pEditRename->GetText();
-		for (int i = 0; i < strlen(buf) - 1; i++)
+		for (size_t i = 0; i < strlen(buf) - 1; i++)
 		{
 			if (buf[i] == -95 && buf[i + 1] == -95)
 			{
@@ -1923,15 +1923,15 @@ void TMSelectCharScene::ReloadCharList(RELOAD_CHARLIST_TYPE type)
 		m_pHuman[i]->m_stSancInfo.Sanc7 = BASE_GetItemSanc(&pSelChar->Equip[i][6]);//??
 		m_pHuman[i]->m_stSancInfo.Sanc6 = BASE_GetItemSanc(&pSelChar->Equip[i][7]);//??
 		m_pHuman[i]->m_ucMantuaSanc = BASE_GetItemSanc(&pSelChar->Equip[i][15]);
-		m_pHuman[i]->m_stSancInfo.Legend0 = g_pItemList[pSelChar->Equip[i][0].sIndex % 6500].nGrade;
-		m_pHuman[i]->m_stSancInfo.Legend1 = g_pItemList[pSelChar->Equip[i][1].sIndex % 6500].nGrade;
-		m_pHuman[i]->m_stSancInfo.Legend2 = g_pItemList[pSelChar->Equip[i][2].sIndex % 6500].nGrade;
-		m_pHuman[i]->m_stSancInfo.Legend3 = g_pItemList[pSelChar->Equip[i][3].sIndex % 6500].nGrade;
-		m_pHuman[i]->m_stSancInfo.Legend4 = g_pItemList[pSelChar->Equip[i][4].sIndex % 6500].nGrade;
-		m_pHuman[i]->m_stSancInfo.Legend5 = g_pItemList[pSelChar->Equip[i][5].sIndex % 6500].nGrade;
-		m_pHuman[i]->m_stSancInfo.Legend7 = g_pItemList[pSelChar->Equip[i][6].sIndex % 6500].nGrade;
-		m_pHuman[i]->m_stSancInfo.Legend6 = g_pItemList[pSelChar->Equip[i][7].sIndex % 6500].nGrade;
-		m_pHuman[i]->m_ucMantuaLegend = g_pItemList[pSelChar->Equip[i][15].sIndex % 6500].nGrade;
+		m_pHuman[i]->m_stSancInfo.Legend0 = static_cast<unsigned char>(g_pItemList[pSelChar->Equip[i][0].sIndex % 6500].nGrade);
+		m_pHuman[i]->m_stSancInfo.Legend1 = static_cast<unsigned char>(g_pItemList[pSelChar->Equip[i][1].sIndex % 6500].nGrade);
+		m_pHuman[i]->m_stSancInfo.Legend2 = static_cast<unsigned char>(g_pItemList[pSelChar->Equip[i][2].sIndex % 6500].nGrade);
+		m_pHuman[i]->m_stSancInfo.Legend3 = static_cast<unsigned char>(g_pItemList[pSelChar->Equip[i][3].sIndex % 6500].nGrade);
+		m_pHuman[i]->m_stSancInfo.Legend4 = static_cast<unsigned char>(g_pItemList[pSelChar->Equip[i][4].sIndex % 6500].nGrade);
+		m_pHuman[i]->m_stSancInfo.Legend5 = static_cast<unsigned char>(g_pItemList[pSelChar->Equip[i][5].sIndex % 6500].nGrade);
+		m_pHuman[i]->m_stSancInfo.Legend7 = static_cast<unsigned char>(g_pItemList[pSelChar->Equip[i][6].sIndex % 6500].nGrade);
+		m_pHuman[i]->m_stSancInfo.Legend6 = static_cast<unsigned char>(g_pItemList[pSelChar->Equip[i][7].sIndex % 6500].nGrade);
+		m_pHuman[i]->m_ucMantuaLegend = static_cast<char>(g_pItemList[pSelChar->Equip[i][15].sIndex % 6500].nGrade);
 
 		m_pHuman[i]->m_stColorInfo.Sanc0 = BASE_GetItemColorEffect(pSelChar->Equip[i]);
 		m_pHuman[i]->m_stColorInfo.Sanc1 = BASE_GetItemColorEffect(&pSelChar->Equip[i][1]);

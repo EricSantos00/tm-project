@@ -662,7 +662,7 @@ void SText::SetText(char* istrText, int bCheckZero)
 			istrText = 0;
 	}
 
-	int count = 0;
+	size_t count = 0;
 
 	if (istrText == nullptr)
 	{
@@ -676,7 +676,7 @@ void SText::SetText(char* istrText, int bCheckZero)
 
 	if (strlen(istrText) != 0 && (m_cComma == 2 || m_cComma == 1))
 	{
-		for (int i = 0; i < strlen(istrText); ++i)
+		for (size_t i = 0; i < strlen(istrText); ++i)
 		{
 			if (!isdigit(istrText[i]) && istrText[i] != ' ')
 				++count;
@@ -685,20 +685,20 @@ void SText::SetText(char* istrText, int bCheckZero)
 		if (!count && atoi(istrText))
 		{
 			char str[100]{};
-			for (int i = 0; i < strlen(istrText); ++i)
+			for (size_t i = 0; i < strlen(istrText); ++i)
 			{
 				if (istrText[i] != ' ')
 					continue;
 
 				++count;
-				for (int j = i; j < strlen(istrText); ++j)
+				for (size_t j = i; j < strlen(istrText); ++j)
 				{
 					istrText[j] = istrText[j + 1];
 				}
 				i -= 1;
 			}
 
-			int i = 0;
+			size_t i = 0;
 			int j = 0;
 			while (1)
 			{
@@ -983,7 +983,7 @@ int SText::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int n
 	return 0;
 }
 
-SEditableText::SEditableText(int inTextureSetIndex, const char* istrText, int inMaxStringLen, int ibPasswd, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType)
+SEditableText::SEditableText(int inTextureSetIndex, const char* istrText, size_t inMaxStringLen, int ibPasswd, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType)
 	: SText(inTextureSetIndex,
 		0,
 		idwFontColor,
