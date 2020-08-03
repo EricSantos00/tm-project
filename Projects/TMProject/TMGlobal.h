@@ -86,6 +86,12 @@ extern FILE* g_hPacketDump;
 extern char* g_pDumpPacket;
 extern unsigned short g_usLastPacketType;
 extern int g_bLastStop;
+extern int g_bCastleWar;
+extern int g_bCastleWar2;
+
+extern SPanel* g_pGBPanel;
+
+extern int g_GameAuto;
 
 extern int g_bEndGame;
 
@@ -132,6 +138,9 @@ extern int g_nMyHumanSpeed;
 
 extern int g_NonePKServer;;
 extern int g_pPKServerNum[2];
+
+extern int g_nTempArray[3];
+extern int g_nTempArray2[4];
 
 static unsigned int g_dwHandIndex[101][2] =
 {

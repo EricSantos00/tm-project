@@ -54,6 +54,12 @@ FILE* g_hPacketDump;
 char* g_pDumpPacket; 
 unsigned short g_usLastPacketType;
 int g_bLastStop;
+int g_bCastleWar;
+int g_bCastleWar2;
+
+int g_GameAuto;
+
+SPanel* g_pGBPanel;
 
 unsigned int g_dwStartQuitGameTime;
 
@@ -104,3 +110,6 @@ int g_nMyHumanSpeed = 3;
 
 int g_NonePKServer;
 int g_pPKServerNum[2] = { 5, 10 };
+
+int g_nTempArray[3] = { 4047990319, 0, 0 };
+int g_nTempArray2[4] = { 4049041969, 0, 0, 0 };
