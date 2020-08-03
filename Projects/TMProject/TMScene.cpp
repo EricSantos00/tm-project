@@ -1934,27 +1934,273 @@ void TMScene::ReadCameraPos(const char* szFileName)
 
 int TMScene::LoadMsgText(SListBox* pListBox, char* szFileName)
 {
-	return 0;
+	FILE* fp{};
+
+	fopen_s(&fp, szFileName, "rt");
+
+	if (!fp)
+		return 0;
+
+	if (!pListBox)
+		return 0;
+
+	char szText[256]{};
+	char szTemp[256]{};
+
+	for (int i = 0; i < 100 && fgets(szTemp, 256, fp); ++i)
+	{
+		char szCol[7]{};
+
+		strncpy(szCol, szTemp, 6);
+
+		DWORD dwCol{};
+
+		sscanf(szCol, "%x", &dwCol);
+
+		char* szRet = strstr(szTemp, "\n");
+
+		if (szRet)
+			*szRet = 0;
+
+		if (szTemp[6] == 32)
+		{
+			sprintf_s(szText, "%s", &szTemp[6]);
+			
+			pListBox->AddItem(new SListBoxItem(
+				szText,
+				dwCol | 0xFF000000,
+				0.0f,
+				0.0f,
+				pListBox->m_nWidth,
+				16.0f,
+				0,
+				0x77777777u,
+				1u,
+				0));
+		}
+	}
+
+	if (pListBox->m_pScrollBar)
+		pListBox->m_pScrollBar->SetCurrentPos(0);
+
+	fclose(fp);
+	return 1;
 }
 
 int TMScene::LoadMsgText2(SListBox* pListBox, char* szFileName, int nStartLine, int nEndLine)
 {
-	return 0;
+	FILE* fp{};
+
+	fopen_s(&fp, szFileName, "rt");
+
+	if (!fp)
+		return 0;
+
+	if (!pListBox)
+		return 0;
+
+	char szText[256]{};
+	char szTemp[256]{};
+
+	int nCount = 0;
+
+	pListBox->Empty();
+
+	for (int i = 0; i < 560 && fgets(szTemp, 256, fp); ++i)
+	{
+		char szCol[7]{};
+		
+		strncpy(szCol, szTemp, 6);
+
+		DWORD dwCol{};
+
+		sscanf(szCol, "%x", &dwCol);
+
+		char* szRet = strstr(szTemp, "\n");
+
+		if (szRet)
+			*szRet = 0;
+
+		if (szTemp[6] == 32 && i >= nStartLine && i <= nEndLine)
+		{
+			sprintf_s(szText, "%s", &szTemp[6]);
+
+			pListBox->AddItem(new SListBoxItem(
+				szText,
+				dwCol | 0xFF000000,
+				0.0f,
+				0.0f,
+				pListBox->m_nWidth,
+				16.0f,
+				0,
+				0x77777777u,
+				1u,
+				0));
+
+			if (++nCount > 100)
+				break;
+		}
+	}
+
+	if (pListBox->m_pScrollBar)
+		pListBox->m_pScrollBar->SetCurrentPos(0);
+
+	fclose(fp);
+	return 1;
 }
 
 int TMScene::LoadMsgText3(SListBox* pListBox, char* szFileName, int nLv, int ntrans)
 {
-	return 0;
+	FILE* fp{};
+
+	fopen_s(&fp, szFileName, "rt");
+
+	if (!fp)
+		return 0;
+
+	if (!pListBox)
+		return 0;
+
+	char szText[256]{};
+	char szTemp[256]{};
+
+	int nLvLimit = 300;
+
+	pListBox->Empty();
+
+	for (int i = 0; i < 100 && fgets(szTemp, 256, fp); ++i)
+	{
+		char szCol[11]{};
+		
+		strncpy(szCol, szTemp, 10);
+
+		DWORD dwCol{};
+
+		sscanf_s(szCol, "%d %x", &nLvLimit, &dwCol);
+
+		if (nLvLimit > nLv)
+			dwCol = 0xFF777777;
+
+		if (nLvLimit > 350 && ntrans < 6)
+			dwCol = 0xFF777777;
+
+		if (g_pCurrentScene)
+		{
+			if (m_pMyHuman->Is2stClass() == 2)
+				dwCol = 0xFF777777;
+
+			else if (nLvLimit > nLv)
+				dwCol = 0xFF777777;
+		}
+
+		char* szRet = strstr(szTemp, "\n");
+
+		if (szRet)
+			*szRet = 0;
+
+		if (szTemp[10] == 32)
+		{
+			sprintf(szText, "%s", &szTemp[10]);
+			
+			pListBox->AddItem(new SListBoxItem(
+				szText,
+				dwCol | 0xFF000000,
+				0.0f,
+				0.0f,
+				pListBox->m_nWidth,
+				16.0f,
+				0,
+				0x77777777u,
+				1u,
+				0));
+		}
+	}
+
+	if (pListBox->m_pScrollBar)
+		pListBox->m_pScrollBar->SetCurrentPos(0);
+
+	fclose(fp);
+	return 1;
 }
 
 unsigned int TMScene::LoadMsgText4(char* pStr, char* szFileName, int nLv, int ntrans)
 {
-	return 0;
+	FILE* fp{};
+
+	fopen_s(&fp, szFileName, "rt");
+
+	if (!fp)
+		return 0;
+
+	int nLvLimit = 300;
+	DWORD dwCol = 0;
+
+	char szTemp[256]{};
+
+	for (int i = 0; i < 100 && fgets(szTemp, 256, fp); ++i)
+	{
+		char szCol[11]{};
+
+		strncpy(szCol, szTemp, 10);
+
+		sscanf_s(szCol, "%d %x", &nLvLimit, &dwCol);
+
+		if (nLvLimit == nLv)
+		{
+			if (dwCol == 0xFFAAAA && ntrans >= 6)
+			{
+				dwCol = 0;
+			}
+			else if (nLvLimit <= 350 || ntrans >= 6)
+			{
+				char* szRet = strstr(szTemp, "\n");
+
+				if (szRet)
+					*szRet = 0;
+
+				if (szTemp[10] == 32)
+					sprintf_s(pStr, sizeof(szTemp), "%s", &szTemp[10]);
+			}
+			else
+			{
+				dwCol = 0;
+			}
+			
+			break;
+		}
+	}
+
+	fclose(fp);
+
+	return dwCol | 0xFF000000;
 }
 
 int TMScene::LoadMsgLevel(char* LevelQuest, char* szFileName, char cType)
 {
-	return 0;
+	FILE* fp{};
+
+	fopen_s(&fp, szFileName, "rt");
+
+	if (!fp)
+		return 0;
+
+	char szTemp[256]{};
+
+	for (int i = 0; i < 100 && fgets(szTemp, 256, fp); ++i)
+	{
+		char szCol[11]{};
+
+		strncpy(szCol, szTemp, 10);
+
+		int nLvLimit{};
+		DWORD dwCol{};
+
+		sscanf_s(szCol, "%d %x", &nLvLimit, &dwCol);
+
+		LevelQuest[nLvLimit - 1] = cType;
+	}
+	fclose(fp);
+	return 1;
 }
 
 void TMScene::CheckPKNonePK(int nServerIndex)
