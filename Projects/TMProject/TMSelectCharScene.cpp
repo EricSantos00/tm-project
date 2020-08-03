@@ -1655,7 +1655,7 @@ int TMSelectCharScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		m_pMessagePanel->SetVisible(0, 1);
 		MSG_CNFNewCharacter* pNewCharacter = reinterpret_cast<MSG_CNFNewCharacter*>(pStd);
 
-		memcpy(&g_pObjectManager->m_stSelCharData, &pNewCharacter->SelChar, sizeof(pNewCharacter->SelChar));
+		memcpy(&g_pObjectManager->m_stSelCharData, &pNewCharacter->SelChar, sizeof STRUCT_SELCHAR);
 
 		STRUCT_SELCHAR* pSelChar = &g_pObjectManager->m_stSelCharData;
 		for (int i = 0; i < 4; ++i)
@@ -1793,11 +1793,13 @@ int TMSelectCharScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case MSG_CNFDeleteCharacter_Opcode:
 	{
 		m_pMessagePanel->SetVisible(0, 1);
-		MSG_CNFNewCharacter* pNewCharacter = reinterpret_cast<MSG_CNFNewCharacter*>(pStd);
+		MSG_CNFDeleteCharacter* pDeleteCharacter = reinterpret_cast<MSG_CNFDeleteCharacter*>(pStd);
 
-		memcpy(&g_pObjectManager->m_stSelCharData, &pNewCharacter->SelChar, sizeof(pNewCharacter->SelChar));
+		memcpy(&g_pObjectManager->m_stSelCharData, &pDeleteCharacter->SelChar, sizeof(pDeleteCharacter->SelChar));
 
 		STRUCT_SELCHAR* pSelChar = &g_pObjectManager->m_stSelCharData;
+
+		OnControlEvent(4616, 0);
 		for (int i = 0; i < 4; ++i)
 		{
 			if (pSelChar && !pSelChar->MobName[i][0])
