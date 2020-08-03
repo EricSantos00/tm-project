@@ -51,7 +51,8 @@ int IsCastle(int nServerIndex)
 	return !(iweek % 7) && (int)((iweek / 7) & 2) != nServerIndex % 2;
 }
 
-TMSelectServerScene::TMSelectServerScene()
+TMSelectServerScene::TMSelectServerScene() 
+	: TMScene()
 {
 	m_eSceneType = ESCENE_TYPE::ESCENE_SELECT_SERVER;
 	m_nTextIndex = -1;
@@ -815,52 +816,7 @@ int TMSelectServerScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return 0;
 
 	auto packet = reinterpret_cast<MSG_STANDARD*>(buf);
-	if (TMScene::OnPacketEvent(dwCode, buf))
-	{
-		if (packet->Type != MSG_CNFAccountLogin_Opcode)
-		{
-			if (packet->Type == 0x11D || packet->Type == 0x11C)
-			{
-				if (packet->Type == 0x101)
-					m_pLoginPanel->SetVisible(1);
-
-				m_pMessagePanel->SetMessage(g_pMessageStringTable[12], 4000);
-				m_pMessagePanel->SetVisible(1, 1);
-				m_pLoginBtns[0]->SetEnable(1);
-				m_pLoginPanel->SetVisible(1);
-				return 1;
-			}
-			else
-			{
-				if (packet->Type == 0xADA)
-					g_pObjectManager->m_bPlayTime = *(DWORD*)&buf[12];
-
-				return 0;
-			}
-		}
-		else
-		{
-			m_pMessagePanel->SetVisible(0, 1);
-			g_pTimerManager->SetServerTime(packet->Tick);
-
-			auto selChar = reinterpret_cast<MSG_CNFAccountLogin*>(buf);
-			memcpy(&g_pObjectManager->m_stSelCharData, &selChar->SelChar, sizeof STRUCT_SELCHAR);
-			memcpy(g_pObjectManager->m_stItemCargo, selChar->Cargo, sizeof (STRUCT_ITEM) * MAX_CARGO);
-
-			g_pObjectManager->m_nCargoCoin = selChar->Coin;
-			memset(g_pObjectManager->m_stMemo, 0, sizeof g_pObjectManager->m_stMemo);
-
-			for (int i = 0; i < 16; ++i)
-				g_pSocketManager->SendQueue[i] = selChar->SecretCode[i];
-
-			g_pSocketManager->SendCount = 0;
-			g_pSocketManager->RecvCount = 0;
-
-			g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTCHAR_STATE);
-			return 1;
-		}
-	}
-	else
+	if (TMScene::OnPacketEvent(dwCode, buf) == 1)
 	{
 		if (packet->Type == 0x101)
 			m_pLoginPanel->SetVisible(1);
@@ -870,6 +826,47 @@ int TMSelectServerScene::OnPacketEvent(unsigned int dwCode, char* buf)
 
 		if (!m_pEditPW->m_bEnable)
 			m_pEditPW->SetEnable(1);
+
+		return 1;		
+	}
+	if (packet->Type == MSG_CNFAccountLogin_Opcode)
+	{
+		m_pMessagePanel->SetVisible(0, 1);
+		g_pTimerManager->SetServerTime(packet->Tick);
+
+		auto selChar = reinterpret_cast<MSG_CNFAccountLogin*>(buf);
+		memcpy(&g_pObjectManager->m_stSelCharData, &selChar->SelChar, sizeof STRUCT_SELCHAR);
+		memcpy(g_pObjectManager->m_stItemCargo, selChar->Cargo, sizeof(STRUCT_ITEM) * MAX_CARGO);
+
+		g_pObjectManager->m_nCargoCoin = selChar->Coin;
+		memset(g_pObjectManager->m_stMemo, 0, sizeof g_pObjectManager->m_stMemo);
+
+		for (int i = 0; i < 16; ++i)
+			g_pSocketManager->SendQueue[i] = selChar->SecretCode[i];
+
+		g_pSocketManager->SendCount = 0;
+		g_pSocketManager->RecvCount = 0;
+
+		g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTCHAR_STATE);
+		return 1;		
+	}
+	if (packet->Type == 0x11D || packet->Type == 0x11C)
+	{
+		if (packet->Type == 0x101)
+			m_pLoginPanel->SetVisible(1);
+
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[12], 4000);
+		m_pMessagePanel->SetVisible(1, 1);
+		m_pLoginBtns[0]->SetEnable(1);
+		m_pLoginPanel->SetVisible(1);
+		return 1;
+	}
+	else
+	{
+		if (packet->Type == 0xADA)
+			g_pObjectManager->m_bPlayTime = *(DWORD*)&buf[12];
+
+		return 0;
 	}
 
 	return 0;
@@ -1345,7 +1342,7 @@ void TMSelectServerScene::InitializeUI()
 {
 	SListBoxItem* pGroupItem[11];
 	m_pNServerSelect = (SPanel*)m_pControlContainer->FindControl(P_SERVER_SEL);
-	m_pNServerSelect->SetVisible(0);
+	m_pNServerSelect->SetVisible(1);
 
 	m_pNServerGroupList = (SListBox*)m_pControlContainer->FindControl(L_SELECT_SERVERG);
 	m_pNServerList = (SListBox*)m_pControlContainer->FindControl(L_SELECT_SERVER);
