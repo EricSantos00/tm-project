@@ -59,6 +59,9 @@ int g_bCastleWar2;
 
 int g_GameAuto;
 
+int g_GameAuto_mountValue = 30;
+int g_GameAuto_hpValue = 30;
+
 SPanel* g_pGBPanel;
 
 unsigned int g_dwStartQuitGameTime;

@@ -89,6 +89,9 @@ extern int g_bLastStop;
 extern int g_bCastleWar;
 extern int g_bCastleWar2;
 
+extern int g_GameAuto_mountValue;
+extern int g_GameAuto_hpValue;
+
 extern SPanel* g_pGBPanel;
 
 extern int g_GameAuto;

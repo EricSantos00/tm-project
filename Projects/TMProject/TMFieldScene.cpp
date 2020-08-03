@@ -4,6 +4,7 @@
 #include "TMLog.h"
 #include "dsutil.h"
 #include "DirShow.h"
+#include "SControlContainer.h"
 
 RECT TMFieldScene::m_rectWarning[7] =
 {
@@ -515,7 +516,365 @@ TMFieldScene::~TMFieldScene()
 
 int TMFieldScene::InitializeScene()
 {
-	return 0;
+	LOG_WRITELOG(">> Init Field Scene::Start\r\n");
+	LoadRC("UI\\FieldScene2.txt");
+	g_pDevice->m_nHeightShift = 0;
+
+	m_pQuizBG = new SPanel(-9, BASE_ScreenResize(275.0f) / 2.0f, 100.0f, 525.0f, 54.0f, 0x44FFFFFF, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+	if (m_pQuizBG)
+	{
+		m_pQuizBG->SetControlID(896);
+		m_pQuizBG->m_bSelectEnable = 0;
+		m_pControlContainer->AddItem(m_pQuizBG);
+
+		float fScale = (float)g_pDevice->m_dwScreenHeight * 0.016f;
+		m_pQuizBG->SetPos((float)g_pDevice->m_dwScreenWidth * 0.5f - m_pQuizBG->m_nWidth * 0.5f, fScale);
+	}
+
+	m_pQuizQuestion = new SText(-2, "Question", 0xFFFFFFFF, 5.0f, 104.0f, 510.0f, 16.0f, 0, 0x77777777, 1, 0);
+	if (m_pQuizQuestion)
+		m_pQuizBG->AddChild(m_pQuizQuestion);
+
+	m_pQuizButton[0] = new SButton(-2, 5.0f, 128.0f, 125.0f, 20.0f, 0x77777777, 1, (char*)"Answer1");
+
+	if (m_pQuizButton[0])
+	{
+		m_pQuizButton[0]->SetControlID(897);
+		if (m_pControlContainer)
+			m_pQuizButton[0]->SetEventListener(m_pControlContainer);
+		else
+			m_pQuizButton[0]->SetEventListener(nullptr);
+
+		m_pQuizBG->AddChild(m_pQuizButton[0]);
+	}
+
+	m_pQuizButton[1] = new SButton(-2, 135.0f, 128.0f, 125.0f, 20.0f, 0x77777777, 1, (char*)"Answer2");
+	if (m_pQuizButton[1])
+	{
+		m_pQuizButton[1]->SetControlID(898);
+		if (m_pControlContainer)
+			m_pQuizButton[1]->SetEventListener(m_pControlContainer);
+		else
+			m_pQuizButton[1]->SetEventListener(nullptr);
+
+		m_pQuizBG->AddChild(m_pQuizButton[1]);
+	}
+
+	m_pQuizButton[2] = new SButton(-2, 265.0f, 128.0f, 125.0f, 20.0f, 0x77777777, 1, (char*)"Answer3");
+	if (m_pQuizButton[2])
+	{
+		m_pQuizButton[2]->SetControlID(899);
+		if (m_pControlContainer)
+			m_pQuizButton[2]->SetEventListener(m_pControlContainer);
+		else
+			m_pQuizButton[2]->SetEventListener(nullptr);
+
+		m_pQuizBG->AddChild(m_pQuizButton[2]);
+	}
+
+	m_pQuizButton[3] = new SButton(-2, 395.0f, 128.0f, 125.f, 20.0f, 0x77777777, 1, (char*)"Answer4");
+	if (m_pQuizButton[3])
+	{
+		m_pQuizButton[3]->SetControlID(900);
+		if (m_pControlContainer)
+			m_pQuizButton[3]->SetEventListener(m_pControlContainer);
+		else
+			m_pQuizButton[3]->SetEventListener(nullptr);
+
+		m_pQuizBG->AddChild(m_pQuizButton[3]);
+	}
+
+	if (m_pQuizBG)
+		m_pQuizBG->SetVisible(0);
+
+	m_pChatList = (SListBox*)m_pControlContainer->FindControl(65667);
+	m_pChatListnotice = (SListBox*)m_pControlContainer->FindControl(65944);
+	m_pChatBack = (SPanel*)m_pControlContainer->FindControl(65943);
+	m_pChatGeneral = (SButton*)m_pControlContainer->FindControl(65677);
+	m_pChatParty = (SButton*)m_pControlContainer->FindControl(65678);
+	m_pChatWhisper = (SButton*)m_pControlContainer->FindControl(65679);
+	m_pChatGuild = (SButton*)m_pControlContainer->FindControl(65680);
+	m_pChatGeneral_C = (SButton*)m_pControlContainer->FindControl(65673);
+	m_pChatParty_C = (SButton*)m_pControlContainer->FindControl(65674);
+	m_pChatWhisper_C = (SButton*)m_pControlContainer->FindControl(65675);
+	m_pChatGuild_C = (SButton*)m_pControlContainer->FindControl(65676);
+	m_pKingdomText = (SText*)m_pControlContainer->FindControl(131072);
+	m_pKingDomGuild = (SButton*)m_pControlContainer->FindControl(131074);
+	m_pKingDomGuild_C = (SButton*)m_pControlContainer->FindControl(131073);
+	m_pQuestBtn = (SButton*)m_pControlContainer->FindControl(65793);
+	m_pHelpBtn = (SButton*)m_pControlContainer->FindControl(65795);
+	m_pccmode = (SPanel*)m_pControlContainer->FindControl(66817);
+
+	m_pccmode->SetVisible(0);
+	m_pccmode->SetVisible(1);
+
+	m_pGridCharFace = (SPanel*)m_pControlContainer->FindControl(69636);
+	m_pKingDomGuild_C->m_bSelected = 1;
+	m_pKingDomGuild_C->SetVisible(0);
+	m_pChatGeneral_C->m_bSelected = 0;
+	m_pChatParty_C->m_bSelected = 0;
+	m_pChatWhisper_C->m_bSelected = 0;
+	m_pChatGuild_C->m_bSelected = 0;
+	m_pChatGeneral->m_bSelected = 1;
+	m_pChatParty->m_bSelected = 1;
+	m_pChatWhisper->m_bSelected = 1;
+	m_pChatGuild->m_bSelected = 1;
+	m_pKingDomGuild->m_bSelected = 0;
+	m_pChatList->m_pScrollBar->SetVisible(1);
+	m_pChatListnotice->m_nPosX = 490.0f * RenderDevice::m_fWidthRatio;
+	m_pChatListnotice->m_nPosX = 440.0f * RenderDevice::m_fHeightRatio;
+	m_pChatListnotice->m_pScrollBar->SetVisible(0);
+
+	m_pAutoRunBtn = (SButton*)m_pControlContainer->FindControl(316);
+	m_pSysMsgList = (SListBox*)m_pControlContainer->FindControl(5695);
+	m_PkButton = (SButton*)m_pControlContainer->FindControl(65786);
+
+	m_PkButton->SetSelected(TMFieldScene::m_bPK == 0);
+	m_pPGTText = (SText*)m_pControlContainer->FindControl(645);
+
+	char szStr[128]{};
+	sprintf(szStr, " %s", g_pMessageStringTable[157]);
+
+	m_pAutoSkillPanel = (SPanel*)m_pControlContainer->FindControl(65648);
+	m_pAutoSkillPanelChild[0] = (SPanel*)m_pControlContainer->FindControl(65775);
+	m_pAutoSkillPanelChild[1] = (SPanel*)m_pControlContainer->FindControl(65776);
+	m_pAutoSkillPanelChild[2] = (SPanel*)m_pControlContainer->FindControl(65777);
+	m_pAutoSkillPanelChild[3] = (SPanel*)m_pControlContainer->FindControl(65778);
+	m_pAutoSkillPanelChild[4] = (SPanel*)m_pControlContainer->FindControl(65779);
+	m_pAutoSkillPanelChild[5] = (SPanel*)m_pControlContainer->FindControl(65780);
+	m_pAutoSkillPanelChild[6] = (SPanel*)m_pControlContainer->FindControl(65781);
+	m_pAutoSkillPanelChild[7] = (SPanel*)m_pControlContainer->FindControl(65782);
+	m_pAutoSkillPanelChild[8] = (SPanel*)m_pControlContainer->FindControl(65783);
+	m_pAutoSkillPanelChild[9] = (SPanel*)m_pControlContainer->FindControl(65784);
+
+	if (m_pAutoSkillPanel)
+		m_pAutoSkillPanel->SetVisible(0);
+
+	SetAutoSkillNum(m_nAutoSkillNum);
+
+	memset(&g_pObjectManager->m_stTrade, 0, sizeof(g_pObjectManager->m_stTrade));
+	memset(&g_pObjectManager->m_stCombineItem, 0, sizeof(g_pObjectManager->m_stCombineItem));
+	memset(&g_pObjectManager->m_stCombineItem4, 0, sizeof(g_pObjectManager->m_stCombineItem4));
+	g_pObjectManager->m_stCombineItem.Header.ID = g_pObjectManager->m_dwCharID;
+	g_pObjectManager->m_stCombineItem.Header.Type = 0x3A6;
+	g_pObjectManager->m_stCombineItem4.Header.ID = g_pObjectManager->m_dwCharID;
+	g_pObjectManager->m_stCombineItem4.Header.Type = 0x3C0;
+
+	for (int i = 0; i < 15; ++i)
+		g_pObjectManager->m_stTrade.CarryPos[i] = -1;
+	for (int i = 0; i < 8; ++i)
+	{
+		g_pObjectManager->m_stCombineItem.CarryPos[i] = -1;
+		g_pObjectManager->m_stCombineItem4.CarryPos[i] = -1;
+	}
+
+	m_pPositionText = (SText*)m_pControlContainer->FindControl(771);
+	if (m_pPositionText)
+		m_pPositionText->SetVisible(0);
+
+	m_pFadePanel = (SPanel*)m_pControlContainer->FindControl(65566);
+	if (m_pFadePanel)
+		m_pFadePanel->m_bSelectEnable = 0;
+
+	SPanel* pUnderBGPanel = (SPanel*)m_pControlContainer->FindControl(625);
+	if (pUnderBGPanel)
+		pUnderBGPanel->m_bSelectEnable = 0;
+
+	m_pEditChat = (SEditableText*)m_pControlContainer->FindControl(65671);
+	m_pInputBG2 = (SPanel*)m_pControlContainer->FindControl(574);
+
+	if (m_pInputBG2)
+		m_pInputBG2->SetVisible(0);
+	if (m_pEditChat)
+		m_pEditChat->SetVisible(1);
+
+	m_pEditChat = (SEditableText*)m_pControlContainer->FindControl(65671);
+	m_pInputBG2 = (SPanel*)m_pControlContainer->FindControl(574);
+
+	if (m_pInputBG2)
+		m_pInputBG2->SetVisible(0);
+	if (m_pEditChat)
+		m_pEditChat->SetVisible(1);
+
+	memset(m_dwSkillLastTime, 0, sizeof(m_dwSkillLastTime));
+
+	m_sWhisperIndex = 0;
+	m_sChatIndex = 0;
+
+	memset(m_szLastChatList, 0, sizeof(m_szLastChatList));
+	memset(m_szWhisperList, 0, sizeof(m_szWhisperList));
+
+	m_pFadePanel->SetSize((float)g_pDevice->m_dwScreenWidth, (float)g_pDevice->m_dwScreenHeight);
+
+	m_pKingDomFlag = (SPanel*)m_pControlContainer->FindControl(65768);
+	if (m_pKingDomFlag)
+		m_pKingDomFlag->SetVisible(0);
+
+	m_pFlagDesc = (SPanel*)m_pControlContainer->FindControl(65771);
+	if (m_pFlagDesc)
+		m_pFlagDesc->SetVisible(0);
+
+	m_pFlagDescText[0] = (SText*)m_pControlContainer->FindControl(65772);
+	m_pFlagDescText[1] = (SText*)m_pControlContainer->FindControl(65773);
+	m_pFlagDescText[2] = (SText*)m_pControlContainer->FindControl(65774);
+
+	m_pKingDomFlag->m_pDescPanel = m_pFlagDesc;
+
+	m_pRankTimeText = new SText(-2,
+		"00 : 00",
+		0xFF00FF00,
+		(((float)g_pDevice->m_dwScreenWidth / RenderDevice::m_fWidthRatio) / 2.0f) - 42.0f,
+		30.0f,
+		200.0f,
+		16.0f,
+		0,
+		0x77777777,
+		1,
+		0);
+
+	if (m_pRankTimeText)
+	{
+		m_pRankTimeText->m_Font.m_fSize = 2.0f;
+		m_pRankTimeText->SetVisible(0);
+		m_bRankTimeOn = 0;
+	}
+
+	char szTempLeft[128]{};
+	sprintf(szTempLeft, "%s 100", g_pMessageStringTable[230]);
+
+	m_pRemainText = new SText(-2,
+		szTempLeft,
+		0xFFFFAA00,
+		((float)g_pDevice->m_dwScreenWidth / RenderDevice::m_fWidthRatio) - 210.0f,
+		30.0f,
+		100.0f,
+		16.0f,
+		0,
+		0x77777777,
+		1,
+		0);
+
+	if (m_pRemainText)
+	{
+		m_pRemainText->m_Font.m_fSize = 2.0f;
+		m_pRemainText->SetVisible(0);
+	}
+
+	m_pQuestRemainTime = new SText(-2,
+		"",
+		0xDDFFFF33,
+		(float)((float)g_pDevice->m_dwScreenWidth / RenderDevice::m_fWidthRatio) - 140.0f,
+		5.0f * RenderDevice::m_fHeightRatio,
+		100.0f,
+		16.0f,
+		0,
+		0x77777777,
+		1,
+		0);
+
+	if (m_pQuestRemainTime)
+	{
+		m_pQuestRemainTime->m_Font.m_fSize = 1.0f;
+		m_pQuestRemainTime->SetVisible(1);
+	}
+
+	if (m_pRankTimeText)
+		m_pControlContainer->AddItem(m_pRankTimeText);
+	if (m_pRemainText)
+		m_pControlContainer->AddItem(m_pRemainText);
+	if (m_pQuestRemainTime)
+		m_pControlContainer->AddItem(m_pQuestRemainTime);
+
+	m_pRankTimeText->SetPos(((float)g_pDevice->m_dwScreenWidth * 0.5f) - 50.0f, 
+		(3.0f * RenderDevice::m_fHeightRatio) + 55.0f);
+
+	m_pRemainText->SetPos((float)g_pDevice->m_dwScreenWidth - 200.0f,
+		30.0f * RenderDevice::m_fHeightRatio);
+
+	if (g_pDevice->m_dwScreenWidth < 800)
+	{
+		m_pQuestRemainTime->SetPos((float)g_pDevice->m_dwScreenWidth + 35.0f,
+			5.0f * RenderDevice::m_fHeightRatio);
+	}
+	else
+	{
+		m_pQuestRemainTime->SetPos(276.0f * RenderDevice::m_fWidthRatio,
+			525.0f * RenderDevice::m_fHeightRatio);
+	}
+
+	m_pMoney1 = (SText*)m_pControlContainer->FindControl(65564u);
+	m_pMoney4 = (SText*)m_pControlContainer->FindControl(94221u);
+	m_pSkBonus = (SText*)m_pControlContainer->FindControl(65600u);
+	m_pCHP = (SText*)m_pControlContainer->FindControl(65614u);
+	m_pCMP = (SText*)m_pControlContainer->FindControl(65616u);
+	m_pExpLamp[0] = (SPanel*)m_pControlContainer->FindControl(65637u);
+	m_pExpLamp[1] = (SPanel*)m_pControlContainer->FindControl(65638u);
+	m_pExpLamp[2] = (SPanel*)m_pControlContainer->FindControl(65639u);
+	m_pExpProgress[0] = (SProgressBar*)m_pControlContainer->FindControl(65655u);
+	m_pExpProgress[1] = (SProgressBar*)m_pControlContainer->FindControl(65656u);
+	m_pExpProgress[2] = (SProgressBar*)m_pControlContainer->FindControl(65657u);
+	m_pExpProgress[3] = (SProgressBar*)m_pControlContainer->FindControl(65658u);
+	m_pExpProgress[4] = (SProgressBar*)m_pControlContainer->FindControl(65659u);
+	m_pExpProgress[5] = (SProgressBar*)m_pControlContainer->FindControl(65660u);
+	m_pExpProgress[6] = (SProgressBar*)m_pControlContainer->FindControl(65661u);
+	m_pExpProgress[7] = (SProgressBar*)m_pControlContainer->FindControl(65662u);
+	m_pExpProgress[8] = (SProgressBar*)m_pControlContainer->FindControl(65663u);
+	m_pExpProgress[9] = (SProgressBar*)m_pControlContainer->FindControl(65664u);
+	m_pCCModeHpSte = (SText*)m_pControlContainer->FindControl(66823u);
+	m_pCCModeMountSte = (SText*)m_pControlContainer->FindControl(66824u);
+
+	char chtmp[128]{};
+	sprintf(chtmp, "%d", g_GameAuto_hpValue);
+	m_pCCModeHpSte->SetText(chtmp, 0);
+	sprintf(chtmp, "%d", g_GameAuto_mountValue);
+	m_pCCModeMountSte->SetText(chtmp, 0);
+
+	m_pCIName = (SText*)m_pControlContainer->FindControl(65703u);
+	m_pCIClass = (SText*)m_pControlContainer->FindControl(65707u);
+	m_pCIClass2 = (SText*)m_pControlContainer->FindControl(65708u);
+	m_pCIHP = (SText*)m_pControlContainer->FindControl(65729u);
+	m_pCIMP = (SText*)m_pControlContainer->FindControl(65731u);
+	m_pCIEXP = (SText*)m_pControlContainer->FindControl(65710u);
+	m_pCIEXPE = (SText*)m_pControlContainer->FindControl(65711u);
+	m_pCLevel = (SText*)m_pControlContainer->FindControl(65713u);
+	m_pScBonus = (SText*)m_pControlContainer->FindControl(65727u);
+	m_pCIStr = (SText*)m_pControlContainer->FindControl(65715u);
+	m_pCIInt = (SText*)m_pControlContainer->FindControl(65718u);
+	m_pCIDex = (SText*)m_pControlContainer->FindControl(65721u);
+	m_pCICon = (SText*)m_pControlContainer->FindControl(65724u);
+	m_pCIFakeExp = (SText*)m_pControlContainer->FindControl(65767u);
+	m_pCISpecial1 = (SText*)m_pControlContainer->FindControl(65753u);
+	m_pCISpecial2 = (SText*)m_pControlContainer->FindControl(65756u);
+	m_pCISpecial3 = (SText*)m_pControlContainer->FindControl(65759u);
+	m_pCISpecial4 = (SText*)m_pControlContainer->FindControl(65762u);
+	m_pSpBonus = (SText*)m_pControlContainer->FindControl(65765u);
+	m_pMoney2 = (SText*)m_pControlContainer->FindControl(1041u);
+	m_pMoney3 = (SText*)m_pControlContainer->FindControl(6408u);
+
+	for (int i = 0; i < 24; ++i)
+		m_pSkillSecGrid[i] = (SGridControl*)m_pControlContainer->FindControl(i + 65574);
+
+	for (int i = 0; i < 12; ++i)
+		m_pSkillSecGrid2[i] = (SGridControl*)m_pControlContainer->FindControl(i + 94208);
+
+	m_pDamage = (SText*)m_pControlContainer->FindControl(65733u);
+	m_pSkillDam = (SText*)m_pControlContainer->FindControl(65735u);
+	m_pSpeed = (SText*)m_pControlContainer->FindControl(65737u);
+	m_pDefence = (SText*)m_pControlContainer->FindControl(65739u);
+	m_pAttackSpeed = (SText*)m_pControlContainer->FindControl(65741u);
+	m_pCritical = (SText*)m_pControlContainer->FindControl(65743u);
+	m_pRegist1 = (SText*)m_pControlContainer->FindControl(65745u);
+	m_pRegist2 = (SText*)m_pControlContainer->FindControl(65747u);
+	m_pRegist3 = (SText*)m_pControlContainer->FindControl(65749u);
+	m_pRegist4 = (SText*)m_pControlContainer->FindControl(65751u);
+	m_pSLPanel1 = (SPanel*)m_pControlContainer->FindControl(1923u);
+	m_pSLPanel2 = (SPanel*)m_pControlContainer->FindControl(1924u);
+	m_pSLPanel3 = (SPanel*)m_pControlContainer->FindControl(1925u);
+	m_pSkillCover = (SPanel*)m_pControlContainer->FindControl(1157u);
+	m_pMainInfo1 = (SPanel*)m_pControlContainer->FindControl(65628u);
+	m_pMainInfo1_BG = (SPanel*)m_pControlContainer->FindControl(65641u);
+
+
 }
 
 int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEvent)
