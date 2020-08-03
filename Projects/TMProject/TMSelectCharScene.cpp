@@ -734,7 +734,6 @@ int TMSelectCharScene::OnControlEvent(unsigned int idwControlID, unsigned int id
 		m_pAccountLockDlgTitle->SetText(g_UIString[236], 0);
 		return 1;
 	}
-
 	if (idwControlID == 4628)
 	{
 		if (m_pControlContainer->m_pFocusControl && m_pControlContainer->m_pFocusControl->m_eCtrlType == CONTROL_TYPE::CTRL_TYPE_EDITABLETEXT
@@ -745,8 +744,9 @@ int TMSelectCharScene::OnControlEvent(unsigned int idwControlID, unsigned int id
 			else
 				g_pEventTranslator->SetIMENative();
 		}
+		return 1;
 	}
-	else if (idwControlID == 4612 && dwServerTime - m_dwLastClickLoginBtnTime > 2000)
+	if (idwControlID == 4612 && dwServerTime - m_dwLastClickLoginBtnTime > 2000)
 	{
 		int nSlot = g_pObjectManager->m_cCharacterSlot;
 		if (nSlot < 0 || nSlot >= 4)
@@ -768,11 +768,275 @@ int TMSelectCharScene::OnControlEvent(unsigned int idwControlID, unsigned int id
 			m_pBtnCancel->SetEnable(0);
 			m_pBtnDelete->SetEnable(0);
 		}
+		return 1;
 	}
-	else if (idwControlID == 1545)
+	if (idwControlID == 1545)
 	{
+		SEditableText* pEditID = static_cast<SEditableText*>(m_pControlContainer->FindControl(4626));
+		if (strlen(pEditID->GetText()) < 4)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[15], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+		if (strlen(pEditID->GetText()) > 12)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[16], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+		if (!BASE_CheckValidString(pEditID->GetText()))
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[17], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+		char* szName = BASE_TransCurse(pEditID->GetText());
+		for (int i = 0; i < strlen(szName) - 1; i++)
+		{
+			if (szName[i] == -95 && szName[i + 1] == -95)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[17], 2000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+		}
 
+		int slotId = 0;
+		for (int i = 0; i < 4 && (!pSelChar || pSelChar->MobName[i][0]); i++)
+			slotId++;
+
+		int nClass = -1;
+		for (int i = 0; i < 4; i++)
+		{
+			if (g_pObjectManager->m_pTargetObject == m_pSampleHuman[i])
+				nClass = i;
+		}
+
+		if (!g_pObjectManager->m_pTargetObject || nClass == -1)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[14], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+		if (slotId >= 0 && slotId < 4)
+		{
+			MSG_NewCharacter stNewCharacter{};
+			stNewCharacter.Header.ID = 0;
+			stNewCharacter.Header.Type = MSG_NewCharacter_Opcode;
+			stNewCharacter.Class = nClass;
+			stNewCharacter.Slot = slotId;
+
+			sprintf(stNewCharacter.MobName, "%s", szName);
+
+			g_pSocketManager->SendOneMessage((char*)&stNewCharacter, sizeof(stNewCharacter));
+			m_dwLastClickCreateBtnTime = dwServerTime;
+			m_pBtnCreate->SetEnable(0);
+		}
+		return 1;
 	}
+	if (idwControlID == 4615)
+	{
+		m_pMessageBox->SetMessage(g_pMessageStringTable[18], 4615, 0);
+		m_pMessageBox->SetVisible(1);
+		return 1;
+	}
+	if (idwControlID == 4613)
+	{
+		VisibleSelectCreate(0);
+		return 1;
+	}
+	if (idwControlID == 4616)
+	{
+		int nIndex = 0;
+		for (nIndex = 0; nIndex < 4; nIndex++)
+		{
+			if (m_pHuman[nIndex] && m_pHuman[nIndex]->m_bSelected)
+				break;
+		}
+
+		if (nIndex == 4)
+		{
+			VisibleSelectCreate(1);
+		}
+		else
+		{
+			LookSampleHuman(nIndex, 0, 1);
+			m_pHuman[nIndex]->m_bSelected = 0;
+
+			SPanel* pPanel = static_cast<SPanel*>(m_pControlContainer->FindControl(1282));
+			pPanel->SetVisible(0);
+		}
+		if (m_pBtnDelete->m_bVisible == 1)
+			m_pBtnDelete->SetVisible(0);
+
+		return 1;
+	}
+	if (idwControlID == 1552)
+	{
+		int nIndex = 0;
+		for (nIndex = 0; nIndex < 4; nIndex++)
+		{
+			if (m_pSampleHuman[nIndex] && m_pSampleHuman[nIndex]->m_bSelected)
+				break;
+		}
+		if (nIndex == 4)
+		{
+			VisibleSelectCreate(1);
+		}
+		else
+		{
+			LookSampleHuman(nIndex, 0, 1);
+			m_pSampleHuman[nIndex]->m_bSelected = 0;
+
+			SPanel* pPanel = static_cast<SPanel*>(m_pControlContainer->FindControl(1542));
+			pPanel->SetVisible(0);
+		}
+		return 1;
+	}
+	if (idwControlID == 628)
+	{
+		if (m_pRename)
+			m_pRename->SetVisible(0);
+		if (!m_pEditRename)
+			return 1;
+
+		int size = strlen(m_pEditRename->GetText());
+		if (size < 4)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[15], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+		if (size > 12)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[16], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+		if (!BASE_CheckValidString(m_pEditRename->GetText()))
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[17], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+		char* szName = BASE_TransCurse(m_pEditRename->GetText());
+		if (strcmp(m_pEditRename->GetText(), szName))
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[17], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+
+		char* buf = m_pEditRename->GetText();
+		for (int i = 0; i < strlen(buf) - 1; i++)
+		{
+			if (buf[i] == -95 && buf[i + 1] == -95)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[17], 2000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+		}
+
+		MSG_ReqTransper stReqTransper{}; 
+		stReqTransper.Header.ID = 0;
+		stReqTransper.Header.Type = MSG_ReqTransper_Opcode;
+		stReqTransper.Slot = g_pObjectManager->m_cCharacterSlot;
+		stReqTransper.Result = 0;
+		sprintf(stReqTransper.OldName, "%s", pSelChar->MobName[g_pObjectManager->m_cCharacterSlot]);
+		sprintf(stReqTransper.NewName, "%s", m_pEditRename->GetText());
+
+		g_pSocketManager->SendOneMessage((char*)&stReqTransper, sizeof(stReqTransper));
+		m_bMovingNow = 1;
+		m_dwLastMoveTime = dwServerTime;
+		return 1;
+	}
+	if (idwControlID == 629)
+	{
+		if (m_pRename)
+			m_pRename->SetVisible(0);
+		m_bMovingNow = 0;
+		return 1;
+	}
+	if (idwControlID == 65886)
+	{
+		MSG_DeleteCharacter stDelCharacter{};
+		stDelCharacter.Header.ID = 0;
+		stDelCharacter.Header.Type = MSG_DeleteCharacter_Opcode;
+		stDelCharacter.Slot = g_pObjectManager->m_cCharacterSlot;
+		sprintf(stDelCharacter.MobName, "%s", pSelChar->MobName[g_pObjectManager->m_cCharacterSlot]);
+		sprintf(stDelCharacter.Password, "%s", m_pPWEdit->GetText());
+
+		g_pSocketManager->SendOneMessage((char*)&stDelCharacter, sizeof(stDelCharacter));
+		memset(m_pPWEdit->m_strText, 0, 4);
+		m_pInputPWPanel->SetVisible(0);
+		m_pControlContainer->SetFocusedControl(nullptr);
+		return 1;
+	}
+	if (idwControlID == 65887)
+	{
+		m_pInputPWPanel->SetVisible(0);
+		m_pControlContainer->SetFocusedControl(nullptr);
+		return 1;
+	}
+	if (idwControlID == 4617)
+	{
+		if (idwEvent)
+		{
+			if (idwEvent == 1)
+				m_pMessageBox->SetVisible(0);
+
+			return 1;
+		}
+
+		int characterSlot = g_pObjectManager->m_cCharacterSlot;
+		if (m_pMessageBox->m_dwMessage == 65796)
+		{
+			g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTSERVER_STATE);
+			return 1;
+		}
+		if (m_pMessageBox->m_dwMessage == 4615 && characterSlot >= 0 && characterSlot < 4)
+		{
+			m_pInputPWPanel->SetVisible(1);
+			m_pControlContainer->SetFocusedControl(m_pPWEdit);
+			return 1;
+		}
+		if (m_pMessageBox->m_dwMessage == 65875)
+		{
+			ShellExecute(0, 0, g_pMessageStringTable[263], 0, 0, 3);
+			return 1;
+		}
+		if (m_pMessageBox->m_dwMessage == 1)
+		{
+			if (characterSlot < 0)
+				return 1;
+
+			MSG_ReqTransper stReqTransper{};
+			stReqTransper.Header.ID = 0;
+			stReqTransper.Header.Type = MSG_ReqTransper_Opcode;
+			stReqTransper.Slot = characterSlot;
+			stReqTransper.Result = 0;
+			sprintf(stReqTransper.OldName, "%s", pSelChar->MobName[characterSlot]);
+			sprintf(stReqTransper.NewName, "%s", pSelChar->MobName[characterSlot]);
+
+			g_pSocketManager->SendOneMessage((char*)&stReqTransper, sizeof(stReqTransper));
+
+			m_bMovingNow = 1;
+			m_dwLastMoveTime = dwServerTime;
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[206], 0);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+		if (m_pMessageBox->m_dwMessage == 0)
+		{
+			m_pMessageBox->SetVisible(0);
+			return 1;
+		}
+		return 1;
+	}
+
+	return 0;
 }
 
 int TMSelectCharScene::OnCharEvent(char iCharCode, int lParam)

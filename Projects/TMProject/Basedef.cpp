@@ -1135,3 +1135,58 @@ int BASE_GetItemColorEffect(STRUCT_ITEM* item)
 
     return effect;
 }
+
+char BASE_CheckValidString(char* name)
+{
+    int size = strlen(name);
+    if (size < 4 || size >= 16)
+        return 0;
+
+    for (int j = 0; j < size; ++j)
+    {
+        char x = name[j];
+        if (x < 0)
+        {
+            if (!name[++j])
+                return 0;
+        }
+        else if ((x < 'a' || x > 'z') && (x < 'A' || x > 'Z') && (x < '0' || x > '9') && x != '-')
+            return 0;
+    }
+
+    return 1;
+}
+
+char* BASE_TransCurse(char* sz)
+{
+    if (sz == nullptr)
+        return 0;
+    
+    bool bFind = false;
+    do
+    {
+        bFind = false;
+        for (int i = 0; i < g_pCurseList.dnum; ++i)
+        {
+            if (strlen(g_pCurseList.pCurseList[i].szOriginal) == 0)
+                return sz;
+
+            char* szDest = strstr(sz, g_pCurseList.pCurseList[i].szOriginal);
+            if (szDest == nullptr)
+                continue;
+
+            int nOriLen = strlen(g_pCurseList.pCurseList[i].szOriginal);
+            if (!IsClearString2(sz, szDest - sz))
+                continue;
+
+            char szNext[128]{};
+            memcpy(szNext, sz, szDest - sz);
+            strcat(szNext, g_pCurseList.pCurseList[i].szTrans);
+            strcat(szNext, &szDest[nOriLen]);
+            sprintf(sz, szNext);
+            bFind = true;
+            break;
+        }
+    } while (bFind == true);
+    return sz;
+}

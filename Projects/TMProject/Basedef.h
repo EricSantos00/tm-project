@@ -863,6 +863,34 @@ struct MSG_CharacterLogin
 	char SecretCode[16];
 };
 
+constexpr auto MSG_NewCharacter_Opcode = 0x20F;
+struct MSG_NewCharacter
+{
+	MSG_STANDARD Header;
+	int Slot;
+	char MobName[16];
+	int Class;
+};
+
+constexpr auto MSG_ReqTransper_Opcode = 0xFAA;
+struct MSG_ReqTransper
+{
+	MSG_STANDARD Header;
+	int Result;
+	int Slot;
+	char OldName[16];
+	char NewName[16];
+};
+
+constexpr auto MSG_DeleteCharacter_Opcode = 0x211;
+struct MSG_DeleteCharacter
+{
+	MSG_STANDARD Header;
+	int Slot;
+	char MobName[16];
+	char Password[16];
+};
+
 constexpr auto MSG_Attack_Multi = 0x367;
 constexpr auto MSG_Attack_One = 0x39D;
 constexpr auto MSG_Attack_Two = 0x39E;
@@ -973,6 +1001,8 @@ int BASE_GetSpeed(STRUCT_SCORE* score);
 int BASE_GetSubGuild(int item);
 unsigned int BASE_GetItemTenColor(STRUCT_ITEM* pItem);
 int BASE_GetItemColorEffect(STRUCT_ITEM* item);
+char BASE_CheckValidString(char* name);
+char* BASE_TransCurse(char* sz);
 
 /* Read Functions */
 int ReadItemicon();
