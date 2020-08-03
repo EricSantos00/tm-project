@@ -130,6 +130,9 @@ extern int g_nWeather;
 
 extern int g_nMyHumanSpeed;
 
+extern int g_NonePKServer;;
+extern int g_pPKServerNum[2];
+
 static unsigned int g_dwHandIndex[101][2] =
 {
     {19,25},{18,24},{15,21},{15,21},{12,18},{22,28},{23,29},

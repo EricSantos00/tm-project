@@ -17,6 +17,8 @@
 #include "TMScene.h"
 #include "TMFieldScene.h"
 #include "TMEffectFirework.h"
+#include "TMSnow.h"
+#include "TMRain.h"
 
 TMScene::TMScene() : TreeNode(0)
 {
@@ -1362,7 +1364,7 @@ int TMScene::OnChangeIME()
 
 int TMScene::OnAccel(int nMsg)
 {
-	return 0;
+	return 1;
 }
 
 int TMScene::FrameMove(unsigned int dwServerTime)
@@ -1485,6 +1487,7 @@ ESCENE_TYPE TMScene::GetSceneType()
 
 void TMScene::Cleanup()
 {
+	;
 }
 
 char heightMapData[128][128]{};
@@ -2006,17 +2009,116 @@ void TMScene::GroundSetColor(TMVector2 vecPosition, unsigned int dwColor)
 
 int TMScene::GroundIsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight)
 {
+	if (!m_pGround)
+		return 0;
+
+	if (vecPosition.x >= m_pGround->m_vecOffset.x && (float)(m_pGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_vecOffset.y && (float)(m_pGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->IsInWater(vecPosition, fHeight, pfWaterHeight);
+	}
+	if (m_pGround->m_pLeftGround && 
+		vecPosition.x >= m_pGround->m_pLeftGround->m_vecOffset.x && (float)(m_pGround->m_pLeftGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pLeftGround->m_vecOffset.y && (float)(m_pGround->m_pLeftGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pLeftGround->IsInWater(vecPosition, fHeight, pfWaterHeight);
+	}
+	if (m_pGround->m_pRightGround
+		&& vecPosition.x >= m_pGround->m_pRightGround->m_vecOffset.x && (float)(m_pGround->m_pRightGround->m_vecOffset.x + 128.0f) > vecPosition.x
+		&& vecPosition.y >= m_pGround->m_pRightGround->m_vecOffset.y && (float)(m_pGround->m_pRightGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pRightGround->IsInWater(vecPosition, fHeight, pfWaterHeight);
+	}
+	if (m_pGround->m_pUpGround
+		&& vecPosition.x >= m_pGround->m_pUpGround->m_vecOffset.x && (float)(m_pGround->m_pUpGround->m_vecOffset.x + 128.0f) > vecPosition.x
+		&& vecPosition.y >= m_pGround->m_pUpGround->m_vecOffset.y && (float)(m_pGround->m_pUpGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pUpGround->IsInWater(vecPosition, fHeight, pfWaterHeight);
+	}
+	if (m_pGround->m_pDownGround
+		&& vecPosition.x >= m_pGround->m_pDownGround->m_vecOffset.x && (float)(m_pGround->m_pDownGround->m_vecOffset.x + 128.0f) > vecPosition.x
+		&& vecPosition.y >= m_pGround->m_pDownGround->m_vecOffset.y && (float)(m_pGround->m_pDownGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pDownGround->IsInWater(vecPosition, fHeight, pfWaterHeight);
+	}
+
 	return 0;
 }
 
 int TMScene::GroundIsInWater2(TMVector2 vecPosition, float* pfWaterHeight)
 {
-	return 0;
+	if (!m_pGround)
+		return 0;
+
+	if (vecPosition.x >= m_pGround->m_vecOffset.x && (float)(m_pGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_vecOffset.y && (float)(m_pGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1f, pfWaterHeight);
+	}
+	if (m_pGround->m_pLeftGround && 
+		vecPosition.x >= m_pGround->m_pLeftGround->m_vecOffset.x && (float)(m_pGround->m_pLeftGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pLeftGround->m_vecOffset.y && (float)(m_pGround->m_pLeftGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pLeftGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1, pfWaterHeight);
+	}
+	if (m_pGround->m_pRightGround && 
+		vecPosition.x >= m_pGround->m_pRightGround->m_vecOffset.x && (float)(m_pGround->m_pRightGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pRightGround->m_vecOffset.y && (float)(m_pGround->m_pRightGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pRightGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1, pfWaterHeight);
+	}
+	if (m_pGround->m_pUpGround && 
+		vecPosition.x >= m_pGround->m_pUpGround->m_vecOffset.x && (float)(m_pGround->m_pUpGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pUpGround->m_vecOffset.y && (float)(m_pGround->m_pUpGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pUpGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1, pfWaterHeight);
+	}
+	if (!m_pGround->m_pDownGround || 
+		vecPosition.x < m_pGround->m_pDownGround->m_vecOffset.x || (float)(m_pGround->m_pDownGround->m_vecOffset.x + 128.0f) <= vecPosition.x || 
+		vecPosition.y < m_pGround->m_pDownGround->m_vecOffset.y || (float)(m_pGround->m_pDownGround->m_vecOffset.y + 128.0f) <= vecPosition.y)
+	{
+		return 0;
+	}
+
+	return m_pGround->m_pDownGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1f, pfWaterHeight);
 }
 
 float TMScene::GroundGetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight)
 {
-	return 0.0f;
+	if (!m_pGround)
+		return -100.0f;
+
+	if (vecPosition.x >= m_pGround->m_vecOffset.x && (float)(m_pGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_vecOffset.y && (float)(m_pGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->GetWaterHeight(vecPosition, pfWaterHeight);
+	}
+	if (m_pGround->m_pLeftGround && 
+		vecPosition.x >= m_pGround->m_pLeftGround->m_vecOffset.x && (float)(m_pGround->m_pLeftGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pLeftGround->m_vecOffset.y && (float)(m_pGround->m_pLeftGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pLeftGround->GetWaterHeight(vecPosition, pfWaterHeight);
+	}
+	if (m_pGround->m_pRightGround && 
+		vecPosition.x >= m_pGround->m_pRightGround->m_vecOffset.x && (float)(m_pGround->m_pRightGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pRightGround->m_vecOffset.y && (float)(m_pGround->m_pRightGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pRightGround->GetWaterHeight(vecPosition, pfWaterHeight);
+	}
+	if (m_pGround->m_pUpGround && 
+		vecPosition.x >= m_pGround->m_pUpGround->m_vecOffset.x && (float)(m_pGround->m_pUpGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pUpGround->m_vecOffset.y && (float)(m_pGround->m_pUpGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pUpGround->GetWaterHeight(vecPosition, pfWaterHeight);
+	}
+	if (m_pGround->m_pDownGround && 
+		vecPosition.x >= m_pGround->m_pDownGround->m_vecOffset.x && (float)(m_pGround->m_pDownGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pDownGround->m_vecOffset.y && (float)(m_pGround->m_pDownGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+	    return m_pGround->m_pDownGround->GetWaterHeight(vecPosition, pfWaterHeight);
+	}
+
+	return -100.0f;
 }
 
 int TMScene::GetMask2(TMVector2 vecPosition)
@@ -2046,10 +2148,134 @@ void TMScene::Warp()
 
 void TMScene::Warp2(int nZoneX, int nZoneY)
 {
+	if (m_bCriticalError == 1 || !m_pGround)
+		return;
+
+	m_bAutoRun = 0;
+	if (m_eSceneType == ESCENE_TYPE::ESCENE_FIELD && static_cast<TMFieldScene*>(this)->m_pAutoRunBtn)
+		static_cast<TMFieldScene*>(this)->m_pAutoRunBtn->SetSelected(m_bAutoRun);
+
+	TMGround* pNeighbor = nullptr;
+	if (m_pGround->m_pLeftGround)
+		pNeighbor = m_pGround->m_pLeftGround;
+	if (m_pGround->m_pRightGround)
+		pNeighbor = m_pGround->m_pRightGround;
+	if (m_pGround->m_pUpGround)
+		pNeighbor = m_pGround->m_pUpGround;
+	if (m_pGround->m_pDownGround)
+		pNeighbor = m_pGround->m_pDownGround;
+
+	if (!pNeighbor && 
+		(nZoneX != m_pGround->m_vecOffsetIndex.x || nZoneY != m_pGround->m_vecOffsetIndex.y) || 
+		pNeighbor && 
+		(nZoneX != m_pGround->m_vecOffsetIndex.x && nZoneX != pNeighbor->m_vecOffsetIndex.x || 
+		 nZoneY != m_pGround->m_vecOffsetIndex.y && nZoneY != pNeighbor->m_vecOffsetIndex.y))
+	{
+		char szMapPath[128]{};
+		char szDataPath[128]{};
+		sprintf(szMapPath, "env\\Field%02d%02d.trn", nZoneX, nZoneY);
+		sprintf(szDataPath, "env\\Field%02d%02d.dat", nZoneX, nZoneY);
+
+		TMGround* pGround = new TMGround();
+
+		if (!pGround->LoadTileMap(szMapPath))
+		{
+			if (!m_bCriticalError)
+				LogMsgCriticalError(10, 0, 0, 0, 0);
+
+			m_bCriticalError = 1;
+			return;
+		}
+
+		TMGround* pOldGround = m_pGround;
+		m_pGround = pGround;
+
+		for (int i = 0; i < 2; ++i)
+		{
+			SAFE_DELETE(m_pObjectContainerList[i]);
+			SAFE_DELETE(m_pGroundList[i]);
+		}
+
+		g_HeightPosX = nZoneX << 7;
+		g_HeightPosY = nZoneY << 7;
+
+		m_nCurrentGroundIndex = 0;
+		m_pGroundList[0] = m_pGround;
+
+		m_pObjectContainerList[0] = new TMObjectContainer(m_pGround);
+
+		if (!m_pObjectContainerList[0]->Load(szDataPath))
+		{
+			LOG_WRITELOG("DataFile Not Found : %s\r\n", szDataPath);
+			if (!m_bCriticalError)
+				LogMsgCriticalError(11, 0, 0, 0, 0);
+
+			m_bCriticalError = 1;
+			return;
+		}
+
+		memset(m_HeightMapData, 0, 4u);
+
+		for (int nY = 0; nY < 128; ++nY)
+			memcpy(&m_HeightMapData[nY], m_pGround->m_pMaskData[nY], 128);
+
+		m_pGround->SetMiniMapData();
+		m_pGroundObjectContainer->AddChild(m_pObjectContainerList[0]);
+		m_pGroundObjectContainer->AddChild(m_pGroundList[0]);
+
+		BASE_ApplyAttribute((char*)&m_HeightMapData, 256);
+
+		memcpy(m_GateMapData, m_HeightMapData, sizeof(m_GateMapData));
+
+		SaveHeightMap(szMapPath);
+		m_nAdjustTime = 0;
+		m_dwInitTime = g_pTimerManager->GetServerTime();
+	}
+	else if (pNeighbor && nZoneX == pNeighbor->m_vecOffsetIndex.x && nZoneY == pNeighbor->m_vecOffsetIndex.y)
+	{
+		m_pGround = pNeighbor;
+		m_nCurrentGroundIndex = (m_nCurrentGroundIndex + 1) % 2;
+		m_pGround->SetMiniMapData();
+	}
+	if (m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+	{
+		auto pSoundManager = g_pSoundManager;
+		if (pSoundManager)
+		{
+			auto pSoundData = pSoundManager->GetSoundData(6);
+			if (pSoundData && pSoundData->IsSoundPlaying())
+			{
+				pSoundData->Stop();
+			}
+		}
+		if (RenderDevice::m_bDungeon && RenderDevice::m_bDungeon != 3 && RenderDevice::m_bDungeon != 4)
+		{
+			g_nWeather = 0;
+			static_cast<TMFieldScene*>(this)->m_pRain->m_bVisible = 0;
+			static_cast<TMFieldScene*>(this)->m_pSnow->m_bVisible = 0;
+			static_cast<TMFieldScene*>(this)->m_pSnow2->m_bVisible = 0;
+			static_cast<TMFieldScene*>(this)->m_bQuater = 1;
+			static_cast<TMFieldScene*>(this)->UpdateScoreUI(0);
+			static_cast<TMFieldScene*>(this)->m_pMiniMapPanel->m_GCPanel.dwColor = 0x80FFFFFF;
+		}
+		else
+		{
+			if (RenderDevice::m_bDungeon == 3 || RenderDevice::m_bDungeon == 4)
+			{
+				static_cast<TMFieldScene*>(this)->m_pSnow->m_bVisible = 0;
+				static_cast<TMFieldScene*>(this)->m_pSnow2->m_bVisible = 0;
+			}
+
+			static_cast<TMFieldScene*>(this)->SetWeather(g_nWeather);
+			g_pObjectManager->m_pCamera->m_fHorizonAngle = 0.78539819f;
+			static_cast<TMFieldScene*>(this)->m_pMiniMapPanel->m_GCPanel.dwColor = 0x80FFFFFF;
+		}
+	}
 }
 
 void TMScene::SaveHeightMap(char* szFileName)
 {
+	;
 }
 
 void TMScene::CameraAction()
@@ -2430,10 +2656,30 @@ int TMScene::LoadMsgLevel(char* LevelQuest, char* szFileName, char cType)
 
 void TMScene::CheckPKNonePK(int nServerIndex)
 {
+	g_NonePKServer = 1;
+	for (int i = 0; i < 2; ++i)
+	{
+		if (nServerIndex == g_pPKServerNum[i])
+			g_NonePKServer = 0;
+	}
+	g_NonePKServer = 0;
 }
 
 void TMScene::LogMsgCriticalError(int Type, int ID, int nMesh, int X, int Y)
 {
+	MSG_MessageLog stLog{};
+	stLog.Header.ID = m_pMyHuman->m_dwID;
+	stLog.Header.Type = MSG_MessageLog_Opcode;
+
+	if(Type == 10)
+		sprintf(stLog.String, "00000000 , Load Tile Map Fail");
+	else
+		sprintf(stLog.String, "%08d , Critical Data Err Cl,%d,%d,%d,%d,%d, %d", ID,	nMesh, (int)m_pMyHuman->m_vecPosition.x, (int)m_pMyHuman->m_vecPosition.y,
+			X,
+			Y,
+			Type);
+
+	g_pSocketManager->SendOneMessage((char*)&stLog, sizeof(stLog));
 }
 
 void TMScene::DeleteOwnerAllContainer()

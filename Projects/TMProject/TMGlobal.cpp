@@ -101,3 +101,6 @@ int g_nWeather;
 
 unsigned int CurrentTime;
 int g_nMyHumanSpeed = 3;
+
+int g_NonePKServer;
+int g_pPKServerNum[2] = { 5, 10 };

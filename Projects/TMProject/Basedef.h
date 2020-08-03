@@ -936,6 +936,13 @@ struct MSG_INITGULDNAME
 	char GuildName[12];
 };
 
+constexpr auto MSG_MessageLog_Opcode = 0x2BC;
+struct MSG_MessageLog
+{
+	MSG_STANDARD Header;
+	char String[128];
+};
+
 constexpr auto MSG_Attack_Multi = 0x367;
 constexpr auto MSG_Attack_One = 0x39D;
 constexpr auto MSG_Attack_Two = 0x39E;
