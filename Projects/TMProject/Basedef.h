@@ -818,6 +818,7 @@ struct MSG_AccountLogin
 };
 
 constexpr auto MSG_MessageWhisper_Opcode = 0x334;
+constexpr auto MSG_MessageShout_Opcode = 0xD1D;
 struct MSG_MessageWhisper
 {
 	MSG_STANDARD Header;
