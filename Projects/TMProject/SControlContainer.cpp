@@ -87,11 +87,14 @@ int SControlContainer::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, i
 			}
 
 			pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pTop);
+
+			if (pCurrentControl == nullptr)
+				break;
+
 			ParentPosX -= static_cast<int>(pCurrentControl->m_nPosX);
 			ParentPosY -= static_cast<int>(pCurrentControl->m_nPosY);
-
 			++b;
-		} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
+		} while (pCurrentControl != pRootControl);
 	} while (pCurrentControl != pRootControl && pCurrentControl != nullptr);
 
 	if (!bProcessed)
@@ -215,7 +218,7 @@ void SControlContainer::SetFocusedControl(SControl* pControl)
 				g_pCurrentScene->m_pAlphaNative->SetVisible(1);
 				g_pEventTranslator->UpdateCompositionPos();
 
-				SPanel* panel = static_cast<SPanel*>(g_pCurrentScene->m_pControlContainer->FindControl(65670u));
+				SPanel* panel = static_cast<SPanel*>(g_pCurrentScene->m_pControlContainer->FindControl(P_CHAT));
 				if (panel && panel->m_bVisible && pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
 					static_cast<TMFieldScene*>(pScene)->m_pChatSelectPanel->SetVisible(1);
 			}
@@ -273,7 +276,7 @@ int SControlContainer::FrameMove(unsigned int dwServerTime)
 			{
 				pCurrentControl->FrameMove2(m_pDrawControl, vParentPos, vControlLayer, 0);
 
-				if (m_pDown)
+				if (pCurrentControl->m_pDown)
 				{
 					vParentPos.x += pCurrentControl->m_nPosX;
 					vParentPos.y += pCurrentControl->m_nPosY;

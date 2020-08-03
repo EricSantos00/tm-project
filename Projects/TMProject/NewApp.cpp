@@ -799,6 +799,8 @@ HRESULT NewApp::MsgProc(HWND hWnd, DWORD uMsg, DWORD wParam, int lParam)
 {
 	switch (uMsg)
 	{
+	case WM_SETCURSOR:
+			return 0;
 	case WM_MOUSEMOVE:
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP:

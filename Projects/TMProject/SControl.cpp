@@ -1117,37 +1117,37 @@ int SEditableText::OnCharEvent(char iCharCode, int lParam)
 			switch (iCharCode)
 			{
 			case '-':
-				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90132));
+				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_GUILD));
 				strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "-");
 				break;
 			case '=':
-				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90131));
+				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_PARTY));
 				strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "=");
 				break;
 			case '@':
-				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90135));
+				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_KINGDOM));
 				strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "@");
 				break;
 			}
 
 			if (Button != nullptr)
 			{
-				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90114));
+				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT));
 				Button2->SetText(Button->m_GCPanel.strString);
 			}
 		}
 		else if (iCharCode == '-' && m_strText[0] == '-')
 		{
-			Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90133));
+			Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_GUILD2));
 			strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "--");
-			Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90114));
+			Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT));
 			Button2->SetText(Button->m_GCPanel.strString);
 		}
 		else if (iCharCode == '@' && m_strText[0] == '@')
 		{
-			Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90134));
+			Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_CITY));
 			strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "@@");
-			Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90114));
+			Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT));
 			Button2->SetText(Button->m_GCPanel.strString);
 		}
 	}
@@ -1159,16 +1159,16 @@ int SEditableText::OnCharEvent(char iCharCode, int lParam)
 
 		if (m_strText[0] == '/' && !strncmp(m_strText, temp, length))
 		{
-			Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90136));
+			Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_SHOUT));
 			strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "");
-			Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90114));
+			Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT));
 			Button2->SetText(Button->m_GCPanel.strString);
 		}
 		else if (m_strText[0] == '/' && strncmp(m_strText, temp, length))
 		{
-			Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90130));
+			Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_WHISPER));
 			strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "");
-			Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90114));
+			Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT));
 			Button2->SetText(Button->m_GCPanel.strString);
 		}
 	}
@@ -1182,9 +1182,9 @@ int SEditableText::OnCharEvent(char iCharCode, int lParam)
 		{
 			if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
 			{
-				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90129));
+				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_NOMAL));
 				strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "");
-				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90114));
+				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT));
 				Button2->SetText(Button->m_GCPanel.strString);
 			}
 
@@ -1201,37 +1201,37 @@ int SEditableText::OnCharEvent(char iCharCode, int lParam)
 		{
 			if (!strcmp(m_strText, "="))
 			{
-				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90131));
+				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_PARTY));
 				strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "=");
-				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90114));
+				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT));
 				Button2->SetText(Button->m_GCPanel.strString);
 			}
 			else if (!strcmp(m_strText, "-"))
 			{
-				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90132));
+				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_GUILD));
 				strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "-");
-				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90114));
+				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT));
 				Button2->SetText(Button->m_GCPanel.strString);
 			}
 			else if (!strcmp(m_strText, "--"))
 			{
-				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90133));
+				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_GUILD2));
 				strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "--");
-				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90114));
+				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT));
 				Button2->SetText(Button->m_GCPanel.strString);
 			}
 			else if (!strcmp(m_strText, "@"))
 			{
-				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90135));
+				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_KINGDOM));
 				strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "@");
-				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90114));
+				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT));
 				Button2->SetText(Button->m_GCPanel.strString);
 			}
 			else if (!strcmp(m_strText, "@@"))
 			{
-				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90134));
+				Button = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT_CITY));
 				strcpy(static_cast<TMFieldScene*>(g_pCurrentScene)->m_cChatType, "@@");
-				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(90114));
+				Button2 = static_cast<SButton*>(g_pCurrentScene->m_pControlContainer->FindControl(B_CHAT_SELECT));
 				Button2->SetText(Button->m_GCPanel.strString);
 			}
 		}
@@ -2007,7 +2007,7 @@ void SScrollBar::scrollbarbackSetvisible(bool bSet)
 	m_pBackground1->SetVisible(bSet);
 }
 
-SListBoxItem::SListBoxItem(char* istrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType)
+SListBoxItem::SListBoxItem(const char* istrText, unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType)
 	: SText(-1,
 		istrText,
 		idwFontColor,

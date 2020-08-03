@@ -13,6 +13,13 @@ class TMSnow;
 class TMSelectCharScene : public TMScene
 {
 public:
+	enum class RELOAD_CHARLIST_TYPE
+	{
+		INITIALIZE_SCENE = 0,
+		CREATE_CHARACTER = 1,
+		DELETE_CHARACTER = 2
+	};
+
 	TMSelectCharScene();
 	~TMSelectCharScene();
 
@@ -26,10 +33,13 @@ public:
 
 	virtual void VisibleSelectCreate(int bSelect);
 
-	void CamAction(char* szAction);
+	void CamAction(const char* szAction);
 	void LookSampleHuman(int nIndex, int bLook, int bSelect);
 	void SetvirtualKey();
 	void AddvirtualKeyNum(int num);
+
+private:
+	void ReloadCharList(RELOAD_CHARLIST_TYPE type);
 
 public:
 	char keybuf[10];

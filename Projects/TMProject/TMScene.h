@@ -88,7 +88,7 @@ public:
     void Warp2(int nZoneX, int nZoneY);
     void SaveHeightMap(char* szFileName);
     void CameraAction();
-    void ReadCameraPos(char* szFileName);
+    void ReadCameraPos(const char* szFileName);
     int LoadMsgText(SListBox* pListBox, char* szFileName);
     int LoadMsgText2(SListBox* pListBox, char* szFileName, int nStartLine, int nEndLine);
     int LoadMsgText3(SListBox* pListBox, char* szFileName, int nLv, int ntrans);
@@ -131,8 +131,8 @@ public:
     SText* m_pTextBillMsg;
     SMessageBox* m_pMessageBox;
     SMessageBox* m_pMessageBox2;
-    char m_HeightMapData[65536];
-    char m_GateMapData[65536];
+    char m_HeightMapData[256][256];
+    char m_GateMapData[256][256];
     int n_bPrtScreen;
     short m_sPlayDemo;
     unsigned int m_dwStartCamTime;

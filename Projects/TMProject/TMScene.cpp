@@ -15,6 +15,10 @@
 #include "TMGlobal.h"
 #include "TMLog.h"
 #include "TMScene.h"
+#include "TMFieldScene.h"
+#include "TMEffectFirework.h"
+#include "TMSnow.h"
+#include "TMRain.h"
 
 TMScene::TMScene() : TreeNode(0)
 {
@@ -244,10 +248,10 @@ TMScene::TMScene() : TreeNode(0)
 		}
 	}
 
-	memset(m_HeightMapData, 0, sizeof(m_HeightMapData));
-	memset(m_GateMapData, 0, sizeof(m_GateMapData));
+	memset(&m_HeightMapData, 0, sizeof(m_HeightMapData));
+	memset(&m_GateMapData, 0, sizeof(m_GateMapData));
 
-	BASE_ApplyAttribute(m_HeightMapData, 256);
+	BASE_ApplyAttribute((char*)m_HeightMapData, 256);
 
 	for (int i = 0; i < 32; ++i)
 		m_TargetAffect[i] = 0;
@@ -840,6 +844,458 @@ int TMScene::InitializeScene()
 
 int TMScene::OnPacketEvent(unsigned int dwCode, char* pSBuffer)
 {
+	if (g_pCurrentScene != this)
+		return 0;
+
+	auto pStd = reinterpret_cast<MSG_STANDARD*>(pSBuffer);
+	auto dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (!pSBuffer && (!m_dwDelayDisconnectTime || m_dwDelayDisconnectTime + 15000 < dwServerTime))
+	{
+		if (!m_pMessagePanel->IsVisible())
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[13], 4000u);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+
+		if (m_eSceneType != ESCENE_TYPE::ESCENE_LOGIN)
+			g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTSERVER_STATE);
+
+		m_dwDelayDisconnectTime = 0;
+		return 1;
+	}
+
+	if (!pStd)
+	{
+		if(!m_pMessagePanel->IsVisible())
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[13], 4000u);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+
+		if (m_eSceneType != ESCENE_TYPE::ESCENE_LOGIN)
+			g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTSERVER_STATE);
+
+		m_dwDelayDisconnectTime = 0;
+		return 1;
+	}
+
+	if (pStd->Type == 0x194)
+	{
+		g_pObjectManager->m_bBilling = 1;
+		m_pMessageBox->SetMessage(g_pMessageStringTable[132], B_CREATE_ID, nullptr);
+		m_pMessageBox->SetVisible(1);
+		return 1;
+	}
+
+	if (pStd->Type == MSG_Encode_Opcode)
+	{
+		MSG_Encode* pEncode = reinterpret_cast<MSG_Encode*>(pStd);
+
+		int EncodeByte1 = *(DWORD*)&pEncode->Parm[40];
+		int EncodeByte2 = *(DWORD*)&pEncode->Parm[41];
+
+		int type = (3 * (EncodeByte1 / 7) + 7 * (EncodeByte2 / 3) + 220) % 3;
+		if (type)
+		{
+			if (type == 1)
+				pStd->Type = 0x13BD;
+			else if (type == 2)
+				pStd->Type == 0x7BE;
+		}
+		else
+			pStd->Type = 0xFBC;
+		return 1;
+	}
+
+	if (pStd->Type == 0xFBC)
+	{
+		// need to decompile here... and other encode packets
+		return 1;
+	}
+
+	if (pStd->Type == 0x13BD)
+	{
+		// need to decompile here... and other encode packets
+		return 1;
+	}
+
+	if (pStd->Type == 0x7BE)
+	{
+		// need to decompile here... and other encode packets
+		return 1;
+	}
+	if (!pStd->ID && (pStd->Type == MSG_MessagePanel_Opcode || pStd->Type == 0x102 || pStd->Type == 0x104 || pStd->Type == 0x105 || pStd->Type == 0x106))
+	{
+		char szStr[128] = { 0 };
+		if (pStd->Type != MSG_MessagePanel_Opcode)
+		{
+			if (pStd->Type == 0x105)
+			{
+				auto pMessageChat = reinterpret_cast<MSG_MessageChat*>(pStd);
+				if (!pMessageChat->String[0])
+				{
+					char str[128]{};
+					char num[5]{};
+
+					int index = *reinterpret_cast<short*>(&pMessageChat->String[2]) + 1000;
+					g_pMessageStringTable[index][127] = 0;
+					g_pMessageStringTable[index][126] = 0;
+
+					strcpy(str, g_pMessageStringTable[index]);
+					if (strlen(str) < 1)
+						strcpy(str, _itoa(*reinterpret_cast<short*>(&pMessageChat->String[2]), num, 10));
+
+					if (index == 465 || index == 466 || index == 485 || index == 484)
+						m_pMessagePanel->SetMessage(str, 600000);
+					else
+						m_pMessagePanel->SetMessage(str, 4000);
+
+					m_pMessagePanel->SetVisible(1, 1);
+				}
+			}
+			else if (pStd->Type == 0x106)
+			{
+				auto pMessageChat = reinterpret_cast<MSG_MessageChat*>(pStd);
+				if (!pMessageChat->String[0])
+				{
+					char szStr[128]{};
+					char szParse[6][128]{};
+					int Param = 0;
+					strcpy(szStr, &pMessageChat->String[4]);
+
+					for (int k = 0; k < 128; ++k)
+					{
+						if (szStr[k] == ',')
+						{
+							szStr[k] = ' ';
+							++Param;
+						}
+						if (!szStr[k])
+							break;
+					}
+
+					sscanf(szStr, "%s %s %s %s %s %s", szParse[0], szParse[1], szParse[2], szParse[3], szParse[4], szParse[5]);
+
+
+					int index = *reinterpret_cast<short*>(&pMessageChat->String[2]) + 1000;
+
+					memset(szStr, 0, sizeof(szStr));
+					sprintf(szStr, g_pMessageStringTable[index], szParse[0], szParse[1], szParse[2], szParse[3], szParse[4], szParse[5]);
+
+					char buffer[4]{};
+
+					if (strlen(szStr) < 1)
+						strcpy(szStr, _itoa(*reinterpret_cast<short*>(&pMessageChat->String[2]), buffer, 10));
+
+					if (index == 465 || index == 466 || index == 485 || index == 484)
+						m_pMessagePanel->SetMessage(szStr, 600000);
+					else
+						m_pMessagePanel->SetMessage(szStr, 4000);
+
+					m_pMessagePanel->SetVisible(1, 1);
+				}
+			}
+
+			return 1;
+		}
+
+		auto pMsgPanel = reinterpret_cast<MSG_MessagePanel*>(pStd);
+		pMsgPanel->String[127] = 0;
+		pMsgPanel->String[126] = 0;
+
+		if (m_eSceneType == ESCENE_TYPE::ESCENE_SELCHAR && pMsgPanel->String[0] == '^')
+		{
+			char szMsg[128]{ 0 };
+			sprintf_s(szMsg, "%s", &pMsgPanel->String[1]);
+
+			m_pMessageBox2->SetMessage(szMsg, 0, nullptr);
+			m_pMessageBox2->SetVisible(1);
+		}
+		else if (pMsgPanel->String[0] == '^')
+		{
+			char szMsg[128]{ 0 };
+			sprintf_s(szMsg, "%s", &pMsgPanel->String[1]);
+
+			m_pMessagePanel->SetMessage(szMsg, 7000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+		else if (pMsgPanel->String[0] == '!' && pMsgPanel->String[1] == '#')
+		{
+			for (int i = 2; i < 6; i++)
+			{
+				if (pMsgPanel->String[i] < '0' || pMsgPanel->String[i] > '9')
+					pMsgPanel->String[i] = '0';
+			}
+
+			TMFieldScene* pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+			pFScene->m_nYear = static_cast<unsigned short>(pMsgPanel->String[3] - 48)
+				+ 10 * static_cast<unsigned short>(pMsgPanel->String[2] - 48);
+			pFScene->m_nDays = static_cast<unsigned short>(pMsgPanel->String[6] - 48)
+				+ 10 * static_cast<unsigned short>(pMsgPanel->String[5] - 48)
+				+ 100 * static_cast<unsigned short>(pMsgPanel->String[4] - 48);
+
+			return 1;
+		}
+		else if (pMsgPanel->String[1] == '!' && pMsgPanel->String[2] == '!' && pMsgPanel->String[3] == '!')
+		{
+			auto pFocusedObject = static_cast<TMObject*>(m_pMyHuman);
+
+			if ((int)pFocusedObject->m_vecPosition.x >> 7 == 31 && (int)pFocusedObject->m_vecPosition.y >> 7 == 31)
+			{
+				for (int nType = 0; nType < 5; ++nType)
+				{
+					for (int j = 0; j < 5; ++j)
+					{
+						auto pFireWork = new TMEffectFireWork({ (pFocusedObject->m_vecPosition.x) - 10.0f + (5.0f * nType), 7.0f, ((pFocusedObject->m_vecPosition.y - 10.0f) + 5.0f * j) + 8.0f }, nType);
+
+						g_pCurrentScene->AddChild(pFireWork);
+					}
+				}
+			}
+
+			if (pFocusedObject->IsInTown() == 1 || (int)pFocusedObject->m_vecPosition.x >> 7 != 31 || (int)pFocusedObject->m_vecPosition.y >> 7 != 31)
+			{
+				m_pMessagePanel->SetMessage(pMsgPanel->String, 4000);
+				m_pMessagePanel->SetVisible(1, 1);
+			}
+		}
+		else if (pMsgPanel->String[1] == '!' && pMsgPanel->String[2] == '!' && pMsgPanel->String[3] == '#')
+		{
+			if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD && pMsgPanel->String[4] == 'E')
+			{
+				auto pKilled = static_cast<TMHuman*>(g_pObjectManager->GetHumanByID(static_cast<TMFieldScene*>(g_pCurrentScene)->m_dwKhepraID));
+
+				if (pKilled)
+				{
+					pKilled->m_stScore.Hp = 0;
+					pKilled->Die();
+				}
+
+				static_cast<TMFieldScene*>(g_pCurrentScene)->m_dwKhepraID = 0;
+
+				for (int iSt = 0; iSt < 5; ++iSt)
+					pMsgPanel->String[iSt] = '_';
+			}
+		}
+		else if (pMsgPanel->String[0] == '!' || pMsgPanel->String[1] == '!')
+		{
+			if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+			{
+				for (int n = 2; n < 8; ++n)
+				{
+					if (pMsgPanel->String[n] < '0' || pMsgPanel->String[n] > '9')
+						pMsgPanel->String[n] = '0';
+				}
+
+				TMFieldScene* pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+				pFScene->m_NightmareTime.wHour = pMsgPanel->String[3] - 48 + 10 * (pMsgPanel->String[2] - 48);
+				pFScene->m_NightmareTime.wMonth = pMsgPanel->String[5] - 48 + 10 * (pMsgPanel->String[4] - 48);
+				pFScene->m_NightmareTime.wSecond = pMsgPanel->String[7] - 48 + 10 * (pMsgPanel->String[6] - 48);
+				pFScene->m_dwLastNightmareTime = g_pTimerManager->GetServerTime();
+				return 1;
+			}
+		}
+		else if (pMsgPanel->String[0] == '!')
+		{
+			SYSTEMTIME sysTime;
+			GetLocalTime(&sysTime);
+
+			if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+			{
+				auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+				auto pItem3 = new SListBoxItem(" ", 0xFFFFFFFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+				pFScene->m_pHelpList[3]->AddItem(pItem3);
+
+				char szTime[128]{ 0 };
+				char _Buffer[128]{ 0 };
+
+				sprintf_s(szTime, "SMS [%02d:%02d:%02d]", sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
+				auto pItem = new SListBoxItem(szTime, 0xFFBBFFFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+				pFScene->m_pHelpList[3]->AddItem(pItem);
+
+				sprintf_s(_Buffer, "%s", &pMsgPanel->String[1]);
+
+				auto pItem2 = new SListBoxItem(_Buffer, 0xFFBBFFCC, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+				pFScene->m_pHelpList[3]->AddItem(pItem2);
+
+				if (pFScene->m_pHelpMemo)
+					pFScene->m_pHelpMemo->SetVisible(1);
+			}
+			else
+			{
+				for (int l = 0; l < 98; ++l)
+				{
+					if (!g_pObjectManager->m_stMemo[l].szString[0] && !g_pObjectManager->m_stMemo[l + 1].szString[0])
+					{
+						g_pObjectManager->m_stMemo[l].dwColor = -1;
+						sprintf_s(g_pObjectManager->m_stMemo[l].szString, "");
+						g_pObjectManager->m_stMemo[l + 1].dwColor = 0xFFBBFFFF;
+						sprintf_s(g_pObjectManager->m_stMemo[l + 1].szString, "SMS [%02d:%02d:%02d]", sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
+
+						g_pObjectManager->m_stMemo[l + 2].dwColor = 0xFFBBFFCC;
+						sprintf_s(g_pObjectManager->m_stMemo[l + 2].szString, "%s", &pMsgPanel->String[1]);
+					}
+				}
+			}
+
+			m_pMessagePanel->SetMessage(&pMsgPanel->String[1], 4000u);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+		else if (pMsgPanel->String[0] == '2' && pMsgPanel->String[1] == '0' && pMsgPanel->String[2] == '0')
+		{
+			char Msg[128]{ 0 };
+			if (m_pMyHuman)
+				sprintf_s(Msg, "%s %d %d,%d", pMsgPanel->String, g_pObjectManager->m_nServerIndex, m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_vecPosition.y);
+			else
+				sprintf_s(Msg, "%s %d", pMsgPanel->String, g_pObjectManager->m_nServerIndex);
+
+			m_pMessagePanel->SetMessage(Msg, 4000u);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+		else
+		{
+			m_pMessagePanel->SetMessage(pMsgPanel->String, 4000u);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+
+		SListBox* pChatList = static_cast<SListBox*>(m_pControlContainer->FindControl(65667));
+
+		int len = strlen(pMsgPanel->String);
+		int size = 50;
+		if (len > size)
+		{
+			char szMsg2[128]{};
+			char szMsg3[128]{};
+
+			if (IsClearString(pMsgPanel->String, size - 1))
+			{
+				strncpy(szMsg3, pMsgPanel->String, size);
+				sprintf(szMsg2, "%s", &pMsgPanel->String[size]);
+			}
+			else
+			{
+				strncpy(szMsg3, pMsgPanel->String, size - 1);
+				sprintf(szMsg2, "%s", &pMsgPanel->String[size - 1]);
+			}
+
+			SListBoxItem* ipNewItem = new SListBoxItem(szMsg3, 0xFFCCAAFF, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777, 1u, 0);
+			if (ipNewItem && pChatList)
+				pChatList->AddItem(ipNewItem);
+
+			SListBoxItem* ipNewItem2 = new SListBoxItem(szMsg2, 0xFFCCAAFF, 0.0f, 0.0f, 280.0f, 16.0, 0, 0x77777777, 1u, 0);
+			if (ipNewItem2 && pChatList)
+				pChatList->AddItem(ipNewItem2);
+		}
+		else
+		{
+			if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+			{
+				TMFieldScene* pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+				if (!strcmp(pMsgPanel->String, "Whisper : Off"))
+				{
+					sprintf(pMsgPanel->String, "%s%s", g_pMessageStringTable[448], g_pMessageStringTable[447]);
+					pFScene->SetWhisper(0);
+				}
+				if (!strcmp(pMsgPanel->String, "Whisper : On"))
+				{
+					sprintf(pMsgPanel->String, "%s%s", g_pMessageStringTable[448], g_pMessageStringTable[446]);
+					pFScene->SetWhisper(1);
+				}
+				if (!strcmp(pMsgPanel->String, "Citizen Chatting : Off"))
+				{
+					sprintf(pMsgPanel->String, "%s%s", g_pMessageStringTable[449], g_pMessageStringTable[447]);
+					pFScene->SetPartyChat(0);
+				}
+				if (!strcmp(pMsgPanel->String, "Citizen Chatting : On"))
+				{
+					sprintf(pMsgPanel->String, "%s%s", g_pMessageStringTable[449], g_pMessageStringTable[446]);
+					pFScene->SetPartyChat(1);
+				}
+				if (!strcmp(pMsgPanel->String, "Guild Chatting : Off"))
+				{
+					sprintf(pMsgPanel->String, "%s%s", g_pMessageStringTable[450], g_pMessageStringTable[447]);
+					pFScene->SetGuildChat(0);
+				}
+				if (!strcmp(pMsgPanel->String, "Guild Chatting : On"))
+				{
+					sprintf(pMsgPanel->String, "%s%s", g_pMessageStringTable[450], g_pMessageStringTable[446]);
+					pFScene->SetGuildChat(1);
+				}
+				if (!strcmp(pMsgPanel->String, "Kingdom Chatting : On"))
+				{
+					sprintf(pMsgPanel->String, "%s%s", g_pMessageStringTable[451], g_pMessageStringTable[446]);
+					pFScene->SetKingDomChat(1);
+				}
+				if (!strcmp(pMsgPanel->String, "Kingdom Chatting : Off"))
+				{
+					sprintf(pMsgPanel->String, "%s%s", g_pMessageStringTable[451], g_pMessageStringTable[447]);
+					pFScene->SetKingDomChat(0);
+				}
+			}
+
+			SListBoxItem* ipNewItem = new SListBoxItem(pMsgPanel->String, 0xFFCCAAFF, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777, 1u, 0);
+			if (ipNewItem && pChatList)
+				pChatList->AddItem(ipNewItem);
+		}
+
+		SControl* pLoginOK = m_pControlContainer->FindControl(65873);
+		if (pLoginOK)
+			pLoginOK->SetEnable(1);
+		return 1;
+	}
+	if (pStd->Type == MSG_MessageShout_Opcode)
+	{
+		MSG_MessageWhisper* pShoutMessage = reinterpret_cast<MSG_MessageWhisper*>(pStd);
+		pShoutMessage->String[111] = 0;
+		pShoutMessage->String[110] = 0;
+
+		TMFieldScene* pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+		if (!pFScene->m_pChatGeneral || pFScene->GetSceneType() != ESCENE_TYPE::ESCENE_FIELD || pFScene->m_pCHP->m_bSelectEnable)
+		{
+			int nIndex = 0;
+			unsigned int dwColor = 0xFF00CD00;
+
+			SListBox* pChatList = pFScene->m_pChatList;
+
+			int nLen = strlen(pShoutMessage->MobName);
+
+			SListBoxItem* ipNewItem = new SListBoxItem(pShoutMessage->MobName,
+				dwColor,
+				0.0f,
+				0.0f,
+				(float)nLen * 6.6999998f,
+				16.0f,
+				0,
+				0xFFFFFF00,
+				1u,
+				0);
+
+			ipNewItem->m_bBGColor = 0;
+			if (ipNewItem && pChatList)
+				pChatList->AddItem(ipNewItem);
+
+			pFScene->m_dwChatTime = g_pTimerManager->GetServerTime();
+			return 1;
+		}
+		else
+			return 1;
+	}
+	if (pStd->Type == 0x7DB)
+	{
+		MSG_STANDARDPARM* m = reinterpret_cast<MSG_STANDARDPARM*>(pStd);
+
+		g_pApp->china_bWrite = 1;
+		g_pApp->china_Playtime = m->Parm / 60;
+		LOG_WRITELOG("get start Time : %d \r\n", g_pApp->china_Playtime);
+		return 1;
+	}
+
+	if (m_pControlContainer && m_pControlContainer->OnPacketEvent(dwCode, pSBuffer) == 1)
+		return 1;
+
+	TreeNode::OnPacketEvent(dwCode, pSBuffer);
 	return 0;
 }
 
@@ -908,7 +1364,7 @@ int TMScene::OnChangeIME()
 
 int TMScene::OnAccel(int nMsg)
 {
-	return 0;
+	return 1;
 }
 
 int TMScene::FrameMove(unsigned int dwServerTime)
@@ -1031,6 +1487,7 @@ ESCENE_TYPE TMScene::GetSceneType()
 
 void TMScene::Cleanup()
 {
+	;
 }
 
 char heightMapData[128][128]{};
@@ -1089,31 +1546,31 @@ int TMScene::GroundNewAttach(EDirection eDir)
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+				memcpy(heightMapData[i], m_HeightMapData[i], 128);
 		}
 		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x &&
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y + 1)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+				memcpy(heightMapData[i], m_HeightMapData[i], 128);
 		}
 		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x - 1 &&
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * i + 128], 128);
+				memcpy(heightMapData[i], &m_HeightMapData[i][128], 128);
 		}
 		else if (m_pGroundList[gId]->m_vecOffsetIndex.x == m_pGround->m_vecOffsetIndex.x &&
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y - 1)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(&heightMapData[i], &m_HeightMapData[256 * (i + 128)], 128);
+				memcpy(heightMapData[i], &m_HeightMapData[i][128], 128);
 		}
 	}
 	else
 	{
 		for (int i = 0; i < 128; ++i)
-			memcpy(&heightMapData[i], &m_HeightMapData[256 * i], 128);
+			memcpy(heightMapData[i], m_HeightMapData[i], 128);
 	}
 	
 	auto pGround = new TMGround();
@@ -1182,8 +1639,8 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_LEFT:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i], m_pGround->m_pLeftGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i + 128], &heightMapData[i], 128);
+			memcpy(m_HeightMapData[i], m_pGround->m_pLeftGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[i][128], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_pLeftGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_pLeftGround->m_vecOffset.y;
@@ -1191,8 +1648,8 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_RIGHT:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i + 128], m_pGround->m_pRightGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i], &heightMapData[i], 128);
+			memcpy(&m_HeightMapData[i][128], m_pGround->m_pRightGround->m_pMaskData[i], 128);
+			memcpy(m_HeightMapData[i], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_vecOffset.y;
@@ -1200,8 +1657,8 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_UP:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i], m_pGround->m_pUpGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i + 128], &heightMapData[i], 128);
+			memcpy(&m_HeightMapData[i], m_pGround->m_pUpGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[i][128], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_pUpGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_pUpGround->m_vecOffset.y;
@@ -1209,15 +1666,15 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_DOWN:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[256 * i + 128], m_pGround->m_pDownGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[256 * i], &heightMapData[i], 128);
+			memcpy(&m_HeightMapData[i][128], m_pGround->m_pDownGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[i], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_vecOffset.y;
 		break;
 	}
 
-	BASE_ApplyAttribute(m_HeightMapData, 256);
+	BASE_ApplyAttribute((char*)m_HeightMapData, 256);
 
 	memcpy(m_GateMapData, m_HeightMapData, sizeof(m_HeightMapData));
 
@@ -1251,17 +1708,17 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 
 	vPickTempPos = m_pGround->GetPickPos();
 
-	if ((vFocusePos.y - vPickTempPos.y) < 4.0f)
+	if (fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 		vPickPos = vPickTempPos;
 
-	if (vPickPos.y >= -5000.0f && (vFocusePos.y - vPickPos.y) < 2.0f)
+	if (vPickPos.y >= -5000.0f && fabsf(vFocusePos.y - vPickPos.y) < 2.0f)
 		return vPickPos;
 
 	if (m_pGround->m_pLeftGround)
 	{
 		vPickTempPos = m_pGround->m_pLeftGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y) || (vFocusePos.y - vPickTempPos.y) < 4.0f)
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y) || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 		{
 			vPickPos = vPickTempPos;
 
@@ -1274,11 +1731,11 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 	{
 		vPickTempPos = m_pGround->m_pRightGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y))
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y))
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0f && (vFocusePos.y - vPickPos.y) < 2.0f || (vFocusePos.y - vPickTempPos.y < 4.0f))
+			if (vPickTempPos.y > -5000.0f && fabsf(vFocusePos.y - vPickPos.y) < 2.0f || fabsf(vFocusePos.y - vPickTempPos.y < 4.0f))
 				return vPickPos;
 		}
 	}
@@ -1287,11 +1744,11 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 	{
 		vPickTempPos = m_pGround->m_pUpGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y))
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y))
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0f && (vFocusePos.y - vPickPos.y) < 2.0f || (vFocusePos.y - vPickTempPos.y) < 4.0f)
+			if (vPickTempPos.y > -5000.0f && fabsf(vFocusePos.y - vPickPos.y) < 2.0f || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 				return vPickPos;
 		}
 	}
@@ -1300,11 +1757,11 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 	{
 		vPickTempPos = m_pGround->m_pDownGround->GetPickPos();
 
-		if ((vFocusePos.y - vPickPos.y) > (vFocusePos.y - vPickTempPos.y) || (vFocusePos.y - vPickTempPos.y) < 4.0f)
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y) || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0 && (vFocusePos.y - vPickPos.y) < 2.0f)
+			if (vPickTempPos.y > -5000.0 && fabsf(vFocusePos.y - vPickPos.y) < 2.0f)
 				return vPickPos;
 		}
 	}
@@ -1379,7 +1836,7 @@ int TMScene::GroundGetMask(TMVector2 vecPosition)
 	if (nYIndex > 256)
 		nYIndex = 255;
 
-	return m_HeightMapData[nXIndex + g_HeightWidth * nYIndex];
+	return m_HeightMapData[0][nXIndex + g_HeightWidth * nYIndex];
 }
 
 int TMScene::GroundGetMask(IVector2 vecPosition)
@@ -1399,7 +1856,7 @@ int TMScene::GroundGetMask(IVector2 vecPosition)
 	if (nYIndex > 256)
 		nYIndex = 255;
 
-	return m_HeightMapData[nXIndex + g_HeightWidth * nYIndex];
+	return m_HeightMapData[0][nXIndex + g_HeightWidth * nYIndex];
 }
 
 float TMScene::GroundGetHeight(TMVector2 vecPosition)
@@ -1552,17 +2009,116 @@ void TMScene::GroundSetColor(TMVector2 vecPosition, unsigned int dwColor)
 
 int TMScene::GroundIsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight)
 {
+	if (!m_pGround)
+		return 0;
+
+	if (vecPosition.x >= m_pGround->m_vecOffset.x && (float)(m_pGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_vecOffset.y && (float)(m_pGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->IsInWater(vecPosition, fHeight, pfWaterHeight);
+	}
+	if (m_pGround->m_pLeftGround && 
+		vecPosition.x >= m_pGround->m_pLeftGround->m_vecOffset.x && (float)(m_pGround->m_pLeftGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pLeftGround->m_vecOffset.y && (float)(m_pGround->m_pLeftGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pLeftGround->IsInWater(vecPosition, fHeight, pfWaterHeight);
+	}
+	if (m_pGround->m_pRightGround
+		&& vecPosition.x >= m_pGround->m_pRightGround->m_vecOffset.x && (float)(m_pGround->m_pRightGround->m_vecOffset.x + 128.0f) > vecPosition.x
+		&& vecPosition.y >= m_pGround->m_pRightGround->m_vecOffset.y && (float)(m_pGround->m_pRightGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pRightGround->IsInWater(vecPosition, fHeight, pfWaterHeight);
+	}
+	if (m_pGround->m_pUpGround
+		&& vecPosition.x >= m_pGround->m_pUpGround->m_vecOffset.x && (float)(m_pGround->m_pUpGround->m_vecOffset.x + 128.0f) > vecPosition.x
+		&& vecPosition.y >= m_pGround->m_pUpGround->m_vecOffset.y && (float)(m_pGround->m_pUpGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pUpGround->IsInWater(vecPosition, fHeight, pfWaterHeight);
+	}
+	if (m_pGround->m_pDownGround
+		&& vecPosition.x >= m_pGround->m_pDownGround->m_vecOffset.x && (float)(m_pGround->m_pDownGround->m_vecOffset.x + 128.0f) > vecPosition.x
+		&& vecPosition.y >= m_pGround->m_pDownGround->m_vecOffset.y && (float)(m_pGround->m_pDownGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pDownGround->IsInWater(vecPosition, fHeight, pfWaterHeight);
+	}
+
 	return 0;
 }
 
 int TMScene::GroundIsInWater2(TMVector2 vecPosition, float* pfWaterHeight)
 {
-	return 0;
+	if (!m_pGround)
+		return 0;
+
+	if (vecPosition.x >= m_pGround->m_vecOffset.x && (float)(m_pGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_vecOffset.y && (float)(m_pGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1f, pfWaterHeight);
+	}
+	if (m_pGround->m_pLeftGround && 
+		vecPosition.x >= m_pGround->m_pLeftGround->m_vecOffset.x && (float)(m_pGround->m_pLeftGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pLeftGround->m_vecOffset.y && (float)(m_pGround->m_pLeftGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pLeftGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1, pfWaterHeight);
+	}
+	if (m_pGround->m_pRightGround && 
+		vecPosition.x >= m_pGround->m_pRightGround->m_vecOffset.x && (float)(m_pGround->m_pRightGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pRightGround->m_vecOffset.y && (float)(m_pGround->m_pRightGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pRightGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1, pfWaterHeight);
+	}
+	if (m_pGround->m_pUpGround && 
+		vecPosition.x >= m_pGround->m_pUpGround->m_vecOffset.x && (float)(m_pGround->m_pUpGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pUpGround->m_vecOffset.y && (float)(m_pGround->m_pUpGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pUpGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1, pfWaterHeight);
+	}
+	if (!m_pGround->m_pDownGround || 
+		vecPosition.x < m_pGround->m_pDownGround->m_vecOffset.x || (float)(m_pGround->m_pDownGround->m_vecOffset.x + 128.0f) <= vecPosition.x || 
+		vecPosition.y < m_pGround->m_pDownGround->m_vecOffset.y || (float)(m_pGround->m_pDownGround->m_vecOffset.y + 128.0f) <= vecPosition.y)
+	{
+		return 0;
+	}
+
+	return m_pGround->m_pDownGround->IsInWater(vecPosition, (float)GroundGetMask(vecPosition) * 0.1f, pfWaterHeight);
 }
 
 float TMScene::GroundGetWaterHeight(TMVector2 vecPosition, float* pfWaterHeight)
 {
-	return 0.0f;
+	if (!m_pGround)
+		return -100.0f;
+
+	if (vecPosition.x >= m_pGround->m_vecOffset.x && (float)(m_pGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_vecOffset.y && (float)(m_pGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->GetWaterHeight(vecPosition, pfWaterHeight);
+	}
+	if (m_pGround->m_pLeftGround && 
+		vecPosition.x >= m_pGround->m_pLeftGround->m_vecOffset.x && (float)(m_pGround->m_pLeftGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pLeftGround->m_vecOffset.y && (float)(m_pGround->m_pLeftGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pLeftGround->GetWaterHeight(vecPosition, pfWaterHeight);
+	}
+	if (m_pGround->m_pRightGround && 
+		vecPosition.x >= m_pGround->m_pRightGround->m_vecOffset.x && (float)(m_pGround->m_pRightGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pRightGround->m_vecOffset.y && (float)(m_pGround->m_pRightGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pRightGround->GetWaterHeight(vecPosition, pfWaterHeight);
+	}
+	if (m_pGround->m_pUpGround && 
+		vecPosition.x >= m_pGround->m_pUpGround->m_vecOffset.x && (float)(m_pGround->m_pUpGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pUpGround->m_vecOffset.y && (float)(m_pGround->m_pUpGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+		return m_pGround->m_pUpGround->GetWaterHeight(vecPosition, pfWaterHeight);
+	}
+	if (m_pGround->m_pDownGround && 
+		vecPosition.x >= m_pGround->m_pDownGround->m_vecOffset.x && (float)(m_pGround->m_pDownGround->m_vecOffset.x + 128.0f) > vecPosition.x && 
+		vecPosition.y >= m_pGround->m_pDownGround->m_vecOffset.y && (float)(m_pGround->m_pDownGround->m_vecOffset.y + 128.0f) > vecPosition.y)
+	{
+	    return m_pGround->m_pDownGround->GetWaterHeight(vecPosition, pfWaterHeight);
+	}
+
+	return -100.0f;
 }
 
 int TMScene::GetMask2(TMVector2 vecPosition)
@@ -1571,7 +2127,7 @@ int TMScene::GetMask2(TMVector2 vecPosition)
 	int nMaskY = (int)(vecPosition.y - (float)g_HeightPosY);
 
 	if (nMaskX >= 0 && nMaskY >= 0 && nMaskX < 256 && nMaskY < 256)
-		return m_GateMapData[256 * nMaskY + nMaskX];
+		return m_GateMapData[nMaskY][nMaskX];
 
 	return -10000;
 }
@@ -1592,10 +2148,134 @@ void TMScene::Warp()
 
 void TMScene::Warp2(int nZoneX, int nZoneY)
 {
+	if (m_bCriticalError == 1 || !m_pGround)
+		return;
+
+	m_bAutoRun = 0;
+	if (m_eSceneType == ESCENE_TYPE::ESCENE_FIELD && static_cast<TMFieldScene*>(this)->m_pAutoRunBtn)
+		static_cast<TMFieldScene*>(this)->m_pAutoRunBtn->SetSelected(m_bAutoRun);
+
+	TMGround* pNeighbor = nullptr;
+	if (m_pGround->m_pLeftGround)
+		pNeighbor = m_pGround->m_pLeftGround;
+	if (m_pGround->m_pRightGround)
+		pNeighbor = m_pGround->m_pRightGround;
+	if (m_pGround->m_pUpGround)
+		pNeighbor = m_pGround->m_pUpGround;
+	if (m_pGround->m_pDownGround)
+		pNeighbor = m_pGround->m_pDownGround;
+
+	if (!pNeighbor && 
+		(nZoneX != m_pGround->m_vecOffsetIndex.x || nZoneY != m_pGround->m_vecOffsetIndex.y) || 
+		pNeighbor && 
+		(nZoneX != m_pGround->m_vecOffsetIndex.x && nZoneX != pNeighbor->m_vecOffsetIndex.x || 
+		 nZoneY != m_pGround->m_vecOffsetIndex.y && nZoneY != pNeighbor->m_vecOffsetIndex.y))
+	{
+		char szMapPath[128]{};
+		char szDataPath[128]{};
+		sprintf(szMapPath, "env\\Field%02d%02d.trn", nZoneX, nZoneY);
+		sprintf(szDataPath, "env\\Field%02d%02d.dat", nZoneX, nZoneY);
+
+		TMGround* pGround = new TMGround();
+
+		if (!pGround->LoadTileMap(szMapPath))
+		{
+			if (!m_bCriticalError)
+				LogMsgCriticalError(10, 0, 0, 0, 0);
+
+			m_bCriticalError = 1;
+			return;
+		}
+
+		TMGround* pOldGround = m_pGround;
+		m_pGround = pGround;
+
+		for (int i = 0; i < 2; ++i)
+		{
+			SAFE_DELETE(m_pObjectContainerList[i]);
+			SAFE_DELETE(m_pGroundList[i]);
+		}
+
+		g_HeightPosX = nZoneX << 7;
+		g_HeightPosY = nZoneY << 7;
+
+		m_nCurrentGroundIndex = 0;
+		m_pGroundList[0] = m_pGround;
+
+		m_pObjectContainerList[0] = new TMObjectContainer(m_pGround);
+
+		if (!m_pObjectContainerList[0]->Load(szDataPath))
+		{
+			LOG_WRITELOG("DataFile Not Found : %s\r\n", szDataPath);
+			if (!m_bCriticalError)
+				LogMsgCriticalError(11, 0, 0, 0, 0);
+
+			m_bCriticalError = 1;
+			return;
+		}
+
+		memset(m_HeightMapData, 0, 4u);
+
+		for (int nY = 0; nY < 128; ++nY)
+			memcpy(&m_HeightMapData[nY], m_pGround->m_pMaskData[nY], 128);
+
+		m_pGround->SetMiniMapData();
+		m_pGroundObjectContainer->AddChild(m_pObjectContainerList[0]);
+		m_pGroundObjectContainer->AddChild(m_pGroundList[0]);
+
+		BASE_ApplyAttribute((char*)&m_HeightMapData, 256);
+
+		memcpy(m_GateMapData, m_HeightMapData, sizeof(m_GateMapData));
+
+		SaveHeightMap(szMapPath);
+		m_nAdjustTime = 0;
+		m_dwInitTime = g_pTimerManager->GetServerTime();
+	}
+	else if (pNeighbor && nZoneX == pNeighbor->m_vecOffsetIndex.x && nZoneY == pNeighbor->m_vecOffsetIndex.y)
+	{
+		m_pGround = pNeighbor;
+		m_nCurrentGroundIndex = (m_nCurrentGroundIndex + 1) % 2;
+		m_pGround->SetMiniMapData();
+	}
+	if (m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+	{
+		auto pSoundManager = g_pSoundManager;
+		if (pSoundManager)
+		{
+			auto pSoundData = pSoundManager->GetSoundData(6);
+			if (pSoundData && pSoundData->IsSoundPlaying())
+			{
+				pSoundData->Stop();
+			}
+		}
+		if (RenderDevice::m_bDungeon && RenderDevice::m_bDungeon != 3 && RenderDevice::m_bDungeon != 4)
+		{
+			g_nWeather = 0;
+			static_cast<TMFieldScene*>(this)->m_pRain->m_bVisible = 0;
+			static_cast<TMFieldScene*>(this)->m_pSnow->m_bVisible = 0;
+			static_cast<TMFieldScene*>(this)->m_pSnow2->m_bVisible = 0;
+			static_cast<TMFieldScene*>(this)->m_bQuater = 1;
+			static_cast<TMFieldScene*>(this)->UpdateScoreUI(0);
+			static_cast<TMFieldScene*>(this)->m_pMiniMapPanel->m_GCPanel.dwColor = 0x80FFFFFF;
+		}
+		else
+		{
+			if (RenderDevice::m_bDungeon == 3 || RenderDevice::m_bDungeon == 4)
+			{
+				static_cast<TMFieldScene*>(this)->m_pSnow->m_bVisible = 0;
+				static_cast<TMFieldScene*>(this)->m_pSnow2->m_bVisible = 0;
+			}
+
+			static_cast<TMFieldScene*>(this)->SetWeather(g_nWeather);
+			g_pObjectManager->m_pCamera->m_fHorizonAngle = 0.78539819f;
+			static_cast<TMFieldScene*>(this)->m_pMiniMapPanel->m_GCPanel.dwColor = 0x80FFFFFF;
+		}
+	}
 }
 
 void TMScene::SaveHeightMap(char* szFileName)
 {
+	;
 }
 
 void TMScene::CameraAction()
@@ -1677,7 +2357,7 @@ void TMScene::CameraAction()
 	}
 }
 
-void TMScene::ReadCameraPos(char* szFileName)
+void TMScene::ReadCameraPos(const char* szFileName)
 {
 	m_nCameraLoop = 0;
 
@@ -1705,35 +2385,301 @@ void TMScene::ReadCameraPos(char* szFileName)
 
 int TMScene::LoadMsgText(SListBox* pListBox, char* szFileName)
 {
-	return 0;
+	FILE* fp{};
+
+	fopen_s(&fp, szFileName, "rt");
+
+	if (!fp)
+		return 0;
+
+	if (!pListBox)
+		return 0;
+
+	char szText[256]{};
+	char szTemp[256]{};
+
+	for (int i = 0; i < 100 && fgets(szTemp, 256, fp); ++i)
+	{
+		char szCol[7]{};
+
+		strncpy(szCol, szTemp, 6);
+
+		DWORD dwCol{};
+
+		sscanf(szCol, "%x", &dwCol);
+
+		char* szRet = strstr(szTemp, "\n");
+
+		if (szRet)
+			*szRet = 0;
+
+		if (szTemp[6] == 32)
+		{
+			sprintf_s(szText, "%s", &szTemp[6]);
+			
+			pListBox->AddItem(new SListBoxItem(
+				szText,
+				dwCol | 0xFF000000,
+				0.0f,
+				0.0f,
+				pListBox->m_nWidth,
+				16.0f,
+				0,
+				0x77777777u,
+				1u,
+				0));
+		}
+	}
+
+	if (pListBox->m_pScrollBar)
+		pListBox->m_pScrollBar->SetCurrentPos(0);
+
+	fclose(fp);
+	return 1;
 }
 
 int TMScene::LoadMsgText2(SListBox* pListBox, char* szFileName, int nStartLine, int nEndLine)
 {
-	return 0;
+	FILE* fp{};
+
+	fopen_s(&fp, szFileName, "rt");
+
+	if (!fp)
+		return 0;
+
+	if (!pListBox)
+		return 0;
+
+	char szText[256]{};
+	char szTemp[256]{};
+
+	int nCount = 0;
+
+	pListBox->Empty();
+
+	for (int i = 0; i < 560 && fgets(szTemp, 256, fp); ++i)
+	{
+		char szCol[7]{};
+		
+		strncpy(szCol, szTemp, 6);
+
+		DWORD dwCol{};
+
+		sscanf(szCol, "%x", &dwCol);
+
+		char* szRet = strstr(szTemp, "\n");
+
+		if (szRet)
+			*szRet = 0;
+
+		if (szTemp[6] == 32 && i >= nStartLine && i <= nEndLine)
+		{
+			sprintf_s(szText, "%s", &szTemp[6]);
+
+			pListBox->AddItem(new SListBoxItem(
+				szText,
+				dwCol | 0xFF000000,
+				0.0f,
+				0.0f,
+				pListBox->m_nWidth,
+				16.0f,
+				0,
+				0x77777777u,
+				1u,
+				0));
+
+			if (++nCount > 100)
+				break;
+		}
+	}
+
+	if (pListBox->m_pScrollBar)
+		pListBox->m_pScrollBar->SetCurrentPos(0);
+
+	fclose(fp);
+	return 1;
 }
 
 int TMScene::LoadMsgText3(SListBox* pListBox, char* szFileName, int nLv, int ntrans)
 {
-	return 0;
+	FILE* fp{};
+
+	fopen_s(&fp, szFileName, "rt");
+
+	if (!fp)
+		return 0;
+
+	if (!pListBox)
+		return 0;
+
+	char szText[256]{};
+	char szTemp[256]{};
+
+	int nLvLimit = 300;
+
+	pListBox->Empty();
+
+	for (int i = 0; i < 100 && fgets(szTemp, 256, fp); ++i)
+	{
+		char szCol[11]{};
+		
+		strncpy(szCol, szTemp, 10);
+
+		DWORD dwCol{};
+
+		sscanf_s(szCol, "%d %x", &nLvLimit, &dwCol);
+
+		if (nLvLimit > nLv)
+			dwCol = 0xFF777777;
+
+		if (nLvLimit > 350 && ntrans < 6)
+			dwCol = 0xFF777777;
+
+		if (g_pCurrentScene)
+		{
+			if (m_pMyHuman->Is2stClass() == 2)
+				dwCol = 0xFF777777;
+
+			else if (nLvLimit > nLv)
+				dwCol = 0xFF777777;
+		}
+
+		char* szRet = strstr(szTemp, "\n");
+
+		if (szRet)
+			*szRet = 0;
+
+		if (szTemp[10] == 32)
+		{
+			sprintf(szText, "%s", &szTemp[10]);
+			
+			pListBox->AddItem(new SListBoxItem(
+				szText,
+				dwCol | 0xFF000000,
+				0.0f,
+				0.0f,
+				pListBox->m_nWidth,
+				16.0f,
+				0,
+				0x77777777u,
+				1u,
+				0));
+		}
+	}
+
+	if (pListBox->m_pScrollBar)
+		pListBox->m_pScrollBar->SetCurrentPos(0);
+
+	fclose(fp);
+	return 1;
 }
 
 unsigned int TMScene::LoadMsgText4(char* pStr, char* szFileName, int nLv, int ntrans)
 {
-	return 0;
+	FILE* fp{};
+
+	fopen_s(&fp, szFileName, "rt");
+
+	if (!fp)
+		return 0;
+
+	int nLvLimit = 300;
+	DWORD dwCol = 0;
+
+	char szTemp[256]{};
+
+	for (int i = 0; i < 100 && fgets(szTemp, 256, fp); ++i)
+	{
+		char szCol[11]{};
+
+		strncpy(szCol, szTemp, 10);
+
+		sscanf_s(szCol, "%d %x", &nLvLimit, &dwCol);
+
+		if (nLvLimit == nLv)
+		{
+			if (dwCol == 0xFFAAAA && ntrans >= 6)
+			{
+				dwCol = 0;
+			}
+			else if (nLvLimit <= 350 || ntrans >= 6)
+			{
+				char* szRet = strstr(szTemp, "\n");
+
+				if (szRet)
+					*szRet = 0;
+
+				if (szTemp[10] == 32)
+					sprintf_s(pStr, sizeof(szTemp), "%s", &szTemp[10]);
+			}
+			else
+			{
+				dwCol = 0;
+			}
+			
+			break;
+		}
+	}
+
+	fclose(fp);
+
+	return dwCol | 0xFF000000;
 }
 
 int TMScene::LoadMsgLevel(char* LevelQuest, char* szFileName, char cType)
 {
-	return 0;
+	FILE* fp{};
+
+	fopen_s(&fp, szFileName, "rt");
+
+	if (!fp)
+		return 0;
+
+	char szTemp[256]{};
+
+	for (int i = 0; i < 100 && fgets(szTemp, 256, fp); ++i)
+	{
+		char szCol[11]{};
+
+		strncpy(szCol, szTemp, 10);
+
+		int nLvLimit{};
+		DWORD dwCol{};
+
+		sscanf_s(szCol, "%d %x", &nLvLimit, &dwCol);
+
+		LevelQuest[nLvLimit - 1] = cType;
+	}
+	fclose(fp);
+	return 1;
 }
 
 void TMScene::CheckPKNonePK(int nServerIndex)
 {
+	g_NonePKServer = 1;
+	for (int i = 0; i < 2; ++i)
+	{
+		if (nServerIndex == g_pPKServerNum[i])
+			g_NonePKServer = 0;
+	}
+	g_NonePKServer = 0;
 }
 
 void TMScene::LogMsgCriticalError(int Type, int ID, int nMesh, int X, int Y)
 {
+	MSG_MessageLog stLog{};
+	stLog.Header.ID = m_pMyHuman->m_dwID;
+	stLog.Header.Type = MSG_MessageLog_Opcode;
+
+	if(Type == 10)
+		sprintf(stLog.String, "00000000 , Load Tile Map Fail");
+	else
+		sprintf(stLog.String, "%08d , Critical Data Err Cl,%d,%d,%d,%d,%d, %d", ID,	nMesh, (int)m_pMyHuman->m_vecPosition.x, (int)m_pMyHuman->m_vecPosition.y,
+			X,
+			Y,
+			Type);
+
+	g_pSocketManager->SendOneMessage((char*)&stLog, sizeof(stLog));
 }
 
 void TMScene::DeleteOwnerAllContainer()

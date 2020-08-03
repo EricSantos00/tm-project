@@ -203,7 +203,7 @@ int RenderDevice::Initialize(HWND hWnd)
 		return 0;
 	}
 
-	m_MiniMapVertex2[0].position = m_CtrlVertex[0].position = m_CtrlVertex2[0].position = m_CtrlVertexC2[0].position = TMVector3(0.0f, 0.0f, 0.009f);
+	m_MiniMapVertex2[0].position = m_CtrlVertex[0].position = m_CtrlVertex2[0].position = m_CtrlVertexC2[0].position = TMVector3(0.0f, 0.0f, 0.01f);
 
 	m_CtrlVertex[0].rhw = 1.0f;
 	m_CtrlVertex2[0].rhw = 1.0f;
@@ -213,16 +213,16 @@ int RenderDevice::Initialize(HWND hWnd)
 	m_CtrlVertex2[0].diffuse = 0xAAAAAAAA;
 	m_CtrlVertexC2[0].diffuse = 0xAAAAAAAA;
 	m_MiniMapVertex2[0].diffuse = 0xAAAAAAAA;
-	m_CtrlVertex[0].tu = 0.009f;
-	m_CtrlVertex2[0].tu1 = 0.009f;
-	m_CtrlVertexC2[0].tu1 = 0.009f;
-	m_MiniMapVertex2[0].tu1 = 0.009f;
-	m_CtrlVertex[0].tv = 0.009f;
-	m_CtrlVertex2[0].tv1 = 0.009f;
-	m_CtrlVertexC2[0].tv1 = 0.009f;
-	m_MiniMapVertex2[0].tv1 = 0.009f;
+	m_CtrlVertex[0].tu = 0.01f;
+	m_CtrlVertex2[0].tu1 = 0.01f;
+	m_CtrlVertexC2[0].tu1 = 0.01f;
+	m_MiniMapVertex2[0].tu1 = 0.01f;
+	m_CtrlVertex[0].tv = 0.01f;
+	m_CtrlVertex2[0].tv1 = 0.01f;
+	m_CtrlVertexC2[0].tv1 = 0.01f;
+	m_MiniMapVertex2[0].tv1 = 0.01f;
 
-	m_MiniMapVertex2[1].position = m_CtrlVertex[1].position = m_CtrlVertex2[1].position = m_CtrlVertexC2[1].position = TMVector3(0.0f, 0.0f, 0.009f);
+	m_MiniMapVertex2[1].position = m_CtrlVertex[1].position = m_CtrlVertex2[1].position = m_CtrlVertexC2[1].position = TMVector3(0.0f, 0.0f, 0.01f);
 
 	m_CtrlVertex[1].rhw = 1.0f;
 	m_CtrlVertex2[1].rhw = 1.0f;
@@ -236,12 +236,12 @@ int RenderDevice::Initialize(HWND hWnd)
 	m_CtrlVertex2[1].tu1 = 0.99f;
 	m_CtrlVertexC2[1].tu1 = 0.99f;
 	m_MiniMapVertex2[1].tu1 = 0.99f;
-	m_CtrlVertex[1].tv = 0.009f;
-	m_CtrlVertex2[1].tv1 = 0.009f;
-	m_CtrlVertexC2[1].tv1 = 0.009f;
-	m_MiniMapVertex2[1].tv1 = 0.009f;
+	m_CtrlVertex[1].tv = 0.01f;
+	m_CtrlVertex2[1].tv1 = 0.01f;
+	m_CtrlVertexC2[1].tv1 = 0.01f;
+	m_MiniMapVertex2[1].tv1 = 0.01f;
 
-	m_MiniMapVertex2[2].position = m_CtrlVertex[2].position = m_CtrlVertex2[2].position = m_CtrlVertexC2[2].position = TMVector3(0.0f, 0.0f, 0.009f);
+	m_MiniMapVertex2[2].position = m_CtrlVertex[2].position = m_CtrlVertex2[2].position = m_CtrlVertexC2[2].position = TMVector3(0.0f, 0.0f, 0.01f);
 
 	m_CtrlVertex[2].rhw = 1.0f;
 	m_CtrlVertex2[2].rhw = 1.0f;
@@ -260,7 +260,7 @@ int RenderDevice::Initialize(HWND hWnd)
 	m_CtrlVertexC2[2].tv1 = 0.99f;
 	m_MiniMapVertex2[2].tv1 = 0.99f;
 
-	m_MiniMapVertex2[3].position = m_CtrlVertex[3].position = m_CtrlVertex2[3].position = m_CtrlVertexC2[3].position = TMVector3(0.0f, 0.0f, 0.009f);
+	m_MiniMapVertex2[3].position = m_CtrlVertex[3].position = m_CtrlVertex2[3].position = m_CtrlVertexC2[3].position = TMVector3(0.0f, 0.0f, 0.01f);
 
 	m_CtrlVertex[3].rhw = 1.0f;
 	m_CtrlVertex2[3].rhw = 1.0f;
@@ -270,10 +270,10 @@ int RenderDevice::Initialize(HWND hWnd)
 	m_CtrlVertex2[3].diffuse = 0xAAAAAAAA;
 	m_CtrlVertexC2[3].diffuse = 0xAAAAAAAA;
 	m_MiniMapVertex2[3].diffuse = 0xAAAAAAAA;
-	m_CtrlVertex[3].tu = 0.009f;
-	m_CtrlVertex2[3].tu1 = 0.009f;
-	m_CtrlVertexC2[3].tu1 = 0.009f;
-	m_MiniMapVertex2[3].tu1 = 0.009f;
+	m_CtrlVertex[3].tu = 0.01f;
+	m_CtrlVertex2[3].tu1 = 0.01f;
+	m_CtrlVertexC2[3].tu1 = 0.01f;
+	m_MiniMapVertex2[3].tu1 = 0.01f;
 	m_CtrlVertex[3].tv = 0.99f;
 	m_CtrlVertex2[3].tv1 = 0.99f;
 	m_CtrlVertexC2[3].tv1 = 0.99f;
@@ -1673,7 +1673,7 @@ int RenderDevice::SetRenderStateBlock(int nIndex)
 		else
 		{
 			vLightDir = D3DXVECTOR4(
-				m_light[0].Direction.x,
+				-m_light[0].Direction.x,
 				0.5f,
 				m_light[0].Direction.z,
 				0.0f);
@@ -1867,8 +1867,8 @@ int RenderDevice::SetMatrixForUI()
 void RenderDevice::GetPickRayVector(D3DXVECTOR3* pRickRayOrig, D3DXVECTOR3* pPickRayDir)
 {
 	D3DXVECTOR3 v;
-	v.x = ((((float)(2.0f * g_pCursor->m_nPosX)) / (float)(m_dwScreenWidth - m_nWidthShift) - 1.0f) / m_matProj.m[0][0]);
-	v.x = ((((float)(2.0f * g_pCursor->m_nPosY)) / (float)(m_dwScreenHeight - m_nHeightShift) - 1.0f) / m_matProj.m[1][0]);
+	v.x = (((2.0f * g_pCursor->m_nPosX) / (float)(m_dwScreenWidth - m_nWidthShift)) - 1.0f) / m_matProj.m[0][0];
+	v.y = -(((2.0f * g_pCursor->m_nPosY) / (float)(m_dwScreenHeight - m_nHeightShift)) - 1.0f) / m_matProj.m[1][1];
 	v.z = 1.0f;
 
 	D3DXMATRIX matViewInv;
@@ -1879,7 +1879,7 @@ void RenderDevice::GetPickRayVector(D3DXVECTOR3* pRickRayOrig, D3DXVECTOR3* pPic
 	pPickRayDir->z = (float)((v.x * matViewInv.m[0][2]) + (v.y * matViewInv.m[1][2]) + (v.z * matViewInv.m[2][2]));
 
 	pRickRayOrig->x = matViewInv.m[3][0];
-	pRickRayOrig->x = matViewInv.m[3][1];
+	pRickRayOrig->y = matViewInv.m[3][1];
 	pRickRayOrig->z = matViewInv.m[3][2];
 }
 
@@ -2064,24 +2064,24 @@ void RenderDevice::RenderRectTex(float iStartX, float iStartY, float iCX, float 
 		float fCenterY = (float)((float)((float)(DestCY * fScale) + iDestY) + iDestY) / 2.0f;
 		float fSin = sinf(fAngle);
 		float fCos = cosf(fAngle);
-		m_CtrlVertex[0].position.x = (float)((float)(fRX * fCos)
-			- (float)(fRY * fSin))
+		m_CtrlVertex[0].position.x = (float)((float)(-fRX * fCos)
+			- (float)(-fRY * fSin))
 			+ fCenterX;
-		m_CtrlVertex[0].position.y = (float)((float)(fRX * fSin)
-			+ (float)(fRY * fCos))
+		m_CtrlVertex[0].position.y = (float)((float)(-fRX * fSin)
+			+ (float)(-fRY * fCos))
 			+ fCenterY;
 		m_CtrlVertex[1].position.x = (float)((float)(fCos * fRX)
-			- (float)(fRY * fSin))
+			- (float)(-fRY * fSin))
 			+ fCenterX;
 		m_CtrlVertex[1].position.y = (float)((float)(fSin * fRX)
-			+ (float)(fRY * fCos))
+			+ (float)(-fRY * fCos))
 			+ fCenterY;
 		m_CtrlVertex[2].position.x = (float)((float)(fCos * fRX) - (float)(fSin * fRY)) + fCenterX;
 		m_CtrlVertex[2].position.y = (float)((float)(fSin * fRX) + (float)(fCos * fRY)) + fCenterY;
-		m_CtrlVertex[3].position.x = (float)((float)(fRX * fCos)
+		m_CtrlVertex[3].position.x = (float)((float)(-fRX * fCos)
 			- (float)(fSin * fRY))
 			+ fCenterX;
-		m_CtrlVertex[3].position.y = (float)((float)(fRX * fSin)
+		m_CtrlVertex[3].position.y = (float)((float)(-fRX * fSin)
 			+ (float)(fCos * fRY))
 			+ fCenterY;
 	}
@@ -2184,24 +2184,24 @@ void RenderDevice::RenderRectTex2C(float iStartX, float iStartY, float iCX, floa
 		float fCenterY = (float)((float)((float)(DestCY * fScale) + iDestY) + iDestY) / 2.0f;
 		float fSin = sinf(fAngle);
 		float fCos = cosf(fAngle);
-		m_CtrlVertexC2[0].position.x = (float)((float)(fRX * fCos)
-			- (float)(fRY * fSin))
+		m_CtrlVertexC2[0].position.x = (float)((float)(-fRX * fCos)
+			- (float)(-fRY * fSin))
 			+ fCenterX;
-		m_CtrlVertexC2[0].position.y = (float)((float)(fRX * fSin)
-			+ (float)(fRY * fCos))
+		m_CtrlVertexC2[0].position.y = (float)((float)(-fRX * fSin)
+			+ (float)(-fRY * fCos))
 			+ fCenterY;
 		m_CtrlVertexC2[1].position.x = (float)((float)(fCos * fRX)
-			- (float)(fRY * fSin))
+			- (float)(-fRY * fSin))
 			+ fCenterX;
 		m_CtrlVertexC2[1].position.y = (float)((float)(fSin * fRX)
-			+ (float)(fRY * fCos))
+			+ (float)(-fRY * fCos))
 			+ fCenterY;
 		m_CtrlVertex[2].position.x = (float)((float)(fCos * fRX) - (float)(fSin * fRY)) + fCenterX;
 		m_CtrlVertex[2].position.y = (float)((float)(fSin * fRX) + (float)(fCos * fRY)) + fCenterY;
-		m_CtrlVertexC2[3].position.x = (float)((float)(fRX * fCos)
+		m_CtrlVertexC2[3].position.x = (float)((float)(-fRX * fCos)
 			- (float)(fSin * fRY))
 			+ fCenterX;
-		m_CtrlVertexC2[3].position.y = (float)((float)(fRX * fSin)
+		m_CtrlVertexC2[3].position.y = (float)((float)(-fRX * fSin)
 			+ (float)(fCos * fRY))
 			+ fCenterY;
 	}
@@ -2764,7 +2764,7 @@ void RenderDevice::RenderRectRot(float iStartX, float iStartY, float iCX, float 
 	if (pTexture != nullptr && m_pSprite != nullptr)
 	{
 		m_pSprite->Begin();
-		m_pSprite->Draw(pTexture, &srcRect, &scaleVec, &rotCenter, fAngle, &destPoint, 0xFFFFFFFF);
+		m_pSprite->Draw(pTexture, &srcRect, &scaleVec, &rotCenter, -fAngle, &destPoint, 0xFFFFFFFF);
 		m_pSprite->End();
 	}
 }
@@ -3317,7 +3317,7 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 				SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
 				SetRenderState(D3DRS_ALPHATESTENABLE, 0);
 
-				TMMesh *pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 0, 180000);
+				TMMesh *pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 0, 3_min);
 				float fScale = 1.0f / RenderDevice::m_fWidthRatio;
 				if (ipControl->dwBGColor == -1)
 					fScale = fScale * 0.80000001f;
@@ -3369,7 +3369,7 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 				SetRenderState(D3DRS_FOGENABLE, 0);
 
 				float fScale = 1.0f / RenderDevice::m_fWidthRatio;
-				TMMesh* pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 1, 180000);
+				TMMesh* pMesh = g_pMeshManager->GetCommonMesh(ipControl->n3DObjIndex, 1, 3_min);
 
 				if (pMesh)
 				{

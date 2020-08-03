@@ -355,11 +355,11 @@ int EventTranslator::CameraEventData()
             if (fProgress / 1000.0f > 1.0f)
                 fProgress = 1.0f;
 
-            pCamera->m_fVerticalAngle = ((((sinf(fProgress * D3DXToRadian(180)) * 12.0f) * 0.0099f) * (float)pCamera->m_nEarthLevel)
+            pCamera->m_fVerticalAngle = ((((sinf(fProgress * D3DXToRadian(180)) * 12.0f) * 0.01f) * (float)pCamera->m_nEarthLevel)
                 * (float)(1.0f - fProgress))
                 + pCamera->m_fBackVerticalAngle;
 
-            pCamera->m_fHorizonAngle = ((((sinf(fProgress * D3DXToRadian(180) * 12.0f)) * 0.0099f) * (float)pCamera->m_nEarthLevel)
+            pCamera->m_fHorizonAngle = ((((sinf(fProgress * D3DXToRadian(180) * 12.0f)) * 0.01f) * (float)pCamera->m_nEarthLevel)
                 * (float)(1.0f - fProgress))
                 + pCamera->m_fBackHorizonAngle;
         }

@@ -55,10 +55,10 @@ struct TMVector2
 		return ret;
 	}
 
-	TMVector2* operator+=(TMVector2* other)
+	TMVector2* operator+=(const TMVector2* other)
 	{
-		x = x + other->x;
-		y = y + other->y;
+		this->x = this->x + other->x;
+		this->y = this->y + other->y;
 
 		return this;
 	}
@@ -262,42 +262,42 @@ struct LOOK_INFO
 
 struct SANC_INFO
 {
-	char Sanc0;
-	char Sanc1;
-	char Sanc2;
-	char Sanc3;
-	char Sanc4;
-	char Sanc5;
-	char Sanc6;
-	char Sanc7;
-	char Legend0;
-	char Legend1;
-	char Legend2;
-	char Legend3;
-	char Legend4;
-	char Legend5;
-	char Legend6;
-	char Legend7;
+	unsigned char Sanc0;
+	unsigned char Sanc1;
+	unsigned char Sanc2;
+	unsigned char Sanc3;
+	unsigned char Sanc4;
+	unsigned char Sanc5;
+	unsigned char Sanc6;
+	unsigned char Sanc7;
+	unsigned char Legend0;
+	unsigned char Legend1;
+	unsigned char Legend2;
+	unsigned char Legend3;
+	unsigned char Legend4;
+	unsigned char Legend5;
+	unsigned char Legend6;
+	unsigned char Legend7;
 };
 
 struct HUMAN_LOOKINFO
 {
-	unsigned short FaceMesh;
-	unsigned short FaceSkin;
-	unsigned short HelmMesh;
-	unsigned short HelmSkin;
-	unsigned short CoatMesh;
-	unsigned short CoatSkin;
-	unsigned short PantsMesh;
-	unsigned short PantsSkin;
-	unsigned short GlovesMesh;
-	unsigned short GlovesSkin;
-	unsigned short BootsMesh;
-	unsigned short BootsSkin;
-	unsigned short RightMesh;
-	unsigned short RightSkin;
-	unsigned short LeftMesh;
-	unsigned short LeftSkin;
+	short FaceMesh;
+	short FaceSkin;
+	short HelmMesh;
+	short HelmSkin;
+	short CoatMesh;
+	short CoatSkin;
+	short PantsMesh;
+	short PantsSkin;
+	short GlovesMesh;
+	short GlovesSkin;
+	short BootsMesh;
+	short BootsSkin;
+	short RightMesh;
+	short RightSkin;
+	short LeftMesh;
+	short LeftSkin;
 };
 
 struct ResourceDef
