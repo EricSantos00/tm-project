@@ -1025,6 +1025,7 @@ extern char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
 extern int g_nSelServerWeather;
 extern STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
 extern STRUCT_GUILDZONE g_pGuildZone[MAX_GUILDZONE];
+extern STRUCT_SPELL g_pSpell[248];
 
 float BASE_ScreenResize(float size);
 void BASE_InitModuleDir();
@@ -1055,6 +1056,9 @@ unsigned int BASE_GetItemTenColor(STRUCT_ITEM* pItem);
 int BASE_GetItemColorEffect(STRUCT_ITEM* item);
 char BASE_CheckValidString(char* name);
 char* BASE_TransCurse(char* sz);
+char BASE_GetAttribute(int x, int y);
+char BASE_GetAttr(int nX, int nY);
+int BASE_ReadTOTOList(char* szFileName);
 
 /* Read Functions */
 int ReadItemicon();

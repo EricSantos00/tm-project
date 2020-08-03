@@ -6,7 +6,7 @@
 #include "Basedef.h"
 #include "TMFont2.h"
 
-enum TMEGRIDTYPE
+enum class TMEGRIDTYPE
 {
     GRID_DEFAULT = 0x0,
     GRID_SHOP = 0x1,

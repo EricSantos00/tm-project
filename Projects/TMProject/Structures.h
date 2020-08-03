@@ -399,3 +399,13 @@ struct ObjectFileItem
 	float fScaleH;
 	float fScaleV;
 };
+
+struct stMinimapPos
+{
+	int nX;
+	int nY;
+	int nCX;
+	int nCY;
+	unsigned int dwColor;
+	char szTarget[32];
+};

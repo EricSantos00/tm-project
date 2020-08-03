@@ -2417,7 +2417,7 @@ void SListBox::SetStartItemIndex(int nIndex)
 
 void SListBox::SetSize(float nWidth, float nHeight)
 {
-	SetSize(nWidth, nHeight);
+	SControl::SetSize(nWidth, nHeight);
 
 	m_fPickWidth = m_nWidth;
 	m_fPickHeight = m_nHeight;

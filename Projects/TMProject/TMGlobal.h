@@ -145,6 +145,12 @@ extern int g_pPKServerNum[2];
 extern int g_nTempArray[3];
 extern int g_nTempArray2[4];
 
+extern stMinimapPos g_MinimapPos[256];
+extern char g_TempName[16];
+extern char g_TempNick[26];
+
+extern int g_bEffectFirst;
+
 static unsigned int g_dwHandIndex[101][2] =
 {
     {19,25},{18,24},{15,21},{15,21},{12,18},{22,28},{23,29},

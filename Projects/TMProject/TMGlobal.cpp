@@ -116,3 +116,9 @@ int g_pPKServerNum[2] = { 5, 10 };
 
 int g_nTempArray[3] = { 4047990319, 0, 0 };
 int g_nTempArray2[4] = { 4049041969, 0, 0, 0 };
+
+stMinimapPos g_MinimapPos[256];
+char g_TempName[16];
+char g_TempNick[26];
+
+int g_bEffectFirst = 1;

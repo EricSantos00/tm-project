@@ -12,6 +12,7 @@ char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
 int g_nSelServerWeather;
 char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
 STRUCT_ITEMLIST g_pItemList[6500];
+STRUCT_SPELL g_pSpell[248];
 
 STRUCT_GUILDZONE g_pGuildZone[MAX_GUILDZONE] =
 {
@@ -1189,4 +1190,22 @@ char* BASE_TransCurse(char* sz)
         }
     } while (bFind == true);
     return sz;
+}
+
+char BASE_GetAttribute(int x, int y)
+{
+    if (x >= 0 && x <= 4096 && y >= 0 && x <= 4096)
+        return g_pAttribute[y / 4 & 1023][x / 4 & 1023];
+   
+    return 0;
+}
+
+char BASE_GetAttr(int nX, int nY)
+{
+    return g_pAttribute[nY / 4 % 1024][nX / 4 % 1024];
+}
+
+int BASE_ReadTOTOList(char* szFileName)
+{
+    return 0;
 }

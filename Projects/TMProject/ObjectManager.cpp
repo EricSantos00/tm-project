@@ -711,7 +711,7 @@ void ObjectManager::SetCurrentState(TM_GAME_STATE ieNewState)
 
 	switch (m_eCurrentState)
 	{
-	case TM_GAME_STATE::TM_NONE_STATE:
+	case TM_GAME_STATE::TM_FIELD_STATE:
 		pScene = new TMFieldScene();
 		break;
 	case TM_GAME_STATE::TM_SELECTCHAR_STATE:
