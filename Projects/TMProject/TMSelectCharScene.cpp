@@ -64,7 +64,6 @@ TMSelectCharScene::~TMSelectCharScene()
 int TMSelectCharScene::InitializeScene()
 {
 	char* szClass[4]{};
-	char* szTownName[5]{};
 
 	char szDataPath[128]{};
 	char szMapPath[128]{};
@@ -241,264 +240,12 @@ int TMSelectCharScene::InitializeScene()
 
 		VisibleSelectCreate(1);
 
-		auto pSelChar = &g_pObjectManager->m_stSelCharData;
-
-		for (int i = 0; i < 4; ++i)
-		{
-			if (!pSelChar || pSelChar->MobName[i][0] == 0)
-				continue;
-
-			int sIndex = pSelChar->Equip[i][0].sIndex % 6500;
-
-			if (sIndex == 22 || sIndex == 23 || sIndex == 24 || sIndex == 25 || sIndex == 32)
-				pSelChar->Equip[i][0].sIndex = g_nBattleMaster;
-
-			m_pHuman[i] = new TMHuman(this);
-			m_pHuman[i]->m_nCurrentKill = 0;
-			m_pHuman[i]->m_nTotalKill = 0;
-
-			strncpy(m_pHuman[i]->m_szName, pSelChar->MobName[i], 15);
-
-			memcpy(&m_pHuman[i]->m_stScore, &pSelChar->Score[i], sizeof(STRUCT_SCORE));
-
-			m_pHuman[i]->m_stLookInfo.FaceMesh = g_pItemList[pSelChar->Equip[i][0].sIndex % 6500].nIndexMesh;
-			m_pHuman[i]->m_stLookInfo.FaceSkin = g_pItemList[pSelChar->Equip[i][0].sIndex % 6500].nIndexTexture;
-
-			if (pSelChar->Equip[i][1].sIndex % 6500 < 3500 ||
-				pSelChar->Equip[i][1].sIndex % 6500 > 3502 && pSelChar->Equip[i][1].sIndex % 6500 != 3507)
-			{
-				m_pHuman[i]->m_stLookInfo.HelmMesh = g_pItemList[pSelChar->Equip[i][1].sIndex % 6500].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.HelmSkin = g_pItemList[pSelChar->Equip[i][1].sIndex % 6500].nIndexTexture;
-			}
-
-			m_pHuman[i]->m_stLookInfo.CoatMesh = g_pItemList[pSelChar->Equip[i][2].sIndex % 6500].nIndexMesh;
-			m_pHuman[i]->m_stLookInfo.CoatSkin = g_pItemList[pSelChar->Equip[i][2].sIndex % 6500].nIndexTexture;
-			m_pHuman[i]->m_stLookInfo.PantsMesh = g_pItemList[pSelChar->Equip[i][3].sIndex % 6500].nIndexMesh;
-			m_pHuman[i]->m_stLookInfo.PantsSkin = g_pItemList[pSelChar->Equip[i][3].sIndex % 6500].nIndexTexture;
-			m_pHuman[i]->m_stLookInfo.GlovesMesh = g_pItemList[pSelChar->Equip[i][4].sIndex % 6500].nIndexMesh;
-			m_pHuman[i]->m_stLookInfo.GlovesSkin = g_pItemList[pSelChar->Equip[i][4].sIndex % 6500].nIndexTexture;
-			m_pHuman[i]->m_stLookInfo.BootsMesh = g_pItemList[pSelChar->Equip[i][5].sIndex % 6500].nIndexMesh;
-			m_pHuman[i]->m_stLookInfo.BootsSkin = g_pItemList[pSelChar->Equip[i][5].sIndex % 6500].nIndexTexture;
-			m_pHuman[i]->m_stLookInfo.LeftMesh = g_pItemList[pSelChar->Equip[i][6].sIndex % 6500].nIndexMesh;
-			m_pHuman[i]->m_stLookInfo.LeftSkin = g_pItemList[pSelChar->Equip[i][6].sIndex % 6500].nIndexTexture;
-			m_pHuman[i]->m_stLookInfo.RightMesh = g_pItemList[pSelChar->Equip[i][7].sIndex % 6500].nIndexMesh;
-			m_pHuman[i]->m_stLookInfo.RightSkin = g_pItemList[pSelChar->Equip[i][7].sIndex % 6500].nIndexTexture;
-			m_pHuman[i]->m_sFamiliar = pSelChar->Equip[i][13].sIndex;
-			m_pHuman[i]->m_sCostume = pSelChar->Equip[i][12].sIndex;
-			m_pHuman[i]->m_wMantuaSkin = g_pItemList[pSelChar->Equip[i][15].sIndex].nIndexTexture;
-			
-			m_pHuman[i]->m_wMantuaSkin = m_pHuman[i]->SetCitizenMantle(m_pHuman[i]->m_wMantuaSkin);
-
-			if (sIndex % 10 != 8 && sIndex != 21 && sIndex != 22 && sIndex != 23 && sIndex != 24 && sIndex != 25 && sIndex != 32)
-			{
-				m_pHuman[i]->m_stSancInfo.Sanc0 = BASE_GetItemSanc(pSelChar->Equip[i]);
-			}
-			else
-			{
-				m_pHuman[i]->m_stSancInfo.Sanc0 = 0;
-			}
-
-			m_pHuman[i]->m_stSancInfo.Sanc1 = BASE_GetItemSanc(&pSelChar->Equip[i][1]);
-			m_pHuman[i]->m_stSancInfo.Sanc2 = BASE_GetItemSanc(&pSelChar->Equip[i][2]);
-			m_pHuman[i]->m_stSancInfo.Sanc3 = BASE_GetItemSanc(&pSelChar->Equip[i][3]);
-			m_pHuman[i]->m_stSancInfo.Sanc4 = BASE_GetItemSanc(&pSelChar->Equip[i][4]);
-			m_pHuman[i]->m_stSancInfo.Sanc5 = BASE_GetItemSanc(&pSelChar->Equip[i][5]);
-			m_pHuman[i]->m_stSancInfo.Sanc7 = BASE_GetItemSanc(&pSelChar->Equip[i][6]);//??
-			m_pHuman[i]->m_stSancInfo.Sanc6 = BASE_GetItemSanc(&pSelChar->Equip[i][7]);//??
-			m_pHuman[i]->m_ucMantuaSanc = BASE_GetItemSanc(&pSelChar->Equip[i][15]);
-			m_pHuman[i]->m_stSancInfo.Legend0 = g_pItemList[pSelChar->Equip[i][0].sIndex % 6500].nGrade;
-			m_pHuman[i]->m_stSancInfo.Legend1 = g_pItemList[pSelChar->Equip[i][1].sIndex % 6500].nGrade;
-			m_pHuman[i]->m_stSancInfo.Legend2 = g_pItemList[pSelChar->Equip[i][2].sIndex % 6500].nGrade;
-			m_pHuman[i]->m_stSancInfo.Legend3 = g_pItemList[pSelChar->Equip[i][3].sIndex % 6500].nGrade;
-			m_pHuman[i]->m_stSancInfo.Legend4 = g_pItemList[pSelChar->Equip[i][4].sIndex % 6500].nGrade;
-			m_pHuman[i]->m_stSancInfo.Legend5 = g_pItemList[pSelChar->Equip[i][5].sIndex % 6500].nGrade;
-			m_pHuman[i]->m_stSancInfo.Legend7 = g_pItemList[pSelChar->Equip[i][6].sIndex % 6500].nGrade;
-			m_pHuman[i]->m_stSancInfo.Legend6 = g_pItemList[pSelChar->Equip[i][7].sIndex % 6500].nGrade;
-			m_pHuman[i]->m_ucMantuaLegend = g_pItemList[pSelChar->Equip[i][15].sIndex % 6500].nGrade;
-
-			m_pHuman[i]->m_stColorInfo.Sanc0 = BASE_GetItemColorEffect(pSelChar->Equip[i]);
-			m_pHuman[i]->m_stColorInfo.Sanc1 = BASE_GetItemColorEffect(&pSelChar->Equip[i][1]);
-			m_pHuman[i]->m_stColorInfo.Sanc2 = BASE_GetItemColorEffect(&pSelChar->Equip[i][2]);
-			m_pHuman[i]->m_stColorInfo.Sanc3 = BASE_GetItemColorEffect(&pSelChar->Equip[i][3]);
-			m_pHuman[i]->m_stColorInfo.Sanc4 = BASE_GetItemColorEffect(&pSelChar->Equip[i][4]);
-			m_pHuman[i]->m_stColorInfo.Sanc5 = BASE_GetItemColorEffect(&pSelChar->Equip[i][5]);
-			m_pHuman[i]->m_stColorInfo.Sanc7 = BASE_GetItemColorEffect(&pSelChar->Equip[i][6]);
-			m_pHuman[i]->m_stColorInfo.Sanc6 = BASE_GetItemColorEffect(&pSelChar->Equip[i][7]);
-
-			if (m_pHuman[i]->m_stSancInfo.Legend1 &&
-				m_pHuman[i]->m_stSancInfo.Legend1 <= 4 &&
-				m_pHuman[i]->m_stSancInfo.Sanc1 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend1 = BASE_GetItemTenColor(&pSelChar->Equip[i][1]) + 4;
-			}
-			else if (m_pHuman[i]->m_stSancInfo.Legend1 == 4 && m_pHuman[i]->m_stSancInfo.Sanc1 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend1 = BASE_GetItemTenColor(&pSelChar->Equip[i][1]);
-			}
-
-			if (m_pHuman[i]->m_stSancInfo.Legend2 &&
-				m_pHuman[i]->m_stSancInfo.Legend2 <= 4 &&
-				m_pHuman[i]->m_stSancInfo.Sanc2 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend2 = BASE_GetItemTenColor(&pSelChar->Equip[i][2]) + 4;
-			}
-			else if (m_pHuman[i]->m_stSancInfo.Legend2 == 4 && m_pHuman[i]->m_stSancInfo.Sanc2 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend2 = BASE_GetItemTenColor(&pSelChar->Equip[i][2]);
-			}
-
-			if (m_pHuman[i]->m_stSancInfo.Legend3 &&
-				m_pHuman[i]->m_stSancInfo.Legend3 <= 4 &&
-				m_pHuman[i]->m_stSancInfo.Sanc3 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend3 = BASE_GetItemTenColor(&pSelChar->Equip[i][3]) + 4;
-			}
-			else if (m_pHuman[i]->m_stSancInfo.Legend3 == 4 && m_pHuman[i]->m_stSancInfo.Sanc3 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend3 = BASE_GetItemTenColor(&pSelChar->Equip[i][3]);
-			}
-
-			if (m_pHuman[i]->m_stSancInfo.Legend4 &&
-				m_pHuman[i]->m_stSancInfo.Legend4 <= 4 &&
-				m_pHuman[i]->m_stSancInfo.Sanc4 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend4 = BASE_GetItemTenColor(&pSelChar->Equip[i][4]) + 4;
-			}
-			else if (m_pHuman[i]->m_stSancInfo.Legend4 == 4 && m_pHuman[i]->m_stSancInfo.Sanc4 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend4 = BASE_GetItemTenColor(&pSelChar->Equip[i][4]);
-			}
-
-			if (m_pHuman[i]->m_stSancInfo.Legend5 &&
-				m_pHuman[i]->m_stSancInfo.Legend5 <= 4 &&
-				m_pHuman[i]->m_stSancInfo.Sanc5 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend5 = BASE_GetItemTenColor(&pSelChar->Equip[i][5]) + 4;
-			}
-			else if (m_pHuman[i]->m_stSancInfo.Legend5 == 4 && m_pHuman[i]->m_stSancInfo.Sanc5 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend5 = BASE_GetItemTenColor(&pSelChar->Equip[i][5]);
-			}
-
-			if (m_pHuman[i]->m_stSancInfo.Legend7 && 
-				m_pHuman[i]->m_stSancInfo.Legend7 <= 4 &&
-				m_pHuman[i]->m_stSancInfo.Sanc7 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend7 = BASE_GetItemTenColor(&pSelChar->Equip[i][6]) + 4;
-			}
-			else if (m_pHuman[i]->m_stSancInfo.Legend7 == 4 && m_pHuman[i]->m_stSancInfo.Sanc7 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend7 = BASE_GetItemTenColor(&pSelChar->Equip[i][6]);
-			}
-
-			if (m_pHuman[i]->m_stSancInfo.Legend6 <= 4 && m_pHuman[i]->m_stSancInfo.Sanc6 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend6 = BASE_GetItemTenColor(&pSelChar->Equip[i][7]) + 4;
-			}
-			else if (m_pHuman[i]->m_stSancInfo.Legend6 == 4 && m_pHuman[i]->m_stSancInfo.Sanc6 > 9)
-			{
-				m_pHuman[i]->m_stSancInfo.Legend6 = BASE_GetItemTenColor(&pSelChar->Equip[i][7]);
-			}
-
-			m_pHuman[i]->m_cMantua = pSelChar->Equip[i][15].sIndex > 0;
-			m_pHuman[i]->m_sMantuaIndex = pSelChar->Equip[i][15].sIndex;
-
-			float fCon = (float)m_pHuman[i]->m_stScore.Con;
-
-			m_pHuman[i]->SetCharHeight(fCon);
-			m_pHuman[i]->SetRace(pSelChar->Equip[i][0].sIndex);
-
-			m_pHuman[i]->m_stScore.Hp = 1;
-
-			int nWeaponTypeL = BASE_GetItemAbility(&pSelChar->Equip[i][6], 21);
-
-			if (nWeaponTypeL == 41)
-			{
-				m_pHuman[i]->m_stLookInfo.RightMesh = m_pHuman[i]->m_stLookInfo.LeftMesh;
-				m_pHuman[i]->m_stLookInfo.RightSkin = m_pHuman[i]->m_stLookInfo.LeftSkin;
-			}
-
-			m_pHuman[i]->m_sHeadIndex = pSelChar->Equip[i][0].sIndex;
-			m_pHuman[i]->m_sHelmIndex = pSelChar->Equip[i][1].sIndex;
-
-			m_pHuman[i]->InitObject();
-
-			m_pHuman[i]->CheckWeapon(pSelChar->Equip[i][6].sIndex, pSelChar->Equip[i][7].sIndex);
-			m_pHuman[i]->InitAngle(0, -45.0f, 0);
-			
-			TMVector3 vecStartPos{ 2053.0f, 0.0f, 2048.2f };
-			TMVector3 vecEndPos{ 2048.2f, 0.0f, 2053.0f };
-			TMVector3 vecPos{};
-			
-			D3DXVec3Lerp((D3DXVECTOR3*)&vecPos, (D3DXVECTOR3*)&vecStartPos, (D3DXVECTOR3*)&vecEndPos, (float)i * 0.333f);
-			
-			m_pHuman[i]->InitPosition(vecPos.x, vecPos.y, vecPos.z);
-
-
-			unsigned short usGuild = g_pObjectManager->m_stSelCharData.Guild[i];
-
-			m_pHuman[i]->m_usGuild = usGuild;
-			usGuild &= 0x7FFFu;
-
-			szTownName[0] = g_pMessageStringTable[125];
-			szTownName[1] = g_pMessageStringTable[126];
-			szTownName[2] = g_pMessageStringTable[173];
-			szTownName[3] = g_pMessageStringTable[321];
-			szTownName[4] = g_pMessageStringTable[127];
-
-			int nTownIndex = BASE_GetVillage(
-				g_pObjectManager->m_stSelCharData.HomeTownX[i],
-				g_pObjectManager->m_stSelCharData.HomeTownY[i]);
-
-			auto pTextTownName = static_cast<SText*>(m_pControlContainer->FindControl(1296u));
-
-			if (nTownIndex < 5 && nTownIndex >= 0)
-			{
-				pTextTownName->SetText(szTownName[nTownIndex], 0);
-			}
-			else
-			{
-				char szStrPos[128]{};
-
-				sprintf_s(szStrPos, "[%d, %d]",
-					g_pObjectManager->m_stSelCharData.HomeTownX[i],
-					g_pObjectManager->m_stSelCharData.HomeTownY[i]);
-
-				pTextTownName->SetText(szStrPos, 0);
-			}
-			m_pHumanContainer->AddChild(static_cast<TreeNode*>(m_pHuman[i]));
-		}
+		ReloadCharList(RELOAD_CHARLIST_TYPE::INITIALIZE_SCENE);
 
 		m_pItemContainer = new TreeNode(0);
 
 		AddChild(m_pItemContainer);
-
-		int bHasEmpty = 0;
-
-		for (int i = 0; i < 4; ++i)
-		{
-			if (!pSelChar->MobName[i][0])
-			{
-				bHasEmpty = 1;
-				break;
-			}
-		}
-
-		auto pButton = static_cast<SButton*>(m_pControlContainer->FindControl(4613u));
-
-		if (bHasEmpty)
-		{
-			m_pNewCharPanel->SetVisible(1);
-
-			pButton->SetEnable(1);
-		}
-		else
-		{
-			m_pNewCharPanel->SetVisible(0);
-
-			pButton->SetEnable(0);
-		}
-
+			
 		FILE* fp = nullptr;
 
 		fopen_s(&fp, "UI\\selchar.txt", "rt");
@@ -1657,131 +1404,7 @@ int TMSelectCharScene::OnPacketEvent(unsigned int dwCode, char* buf)
 
 		memcpy(&g_pObjectManager->m_stSelCharData, &pNewCharacter->SelChar, sizeof STRUCT_SELCHAR);
 
-		STRUCT_SELCHAR* pSelChar = &g_pObjectManager->m_stSelCharData;
-		for (int i = 0; i < 4; ++i)
-		{
-			if (pSelChar && pSelChar->MobName[i][0])
-			{
-				if (m_pHuman[i] && m_pHuman[i]->m_pFamiliar)
-					m_pHuman[i]->m_pFamiliar->m_pOwner = 0;
-
-				g_pObjectManager->DeleteObject(m_pHuman[i]);
-				m_pHuman[i] = nullptr;
-				m_pHuman[i] = new TMHuman(this);
-
-				sprintf(m_pHuman[i]->m_szName, "%s", pSelChar->MobName[i]);
-				memcpy(&m_pHuman[i]->m_stScore, &pSelChar->Score[i], sizeof(pSelChar->Score[i]));
-				m_pHuman[i]->m_stLookInfo.FaceMesh = g_pItemList[pSelChar->Equip[i][0].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.FaceSkin = g_pItemList[pSelChar->Equip[i][0].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.HelmMesh = g_pItemList[pSelChar->Equip[i][1].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.HelmSkin = g_pItemList[pSelChar->Equip[i][1].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.CoatMesh = g_pItemList[pSelChar->Equip[i][2].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.CoatSkin = g_pItemList[pSelChar->Equip[i][2].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.PantsMesh = g_pItemList[pSelChar->Equip[i][3].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.PantsSkin = g_pItemList[pSelChar->Equip[i][3].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.GlovesMesh = g_pItemList[pSelChar->Equip[i][4].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.GlovesSkin = g_pItemList[pSelChar->Equip[i][4].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.BootsMesh = g_pItemList[pSelChar->Equip[i][5].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.BootsSkin = g_pItemList[pSelChar->Equip[i][5].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.LeftMesh = g_pItemList[pSelChar->Equip[i][6].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.LeftSkin = g_pItemList[pSelChar->Equip[i][6].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.RightMesh = g_pItemList[pSelChar->Equip[i][7].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.RightSkin = g_pItemList[pSelChar->Equip[i][7].sIndex].nIndexTexture;
-				m_pHuman[i]->m_sFamiliar = pSelChar->Equip[i][13].sIndex;
-				m_pHuman[i]->m_sCostume = pSelChar->Equip[i][12].sIndex;
-				m_pHuman[i]->m_wMantuaSkin = g_pItemList[pSelChar->Equip[i][15].sIndex].nIndexTexture;
-
-				m_pHuman[i]->m_stSancInfo.Sanc0 = BASE_GetItemSanc(pSelChar->Equip[i]);
-				m_pHuman[i]->m_stSancInfo.Sanc1 = BASE_GetItemSanc(&pSelChar->Equip[i][1]);
-				m_pHuman[i]->m_stSancInfo.Sanc2 = BASE_GetItemSanc(&pSelChar->Equip[i][2]);
-				m_pHuman[i]->m_stSancInfo.Sanc3 = BASE_GetItemSanc(&pSelChar->Equip[i][3]);
-				m_pHuman[i]->m_stSancInfo.Sanc4 = BASE_GetItemSanc(&pSelChar->Equip[i][4]);
-				m_pHuman[i]->m_stSancInfo.Sanc5 = BASE_GetItemSanc(&pSelChar->Equip[i][5]);
-				m_pHuman[i]->m_stSancInfo.Sanc7 = BASE_GetItemSanc(&pSelChar->Equip[i][6]);
-				m_pHuman[i]->m_stSancInfo.Sanc6 = BASE_GetItemSanc(&pSelChar->Equip[i][7]);
-				m_pHuman[i]->m_ucMantuaSanc = BASE_GetItemSanc(&pSelChar->Equip[i][15]);
-
-				m_pHuman[i]->m_stSancInfo.Legend0 = g_pItemList[pSelChar->Equip[i][0].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend1 = g_pItemList[pSelChar->Equip[i][1].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend2 = g_pItemList[pSelChar->Equip[i][2].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend3 = g_pItemList[pSelChar->Equip[i][3].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend4 = g_pItemList[pSelChar->Equip[i][4].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend5 = g_pItemList[pSelChar->Equip[i][5].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend7 = g_pItemList[pSelChar->Equip[i][6].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend6 = g_pItemList[pSelChar->Equip[i][7].sIndex].nGrade;
-				m_pHuman[i]->m_ucMantuaLegend = g_pItemList[pSelChar->Equip[i][15].sIndex].nGrade;
-
-				m_pHuman[i]->m_stColorInfo.Sanc0 = BASE_GetItemColorEffect(pSelChar->Equip[i]);
-				m_pHuman[i]->m_stColorInfo.Sanc1 = BASE_GetItemColorEffect(&pSelChar->Equip[i][1]);
-				m_pHuman[i]->m_stColorInfo.Sanc2 = BASE_GetItemColorEffect(&pSelChar->Equip[i][2]);
-				m_pHuman[i]->m_stColorInfo.Sanc3 = BASE_GetItemColorEffect(&pSelChar->Equip[i][3]);
-				m_pHuman[i]->m_stColorInfo.Sanc4 = BASE_GetItemColorEffect(&pSelChar->Equip[i][4]);
-				m_pHuman[i]->m_stColorInfo.Sanc5 = BASE_GetItemColorEffect(&pSelChar->Equip[i][5]);
-				m_pHuman[i]->m_stColorInfo.Sanc7 = BASE_GetItemColorEffect(&pSelChar->Equip[i][6]);
-				m_pHuman[i]->m_stColorInfo.Sanc6 = BASE_GetItemColorEffect(&pSelChar->Equip[i][7]);
-
-				m_pHuman[i]->m_cMantua = pSelChar->Equip[i][15].sIndex > 0;
-				float fCon = (float)m_pHuman[i]->m_stScore.Con;
-				m_pHuman[i]->SetCharHeight(fCon);
-				m_pHuman[i]->SetRace(pSelChar->Equip[i][0].sIndex);
-				m_pHuman[i]->m_stScore.Hp = 1;
-
-				int nWeaponTypeL = BASE_GetItemAbility(&pSelChar->Equip[i][6], 21);
-				if (nWeaponTypeL == 41)
-				{
-					m_pHuman[i]->m_stLookInfo.RightMesh = m_pHuman[i]->m_stLookInfo.LeftMesh;
-					m_pHuman[i]->m_stLookInfo.RightSkin = m_pHuman[i]->m_stLookInfo.LeftSkin;
-				}
-
-				m_pHuman[i]->InitObject();
-				m_pHuman[i]->CheckWeapon(pSelChar->Equip[i][6].sIndex, pSelChar->Equip[i][7].sIndex);
-				m_pHuman[i]->InitAngle(0.0f, -45.0f, 0.0f);
-
-				D3DXVECTOR3 vecPos;
-				D3DXVECTOR3 vecStartPos = D3DXVECTOR3(2053.0f, 0.0f, 2048.2f);
-				D3DXVECTOR3 vecEndPos = D3DXVECTOR3(2048.2f, 0.0f, 2053.0f);
-
-				D3DXVec3Lerp(&vecPos, &vecStartPos, &vecEndPos, i * 0.333f);
-
-				m_pHuman[i]->InitPosition(vecPos.x, vecPos.y, vecPos.z);
-
-				m_pHumanContainer->AddChild(m_pHuman[i]);
-			}
-		}
-
-		auto pSoundManager = g_pSoundManager;
-		if (pSoundManager)
-		{
-			auto pSoundData = pSoundManager->GetSoundData(57);
-			if (pSoundData)
-			{
-				pSoundData->Play();
-			}
-		}
-
-		VisibleSelectCreate(1);
-
-		bool bHasEmpty = false;
-		for (int i = 0; i < 4; ++i)
-		{
-			if (!pSelChar->MobName[i][0])
-			{
-				bHasEmpty = true;
-				break;
-			}
-		}
-
-		SButton* pButton = (SButton*)m_pControlContainer->FindControl(4613);
-		if (bHasEmpty)
-		{
-			m_pNewCharPanel->SetVisible(1);
-			pButton->SetEnable(1);
-		}
-		else
-		{
-			m_pNewCharPanel->SetVisible(0);
-			pButton->SetEnable(0);
-		}
+		ReloadCharList(RELOAD_CHARLIST_TYPE::CREATE_CHARACTER);
 	}
 	return 1;
 	case 0x11A:
@@ -1794,133 +1417,9 @@ int TMSelectCharScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	{
 		m_pMessagePanel->SetVisible(0, 1);
 		MSG_CNFDeleteCharacter* pDeleteCharacter = reinterpret_cast<MSG_CNFDeleteCharacter*>(pStd);
-
 		memcpy(&g_pObjectManager->m_stSelCharData, &pDeleteCharacter->SelChar, sizeof(pDeleteCharacter->SelChar));
-
-		STRUCT_SELCHAR* pSelChar = &g_pObjectManager->m_stSelCharData;
-
 		OnControlEvent(4616, 0);
-		for (int i = 0; i < 4; ++i)
-		{
-			if (pSelChar && !pSelChar->MobName[i][0])
-			{
-				if (m_pHuman[i] && m_pHuman[i]->m_pFamiliar)
-					m_pHuman[i]->m_pFamiliar->m_pOwner = 0;
-
-				g_pObjectManager->DeleteObject(m_pHuman[i]);
-				m_pHuman[i] = nullptr;
-				continue;
-			}
-			if (pSelChar && pSelChar->MobName[i][0])
-			{
-				if (m_pHuman[i] && m_pHuman[i]->m_pFamiliar)
-					m_pHuman[i]->m_pFamiliar->m_pOwner = 0;
-
-				g_pObjectManager->DeleteObject(m_pHuman[i]);
-				m_pHuman[i] = nullptr;
-				m_pHuman[i] = new TMHuman(this);
-
-				sprintf(m_pHuman[i]->m_szName, "%s", pSelChar->MobName[i]);
-				memcpy(&m_pHuman[i]->m_stScore, &pSelChar->Score[i], sizeof(pSelChar->Score[i]));
-				m_pHuman[i]->m_stLookInfo.FaceMesh = g_pItemList[pSelChar->Equip[i][0].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.FaceSkin = g_pItemList[pSelChar->Equip[i][0].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.HelmMesh = g_pItemList[pSelChar->Equip[i][1].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.HelmSkin = g_pItemList[pSelChar->Equip[i][1].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.CoatMesh = g_pItemList[pSelChar->Equip[i][2].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.CoatSkin = g_pItemList[pSelChar->Equip[i][2].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.PantsMesh = g_pItemList[pSelChar->Equip[i][3].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.PantsSkin = g_pItemList[pSelChar->Equip[i][3].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.GlovesMesh = g_pItemList[pSelChar->Equip[i][4].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.GlovesSkin = g_pItemList[pSelChar->Equip[i][4].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.BootsMesh = g_pItemList[pSelChar->Equip[i][5].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.BootsSkin = g_pItemList[pSelChar->Equip[i][5].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.LeftMesh = g_pItemList[pSelChar->Equip[i][6].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.LeftSkin = g_pItemList[pSelChar->Equip[i][6].sIndex].nIndexTexture;
-				m_pHuman[i]->m_stLookInfo.RightMesh = g_pItemList[pSelChar->Equip[i][7].sIndex].nIndexMesh;
-				m_pHuman[i]->m_stLookInfo.RightSkin = g_pItemList[pSelChar->Equip[i][7].sIndex].nIndexTexture;
-				m_pHuman[i]->m_sFamiliar = pSelChar->Equip[i][13].sIndex;
-				m_pHuman[i]->m_sCostume = pSelChar->Equip[i][12].sIndex;
-				m_pHuman[i]->m_wMantuaSkin = g_pItemList[pSelChar->Equip[i][15].sIndex].nIndexTexture;
-
-				m_pHuman[i]->m_stSancInfo.Sanc0 = BASE_GetItemSanc(pSelChar->Equip[i]);
-				m_pHuman[i]->m_stSancInfo.Sanc1 = BASE_GetItemSanc(&pSelChar->Equip[i][1]);
-				m_pHuman[i]->m_stSancInfo.Sanc2 = BASE_GetItemSanc(&pSelChar->Equip[i][2]);
-				m_pHuman[i]->m_stSancInfo.Sanc3 = BASE_GetItemSanc(&pSelChar->Equip[i][3]);
-				m_pHuman[i]->m_stSancInfo.Sanc4 = BASE_GetItemSanc(&pSelChar->Equip[i][4]);
-				m_pHuman[i]->m_stSancInfo.Sanc5 = BASE_GetItemSanc(&pSelChar->Equip[i][5]);
-				m_pHuman[i]->m_stSancInfo.Sanc7 = BASE_GetItemSanc(&pSelChar->Equip[i][6]);
-				m_pHuman[i]->m_stSancInfo.Sanc6 = BASE_GetItemSanc(&pSelChar->Equip[i][7]);
-				m_pHuman[i]->m_ucMantuaSanc = BASE_GetItemSanc(&pSelChar->Equip[i][15]);
-
-				m_pHuman[i]->m_stSancInfo.Legend0 = g_pItemList[pSelChar->Equip[i][0].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend1 = g_pItemList[pSelChar->Equip[i][1].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend2 = g_pItemList[pSelChar->Equip[i][2].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend3 = g_pItemList[pSelChar->Equip[i][3].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend4 = g_pItemList[pSelChar->Equip[i][4].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend5 = g_pItemList[pSelChar->Equip[i][5].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend7 = g_pItemList[pSelChar->Equip[i][6].sIndex].nGrade;
-				m_pHuman[i]->m_stSancInfo.Legend6 = g_pItemList[pSelChar->Equip[i][7].sIndex].nGrade;
-				m_pHuman[i]->m_ucMantuaLegend = g_pItemList[pSelChar->Equip[i][15].sIndex].nGrade;
-
-				m_pHuman[i]->m_stColorInfo.Sanc0 = BASE_GetItemColorEffect(pSelChar->Equip[i]);
-				m_pHuman[i]->m_stColorInfo.Sanc1 = BASE_GetItemColorEffect(&pSelChar->Equip[i][1]);
-				m_pHuman[i]->m_stColorInfo.Sanc2 = BASE_GetItemColorEffect(&pSelChar->Equip[i][2]);
-				m_pHuman[i]->m_stColorInfo.Sanc3 = BASE_GetItemColorEffect(&pSelChar->Equip[i][3]);
-				m_pHuman[i]->m_stColorInfo.Sanc4 = BASE_GetItemColorEffect(&pSelChar->Equip[i][4]);
-				m_pHuman[i]->m_stColorInfo.Sanc5 = BASE_GetItemColorEffect(&pSelChar->Equip[i][5]);
-				m_pHuman[i]->m_stColorInfo.Sanc7 = BASE_GetItemColorEffect(&pSelChar->Equip[i][6]);
-				m_pHuman[i]->m_stColorInfo.Sanc6 = BASE_GetItemColorEffect(&pSelChar->Equip[i][7]);
-
-				m_pHuman[i]->m_cMantua = pSelChar->Equip[i][15].sIndex > 0;
-				float fCon = (float)m_pHuman[i]->m_stScore.Con;
-				m_pHuman[i]->SetCharHeight(fCon);
-				m_pHuman[i]->SetRace(pSelChar->Equip[i][0].sIndex);
-				m_pHuman[i]->m_stScore.Hp = 1;
-
-				int nWeaponTypeL = BASE_GetItemAbility(&pSelChar->Equip[i][6], 21);
-				if (nWeaponTypeL == 41)
-				{
-					m_pHuman[i]->m_stLookInfo.RightMesh = m_pHuman[i]->m_stLookInfo.LeftMesh;
-					m_pHuman[i]->m_stLookInfo.RightSkin = m_pHuman[i]->m_stLookInfo.LeftSkin;
-				}
-
-				m_pHuman[i]->InitObject();
-				m_pHuman[i]->CheckWeapon(pSelChar->Equip[i][6].sIndex, pSelChar->Equip[i][7].sIndex);
-				m_pHuman[i]->InitAngle(0.0f, -45.0f, 0.0f);
-
-				D3DXVECTOR3 vecPos;
-				D3DXVECTOR3 vecStartPos = D3DXVECTOR3(2053.0f, 0.0f, 2048.2f);
-				D3DXVECTOR3 vecEndPos = D3DXVECTOR3(2048.2f, 0.0f, 2053.0f);
-
-				D3DXVec3Lerp(&vecPos, &vecStartPos, &vecEndPos, i * 0.333f);
-
-				m_pHuman[i]->InitPosition(vecPos.x, vecPos.y, vecPos.z);
-
-				m_pHumanContainer->AddChild(m_pHuman[i]);
-			}
-		}
-
-		bool bHasEmpty = false;
-		for (int i = 0; i < 4; ++i)
-		{
-			if (!pSelChar->MobName[i][0])
-			{
-				bHasEmpty = true;
-				break;
-			}
-		}
-
-		SButton* pButton = (SButton*)m_pControlContainer->FindControl(4613);
-		if (bHasEmpty)
-		{
-			m_pNewCharPanel->SetVisible(1);
-			pButton->SetEnable(1);
-		}
-		else
-		{
-			m_pNewCharPanel->SetVisible(0);
-			pButton->SetEnable(0);
-		}
+		ReloadCharList(RELOAD_CHARLIST_TYPE::DELETE_CHARACTER);
 	}
 	return 1;
 	case 0x11B:
@@ -2334,5 +1833,297 @@ void TMSelectCharScene::AddvirtualKeyNum(int num)
 		sprintf_s(keypass, "%s%d", keypass, keybuf[num]);
 		strncpy(chdata, Passdata, strlen(keypass));
 		m_pAccountLockDlgTitle->SetText(chdata, 0);
+	}
+}
+
+void TMSelectCharScene::ReloadCharList(RELOAD_CHARLIST_TYPE type)
+{
+	auto pSelChar = &g_pObjectManager->m_stSelCharData;
+	char* szTownName[5]{};
+
+	for (int i = 0; i < 4; ++i)
+	{
+		if (type == RELOAD_CHARLIST_TYPE::DELETE_CHARACTER)
+		{
+			if (pSelChar && !pSelChar->MobName[i][0])
+			{
+				if (m_pHuman[i] && m_pHuman[i]->m_pFamiliar)
+					m_pHuman[i]->m_pFamiliar->m_pOwner = 0;
+
+				g_pObjectManager->DeleteObject(m_pHuman[i]);
+				m_pHuman[i] = nullptr;
+				continue;
+			}
+		}
+
+		if (!pSelChar || pSelChar->MobName[i][0] == 0)
+			continue;
+
+		if (m_pHuman[i] && m_pHuman[i]->m_pFamiliar)
+			m_pHuman[i]->m_pFamiliar->m_pOwner = 0;
+
+		g_pObjectManager->DeleteObject(m_pHuman[i]);
+		m_pHuman[i] = nullptr;
+
+		int sIndex = pSelChar->Equip[i][0].sIndex % 6500;
+
+		if (sIndex == 22 || sIndex == 23 || sIndex == 24 || sIndex == 25 || sIndex == 32)
+			pSelChar->Equip[i][0].sIndex = g_nBattleMaster;
+
+		m_pHuman[i] = new TMHuman(this);
+		m_pHuman[i]->m_nCurrentKill = 0;
+		m_pHuman[i]->m_nTotalKill = 0;
+
+		strncpy(m_pHuman[i]->m_szName, pSelChar->MobName[i], 15);
+
+		memcpy(&m_pHuman[i]->m_stScore, &pSelChar->Score[i], sizeof(STRUCT_SCORE));
+
+		m_pHuman[i]->m_stLookInfo.FaceMesh = g_pItemList[pSelChar->Equip[i][0].sIndex % 6500].nIndexMesh;
+		m_pHuman[i]->m_stLookInfo.FaceSkin = g_pItemList[pSelChar->Equip[i][0].sIndex % 6500].nIndexTexture;
+
+		if (pSelChar->Equip[i][1].sIndex % 6500 < 3500 ||
+			pSelChar->Equip[i][1].sIndex % 6500 > 3502 && pSelChar->Equip[i][1].sIndex % 6500 != 3507)
+		{
+			m_pHuman[i]->m_stLookInfo.HelmMesh = g_pItemList[pSelChar->Equip[i][1].sIndex % 6500].nIndexMesh;
+			m_pHuman[i]->m_stLookInfo.HelmSkin = g_pItemList[pSelChar->Equip[i][1].sIndex % 6500].nIndexTexture;
+		}
+
+		m_pHuman[i]->m_stLookInfo.CoatMesh = g_pItemList[pSelChar->Equip[i][2].sIndex % 6500].nIndexMesh;
+		m_pHuman[i]->m_stLookInfo.CoatSkin = g_pItemList[pSelChar->Equip[i][2].sIndex % 6500].nIndexTexture;
+		m_pHuman[i]->m_stLookInfo.PantsMesh = g_pItemList[pSelChar->Equip[i][3].sIndex % 6500].nIndexMesh;
+		m_pHuman[i]->m_stLookInfo.PantsSkin = g_pItemList[pSelChar->Equip[i][3].sIndex % 6500].nIndexTexture;
+		m_pHuman[i]->m_stLookInfo.GlovesMesh = g_pItemList[pSelChar->Equip[i][4].sIndex % 6500].nIndexMesh;
+		m_pHuman[i]->m_stLookInfo.GlovesSkin = g_pItemList[pSelChar->Equip[i][4].sIndex % 6500].nIndexTexture;
+		m_pHuman[i]->m_stLookInfo.BootsMesh = g_pItemList[pSelChar->Equip[i][5].sIndex % 6500].nIndexMesh;
+		m_pHuman[i]->m_stLookInfo.BootsSkin = g_pItemList[pSelChar->Equip[i][5].sIndex % 6500].nIndexTexture;
+		m_pHuman[i]->m_stLookInfo.LeftMesh = g_pItemList[pSelChar->Equip[i][6].sIndex % 6500].nIndexMesh;
+		m_pHuman[i]->m_stLookInfo.LeftSkin = g_pItemList[pSelChar->Equip[i][6].sIndex % 6500].nIndexTexture;
+		m_pHuman[i]->m_stLookInfo.RightMesh = g_pItemList[pSelChar->Equip[i][7].sIndex % 6500].nIndexMesh;
+		m_pHuman[i]->m_stLookInfo.RightSkin = g_pItemList[pSelChar->Equip[i][7].sIndex % 6500].nIndexTexture;
+		m_pHuman[i]->m_sFamiliar = pSelChar->Equip[i][13].sIndex;
+		m_pHuman[i]->m_sCostume = pSelChar->Equip[i][12].sIndex;
+		m_pHuman[i]->m_wMantuaSkin = g_pItemList[pSelChar->Equip[i][15].sIndex].nIndexTexture;
+
+		m_pHuman[i]->m_wMantuaSkin = m_pHuman[i]->SetCitizenMantle(m_pHuman[i]->m_wMantuaSkin);
+
+		if (sIndex % 10 != 8 && sIndex != 21 && sIndex != 22 && sIndex != 23 && sIndex != 24 && sIndex != 25 && sIndex != 32)
+		{
+			m_pHuman[i]->m_stSancInfo.Sanc0 = BASE_GetItemSanc(pSelChar->Equip[i]);
+		}
+		else
+		{
+			m_pHuman[i]->m_stSancInfo.Sanc0 = 0;
+		}
+
+		m_pHuman[i]->m_stSancInfo.Sanc1 = BASE_GetItemSanc(&pSelChar->Equip[i][1]);
+		m_pHuman[i]->m_stSancInfo.Sanc2 = BASE_GetItemSanc(&pSelChar->Equip[i][2]);
+		m_pHuman[i]->m_stSancInfo.Sanc3 = BASE_GetItemSanc(&pSelChar->Equip[i][3]);
+		m_pHuman[i]->m_stSancInfo.Sanc4 = BASE_GetItemSanc(&pSelChar->Equip[i][4]);
+		m_pHuman[i]->m_stSancInfo.Sanc5 = BASE_GetItemSanc(&pSelChar->Equip[i][5]);
+		m_pHuman[i]->m_stSancInfo.Sanc7 = BASE_GetItemSanc(&pSelChar->Equip[i][6]);//??
+		m_pHuman[i]->m_stSancInfo.Sanc6 = BASE_GetItemSanc(&pSelChar->Equip[i][7]);//??
+		m_pHuman[i]->m_ucMantuaSanc = BASE_GetItemSanc(&pSelChar->Equip[i][15]);
+		m_pHuman[i]->m_stSancInfo.Legend0 = g_pItemList[pSelChar->Equip[i][0].sIndex % 6500].nGrade;
+		m_pHuman[i]->m_stSancInfo.Legend1 = g_pItemList[pSelChar->Equip[i][1].sIndex % 6500].nGrade;
+		m_pHuman[i]->m_stSancInfo.Legend2 = g_pItemList[pSelChar->Equip[i][2].sIndex % 6500].nGrade;
+		m_pHuman[i]->m_stSancInfo.Legend3 = g_pItemList[pSelChar->Equip[i][3].sIndex % 6500].nGrade;
+		m_pHuman[i]->m_stSancInfo.Legend4 = g_pItemList[pSelChar->Equip[i][4].sIndex % 6500].nGrade;
+		m_pHuman[i]->m_stSancInfo.Legend5 = g_pItemList[pSelChar->Equip[i][5].sIndex % 6500].nGrade;
+		m_pHuman[i]->m_stSancInfo.Legend7 = g_pItemList[pSelChar->Equip[i][6].sIndex % 6500].nGrade;
+		m_pHuman[i]->m_stSancInfo.Legend6 = g_pItemList[pSelChar->Equip[i][7].sIndex % 6500].nGrade;
+		m_pHuman[i]->m_ucMantuaLegend = g_pItemList[pSelChar->Equip[i][15].sIndex % 6500].nGrade;
+
+		m_pHuman[i]->m_stColorInfo.Sanc0 = BASE_GetItemColorEffect(pSelChar->Equip[i]);
+		m_pHuman[i]->m_stColorInfo.Sanc1 = BASE_GetItemColorEffect(&pSelChar->Equip[i][1]);
+		m_pHuman[i]->m_stColorInfo.Sanc2 = BASE_GetItemColorEffect(&pSelChar->Equip[i][2]);
+		m_pHuman[i]->m_stColorInfo.Sanc3 = BASE_GetItemColorEffect(&pSelChar->Equip[i][3]);
+		m_pHuman[i]->m_stColorInfo.Sanc4 = BASE_GetItemColorEffect(&pSelChar->Equip[i][4]);
+		m_pHuman[i]->m_stColorInfo.Sanc5 = BASE_GetItemColorEffect(&pSelChar->Equip[i][5]);
+		m_pHuman[i]->m_stColorInfo.Sanc7 = BASE_GetItemColorEffect(&pSelChar->Equip[i][6]);
+		m_pHuman[i]->m_stColorInfo.Sanc6 = BASE_GetItemColorEffect(&pSelChar->Equip[i][7]);
+
+		if (m_pHuman[i]->m_stSancInfo.Legend1 &&
+			m_pHuman[i]->m_stSancInfo.Legend1 <= 4 &&
+			m_pHuman[i]->m_stSancInfo.Sanc1 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend1 = BASE_GetItemTenColor(&pSelChar->Equip[i][1]) + 4;
+		}
+		else if (m_pHuman[i]->m_stSancInfo.Legend1 == 4 && m_pHuman[i]->m_stSancInfo.Sanc1 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend1 = BASE_GetItemTenColor(&pSelChar->Equip[i][1]);
+		}
+
+		if (m_pHuman[i]->m_stSancInfo.Legend2 &&
+			m_pHuman[i]->m_stSancInfo.Legend2 <= 4 &&
+			m_pHuman[i]->m_stSancInfo.Sanc2 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend2 = BASE_GetItemTenColor(&pSelChar->Equip[i][2]) + 4;
+		}
+		else if (m_pHuman[i]->m_stSancInfo.Legend2 == 4 && m_pHuman[i]->m_stSancInfo.Sanc2 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend2 = BASE_GetItemTenColor(&pSelChar->Equip[i][2]);
+		}
+
+		if (m_pHuman[i]->m_stSancInfo.Legend3 &&
+			m_pHuman[i]->m_stSancInfo.Legend3 <= 4 &&
+			m_pHuman[i]->m_stSancInfo.Sanc3 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend3 = BASE_GetItemTenColor(&pSelChar->Equip[i][3]) + 4;
+		}
+		else if (m_pHuman[i]->m_stSancInfo.Legend3 == 4 && m_pHuman[i]->m_stSancInfo.Sanc3 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend3 = BASE_GetItemTenColor(&pSelChar->Equip[i][3]);
+		}
+
+		if (m_pHuman[i]->m_stSancInfo.Legend4 &&
+			m_pHuman[i]->m_stSancInfo.Legend4 <= 4 &&
+			m_pHuman[i]->m_stSancInfo.Sanc4 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend4 = BASE_GetItemTenColor(&pSelChar->Equip[i][4]) + 4;
+		}
+		else if (m_pHuman[i]->m_stSancInfo.Legend4 == 4 && m_pHuman[i]->m_stSancInfo.Sanc4 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend4 = BASE_GetItemTenColor(&pSelChar->Equip[i][4]);
+		}
+
+		if (m_pHuman[i]->m_stSancInfo.Legend5 &&
+			m_pHuman[i]->m_stSancInfo.Legend5 <= 4 &&
+			m_pHuman[i]->m_stSancInfo.Sanc5 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend5 = BASE_GetItemTenColor(&pSelChar->Equip[i][5]) + 4;
+		}
+		else if (m_pHuman[i]->m_stSancInfo.Legend5 == 4 && m_pHuman[i]->m_stSancInfo.Sanc5 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend5 = BASE_GetItemTenColor(&pSelChar->Equip[i][5]);
+		}
+
+		if (m_pHuman[i]->m_stSancInfo.Legend7 &&
+			m_pHuman[i]->m_stSancInfo.Legend7 <= 4 &&
+			m_pHuman[i]->m_stSancInfo.Sanc7 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend7 = BASE_GetItemTenColor(&pSelChar->Equip[i][6]) + 4;
+		}
+		else if (m_pHuman[i]->m_stSancInfo.Legend7 == 4 && m_pHuman[i]->m_stSancInfo.Sanc7 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend7 = BASE_GetItemTenColor(&pSelChar->Equip[i][6]);
+		}
+
+		if (m_pHuman[i]->m_stSancInfo.Legend6 <= 4 && m_pHuman[i]->m_stSancInfo.Sanc6 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend6 = BASE_GetItemTenColor(&pSelChar->Equip[i][7]) + 4;
+		}
+		else if (m_pHuman[i]->m_stSancInfo.Legend6 == 4 && m_pHuman[i]->m_stSancInfo.Sanc6 > 9)
+		{
+			m_pHuman[i]->m_stSancInfo.Legend6 = BASE_GetItemTenColor(&pSelChar->Equip[i][7]);
+		}
+
+		m_pHuman[i]->m_cMantua = pSelChar->Equip[i][15].sIndex > 0;
+		m_pHuman[i]->m_sMantuaIndex = pSelChar->Equip[i][15].sIndex;
+
+		float fCon = (float)m_pHuman[i]->m_stScore.Con;
+
+		m_pHuman[i]->SetCharHeight(fCon);
+		m_pHuman[i]->SetRace(pSelChar->Equip[i][0].sIndex);
+
+		m_pHuman[i]->m_stScore.Hp = 1;
+
+		int nWeaponTypeL = BASE_GetItemAbility(&pSelChar->Equip[i][6], 21);
+
+		if (nWeaponTypeL == 41)
+		{
+			m_pHuman[i]->m_stLookInfo.RightMesh = m_pHuman[i]->m_stLookInfo.LeftMesh;
+			m_pHuman[i]->m_stLookInfo.RightSkin = m_pHuman[i]->m_stLookInfo.LeftSkin;
+		}
+
+		m_pHuman[i]->m_sHeadIndex = pSelChar->Equip[i][0].sIndex;
+		m_pHuman[i]->m_sHelmIndex = pSelChar->Equip[i][1].sIndex;
+
+		m_pHuman[i]->InitObject();
+
+		m_pHuman[i]->CheckWeapon(pSelChar->Equip[i][6].sIndex, pSelChar->Equip[i][7].sIndex);
+		m_pHuman[i]->InitAngle(0, -45.0f, 0);
+
+		TMVector3 vecStartPos{ 2053.0f, 0.0f, 2048.2f };
+		TMVector3 vecEndPos{ 2048.2f, 0.0f, 2053.0f };
+		TMVector3 vecPos{};
+
+		D3DXVec3Lerp((D3DXVECTOR3*)&vecPos, (D3DXVECTOR3*)&vecStartPos, (D3DXVECTOR3*)&vecEndPos, (float)i * 0.333f);
+
+		m_pHuman[i]->InitPosition(vecPos.x, vecPos.y, vecPos.z);
+
+
+		unsigned short usGuild = g_pObjectManager->m_stSelCharData.Guild[i];
+
+		m_pHuman[i]->m_usGuild = usGuild;
+		usGuild &= 0x7FFFu;
+
+		szTownName[0] = g_pMessageStringTable[125];
+		szTownName[1] = g_pMessageStringTable[126];
+		szTownName[2] = g_pMessageStringTable[173];
+		szTownName[3] = g_pMessageStringTable[321];
+		szTownName[4] = g_pMessageStringTable[127];
+
+		int nTownIndex = BASE_GetVillage(
+			g_pObjectManager->m_stSelCharData.HomeTownX[i],
+			g_pObjectManager->m_stSelCharData.HomeTownY[i]);
+
+		auto pTextTownName = static_cast<SText*>(m_pControlContainer->FindControl(1296u));
+
+		if (nTownIndex < 5 && nTownIndex >= 0)
+		{
+			pTextTownName->SetText(szTownName[nTownIndex], 0);
+		}
+		else
+		{
+			char szStrPos[128]{};
+
+			sprintf_s(szStrPos, "[%d, %d]",
+				g_pObjectManager->m_stSelCharData.HomeTownX[i],
+				g_pObjectManager->m_stSelCharData.HomeTownY[i]);
+
+			pTextTownName->SetText(szStrPos, 0);
+		}
+		m_pHumanContainer->AddChild(static_cast<TreeNode*>(m_pHuman[i]));
+	}
+
+	if (type == RELOAD_CHARLIST_TYPE::CREATE_CHARACTER)
+	{
+		auto pSoundManager = g_pSoundManager;
+		if (pSoundManager)
+		{
+			auto pSoundData = pSoundManager->GetSoundData(57);
+			if (pSoundData)
+			{
+				pSoundData->Play();
+			}
+		}
+
+		VisibleSelectCreate(1);
+	}
+
+	int bHasEmpty = 0;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		if (!pSelChar->MobName[i][0])
+		{
+			bHasEmpty = 1;
+			break;
+		}
+	}
+
+	auto pButton = static_cast<SButton*>(m_pControlContainer->FindControl(4613u));
+
+	if (bHasEmpty)
+	{
+		m_pNewCharPanel->SetVisible(1);
+
+		pButton->SetEnable(1);
+	}
+	else
+	{
+		m_pNewCharPanel->SetVisible(0);
+
+		pButton->SetEnable(0);
 	}
 }

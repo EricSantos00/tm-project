@@ -4507,8 +4507,11 @@ void TMGround::SetAttatchEnable(int nX, int nY)
 int TMGround::IsInWater(TMVector2 vecPosition, float fHeight, float* pfWaterHeight)
 {
     int i = 0;
-    for (; i < 10; ++i)
+    for (i = 0; ; ++i)
     {
+        if (i >= 10)
+            return 0;
+
         if (m_pSeaList[i])
         {
             POINT ptPos{};
