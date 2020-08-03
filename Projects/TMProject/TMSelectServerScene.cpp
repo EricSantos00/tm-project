@@ -51,7 +51,8 @@ int IsCastle(int nServerIndex)
 	return !(iweek % 7) && (int)((iweek / 7) & 2) != nServerIndex % 2;
 }
 
-TMSelectServerScene::TMSelectServerScene()
+TMSelectServerScene::TMSelectServerScene() 
+	: TMScene()
 {
 	m_eSceneType = ESCENE_TYPE::ESCENE_SELECT_SERVER;
 	m_nTextIndex = -1;
@@ -1345,7 +1346,7 @@ void TMSelectServerScene::InitializeUI()
 {
 	SListBoxItem* pGroupItem[11];
 	m_pNServerSelect = (SPanel*)m_pControlContainer->FindControl(P_SERVER_SEL);
-	m_pNServerSelect->SetVisible(0);
+	m_pNServerSelect->SetVisible(1);
 
 	m_pNServerGroupList = (SListBox*)m_pControlContainer->FindControl(L_SELECT_SERVERG);
 	m_pNServerList = (SListBox*)m_pControlContainer->FindControl(L_SELECT_SERVER);

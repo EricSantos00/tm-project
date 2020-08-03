@@ -14,6 +14,7 @@
 #include "TMLog.h"
 
 TMSelectCharScene::TMSelectCharScene() :
+	TMScene(),
 	m_vecSelPos{},
 	m_vecCrePos{}
 {
@@ -1123,7 +1124,6 @@ int TMSelectCharScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, i
 
 		return 1;
 	}
-
 	if (dwFlags != 514 ||
 		nX <= 0 ||
 		nY <= 0 ||
