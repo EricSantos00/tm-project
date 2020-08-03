@@ -846,6 +846,23 @@ struct MSG_MessagePanel
 	char String[128];
 };
 
+constexpr auto MSG_CharPassword_Opcode = 0xFDE;
+struct MSG_CHARPASSWORD
+{
+	MSG_STANDARD Header;
+	char ItemPassWord[16];
+	char State;
+};
+
+constexpr auto MSG_CharacterLogin_Opcode = 0x213;
+struct MSG_CharacterLogin
+{
+	MSG_STANDARD Header;
+	int Slot;
+	int Force;
+	char SecretCode[16];
+};
+
 constexpr auto MSG_Attack_Multi = 0x367;
 constexpr auto MSG_Attack_One = 0x39D;
 constexpr auto MSG_Attack_Two = 0x39E;

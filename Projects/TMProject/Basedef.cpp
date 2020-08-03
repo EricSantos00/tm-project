@@ -662,7 +662,7 @@ int BASE_DefineSkinMeshType(int nClass)
         return 57;
     }
 
-    LOG_WRITELOG("Invalide Item Class\n");
+    LOG_WRITELOG("Invalide Item Class %d\n", nClass);
     return 0;
 }
 

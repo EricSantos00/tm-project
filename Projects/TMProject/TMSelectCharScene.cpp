@@ -627,7 +627,151 @@ int TMSelectCharScene::InitializeScene()
 
 int TMSelectCharScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEvent)
 {
-	return 0;
+	STRUCT_SELCHAR* pSelChar = &g_pObjectManager->m_stSelCharData;
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (idwControlID == 5673)
+	{
+		if (m_bSelect)
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[11], 65796, 0);
+			m_pMessageBox->SetVisible(1);
+		}
+		else
+			VisibleSelectCreate(1);
+
+		return 1;
+	}
+	if (idwControlID == 4617 && !idwEvent && m_pMessageBox->m_dwMessage == 65796)
+		g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTSERVER_STATE);
+	if (idwControlID >= 66437 && idwControlID <= 66446)
+	{
+		AddvirtualKeyNum(idwControlID - 66437);
+		return 1;
+	}
+	if (idwControlID == 66433)
+	{
+		if (!g_AccountLock)
+		{
+			if (strlen(keypass) < 4)
+				return 1;
+
+			MSG_CHARPASSWORD msLock{};			
+			strncpy(msLock.ItemPassWord, keypass, strlen(keypass));
+			msLock.ItemPassWord[14] = 0;
+			msLock.ItemPassWord[15] = 0;
+			msLock.Header.ID = 0;
+			msLock.Header.Type = MSG_CharPassword_Opcode;
+
+			g_pSocketManager->SendOneMessage((char*)&msLock, sizeof(msLock));
+			m_pAccountLockDlg->SetVisible(0);
+			m_pAccountLockTime = g_pTimerManager->GetServerTime();
+			g_AccountLock = 2;
+		}
+
+		return 1;
+	}
+	if (idwControlID == 66434)
+		m_pAccountLockDlg->SetVisible(0);
+	if (idwControlID == 66435)
+	{
+		if (strlen(keypass) < 4)
+			return 1;
+
+		if (!g_AccountLock)
+		{
+			MSG_CHARPASSWORD msLock{};
+			strncpy(msLock.ItemPassWord, keypass, strlen(keypass));
+			msLock.ItemPassWord[14] = 0;
+			msLock.ItemPassWord[15] = 0;
+			msLock.Header.ID = 0;
+			msLock.Header.Type = MSG_CharPassword_Opcode;
+
+			g_pSocketManager->SendOneMessage((char*)&msLock, sizeof(msLock));
+			m_pAccountLockDlg->SetVisible(0);
+			m_pAccountLockTime = g_pTimerManager->GetServerTime();
+			g_AccountLock = 3;
+		}
+		else if (g_AccountLock == 4)
+		{
+			memset(keypasschage, 0, sizeof(keypasschage));
+			strncpy(keypasschage, keypass, strlen(keypass));
+			m_pAccountLockDlgTitle->SetText(g_UIString[239], 0);
+			memset(keypass, 0, sizeof(keypass));
+			g_AccountLock = 5;
+		}
+		else if (g_AccountLock == 5)
+		{
+			if (!strcmp(keypasschage, keypass))
+			{
+				MSG_CHARPASSWORD msLock{};
+				strncpy(msLock.ItemPassWord, keypass, strlen(keypass));
+				msLock.ItemPassWord[14] = 0;
+				msLock.ItemPassWord[15] = 0;
+				msLock.Header.ID = 0;
+				msLock.State = 1;
+				msLock.Header.Type = MSG_CharPassword_Opcode;
+
+				g_pSocketManager->SendOneMessage((char*)&msLock, sizeof(msLock));
+				m_pAccountLockDlg->SetVisible(0);
+				m_pAccountLockTime = g_pTimerManager->GetServerTime();
+			}
+			else
+			{
+				memset(keypass, 0, sizeof(keypass));
+				memset(keypasschage, 0, sizeof(keypasschage));
+			}
+		}
+
+		return 1;
+	}
+
+	if (!g_AccountLock)
+	{
+		m_pAccountLockDlgTitle->SetVisible(1);
+		SetvirtualKey();
+		m_pAccountLockDlgTitle->SetText(g_UIString[236], 0);
+		return 1;
+	}
+
+	if (idwControlID == 4628)
+	{
+		if (m_pControlContainer->m_pFocusControl && m_pControlContainer->m_pFocusControl->m_eCtrlType == CONTROL_TYPE::CTRL_TYPE_EDITABLETEXT
+			&& m_pControlContainer->m_pFocusControl->m_bVisible)
+		{
+			if (g_pEventTranslator->IsNative())
+				g_pEventTranslator->SetIMEAlphaNumeric();
+			else
+				g_pEventTranslator->SetIMENative();
+		}
+	}
+	else if (idwControlID == 4612 && dwServerTime - m_dwLastClickLoginBtnTime > 2000)
+	{
+		int nSlot = g_pObjectManager->m_cCharacterSlot;
+		if (nSlot < 0 || nSlot >= 4)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[14], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+		else if (m_pHuman[nSlot] && pSelChar->MobName[nSlot][0])
+		{
+			MSG_CharacterLogin stCharacterLogin{};
+			stCharacterLogin.Header.ID = 0;
+			stCharacterLogin.Header.Type = MSG_CharacterLogin_Opcode;
+			stCharacterLogin.Slot = nSlot;
+
+			g_pSocketManager->SendOneMessage((char*)&stCharacterLogin, sizeof(stCharacterLogin));
+			m_dwLastClickLoginBtnTime = dwServerTime;
+
+			m_pBtnLogin->SetEnable(0);
+			m_pBtnCancel->SetEnable(0);
+			m_pBtnDelete->SetEnable(0);
+		}
+	}
+	else if (idwControlID == 1545)
+	{
+
+	}
 }
 
 int TMSelectCharScene::OnCharEvent(char iCharCode, int lParam)
@@ -692,15 +836,15 @@ int TMSelectCharScene::FrameMove(unsigned int dwServerTime)
 {
 	TMScene::FrameMove(dwServerTime);
 
-	auto dwServerTimea = g_pTimerManager->GetServerTime();
-	if (dwServerTimea - m_dwLastClickLoginBtnTime > 3000 && m_pBtnLogin && !m_pBtnLogin->m_bEnable)
+	dwServerTime = g_pTimerManager->GetServerTime();
+	if (dwServerTime - m_dwLastClickLoginBtnTime > 3000 && m_pBtnLogin && !m_pBtnLogin->m_bEnable)
 	{
 		m_pBtnLogin->SetEnable(1);
 		m_pBtnCancel->SetEnable(1);
 		m_pBtnDelete->SetEnable(1);
 	}
 
-	if (dwServerTimea - m_dwLastClickCreateBtnTime > 2000 && m_pBtnCreate && !m_pBtnCreate->m_bEnable)
+	if (dwServerTime - m_dwLastClickCreateBtnTime > 2000 && m_pBtnCreate && !m_pBtnCreate->m_bEnable)
 		m_pBtnCreate->SetEnable(1);
 
 	if (m_bMovingNow == 1)
@@ -711,7 +855,7 @@ int TMSelectCharScene::FrameMove(unsigned int dwServerTime)
 		m_pBtnDelete->SetEnable(0);
 	}
 
-	if (dwServerTimea - LastSendTime > 300000)
+	if (dwServerTime - LastSendTime > 300000)
 	{
 		MSG_STANDARD stStandard{};
 		stStandard.ID = 0;
