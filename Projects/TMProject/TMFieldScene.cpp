@@ -16,6 +16,7 @@
 #include "TMSky.h"
 #include "TMSnow.h"
 #include "TMRain.h"
+#include "TMSkinMesh.h"
 #include "TMEffectMesh.h"
 #include "TMEffectBillBoard2.h"
 #include "TMEffectBillBoard.h"
@@ -2078,6 +2079,28 @@ void TMFieldScene::PGTVisible(unsigned int dwServerTime)
 
 void TMFieldScene::MouseMove(int nX, int nY)
 {
+	if (m_pMouseOverHuman && 
+		m_pMouseOverHuman->m_pSkinMesh &&
+		nX > 0 &&
+		nY > 0 &&
+		nX < static_cast<int>(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift) &&
+		nY < static_cast<int>(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift))
+	{
+		if (m_pMouseOverHuman->m_pSkinMesh->m_materials.Emissive.r >= 0.99900001f &&
+			m_pMouseOverHuman->m_pSkinMesh->m_materials.Emissive.g <= 0.001f &&
+			m_pMouseOverHuman->m_pSkinMesh->m_materials.Emissive.b <= 0.001f)
+		{
+			g_pCursor->m_GCPanel.nTextureIndex = 1;
+		}
+		else if (g_pCursor->m_GCPanel.nTextureIndex == 1)
+		{
+			g_pCursor->m_GCPanel.nTextureIndex = 0;
+		}
+	}
+	else if (g_pCursor->m_GCPanel.nTextureIndex == 1)
+	{
+		g_pCursor->m_GCPanel.nTextureIndex = 0;
+	}
 }
 
 int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServerTime, int bMoving, TMHuman* pTarget)
