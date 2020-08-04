@@ -27,6 +27,7 @@
 #include "TMSky.h"
 #include "TMObjectContainer.h"
 #include "TMLight.h"
+#include "TMFieldScene.h"
 
 TMVector2 TMHuman::m_vecPickSize[100]{
   { 0.40000001f, 2.0f },
@@ -5947,6 +5948,435 @@ int TMHuman::GetChatLen(const char* szString, int* pHeight)
 
 void TMHuman::SetPacketMOBItem(STRUCT_MOB* pMobData)
 {
+    if (!m_dwDelayDel)
+    {
+        m_sHeadIndex = pMobData->Equip[0].sIndex;
+        m_sHelmIndex = pMobData->Equip[1].sIndex;
+        m_citizen = (unsigned char)pMobData->Equip[0].stEffect[2].cValue;
+        m_cLegend = g_pItemList[pMobData->Equip[0].sIndex].nGrade;
+        m_stLookInfo.FaceMesh = g_pItemList[pMobData->Equip[0].sIndex].nIndexMesh;
+        m_stLookInfo.FaceSkin = g_pItemList[pMobData->Equip[0].sIndex].nIndexTexture;
+
+        if (pMobData->Equip[1].sIndex >= 3500 && (pMobData->Equip[1].sIndex <= 3502 || pMobData->Equip[1].sIndex == 3507))
+        {
+            m_stLookInfo.HelmMesh = 0;
+            m_stLookInfo.HelmSkin = 0;
+        }
+        else
+        {
+            m_stLookInfo.HelmMesh = g_pItemList[pMobData->Equip[1].sIndex].nIndexMesh;
+            m_stLookInfo.HelmSkin = g_pItemList[pMobData->Equip[1].sIndex].nIndexTexture;
+        }
+
+        m_stLookInfo.CoatMesh = g_pItemList[pMobData->Equip[2].sIndex].nIndexMesh;
+        m_stLookInfo.CoatSkin = g_pItemList[pMobData->Equip[2].sIndex].nIndexTexture;
+        m_stLookInfo.PantsMesh = g_pItemList[pMobData->Equip[3].sIndex].nIndexMesh;
+        m_stLookInfo.PantsSkin = g_pItemList[pMobData->Equip[3].sIndex].nIndexTexture;
+        m_stLookInfo.GlovesMesh = g_pItemList[pMobData->Equip[4].sIndex].nIndexMesh;
+        m_stLookInfo.GlovesSkin = g_pItemList[pMobData->Equip[4].sIndex].nIndexTexture;
+        m_stLookInfo.BootsMesh = g_pItemList[pMobData->Equip[5].sIndex].nIndexMesh;
+        m_stLookInfo.BootsSkin = g_pItemList[pMobData->Equip[5].sIndex].nIndexTexture;
+        m_stLookInfo.LeftMesh = g_pItemList[pMobData->Equip[6].sIndex].nIndexMesh;
+        m_stLookInfo.LeftSkin = g_pItemList[pMobData->Equip[6].sIndex].nIndexTexture;
+        m_stLookInfo.RightMesh = g_pItemList[pMobData->Equip[7].sIndex].nIndexMesh;
+        m_stLookInfo.RightSkin = g_pItemList[pMobData->Equip[7].sIndex].nIndexTexture;
+
+        if (pMobData->Equip[15].sIndex > 0)
+        {
+            m_sMantuaIndex = pMobData->Equip[15].sIndex;
+            m_wMantuaSkin = g_pItemList[pMobData->Equip[15].sIndex].nIndexTexture;
+            SetMantua(m_wMantuaSkin);
+            m_ucMantuaLegend = g_pItemList[m_sMantuaIndex].nGrade;
+            m_ucMantuaSanc = m_nTotalKill / 1000;
+            if ((unsigned char)m_ucMantuaSanc > 9)
+                m_ucMantuaSanc = 9;
+        }
+        else
+            m_cMantua = 0;
+        
+        m_sFamiliar = pMobData->Equip[13].sIndex;
+        m_sCostume = pMobData->Equip[12].sIndex;
+        m_stSancInfo.Sanc0 = BASE_GetItemSanc(pMobData->Equip);
+        m_stSancInfo.Sanc1 = BASE_GetItemSanc(&pMobData->Equip[1]);
+        m_stSancInfo.Sanc2 = BASE_GetItemSanc(&pMobData->Equip[2]);
+        m_stSancInfo.Sanc3 = BASE_GetItemSanc(&pMobData->Equip[3]);
+        m_stSancInfo.Sanc4 = BASE_GetItemSanc(&pMobData->Equip[4]);
+        m_stSancInfo.Sanc5 = BASE_GetItemSanc(&pMobData->Equip[5]);
+        m_stSancInfo.Sanc7 = BASE_GetItemSanc(&pMobData->Equip[6]);
+        m_stSancInfo.Sanc6 = BASE_GetItemSanc(&pMobData->Equip[7]);
+        m_stColorInfo.Sanc0 = BASE_GetItemColorEffect(pMobData->Equip);
+        m_stColorInfo.Sanc1 = BASE_GetItemColorEffect(&pMobData->Equip[1]);
+        m_stColorInfo.Sanc2 = BASE_GetItemColorEffect(&pMobData->Equip[2]);
+        m_stColorInfo.Sanc3 = BASE_GetItemColorEffect(&pMobData->Equip[3]);
+        m_stColorInfo.Sanc4 = BASE_GetItemColorEffect(&pMobData->Equip[4]);
+        m_stColorInfo.Sanc5 = BASE_GetItemColorEffect(&pMobData->Equip[5]);
+        m_stColorInfo.Sanc7 = BASE_GetItemColorEffect(&pMobData->Equip[6]);
+        m_stColorInfo.Sanc6 = BASE_GetItemColorEffect(&pMobData->Equip[7]);
+        m_sFamCount = 0;
+
+        if (m_sFamiliar == 769)
+            m_sFamCount = BASE_GetItemSanc(&pMobData->Equip[13]) + 1;
+
+        SetGuildBattleLifeCount();
+        m_cDamageRate = 1;
+        if (pMobData->Equip[13].sIndex == 786)
+        {
+            int nDmgSanc = BASE_GetItemSanc(&pMobData->Equip[13]);
+            if (nDmgSanc >= 2 || pMobData->Equip[13].sIndex == 786)
+                m_cDamageRate = nDmgSanc;
+            else
+                m_cDamageRate = 2;
+        }
+
+        if (pMobData->Equip[11].sIndex == 786)
+            m_cDamageRate += 16 * BASE_GetItemSanc(&pMobData->Equip[11]);
+
+        bool bSvadilfari = false;
+        int tempIndex = pMobData->Equip[14].sIndex;
+
+        if (pMobData->Equip[14].sIndex == 2383 || pMobData->Equip[14].sIndex == 2382)
+            pMobData->Equip[14].sIndex = 2387;
+        else if (pMobData->Equip[14].sIndex == 2387)
+            bSvadilfari = true;
+
+        if (tempIndex >= 2360 && tempIndex < 2390
+            || tempIndex >= 3980 && tempIndex < 3999
+            || tempIndex >= 2960 && tempIndex < 3000)
+        {
+            int nMountHP = BASE_GetItemAbility(&pMobData->Equip[14], 80);
+            if (nMountHP > 0
+                || pMobData->Equip[14].sIndex >= 2960 && pMobData->Equip[14].sIndex < 2999
+                || pMobData->Equip[14].sIndex >= 3980 && pMobData->Equip[14].sIndex < 3999)
+            {
+                m_cLastMount = m_cMount;
+                m_cMount = 1;
+                int sIndex = pMobData->Equip[14].sIndex - 2045;
+                int _nEquipIdx = pMobData->Equip[14].sIndex;
+
+                if (_nEquipIdx == 2389)
+                    sIndex = 346;
+                else if (_nEquipIdx == 2378)
+                    sIndex = 333;
+                else if (_nEquipIdx >= 2387 && _nEquipIdx <= 2388)
+                    sIndex = 336;
+                else if (_nEquipIdx >= 3980 && _nEquipIdx <= 3982)
+                    sIndex = _nEquipIdx - 3638;
+                else if (_nEquipIdx >= 3983 && _nEquipIdx <= 3985)
+                    sIndex = _nEquipIdx - 3641;
+                else if (_nEquipIdx >= 3986 && _nEquipIdx <= 3988)
+                    sIndex = _nEquipIdx - 3644;
+                else if(_nEquipIdx == 3989)
+                    sIndex = 345;
+                else if (_nEquipIdx == 3990)
+                    sIndex = 334;
+                else if (_nEquipIdx == 3991)
+                    sIndex = 335;
+                else if (_nEquipIdx == 3992)
+                    sIndex = 318;
+                else  if (_nEquipIdx == 3993 || _nEquipIdx == 3994)
+                    sIndex = 200;
+                else if (_nEquipIdx >= 2960 && _nEquipIdx <= 2961)
+                    sIndex = _nEquipIdx - 2616;
+                 
+                STRUCT_ITEM item{};
+
+                item.sIndex = sIndex;
+                int nMountSanc = BASE_GetItemAbility(&pMobData->Equip[14], 81) / 10;
+                int nClass = BASE_GetItemAbility(&item, 18);
+                m_nMountSkinMeshType = BASE_DefineSkinMeshType(nClass);
+                m_stMountLook.Mesh0 = g_pItemList[sIndex].nIndexMesh;
+                m_stMountLook.Mesh1 = m_stMountLook.Mesh0;
+                m_stMountLook.Skin0 = g_pItemList[sIndex].nIndexTexture;
+                m_stMountLook.Skin1 = m_stMountLook.Skin0;
+                m_sMountIndex = sIndex - 315;
+                if (_nEquipIdx == 3993)
+                {
+                    m_stMountLook.Mesh2 = 0;
+                    m_stMountSanc.Sanc2 = 0;
+                    m_stMountSanc.Sanc0 = 12;
+                    m_stMountSanc.Sanc1 = 12;
+                }
+                else if (_nEquipIdx == 3994)
+                {
+                    m_stMountLook.Mesh2 = 0;
+                    m_stMountSanc.Sanc2 = 0;
+                    m_stMountSanc.Sanc0 = 12;
+                    m_stMountSanc.Sanc1 = 12;
+                    m_stMountLook.Skin0 = 8;
+                    m_stMountLook.Skin1 = 8;
+                }
+                else if (sIndex >= 321 && sIndex <= 325)
+                {
+                    m_stMountLook.Mesh2 = sIndex - 320;
+                    m_stMountSanc.Sanc2 = nMountSanc;
+                    m_stMountSanc.Sanc0 = 0;
+                    m_stMountSanc.Sanc1 = 0;
+                }
+                else if (sIndex >= 326 && sIndex <= 330)
+                {
+                    m_stMountLook.Mesh2 = sIndex - 325;
+                    m_stMountSanc.Sanc2 = nMountSanc;
+                    m_stMountSanc.Sanc0 = 0;
+                    m_stMountSanc.Sanc1 = 0;
+                }
+                else if (sIndex == 334 || sIndex == 335)
+                {
+                    m_stMountLook.Mesh2 = m_stMountLook.Mesh0;
+                    m_stMountSanc.Sanc2 = nMountSanc;
+                    m_stMountSanc.Sanc0 = nMountSanc;
+                    m_stMountSanc.Sanc1 = nMountSanc;
+                }
+                else if (sIndex >= 336 && sIndex <= 338)
+                {
+                    if (bSvadilfari)
+                    {
+                        m_stMountLook.Mesh0 = 10;
+                        m_stMountLook.Mesh1 = 10;
+                        m_stMountLook.Mesh2 = 11;
+                        m_stMountSanc.Sanc2 = nMountSanc;
+                        m_stMountSanc.Sanc0 = 0;
+                        m_stMountSanc.Sanc1 = 0;
+                    }
+                    else
+                    {
+                        m_stMountLook.Mesh2 = m_stMountLook.Mesh0;
+                        m_stMountSanc.Sanc2 = nMountSanc;
+                        m_stMountSanc.Sanc0 = nMountSanc;
+                        m_stMountSanc.Sanc1 = nMountSanc;
+                    }
+                }
+                else if (sIndex >= 339 && sIndex <= 341)
+                {
+                    m_stMountLook.Mesh2 = sIndex + m_stMountLook.Mesh0 - 339;
+                    m_stMountSanc.Sanc2 = nMountSanc;
+                    m_stMountSanc.Sanc0 = nMountSanc;
+                    m_stMountSanc.Sanc1 = nMountSanc;
+                }
+                else if (sIndex >= 342 && sIndex <= 345)
+                {
+                    switch (sIndex)
+                    {
+                    case 344:
+                        m_stMountLook.Mesh2 = 10;
+                        break;
+                    case 345:
+                        m_stMountLook.Mesh2 = 11;
+                        break;
+                    case 343:
+                        m_stMountLook.Mesh2 = 11;
+                        break;
+                    default:
+                        m_stMountLook.Mesh2 = m_stMountLook.Mesh0;
+                        break;
+                    }
+                    m_stMountSanc.Sanc0 = 0;
+                    m_stMountSanc.Sanc1 = 0;
+                    m_stMountSanc.Sanc2 = 0;
+                    if (sIndex == 345)
+                        m_stMountSanc.Sanc2 = 7;
+                }
+                else
+                {
+                    m_stMountLook.Mesh2 = 0;
+                    m_stMountSanc.Sanc2 = 0;
+                    m_stMountSanc.Sanc0 = nMountSanc;
+                    m_stMountSanc.Sanc1 = nMountSanc;
+                }
+
+                if (_nEquipIdx >= 2387 && _nEquipIdx <= 2388 && !bSvadilfari)
+                    m_stMountLook.Mesh2 = _nEquipIdx - 2379;
+
+                m_fMountScale = BASE_GetMountScale(m_nMountSkinMeshType, m_stMountLook.Mesh0);
+                if (sIndex == 333)
+                    m_fMountScale = 1.1f;
+
+                if (!m_cLastMount && m_nMountSkinMeshType == 31)
+                {
+                    auto pSoundManager = g_pSoundManager;
+
+                    if (pSoundManager)
+                    {
+                        auto pSoundData = pSoundManager->GetSoundData(276);
+                        if (pSoundData && !pSoundData->IsSoundPlaying())
+                            pSoundData->Play();
+                    }                    
+                    m_cLastMount = m_cMount;
+                }
+
+                int nMountMaxHPIndex = sIndex - 315;
+                if (sIndex - 315 < 0)
+                    nMountMaxHPIndex = 0;
+                switch (_nEquipIdx)
+                {
+                case 2378:
+                    nMountMaxHPIndex = 18;
+                    break;
+                case 2379:
+                    nMountMaxHPIndex = 19;
+                    break;
+                case 2380:
+                    nMountMaxHPIndex = 21;
+                    break;
+                case 2381:
+                    nMountMaxHPIndex = 20;
+                    break;
+                case 2382:
+                case 2383:
+                case 2384:
+                case 2385:
+                case 2386:
+                    break;
+                case 2387:
+                    nMountMaxHPIndex = 20;
+                    break;
+                case 2388:
+                    nMountMaxHPIndex = 21;
+                    break;
+                case 2389:
+                    nMountMaxHPIndex = 22;
+                    break;
+                }
+                m_pMountHPBar->SetMaxProgress(g_nMountHPTable[nMountMaxHPIndex]);
+                m_pMountHPBar->SetCurrentProgress(nMountHP);
+
+                TMFieldScene* pFSCene = (TMFieldScene*)g_pCurrentScene;
+                if (pFSCene)
+                {
+                    pFSCene->m_pMHPBar->SetMaxProgress(g_nMountHPTable[nMountMaxHPIndex]);
+                    pFSCene->m_pMHPBar->SetCurrentProgress(nMountHP);
+
+                    char szMHP[32]{};
+                    sprintf(szMHP, "%d", g_nMountHPTable[nMountMaxHPIndex]);
+                    pFSCene->m_pMaxMHPText->SetText(szMHP, 0);
+
+                    sprintf(szMHP, "%d", nMountHP);
+                    pFSCene->m_pCurrentMHPText->SetText(szMHP, 0);
+                }
+
+                if (_nEquipIdx && (tempIndex < 3980 || tempIndex >= 3999))
+                    SetMountCostume((unsigned char)pMobData->Equip[14].stEffect[2].cValue);
+            }
+            else
+                m_cMount = 0;
+        }
+        else
+        {
+            m_cMount = 0;
+            TMFieldScene* pFScene = (TMFieldScene*)g_pCurrentScene;
+            if (pFScene && !pFScene->m_bAirMove)
+            {
+                char buffer[4];
+                sprintf(buffer, "%d", 0);
+
+                pFScene->m_pMaxMHPText->SetText(buffer, 0);
+                sprintf(buffer, "%d", 0);
+                pFScene->m_pCurrentMHPText->SetText(buffer, 0);
+            }
+
+            pFScene->m_pMHPBar->SetCurrentProgress(0);
+        }
+
+        pMobData->Equip[14].sIndex = tempIndex;
+        m_stSancInfo.Legend0 = g_pItemList[pMobData->Equip[0].sIndex].nGrade;
+        m_stSancInfo.Legend1 = g_pItemList[pMobData->Equip[1].sIndex].nGrade;
+        m_stSancInfo.Legend2 = g_pItemList[pMobData->Equip[2].sIndex].nGrade;
+        m_stSancInfo.Legend3 = g_pItemList[pMobData->Equip[3].sIndex].nGrade;
+        m_stSancInfo.Legend4 = g_pItemList[pMobData->Equip[4].sIndex].nGrade;
+        m_stSancInfo.Legend5 = g_pItemList[pMobData->Equip[5].sIndex].nGrade;
+        m_stSancInfo.Legend7 = g_pItemList[pMobData->Equip[6].sIndex].nGrade;
+        m_stSancInfo.Legend6 = g_pItemList[pMobData->Equip[7].sIndex].nGrade;
+
+        if ((unsigned char)m_stSancInfo.Legend0 <= 4
+            && (unsigned char)m_stSancInfo.Sanc0 > 9)
+        {
+            m_stSancInfo.Legend0 = BASE_GetItemTenColor(pMobData->Equip) + 4;
+        }
+        else if (m_stSancInfo.Legend0 == 4 && (unsigned char)m_stSancInfo.Sanc0 > 9)
+        {
+            m_stSancInfo.Legend0 = BASE_GetItemTenColor(pMobData->Equip);
+        }
+        if ((unsigned char)m_stSancInfo.Legend1 <= 4
+            && (unsigned char)m_stSancInfo.Sanc1 > 9)
+        {
+            m_stSancInfo.Legend1 = BASE_GetItemTenColor(&pMobData->Equip[1]) + 4;
+        }
+        else if (m_stSancInfo.Legend1 == 4 && (unsigned char)m_stSancInfo.Sanc1 > 9)
+        {
+            m_stSancInfo.Legend1 = BASE_GetItemTenColor(&pMobData->Equip[1]);
+        }
+
+        if ((unsigned char)m_stSancInfo.Legend2 <= 4
+            && (unsigned char)m_stSancInfo.Sanc2 > 9)
+        {
+            m_stSancInfo.Legend2 = BASE_GetItemTenColor(&pMobData->Equip[2]) + 4;
+        }
+        else if (m_stSancInfo.Legend2 == 4 && (unsigned char)m_stSancInfo.Sanc2 > 9)
+        {
+            m_stSancInfo.Legend2 = BASE_GetItemTenColor(&pMobData->Equip[2]);
+        }
+        if ((unsigned char)m_stSancInfo.Legend3 <= 4
+            && (unsigned char)m_stSancInfo.Sanc3 > 9)
+        {
+            m_stSancInfo.Legend3 = BASE_GetItemTenColor(&pMobData->Equip[3]) + 4;
+        }
+        else if (m_stSancInfo.Legend3 == 4 && (unsigned char)m_stSancInfo.Sanc3 > 9)
+        {
+            m_stSancInfo.Legend3 = BASE_GetItemTenColor(&pMobData->Equip[3]);
+        }
+        if ((unsigned char)m_stSancInfo.Legend4 <= 4
+            && (unsigned char)m_stSancInfo.Sanc4 > 9)
+        {
+            m_stSancInfo.Legend4 = BASE_GetItemTenColor(&pMobData->Equip[4]) + 4;
+        }
+        else if (m_stSancInfo.Legend4 == 4 && (unsigned char)m_stSancInfo.Sanc4 > 9)
+        {
+            m_stSancInfo.Legend4 = BASE_GetItemTenColor(&pMobData->Equip[4]);
+        }
+        if ((unsigned char)m_stSancInfo.Legend5 <= 4
+            && (unsigned char)m_stSancInfo.Sanc5 > 9)
+        {
+            m_stSancInfo.Legend5 = BASE_GetItemTenColor(&pMobData->Equip[5]) + 4;
+        }
+        else if (m_stSancInfo.Legend5 == 4 && (unsigned char)m_stSancInfo.Sanc5 > 9)
+        {
+            m_stSancInfo.Legend5 = BASE_GetItemTenColor(&pMobData->Equip[5]);
+        }
+        if ((unsigned char)m_stSancInfo.Legend7 <= 4
+            && (unsigned char)m_stSancInfo.Sanc7 > 9)
+        {
+            m_stSancInfo.Legend7 = BASE_GetItemTenColor(&pMobData->Equip[6]) + 4;
+        }
+        else if (m_stSancInfo.Legend7 == 4 && (unsigned char)m_stSancInfo.Sanc7 > 9)
+        {
+            m_stSancInfo.Legend7 = BASE_GetItemTenColor(&pMobData->Equip[6]);
+        }
+        if ((unsigned char)m_stSancInfo.Legend6 <= 4
+            && (unsigned char)m_stSancInfo.Sanc6 > 9)
+        {
+            m_stSancInfo.Legend6 = BASE_GetItemTenColor(&pMobData->Equip[7]) + 4;
+        }
+        else if (m_stSancInfo.Legend6 == 4 && (unsigned char)m_stSancInfo.Sanc6 > 9)
+        {
+            m_stSancInfo.Legend6 = BASE_GetItemTenColor(&pMobData->Equip[7]);
+        }
+
+        TMFieldScene* pFScene = nullptr;
+        if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+            pFScene = (TMFieldScene*)g_pCurrentScene;
+
+        if (g_pCurrentScene->m_pMyHuman == this && pFScene)
+        {
+            int nValue = BASE_GetStaticItemAbility(&pMobData->Equip[14], 80);
+            if (pMobData->Equip[14].sIndex < 3980 || pMobData->Equip[14].sIndex >= 3999)
+                pFScene->m_bMountDead = nValue <= 0;
+            else
+                pFScene->m_bMountDead = 0;
+        }
+
+        m_stOldSancInfo = m_stSancInfo;
+        m_stOldColorInfo = m_stColorInfo;
+        m_stOldMountSanc = m_stMountSanc;
+    }
 }
 
 void TMHuman::SetPacketEquipItem(unsigned short* sEquip)

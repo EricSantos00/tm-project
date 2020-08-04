@@ -1025,6 +1025,38 @@ static int g_pMountBonus2[20][6] =
   { 0, 0, 0, 0, 0, 0 }
 };
 
+static int g_nMountHPTable[28] =
+{
+  7000,
+  8000,
+  8000,
+  7500,
+  9000,
+  9000,
+  10000,
+  10000,
+  11000,
+  11000,
+  12000,
+  10000,
+  10000,
+  11000,
+  11000,
+  12000,
+  12000,
+  15000,
+  12000,
+  23000,
+  15000,
+  25000,
+  10000,
+  15000,
+  20000,
+  20000,
+  20000,
+  0
+};
+
 extern HWND hWndMain;
 extern char EncodeByte[4];
 extern int g_nChannelWidth;
@@ -1068,6 +1100,7 @@ char* BASE_TransCurse(char* sz);
 char BASE_GetAttribute(int x, int y);
 char BASE_GetAttr(int nX, int nY);
 int BASE_ReadTOTOList(char* szFileName);
+int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type);
 
 /* Read Functions */
 int ReadItemicon();

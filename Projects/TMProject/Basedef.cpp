@@ -1209,3 +1209,8 @@ int BASE_ReadTOTOList(char* szFileName)
 {
     return 0;
 }
+
+int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type)
+{
+    return 0;
+}
