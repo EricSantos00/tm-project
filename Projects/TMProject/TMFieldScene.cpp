@@ -2063,7 +2063,8 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 
 int TMFieldScene::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	TMScene::FrameMove(dwServerTime);
+	return 1;
 }
 
 int TMFieldScene::OnAccel(int nMsg)
@@ -2358,6 +2359,226 @@ void TMFieldScene::SetVisibleKhepraPortal(bool bVisible)
 
 void TMFieldScene::InitBoard()
 {
+	if (m_pGMsgPanel)
+	{
+		SListBoxBoardItem* pBoardItem = new SListBoxBoardItem((char*)"0",
+			g_pMessageStringTable[176],
+			g_pMessageStringTable[177],
+			g_pMessageStringTable[178],
+			g_pMessageStringTable[179],
+			g_pMessageStringTable[180],
+			0x5588FFFFu,
+			1);
+
+		pBoardItem->SetControlID(824);
+		pBoardItem->SetPos(4.0f, 28.0f);
+		m_pGMsgListPanel->AddChild(pBoardItem);
+
+		m_pButtonBox = new SButtonBox(4.0f, 320.0f, 500.0f, 16.0f, 1, 10, 1, 1, 10, 1, 10);
+		m_pButtonBox->SetControlID(826);
+		m_pButtonBox->SetEventListener(m_pControlContainer ? m_pControlContainer : nullptr);
+
+		m_pGMsgListPanel->AddChild(m_pButtonBox);
+		m_pGMsgPanel->SetVisible(0);
+	}
+
+	m_pHelpPanel = (SPanel*)m_pControlContainer->FindControl(864);
+	if (m_pHelpPanel)
+	{
+		m_pHelpText = (SText*)m_pControlContainer->FindControl(865);
+		m_pHelpButton[0] = (SButton*)m_pControlContainer->FindControl(867);
+		m_pHelpList[0] = (SListBox*)m_pControlContainer->FindControl(868);
+		m_pHelpButton[1] = (SButton*)m_pControlContainer->FindControl(869);
+		m_pHelpList[1] = (SListBox*)m_pControlContainer->FindControl(870);
+		m_pHelpButton[2] = (SButton*)m_pControlContainer->FindControl(871);
+		m_pHelpList[2] = (SListBox*)m_pControlContainer->FindControl(872);
+		m_pHelpButton[3] = (SButton*)m_pControlContainer->FindControl(873);
+		m_pHelpList[3] = (SListBox*)m_pControlContainer->FindControl(874);
+		m_pHelpMemo = (SButton*)m_pControlContainer->FindControl(875);
+		m_pHelpSummon = (SButton*)m_pControlContainer->FindControl(878);
+
+		m_pHelpSummon->m_cAlwaysAlt = 1;
+		m_pHelpSummon->m_cBlink = 1;
+
+		m_pHelpSummon->m_pAltText->SetPos(-26.0f * RenderDevice::m_fWidthRatio,
+			-17.0f * RenderDevice::m_fHeightRatio);
+		m_pHelpMemo->m_pAltText->SetPos(-26.0f * RenderDevice::m_fWidthRatio,
+			-17.0f * RenderDevice::m_fHeightRatio);
+
+		m_pHelpSummon->m_cAlwaysAlt = 0;
+		m_pHelpMemo->m_nPosX = (float)(665.0f * RenderDevice::m_fWidthRatio)
+			+ m_pMainInfo1->m_nPosX;
+		m_pHelpMemo->m_nPosY = m_pMainInfo1->m_nPosY
+			- (float)(105.0f * RenderDevice::m_fHeightRatio);
+		m_pHelpMemo->m_cBlink = 1;
+		m_pHelpSummon->m_nPosX = (float)(616.0f * RenderDevice::m_fWidthRatio)
+			+ m_pMainInfo1->m_nPosX;
+		m_pHelpSummon->m_nPosY = m_pMainInfo1->m_nPosY
+			- (float)(90.0f * RenderDevice::m_fHeightRatio);
+
+		LoadMsgText(m_pHelpList[0], (char*)"UI\\interface.txt");
+		LoadMsgText(m_pHelpList[1], (char*)"UI\\command.txt");
+		LoadMsgText(m_pHelpList[2], (char*)"UI\\etc.txt");
+
+		if (m_pHelpList[1])
+			m_pHelpList[1]->SetVisible(0);
+		if (m_pHelpList[2])
+			m_pHelpList[2]->SetVisible(0);
+		if (m_pHelpList[3])
+			m_pHelpList[3]->SetVisible(0);
+		if (m_pHelpMemo)
+			m_pHelpMemo->SetVisible(0);
+		if (m_pHelpSummon)
+			m_pHelpSummon->SetVisible(0);
+
+		m_pHelpPanel->SetVisible(0);
+		m_pHelpPanel->SetPos(((float)g_pDevice->m_dwScreenWidth * 0.5f) - (m_pHelpPanel->m_nWidth * 0.5f),
+			((float)g_pDevice->m_dwScreenHeight * 0.5f) - (m_pHelpPanel->m_nHeight * 0.6f));
+
+		m_pHelpInterface = (SPanel*)m_pControlContainer->FindControl(6067);
+		for (int i = 0; i < 3; ++i)
+		{
+			m_pHelpInterfacePanel[i] = (SPanel*)m_pControlContainer->FindControl(i + 6064);
+			m_pHelpInterfaceList[i] = (SListBox*)m_pControlContainer->FindControl(i + 6074);
+			if (i > 0)
+				m_pHelpInterfacePanel[i]->SetVisible(0);
+		}
+		LoadMsgText(m_pHelpInterfaceList[0], (char*)"UI\\interface1.txt");
+		LoadMsgText(m_pHelpInterfaceList[1], (char*)"UI\\interface2.txt");
+		LoadMsgText(m_pHelpInterfaceList[2], (char*)"UI\\interface3.txt");
+		m_nCurrInterfacePanelIndex = 0;
+	}	
+
+	m_pQuestPanel = (SPanel*)m_pControlContainer->FindControl(1054256);
+	if (m_pQuestPanel)
+	{
+		m_pQuestButton[0] = (SButton*)m_pControlContainer->FindControl(1054259);
+		m_pQuestList[0] = (SListBox*)m_pControlContainer->FindControl(1054260);
+		m_pQuestContentList[0] = (SListBox*)m_pControlContainer->FindControl(1054261);
+		m_pQuestButton[1] = (SButton*)m_pControlContainer->FindControl(1054262);
+		m_pQuestList[1] = (SListBox*)m_pControlContainer->FindControl(1054263);
+		m_pQuestContentList[1] = (SListBox*)m_pControlContainer->FindControl(1054264);
+		m_pQuestButton[2] = (SButton*)m_pControlContainer->FindControl(1054265);
+		m_pQuestList[2] = (SListBox*)m_pControlContainer->FindControl(1054266);
+		m_pQuestContentList[2] = (SListBox*)m_pControlContainer->FindControl(1054267);
+		m_pQuestButton[3] = (SButton*)m_pControlContainer->FindControl(1054268);
+		m_pQuestList[3] = (SListBox*)m_pControlContainer->FindControl(1054269);
+		m_pQuestContentList[3] = (SListBox*)m_pControlContainer->FindControl(1054271);
+
+		if (m_pQuestList[0])
+			m_pQuestList[0]->SetVisible(0);
+		if (m_pQuestList[1])
+			m_pQuestList[1]->SetVisible(0);
+		if (m_pQuestList[2])
+			m_pQuestList[2]->SetVisible(0);
+		if (m_pQuestList[3])
+			m_pQuestList[3]->SetVisible(0);
+
+		if (m_pQuestContentList[0])
+			m_pQuestContentList[0]->SetVisible(0);
+		if (m_pQuestContentList[1])
+			m_pQuestContentList[1]->SetVisible(0);
+		if (m_pQuestContentList[2])
+			m_pQuestContentList[2]->SetVisible(0);
+		if (m_pQuestContentList[3])
+			m_pQuestContentList[3]->SetVisible(0);
+
+		m_pQuestPanel->SetVisible(0);
+
+		m_pQuestList[0]->SetEventListener(m_pControlContainer ? m_pControlContainer : nullptr);
+		m_pQuestList[1]->SetEventListener(m_pControlContainer ? m_pControlContainer : nullptr);
+		m_pQuestList[2]->SetEventListener(m_pControlContainer ? m_pControlContainer : nullptr);
+		m_pQuestList[3]->SetEventListener(m_pControlContainer ? m_pControlContainer : nullptr);
+
+		m_pQuestPanel->SetPos(((float)g_pDevice->m_dwScreenWidth * 0.5f) - (m_pQuestPanel->m_nWidth * 0.5f),
+			((float)g_pDevice->m_dwScreenHeight * 0.5f) - (m_pQuestPanel->m_nHeight * 0.6f));
+
+		memset(m_pLevelQuest, 0, sizeof(m_pLevelQuest));
+
+		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects.txt", 97);
+		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects2.txt", 98);
+		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects3.txt", 99);
+		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects4.txt", 101);
+		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestMessage.txt", 100);
+
+		m_pQuestMemo = (SButton*)m_pControlContainer->FindControl(1054273);
+		m_pQuestMemo->m_cAlwaysAlt = 1;
+		m_pQuestMemo->m_cBlink = 1;
+
+		m_pQuestMemo->m_pAltText->SetPos(-20.0f, -10.0f);
+
+		m_pQuestMemo->m_nPosX = (float)(700.0f * RenderDevice::m_fWidthRatio)
+			+ m_pMainInfo1->m_nPosX;
+		m_pQuestMemo->m_nPosY = m_pMainInfo1->m_nPosY
+			- (float)(105.0f * RenderDevice::m_fHeightRatio);
+
+		if (!g_pObjectManager->m_stMobData.CurrentScore.Level)
+		{
+			STRUCT_MOB* pMobData = &g_pObjectManager->m_stMobData;
+			TMScene::LoadMsgText3(m_pQuestList[0], 
+				(char*)"UI\\QuestSubjects.txt",	
+				g_pObjectManager->m_stMobData.CurrentScore.Level + 1, 
+				g_pObjectManager->m_stMobData.Equip[0].sIndex % 10);
+			TMScene::LoadMsgText3(m_pQuestList[1],
+				(char*)"UI\\QuestSubjects2.txt",
+				pMobData->CurrentScore.Level + 1,
+				pMobData->Equip[0].sIndex % 10);
+			TMScene::LoadMsgText3(m_pQuestList[2],
+				(char*)"UI\\QuestSubjects3.txt",
+				pMobData->CurrentScore.Level + 1,
+				pMobData->Equip[0].sIndex % 10);
+			TMScene::LoadMsgText3(m_pQuestList[3],
+				(char*)"UI\\QuestSubjects4.txt",
+				pMobData->CurrentScore.Level + 1,
+				pMobData->Equip[0].sIndex % 10);
+
+			m_pQuestMemo->SetVisible(1);
+
+			char szStr[128]{};
+			unsigned int dwCol = 0xFFAAAAFF;
+			if (m_pLevelQuest[pMobData->CurrentScore.Level] == 100)
+				dwCol = TMScene::LoadMsgText4(					
+					szStr,
+					(char*)"UI\\QuestMessage.txt",
+					pMobData->CurrentScore.Level + 1,
+					pMobData->Equip[0].sIndex % 10);
+			else
+				sprintf(szStr, g_pMessageStringTable[307]);
+
+			SListBoxItem* pChatItem = new SListBoxItem(szStr, dwCol, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0);
+
+			if (pChatItem && m_pChatList)
+				m_pChatList->AddItem(pChatItem);
+		}
+		else if (m_pQuestMemo)
+		{
+			m_pQuestMemo->SetVisible(0);
+		}
+	}
+
+	m_pPotalPanel = (SPanel*)m_pControlContainer->FindControl(12544);
+	m_pPotalList = (SListBox*)m_pControlContainer->FindControl(12545);
+	m_pPotalText = (SText*)m_pControlContainer->FindControl(12549);
+	m_pPotalText1 = (SText*)m_pControlContainer->FindControl(12550);
+	m_pPotalText2 = (SText*)m_pControlContainer->FindControl(12551);
+	m_pPotalText3 = (SText*)m_pControlContainer->FindControl(12552);
+
+	m_pPotalPanel->SetPos(((float)g_pDevice->m_dwScreenWidth * 0.5f) - (m_pQuestPanel->m_nWidth * 0.5f),
+		((float)g_pDevice->m_dwScreenHeight * 0.5f) - (m_pQuestPanel->m_nHeight * 0.6f));
+
+	if (m_pPotalList)
+	{
+		m_pPotalList->SetEventListener(m_pControlContainer ? m_pControlContainer : nullptr);
+	}
+
+	if (m_pPotalPanel)
+		m_pPotalPanel->SetVisible(0);
+
+	for (int j = 0; j < 4; ++j)
+	{
+		m_pQuestList[j]->SetSize(200.0f, m_pQuestList[j]->m_nHeight);
+		m_pQuestContentList[j]->SetSize(300.0f, m_pQuestContentList[j]->m_nHeight);
+	}
 }
 
 int TMFieldScene::LoadMsgText(SListBox* pListBox, char* szFileName)

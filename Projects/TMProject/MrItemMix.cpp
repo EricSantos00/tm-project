@@ -2,6 +2,8 @@
 #include "SControlContainer.h"
 #include "SControl.h"
 #include "MrItemMix.h"
+#include "TMGlobal.h"
+#include "SGrid.h"
 
 CItemMix::CItemMix()
 {
@@ -23,6 +25,37 @@ int CItemMix::Read_NMixListFile(char* filename)
 
 void CItemMix::TakeItResource(SControlContainer* ControlContainer, unsigned short CharID)
 {
+	m_pControlContainer = ControlContainer;
+	m_dwID = CharID;
+	m_pMixPanel = (SPanel*)m_pControlContainer->FindControl(81921);
+
+	if (m_pMixPanel)
+		m_pMixPanel->SetPos(RenderDevice::m_fWidthRatio * 160.0f,
+			RenderDevice::m_fHeightRatio * 35.0f);
+
+	m_pMixPanel->SetVisible(0);
+	for (int i = 0; i < 24; ++i)
+	{
+		m_pGridResultItem[i] = (SGridControl*)m_pControlContainer->FindControl(i + 81924);
+		if (m_pGridResultItem[i])
+			m_pGridResultItem[i]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	}
+	for (int i = 0; i < 8; ++i)
+	{
+		m_pGridNeedItem[i] = (SGridControl*)m_pControlContainer->FindControl(i + 81981);
+		if (m_pGridNeedItem[i])
+			m_pGridNeedItem[i]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	}
+
+	SText* Cost = (SText*)m_pControlContainer->FindControl(81948);
+	Cost->SetTextColor(0xFF000000);
+
+	memset(&m_stCombineItem, 0, sizeof(m_stCombineItem));
+
+	for (int i = 0; i < 8; ++i)
+		m_stCombineItem.CarryPos[i] = -1;
+
+	m_stCombineItem.Header.ID = CharID;
 }
 
 void CItemMix::ResultItemListSet(unsigned int Head, int X, int Y)
