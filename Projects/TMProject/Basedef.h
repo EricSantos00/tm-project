@@ -952,6 +952,24 @@ struct MSG_MessageLog
 	char String[128];
 };
 
+constexpr auto MSG_SetShortSkill_Opcode = 0x378;
+struct MSG_SetShortSkill
+{
+	MSG_STANDARD Header;
+	char Skill[20];
+};
+
+constexpr auto MSG_SwapItem_Opcode = 0x376;
+struct MSG_SwapItem
+{
+	MSG_STANDARD Header;
+	char SourType;
+	char SourPos;
+	char DestType;
+	char DestPos;
+	unsigned short TargetID;
+};
+
 constexpr auto MSG_Attack_Multi = 0x367;
 constexpr auto MSG_Attack_One = 0x39D;
 constexpr auto MSG_Attack_Two = 0x39E;
@@ -1104,7 +1122,12 @@ char BASE_GetAttr(int nX, int nY);
 int BASE_ReadTOTOList(char* szFileName);
 int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type);
 int BASE_IsInLowZone(int nX, int nY);
-int __cdecl BASE_GetItemAmount(STRUCT_ITEM* item);
+int BASE_GetItemAmount(STRUCT_ITEM* item);
+int BASE_CanCarry(STRUCT_ITEM* Carry, int pos);
+int BASE_CanTrade(STRUCT_ITEM* Dest, STRUCT_ITEM* Carry, char* MyTrade, STRUCT_ITEM* OpponentTrade);
+int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY);
+int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans);
+
 /* Read Functions */
 int ReadItemicon();
 void ReadItemName();
@@ -1120,3 +1143,6 @@ int IsClearString2(char* str, int nTarget);
 void EnableSysKey();
 bool CheckOS();
 void DisableSysKey();
+
+/* Other funtions */
+int IsSkill(int nSkillIndex);

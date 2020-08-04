@@ -3,6 +3,8 @@
 #include "TMGlobal.h"
 #include "SControlContainer.h"
 #include "TMMesh.h"
+#include "TMFieldScene.h"
+#include "TMUtil.h"
 
 SGridControl::SGridControl(unsigned int inTextureSetIndex, int inRowGridCount, int inColumnGridCount, float inX, float inY, float inWidth, float inHeight, TMEITEMTYPE type)
 	: SPanel(inTextureSetIndex, inX, inY, inWidth, inHeight, 0xFFFFFFFF, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH)
@@ -228,6 +230,93 @@ IVector2 SGridControl::CanAddItemInEmpty(int nWidth, int nHeight)
 
 int SGridControl::CanChangeItem(SGridControlItem* ipNewItem, int inCellIndexX, int inCellIndexY, int bOnlyCheck)
 {
+	if (IsSkill(ipNewItem->m_pItem->sIndex) == 1)
+		return 0;
+
+	auto pMobData = &g_pObjectManager->m_stMobData;
+	short sType = CheckType(m_eItemType, m_eGridType);
+	short sPos = CheckPos(m_eItemType);
+
+	if (!sType)
+	{
+		int nItemType = BASE_GetItemAbility(ipNewItem->m_pItem, 17);
+		if (m_dwControlID == 65556)
+		{
+			if (nItemType == 128)
+			{
+				return BASE_CanEquip(
+					ipNewItem->m_pItem,
+					&pMobData->CurrentScore,
+					sPos,
+					pMobData->Equip[0].sIndex,
+					pMobData->Equip,
+					g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][0].sIndex,
+					pMobData->LearnedSkill[0] & 0x40000000);
+			}
+			if (nItemType == 64 || nItemType == 192)
+			{
+				if (pMobData->Equip[6].sIndex <= 0)
+				{
+					if (BASE_CanEquip(
+						ipNewItem->m_pItem,
+						&pMobData->CurrentScore,
+						6,
+						pMobData->Equip[0].sIndex,
+						pMobData->Equip,
+						g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][0].sIndex,
+						pMobData->LearnedSkill[0] & 0x40000000) == 1
+						&& !bOnlyCheck)
+					{
+						short sDestType = CheckType(ipNewItem->m_pGridControl->m_eItemType, ipNewItem->m_pGridControl->m_eGridType);
+						short sDestPos = CheckPos(ipNewItem->m_pGridControl->m_eItemType);
+						if (sDestPos == -1)
+							sDestPos = ipNewItem->m_nCellIndexX + 5 * ipNewItem->m_nCellIndexY;
+
+						MSG_SwapItem stSwapItem{};
+						stSwapItem.Header.ID = g_pObjectManager->m_dwCharID;
+						stSwapItem.Header.Type = MSG_SwapItem_Opcode;
+						stSwapItem.SourType = 0;
+						stSwapItem.SourPos = 6;
+						stSwapItem.DestType = sDestType;
+						stSwapItem.DestPos = sDestPos;
+						stSwapItem.TargetID = TMFieldScene::m_dwCargoID;
+						SendOneMessage((char*)&stSwapItem, 20);
+					}
+
+					return 0;
+				}
+
+				short sDestType = CheckType(ipNewItem->m_pGridControl->m_eItemType, ipNewItem->m_pGridControl->m_eGridType);
+				short sDestPos = CheckPos(ipNewItem->m_pGridControl->m_eItemType);
+				if (sDestType == 0 && sDestPos == 6)
+					return 0;
+			}
+		}
+
+		return BASE_CanEquip(
+			ipNewItem->m_pItem,
+			&pMobData->CurrentScore,
+			sPos,
+			pMobData->Equip[0].sIndex,
+			pMobData->Equip,
+			g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][0].sIndex,
+			pMobData->LearnedSkill[0] & 0x40000000);
+	}
+	else if (sType == 1)
+		return 1;
+	else
+	{
+		int page = 40 * (m_dwControlID - 67328);
+		int nPos = ipNewItem->m_nCellIndexX + 5 * ipNewItem->m_nCellIndexY;
+
+		STRUCT_ITEM stCargo[128]{};
+		memcpy(stCargo, g_pObjectManager->m_stItemCargo, sizeof(stCargo));
+		if (ipNewItem->m_pGridControl->m_eGridType == TMEGRIDTYPE::GRID_CARGO)
+			memset(&stCargo[nPos], 0, sizeof(STRUCT_ITEM));
+
+		return 1;
+	}
+
 	return 0;
 }
 
@@ -434,6 +523,71 @@ SGridControlItem* SGridControl::GetItem(int nCount)
 
 int SGridControl::OnKeyDownEvent(unsigned int iKeyCode)
 {
+	if (!m_bEnable)
+		return 0;
+
+	if (iKeyCode == '.' && m_eGridType == TMEGRIDTYPE::GRID_SKILLB)
+	{
+		auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+		if (g_pCurrentScene->m_pControlContainer->m_pFocusControl)
+			return 0;
+
+		int nDelIndex = -1;
+		for (int i = 0; i < 10; ++i)
+		{
+			auto pItem = GetItem(i, 0);
+			if (pItem && pItem->m_GCObj.nTextureSetIndex == 200)
+			{
+				nDelIndex = i;
+				auto pReturnItem = PickupItem(i, 0);
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pReturnItem)
+					g_pCursor->m_pAttachedItem = 0;
+
+				if (pReturnItem)
+					delete pReturnItem;
+
+				break;
+			}
+			if (pItem && pItem->m_GCObj.nTextureSetIndex == 2)
+			{
+				nDelIndex = i;
+				auto pReturnItem = PickupItem(i, 0);
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pReturnItem)
+					g_pCursor->m_pAttachedItem = 0;
+
+				if (pReturnItem)
+					delete pReturnItem;
+				break;
+			}
+		}
+
+		if (pScene->m_pGridSkillBelt3->IsVisible() == 1)
+			nDelIndex += 10;
+		if (nDelIndex >= 0)
+			g_pObjectManager->m_cShortSkill[nDelIndex] = -1;
+
+		MSG_SetShortSkill stSetShortSkill{};
+		stSetShortSkill.Header.ID = g_pCurrentScene->m_pMyHuman->m_dwID;
+		stSetShortSkill.Header.Type = MSG_SetShortSkill_Opcode;
+		memcpy(stSetShortSkill.Skill, g_pObjectManager->m_cShortSkill, sizeof(stSetShortSkill.Skill));
+
+		for (int ia = 0; ia < 20; ++ia)
+		{
+			if (stSetShortSkill.Skill[ia] >= 0 && stSetShortSkill.Skill[ia] < 96)
+			{
+				stSetShortSkill.Skill[ia] -= 24 * g_pObjectManager->m_stMobData.Class;
+			}
+			else if (stSetShortSkill.Skill[ia] >= 105 && stSetShortSkill.Skill[ia] < 153)
+			{
+				stSetShortSkill.Skill[ia] -= 12 * g_pObjectManager->m_stMobData.Class;
+			}
+		}
+
+		SendOneMessage((char*)&stSetShortSkill, sizeof(stSetShortSkill));
+		pScene->UpdateScoreUI(0);
+		pScene->UpdateSkillBelt();
+	}
+
 	return 0;
 }
 
@@ -550,6 +704,190 @@ char SGridControl::automove(int nCellX, int nCellY)
 
 int SGridControl::Check_ItemRightClick(int nType, int nItemSIndex)
 {
+	switch (nType)
+	{
+	case 1:
+		return 1;
+	case 12:
+		return 1;
+	case 6:
+		return 1;
+	case 7:
+		return 1;
+	case 8:
+		return 1;
+	case 10:
+		return 1;
+	case 15:
+		return 1;
+	case 18:
+		return 1;
+	case 140:
+		return 1;
+	case 170:
+		return 1;
+	case 171:
+		return 1;
+	case 172:
+		return 1;
+	case 200:
+		return 1;
+	case 201:
+		return 1;
+	case 202:
+		return 1;
+	case 173:
+		return 1;
+	case 174:
+		return 1;
+	case 175:
+		return 1;
+	case 176:
+		return 1;
+	case 177:
+		return 1;
+	case 178:
+		return 1;
+	case 203:
+		return 1;
+	case 204:
+		return 1;
+	case 205:
+		return 1;
+	case 188:
+		return 1;
+	case 189:
+		return 1;
+	case 191:
+		return 1;
+	case 192:
+		return 1;
+	case 193:
+		return 1;
+	case 194:
+		return 1;
+	case 197:
+		return 1;
+	case 198:
+		return 1;
+	case 206:
+		return 1;
+	case 210:
+		return 1;
+	case 208:
+		return 1;
+	}
+
+	if (nType >= 19 && nType <= 28)
+		return 1;
+	if (nType == 30)
+		return 1;
+	if (nType >= 31 && nType <= 36)
+		return 1;
+	if (nType >= 40 && nType <= 58)
+		return 1;
+	if (nType >= 60 && nType <= 69)
+		return 1;
+	if (nType >= 70 && nType < 90)
+		return 1;
+	if (nType >= 131 && nType < 139)
+		return 1;
+	if (nType >= 161 && nType < 169)
+		return 1;
+	if (nType >= 184 && nType < 186)
+		return 1;
+	
+	switch (nItemSIndex)
+	{
+	case 4146:
+		return 1;
+	case 4147:
+		return 1;
+	case 5338:
+		return 1;
+	case 3451:
+	case 3452:
+		return 1;
+	case 3453:
+	case 3454:
+		return 1;
+	case 5137:
+		return 1;
+	case 5453:
+		return 1;
+	case 5454:
+		return 1;
+	case 646:
+		return 1;
+	case 647:
+		return 1;
+	case 3378:
+		return 1;
+	case 4030:
+		return 1;
+	case 4031:
+		return 1;
+	case 4014:
+		return 1;
+	case 3020:
+		return 1;
+	case 1773:
+		return 1;
+	case 4148:
+		return 1;
+	case 4044:
+		return 1;
+	case 4045:
+		return 1;
+	case 4046:
+		return 1;
+	case 4047:
+		return 1;
+	case 415:
+		return 1;
+	case 679:
+		return 1;
+	case 3478:
+		return 1;
+	case 241:
+		return 1;
+	case 3473:
+		return 1;
+	case 3475:
+		return 1;
+	case 473:
+		return 1;
+	case 4149:
+		return 1;
+	case 489:
+		return 1;
+	case 3479:
+		return 1;
+	case 3480:
+		return 1;
+	case 3210:
+		return 1;
+	}
+
+	if (nItemSIndex >= 3021 && nItemSIndex <= 3026)
+		return 1;
+	if (nItemSIndex >= 3445 && nItemSIndex <= 3448)
+		return 1;	
+	if (nItemSIndex >= 3200 && nItemSIndex < 3300)
+		return 1;
+	if (nItemSIndex >= 3457 && nItemSIndex <= 3459)
+		return 1;
+	if (nItemSIndex == 4048)
+		return 1;
+	if (nItemSIndex == 4049)
+		return 1;
+	if (nItemSIndex >= 1777 && nItemSIndex <= 1779)
+		return 1;	
+	if (nItemSIndex >= 4900 && nItemSIndex <= 4910)
+		return 1;
+	if (nItemSIndex >= 4911 && nItemSIndex <= 4915)
+		return 1;
+
 	return 0;
 }
 

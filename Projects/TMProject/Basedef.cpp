@@ -1015,6 +1015,16 @@ void DisableSysKey()
 {
 }
 
+int IsSkill(int nSkillIndex)
+{
+    if (nSkillIndex >= 5000 && nSkillIndex <= 5104)
+        return 1;
+    if (nSkillIndex >= 5400 && nSkillIndex <= 5447)
+        return 1;
+
+    return 0;
+}
+
 int IsClearString(char* str, int target)
 {
 	int len = strlen(str);
@@ -1235,5 +1245,30 @@ int BASE_IsInLowZone(int nX, int nY)
     LOG_WRITELOG("\nWrong Position [X:%d Y:%d]\n");
     MessageBox(g_pApp->m_hWnd, "Wrong Character Information.", "Error", MB_SYSTEMMODAL);
     PostMessage(g_pApp->m_hWnd, 16, 0, 0);
+    return 0;
+}
+
+int BASE_GetItemAmount(STRUCT_ITEM* item)
+{
+    return 0;
+}
+
+int BASE_CanCarry(STRUCT_ITEM* Carry, int pos)
+{
+    return 0;
+}
+
+int BASE_CanTrade(STRUCT_ITEM* Dest, STRUCT_ITEM* Carry, char* MyTrade, STRUCT_ITEM* OpponentTrade)
+{
+    return 0;
+}
+
+int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY)
+{
+    return 0;
+}
+
+int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans)
+{
     return 0;
 }
