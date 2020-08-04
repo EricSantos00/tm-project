@@ -970,6 +970,31 @@ struct MSG_SwapItem
 	unsigned short TargetID;
 };
 
+constexpr auto MSG_RepurchaseItems_Opcode = 0x3E8;
+struct MSG_RepurchaseItems
+{
+	MSG_STANDARD Header;
+	int target;
+	STRUCT_REPURCHASEITEM Repurcharse[10];
+};
+
+constexpr auto MSG_REQShopList_Opcode = 0x27B;
+struct MSG_REQShopList
+{
+	MSG_STANDARD Header;
+	unsigned short TargetID;
+};
+
+constexpr auto MSG_Buy_Opcode = 0x379;
+struct MSG_Buy
+{
+	MSG_STANDARD Header;
+	unsigned short TargetID;
+	short TargetCarryPos;
+	short MyCarryPos;
+	int Coin;
+};
+
 constexpr auto MSG_Attack_Multi = 0x367;
 constexpr auto MSG_Attack_One = 0x39D;
 constexpr auto MSG_Attack_Two = 0x39E;
