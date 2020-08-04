@@ -122,3 +122,5 @@ char g_TempName[16];
 char g_TempNick[26];
 
 int g_bEffectFirst = 1;
+int g_bEvent;
+

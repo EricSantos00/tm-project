@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "TMHouse.h"
 
+unsigned int TMHouse::m_dwVisibleWaterFall;
+
 TMHouse::TMHouse(char cHouseType)
 {
 }

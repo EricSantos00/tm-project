@@ -1067,6 +1067,7 @@ extern int g_nSelServerWeather;
 extern STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
 extern STRUCT_GUILDZONE g_pGuildZone[MAX_GUILDZONE];
 extern STRUCT_SPELL g_pSpell[248];
+extern STRUCT_INITITEM g_pInitItem[100];
 
 float BASE_ScreenResize(float size);
 void BASE_InitModuleDir();
@@ -1101,6 +1102,7 @@ char BASE_GetAttribute(int x, int y);
 char BASE_GetAttr(int nX, int nY);
 int BASE_ReadTOTOList(char* szFileName);
 int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type);
+int BASE_IsInLowZone(int nX, int nY);
 
 /* Read Functions */
 int ReadItemicon();

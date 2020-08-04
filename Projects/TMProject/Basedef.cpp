@@ -13,6 +13,7 @@ int g_nSelServerWeather;
 char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
 STRUCT_ITEMLIST g_pItemList[6500];
 STRUCT_SPELL g_pSpell[248];
+STRUCT_INITITEM g_pInitItem[100];
 
 STRUCT_GUILDZONE g_pGuildZone[MAX_GUILDZONE] =
 {
@@ -1212,5 +1213,18 @@ int BASE_ReadTOTOList(char* szFileName)
 
 int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type)
 {
+    return 0;
+}
+
+int BASE_IsInLowZone(int nX, int nY)
+{
+    int nX4 = nX / 4;
+    int nY4 = nY / 4;
+    if (nY / 4 < 1024 && nX4 < 1024 && nY4 >= 0 && nX4 >= 0)
+        return g_pAttribute[nY4][nX4] < 0;
+
+    LOG_WRITELOG("\nWrong Position [X:%d Y:%d]\n");
+    MessageBox(g_pApp->m_hWnd, "Wrong Character Information.", "Error", MB_SYSTEMMODAL);
+    PostMessage(g_pApp->m_hWnd, 16, 0, 0);
     return 0;
 }

@@ -773,3 +773,6 @@ public:
 	static unsigned short m_usProgress;
 	static unsigned int m_dwCargoID;
 };
+
+static RECT rectTownInCastle = { 1036, 1700, 1088, 1774 };
+static RECT g_rectField[2] = { { 2048, 1792, 2688, 2304 }, { 1920, 1408, 2688, 2048 } };

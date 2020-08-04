@@ -23,4 +23,5 @@ public:
 	unsigned int m_dwLastParticle;
 	TMVector2 m_vecPos1;
 	TMVector2 m_vecPos2;
+	static unsigned int m_dwVisibleWaterFall;
 };

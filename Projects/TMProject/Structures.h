@@ -409,3 +409,11 @@ struct stMinimapPos
 	unsigned int dwColor;
 	char szTarget[32];
 };
+
+struct stTeleportPos
+{
+	int nX;
+	int nY;
+	int nPrice;
+	char* szTarget;
+};
