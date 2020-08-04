@@ -2298,7 +2298,7 @@ int TMFieldScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 			pt.x = static_cast<int>(m_pMyHuman->m_vecPosition.x);
 			pt.y = static_cast<int>(m_pMyHuman->m_vecPosition.y);
 
-			RECT rectTownInCastle{};//??
+			static RECT rectTownInCastle = { 1036, 1700, 1088, 1774 };
 
 			if (!m_pMessageBox->IsVisible() && (!m_pMyHuman->IsInTown() || PtInRect(&rectTownInCastle, pt) == 1))
 			{
@@ -2447,7 +2447,6 @@ int TMFieldScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 						m_pTarget1->m_vecPosition = vecTar;
 						m_pTarget2->m_vecPosition = vecTar;
 						m_pTargetBill->m_vecPosition = vecTar;
-
 						m_pTargetBill->m_vecPosition.y -= 0.2f;
 						
 						MobMove(vec, dwServerTime);
@@ -2578,7 +2577,65 @@ int TMFieldScene::MobAttack(unsigned int wParam, D3DXVECTOR3 vec, unsigned int d
 
 int TMFieldScene::MobMove(D3DXVECTOR3 vec, unsigned int dwServerTime)
 {
-	return 0;
+	if (m_pMyHuman->m_bSliding == 1)
+		return 0;
+	if (dwServerTime < m_dwGetItemTime + 1000)
+		return 0;
+	if (m_pCargoPanel->IsVisible() == 1)
+		return 1;
+	if (m_pCargoPanel1->IsVisible() == 1)
+		return 1;
+	if (!g_pApp->m_binactive)
+		return 1;
+	if (dwServerTime < m_pMyHuman->m_dwOldMovePacketTime + 200)
+		return 0;
+	if (m_stAutoTrade.TargetID == m_pMyHuman->m_dwID)
+		return 0;
+
+	if ((m_pMyHuman->m_pMoveTargetHuman || m_pMyHuman->m_pMoveSkillTargetHuman)
+		&& dwServerTime < m_dwLastSetTargetHuman + 1000)
+	{
+		return 0;
+	}
+
+	if ((int)m_pMyHuman->m_eMotion >= 4 && (int)m_pMyHuman->m_eMotion <= 9)
+	{
+		unsigned int dwMod = MeshManager::m_BoneAnimationList[m_pMyHuman->m_nSkinMeshType].numAniCut[m_pMyHuman->m_pSkinMesh->m_nAniIndex];
+		if (dwMod > 2)
+			dwMod -= 2;
+
+		if (g_pEventTranslator->button[0] && dwServerTime < m_pMyHuman->m_dwStartAnimationTime + 4 * dwMod * m_pMyHuman->m_pSkinMesh->m_dwFPS)
+			return 0;
+	}
+
+	if (m_pGround)
+	{
+		if (vec.y < -5000.0f)
+			return 0;
+
+		STRUCT_MOB* pMobData = &g_pObjectManager->m_stMobData;
+		m_pMyHuman->SetSpeed(m_bMountDead);
+
+		if (vec.x == m_pMyHuman->m_vecPosition.x &&
+			vec.z == m_pMyHuman->m_vecPosition.y)
+			return 1;
+
+		TMVector2 vecC = TMVector2(vec.x, vec.z);
+		TMVector2 vecD = vecC - m_pMyHuman->m_vecPosition;
+
+		m_vecMyNext.x = (int)vec.x;
+		m_vecMyNext.y = (int)vec.z;
+		if (m_pMyHuman->m_fProgressRate >= 0.89999998f || m_pMyHuman->m_fProgressRate == 0.0f)
+			m_pMyHuman->GetRoute(m_vecMyNext, 0, 0);
+
+		m_pTargetHuman = 0;
+		m_pMyHuman->m_pMoveTargetHuman = 0;
+		m_pMyHuman->m_pMoveSkillTargetHuman = 0;
+		m_pMouseOverHuman = 0;
+		m_pTargetItem = 0;
+	}
+
+	return 1;
 }
 
 int TMFieldScene::MobMove2(TMVector2 vec, unsigned int dwServerTime)
