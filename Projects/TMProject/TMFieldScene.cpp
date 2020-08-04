@@ -2044,6 +2044,161 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 
 int TMFieldScene::OnCharEvent(char iCharCode, int lParam)
 {
+	if (m_bAirMove == 1)
+		return 0;
+
+	DWORD dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (dwServerTime < g_dwStartQuitGameTime + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastLogout + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastSelServer + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastTown + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastResurrect + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastTeleport + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastRelo + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastWhisper + 6000)
+		return 1;
+
+	if (m_pMessageBox->IsVisible() == 1
+		&& (m_pMessageBox->m_dwMessage == 601 || m_pMessageBox->m_dwMessage == 927)
+		&& iCharCode == 13)
+	{
+		return 1;
+	}
+
+	if (g_nKeyType == 1)
+	{
+		if (iCharCode == 27)
+		{
+			OnESC();
+			return 1;
+		}
+
+		if (TMScene::OnCharEvent(iCharCode, lParam) == 1)
+			return 1;
+	}
+	else
+	{
+		if (TMScene::OnCharEvent(iCharCode, lParam) == 1)
+			return 1;
+
+		if (iCharCode == 27)
+		{
+			OnESC();
+			return 1;
+		}
+	}
+
+	if (m_bCriticalError == 1)
+		return 1;
+
+	if (OnKeyTotoTab(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyCamView(iCharCode, lParam))
+		return 1;
+
+	if (g_nKeyType)
+		return 0;
+
+	if (UseQuickSloat(iCharCode))
+		return 1;
+
+	if (OnKeyTotoEnter(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyDebug(iCharCode, lParam))
+		return 1;
+
+	if (OnKeySkill(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyDash(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyPlus(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyPK(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyName(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyAutoTarget(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyHelp(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyRun(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyFeedMount(iCharCode, lParam))
+		return 1;
+
+	if (g_pObjectManager->m_stMobData.CurrentScore.Hp > 0)
+	{
+		if (OnKeyHPotion(iCharCode, lParam))
+			return 1;
+
+		if (OnKeyMPotion(iCharCode, lParam))
+			return 1;
+
+		if (OnKeyPPotion(iCharCode, lParam))
+			return 1;
+
+		if (OnKeySkillPage(iCharCode, lParam))
+			return 1;
+
+		if (OnKeyQuestLog(iCharCode, lParam))
+			return 1;
+
+		if (OnKeyReverse(iCharCode, lParam))
+			return 1;
+
+		if (OnKeyAutoRun(iCharCode, lParam))
+			return 1;
+
+		if (OnKeyGuildOnOff(iCharCode, lParam))
+			return 1;
+
+		if (OnKeyShortSkill(iCharCode, lParam))
+			return 1;
+	}
+
+	if (OnKeyVisibleSkill(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyVisibleInven(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyVisibleCharInfo(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyVisibleMinimap(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyVisibleParty(iCharCode, lParam))
+		return 1;
+
+	if (OnKeyReturn(iCharCode, lParam))
+		return 1;
+	
 	return 0;
 }
 
