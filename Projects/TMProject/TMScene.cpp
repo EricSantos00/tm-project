@@ -248,8 +248,8 @@ TMScene::TMScene() : TreeNode(0)
 		}
 	}
 
-	memset(&m_HeightMapData, 0, sizeof(m_HeightMapData));
-	memset(&m_GateMapData, 0, sizeof(m_GateMapData));
+	memset(m_HeightMapData, 0, sizeof(m_HeightMapData));
+	memset(m_GateMapData, 0, sizeof(m_GateMapData));
 
 	BASE_ApplyAttribute((char*)m_HeightMapData, 256);
 
@@ -1565,7 +1565,7 @@ int TMScene::GroundNewAttach(EDirection eDir)
 			m_pGroundList[gId]->m_vecOffsetIndex.y == m_pGround->m_vecOffsetIndex.y - 1)
 		{
 			for (int i = 0; i < 128; ++i)
-				memcpy(heightMapData[i], &m_HeightMapData[i][128], 128);
+				memcpy(heightMapData[i], m_HeightMapData[i + 128], 128);
 		}
 	}
 	else
@@ -1659,7 +1659,7 @@ int TMScene::GroundNewAttach(EDirection eDir)
 		for (int i = 0; i < 128; ++i)
 		{
 			memcpy(&m_HeightMapData[i], m_pGround->m_pUpGround->m_pMaskData[i], 128);
-			memcpy(&m_HeightMapData[i][128], heightMapData[i], 128);
+			memcpy(&m_HeightMapData[i + 128], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_pUpGround->m_vecOffset.x;
 		g_HeightPosY = (int)m_pGround->m_pUpGround->m_vecOffset.y;
@@ -1667,7 +1667,7 @@ int TMScene::GroundNewAttach(EDirection eDir)
 	case EDirection::EDIR_DOWN:
 		for (int i = 0; i < 128; ++i)
 		{
-			memcpy(&m_HeightMapData[i][128], m_pGround->m_pDownGround->m_pMaskData[i], 128);
+			memcpy(&m_HeightMapData[i + 128], m_pGround->m_pDownGround->m_pMaskData[i], 128);
 			memcpy(&m_HeightMapData[i], heightMapData[i], 128);
 		}
 		g_HeightPosX = (int)m_pGround->m_vecOffset.x;
@@ -1837,7 +1837,12 @@ int TMScene::GroundGetMask(TMVector2 vecPosition)
 	if (nYIndex > 256)
 		nYIndex = 255;
 
-	return m_HeightMapData[0][nXIndex + g_HeightWidth * nYIndex];
+	int value = m_HeightMapData[nYIndex][nXIndex];
+
+	if(value != 0)
+		std::cout << "Current Height " << value << '\n';
+
+	return m_HeightMapData[nYIndex][nXIndex];
 }
 
 int TMScene::GroundGetMask(IVector2 vecPosition)
@@ -1857,7 +1862,7 @@ int TMScene::GroundGetMask(IVector2 vecPosition)
 	if (nYIndex > 256)
 		nYIndex = 255;
 
-	return m_HeightMapData[0][nXIndex + g_HeightWidth * nYIndex];
+	return m_HeightMapData[nYIndex][nXIndex];
 }
 
 float TMScene::GroundGetHeight(TMVector2 vecPosition)
@@ -2218,13 +2223,13 @@ void TMScene::Warp2(int nZoneX, int nZoneY)
 		memset(m_HeightMapData, 0, 4u);
 
 		for (int nY = 0; nY < 128; ++nY)
-			memcpy(&m_HeightMapData[nY], m_pGround->m_pMaskData[nY], 128);
+			memcpy(m_HeightMapData[nY], m_pGround->m_pMaskData[nY], 128);
 
 		m_pGround->SetMiniMapData();
 		m_pGroundObjectContainer->AddChild(m_pObjectContainerList[0]);
 		m_pGroundObjectContainer->AddChild(m_pGroundList[0]);
 
-		BASE_ApplyAttribute((char*)&m_HeightMapData, 256);
+		BASE_ApplyAttribute((char*)m_HeightMapData, 256);
 
 		memcpy(m_GateMapData, m_HeightMapData, sizeof(m_GateMapData));
 

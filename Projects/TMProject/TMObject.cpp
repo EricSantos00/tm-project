@@ -613,7 +613,6 @@ int TMObject::RegisterMask(TMGround* pGround, float fX, float fY)
 	char cTempMask[16][16];
 	memset(cTempMask, 0, sizeof(cTempMask));
 
-
 	float revAngle = D3DXToRadian(180) - m_fAngle * -1.0f;
 	for (int y = 0; y < 16; ++y)
 	{
@@ -622,9 +621,10 @@ int TMObject::RegisterMask(TMGround* pGround, float fX, float fY)
 			float fx = (float)x + 0.5f - 7.5f;
 			float fy = (float)y + 0.5f - 7.5f;
 			float tx = (cos(revAngle) * fx) - (sin(revAngle) * fy);
+			float ty = (sin(revAngle) * fx) + (cos(revAngle) * fy);
 
 			int intx = (int)(tx + 7.5f);
-			int inty = (int)((sin(revAngle) * fx) + (cos(revAngle) * fy) + 0.75f);
+			int inty = (int)(ty + 7.5f);
 
 			if (intx >= 0 && inty >= 0 && intx < 16 && inty < 16)
 				cTempMask[y][x] = MeshManager::m_aObjectMask[m_nMaskIndex][inty][intx];

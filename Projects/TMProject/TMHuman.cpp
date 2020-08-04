@@ -5712,7 +5712,7 @@ void TMHuman::GenerateRouteTable(int nSX, int nSY, char* pRouteBuffer, TMVector2
         vecCurrent = pRouteTable[i];
     }
 
-    std::cout << "Current " << vecCurrent.x << " " << vecCurrent.y << '\n';
+    //std::cout << "Current " << vecCurrent.x << " " << vecCurrent.y << '\n';
 }
 
 int TMHuman::StraightRouteTable(int nSX, int nSY, int nTargetX, int nTargetY, TMVector2* pRouteTable, int* pMaxRouteIndex, int distance, char* pHeight, int MH)

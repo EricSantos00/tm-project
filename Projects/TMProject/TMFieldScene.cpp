@@ -1678,11 +1678,11 @@ int TMFieldScene::InitializeScene()
 	}
 
 	for (int nY = 0; nY < 128; ++nY)
-		memcpy(&m_HeightMapData[nY], m_pGround->m_pMaskData[nY], 128);
+		memcpy(m_HeightMapData[nY], m_pGround->m_pMaskData[nY], 128);
 
 	g_HeightPosX = (int)m_pGround->m_vecOffset.x;
 	g_HeightPosY = (int)m_pGround->m_vecOffset.y;
-	BASE_ApplyAttribute((char*)&m_HeightMapData, 256);
+	BASE_ApplyAttribute((char*)m_HeightMapData, 256);
 
 	memcpy(m_GateMapData, m_HeightMapData, sizeof(m_HeightMapData));
 

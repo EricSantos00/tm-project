@@ -3577,46 +3577,7 @@ float TMGround::GetHeight(TMVector2 vecPosition)
     D3DXVECTOR3 v6{};
     D3DXVECTOR3 v8{};
 
-    if (nX >= 63 || nY >= 63 || nX < 0 || nY < 0)
-    {
-        if (nX == 63)
-        {
-            v0 = D3DXVECTOR3((float)((float)63 * 2.0f) + m_vecOffset.x,
-                (float)m_TileMapData[(nY << 6) + 63].cHeight * 0.1f,
-                (float)((float)nY * 2.0f) + m_vecOffset.y);
-
-            v2 = D3DXVECTOR3((float)((float)64 * 2.0f) + m_vecOffset.x,
-                (float)m_TileMapData[(nY << 6) + 63].cHeight * 0.1f,
-                (float)((float)nY * 2.0f) + m_vecOffset.y);
-
-            v6 = D3DXVECTOR3((float)((float)63 * 2.0f) + m_vecOffset.x,
-                (float)m_TileMapData[((nY + 1) << 6) + 63].cHeight * 0.1f,
-                (float)((float)(nY + 1) * 2.0f) + m_vecOffset.y);
-
-            v8 = D3DXVECTOR3((float)((float)64 * 2.0f) + m_vecOffset.x,
-                (float)m_TileMapData[((nY + 1) << 6) + 63].cHeight * 0.1f,
-                (float)((float)(nY + 1) * 2.0f) + m_vecOffset.y);
-        }
-        else if (nY == 63)
-        {
-            v0 = D3DXVECTOR3((float)((float)nX * 2.0f) + m_vecOffset.x,
-                (float)m_TileMapData[nX + 4032].cHeight * 0.1f,
-                (float)((float)63 * 2.0f) + m_vecOffset.y);
-
-            v2 = D3DXVECTOR3((float)((float)(nX + 1) * 2.0f) + m_vecOffset.x,
-                (float)m_TileMapData[nX + 4033].cHeight * 0.1f,
-                (float)((float)63 * 2.0f) + m_vecOffset.y);
-
-            v6 = D3DXVECTOR3((float)((float)nX * 2.0f) + m_vecOffset.x,
-                (float)m_TileMapData[nX + 4032].cHeight * 0.1f,
-                (float)((float)64 * 2.0f) + m_vecOffset.y);
-
-            v8 = D3DXVECTOR3((float)((float)(nX + 1) * 2.0f) + m_vecOffset.x,
-                (float)m_TileMapData[nX + 4033].cHeight * 0.1f,
-                (float)((float)64 * 2.0f) + m_vecOffset.y);
-        }
-    }
-    else
+    if (nX < 63 && nY < 63 && nX >= 0 && nY >= 0)
     {
         v0 = D3DXVECTOR3((float)((float)nX * 2.0f) + m_vecOffset.x,
             (float)m_TileMapData[nX + (nY << 6)].cHeight * 0.1f,
@@ -3634,7 +3595,43 @@ float TMGround::GetHeight(TMVector2 vecPosition)
             (float)m_TileMapData[nX + ((nY + 1) << 6) + 1].cHeight * 0.1f,
             (float)((float)(nY + 1) * 2.0f) + m_vecOffset.y);
     }
+    if (nX == 63)
+    {
+        v0 = D3DXVECTOR3((float)((float)63 * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[(nY << 6) + 63].cHeight * 0.1f,
+            (float)((float)nY * 2.0f) + m_vecOffset.y);
 
+        v2 = D3DXVECTOR3((float)((float)64 * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[(nY << 6) + 63].cHeight * 0.1f,
+            (float)((float)nY * 2.0f) + m_vecOffset.y);
+
+        v6 = D3DXVECTOR3((float)((float)63 * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[((nY + 1) << 6) + 63].cHeight * 0.1f,
+            (float)((float)(nY + 1) * 2.0f) + m_vecOffset.y);
+
+        v8 = D3DXVECTOR3((float)((float)64 * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[((nY + 1) << 6) + 63].cHeight * 0.1f,
+            (float)((float)(nY + 1) * 2.0f) + m_vecOffset.y);
+    }
+    else if (nY == 63)
+    {
+        v0 = D3DXVECTOR3((float)((float)nX * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[nX + 4032].cHeight * 0.1f,
+            (float)((float)63 * 2.0f) + m_vecOffset.y);
+
+        v2 = D3DXVECTOR3((float)((float)(nX + 1) * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[nX + 4033].cHeight * 0.1f,
+            (float)((float)63 * 2.0f) + m_vecOffset.y);
+
+        v6 = D3DXVECTOR3((float)((float)nX * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[nX + 4032].cHeight * 0.1f,
+            (float)((float)64 * 2.0f) + m_vecOffset.y);
+
+        v8 = D3DXVECTOR3((float)((float)(nX + 1) * 2.0f) + m_vecOffset.x,
+            (float)m_TileMapData[nX + 4033].cHeight * 0.1f,
+            (float)((float)64 * 2.0f) + m_vecOffset.y);
+    }
+   
     float fU = 0.0;
     float fV = 0.0;
     float fDis = 0.0f;
