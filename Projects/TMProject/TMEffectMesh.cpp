@@ -2,6 +2,7 @@
 #include "TMMesh.h"
 #include "TMEffectMesh.h"
 #include "TMGlobal.h"
+#include "TMCamera.h"
 
 TMEffectMesh::TMEffectMesh(int nMeshIndex, unsigned int dwColor, float fAngle, int nType)
 {
@@ -245,16 +246,97 @@ int TMEffectMesh::Render()
 
 int TMEffectMesh::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	if (m_dwKey != -1 &&
+		m_dwKey != TreeNode::m_VisualKey1 &&
+		m_dwKey != TreeNode::m_VisualKey2 && 
+		m_dwKey != TreeNode::m_VisualKey3 && 
+		m_dwKey != TreeNode::m_VisualKey4)
+	{
+		if (m_nMeshIndex != 506)
+			return 0;
+
+		if (g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_SELCHAR)
+			return 0;
+	}
+
+	dwServerTime = g_pTimerManager->GetServerTime();
+
+	auto pMesh = g_pMeshManager->GetCommonMesh(m_nMeshIndex, 1, 0x2BF20u);
+
+	if (pMesh)
+		m_fRadius = pMesh->m_fRadius;
+
+	IsVisible(); // ?
+
+	m_fProgress = (float)((dwServerTime - m_dwCreateTime) % m_dwCycleTime) / (float)m_dwCycleTime;
+
+	if (m_dwLifeTime)
+	{
+		if ((dwServerTime - m_dwCreateTime) > m_dwLifeTime)
+		{
+			m_bVisible = 0;
+			g_pObjectManager->DeleteObject(static_cast<TreeNode*>(this));
+		}
+	}
+
+	return 1;
 }
 
 void TMEffectMesh::SetColor(unsigned int dwColor)
 {
+	m_dwColor = dwColor;
+	m_dwA = (dwColor & 0xFF000000) >> 24;
+	m_dwR = (dwColor & 0xFF0000) >> 16;
+	m_dwG = (dwColor & 0xFF00) >> 8;
+	m_dwB = static_cast<unsigned char>(dwColor);
 }
 
 int TMEffectMesh::IsVisible()
 {
-	return 0;
+	if (g_pCurrentScene->GetSceneType() != ESCENE_TYPE::ESCENE_FIELD)
+	{
+		m_bVisible = 1;
+		return 1;
+	}
+
+	if (!m_bShow)
+	{
+		m_bVisible = 0;
+		return 0;
+	}
+
+	auto pMesh = g_pMeshManager->GetCommonMesh(m_nMeshIndex, 0, 180000);
+
+	if (!pMesh)
+	{
+		m_bVisible = 0;
+		return 0;
+	}
+
+	auto pCamera = g_pObjectManager->m_pCamera;
+
+	D3DXVECTOR3 Vec{};
+	D3DXVECTOR3 VecCam{ pCamera->m_cameraPos.x, pCamera->m_cameraPos.z, pCamera->m_cameraPos.y };
+
+	Vec = D3DXVECTOR3{ m_vecPosition.x, m_vecPosition.z, m_vecPosition.y } - VecCam;
+
+	if (pMesh->m_fRadius >= D3DXVec3Length(&Vec))
+	{
+		m_bVisible = 1;
+		return 1;
+	}
+
+	D3DXVECTOR3 v11{ pCamera->m_vecCamDir.x, pCamera->m_vecCamDir.z, pCamera->m_vecCamDir.y };
+
+	if (D3DXVec3Dot(&Vec, &v11) <= 0.0f)
+	{
+		m_bVisible = 0;
+		return 0;
+	}
+
+	m_bVisible = IsInView();
+
+	return m_bVisible;
 }
 
 int TMEffectMesh::IsInView()
