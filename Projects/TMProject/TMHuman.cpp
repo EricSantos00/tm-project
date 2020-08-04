@@ -2097,12 +2097,16 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         m_nLastRouteIndex = nRouteIndex % 48;
     }
 
-    float fElapsedAngleToTime = (float)(dwServerTime - m_dwMoveToTime) * 0.0049999999f;
+    float fElapsedAngleToTime = (float)((int)(dwServerTime - m_dwMoveToTime)) * 0.0049999999f;
     if (fElapsedAngleToTime > 1.0f)
         fElapsedAngleToTime = 1.0f;
 
     float fDAngle = 0.0f;
-    if (m_bForcedRotation)
+    if (!m_bForcedRotation)
+    {
+        fDAngle = m_fWantAngle - m_fMoveToAngle;
+    }
+    else
     {
         m_fWantAngle = m_fCurrAng;
         m_fCurrAng = m_fCurrAng + 0.15000001f;
@@ -2130,18 +2134,14 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
             }
             m_fWantAngle = m_fCurrAng;
         }
-    }
-    else
-    {
-        fDAngle = m_fWantAngle - m_fMoveToAngle;
-    }
+    }    
 
     if (fabsf(m_fAngle - m_fWantAngle) > 0.017453292f)
     {
         if (m_bForcedRotation)
             m_fAngle = fElapsedAngleToTime * fDAngle;
         else
-            m_fAngle = (float)(fElapsedAngleToTime * fDAngle) + m_fMoveToAngle;
+            m_fAngle = (fElapsedAngleToTime * fDAngle) + m_fMoveToAngle;
 
         SetAngle(0.0f, m_fAngle, 0.0f);
     }
@@ -5874,7 +5874,6 @@ int TMHuman::ChangeRouteBuffer(int nSX, int nSY, TMVector2* pRouteTable, int* pM
     if (nRoutCount < 0 || nRoutCount > 46)
         return 0;
 
-
     TMVector2 vecRouteBuffer[48]{};
     TMVector2 vecCurrent;
     int nMaxRouteIndex;
@@ -5888,7 +5887,7 @@ int TMHuman::ChangeRouteBuffer(int nSX, int nSY, TMVector2* pRouteTable, int* pM
     for (i = nMaxRouteIndex - 2; i < 48; ++i)
     {
         vecRouteBuffer[i] = vecCurrent;
-        if ((i + nRoutCount) - (nMaxRouteIndex - 2) < 48)
+        if (i + nRoutCount - (nMaxRouteIndex - 2) < 48)
            vecRouteBuffer[i] = pRouteTable[i + nRoutCount - (nMaxRouteIndex - 2)];
 
         vecCurrent = vecRouteBuffer[i];
