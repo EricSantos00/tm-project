@@ -2793,6 +2793,33 @@ void TMFieldScene::SetVisibleInventory()
 
 void TMFieldScene::SetVisibleCharInfo()
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+	
+	auto pCPanel = m_pCPanel;
+	auto pCargoPanel = m_pCargoPanel;
+	auto pCargoPanel1 = m_pCargoPanel1;
+	auto pSkillMPanel = m_pSkillMPanel;
+	auto pSkillPanel = m_pSkillPanel;
+	auto pTradePanel = m_pTradePanel;
+	auto pATradePanel = m_pAutoTrade;
+	auto pHellgateStore = m_pHellgateStore;
+	auto pGambleStore = m_pGambleStore;
+
+	bool bInv = m_pInvenPanel->m_bVisible;
+	bool bVisible = pCPanel->m_bVisible == 0;
+
+	pCPanel->SetVisible(bVisible);
+	pCPanel->SetVisible(bVisible);
+
+	auto pSoundManager = g_pSoundManager;
+	if (pSoundManager)
+	{
+		auto pSoundData = pSoundManager->GetSoundData(51);
+		if (pSoundData)
+		{
+			pSoundData->Play();
+		}
+	}
 }
 
 void TMFieldScene::SetVisibleShop(int bShow)
@@ -2963,10 +2990,95 @@ void TMFieldScene::SetAutoSkillNum(int nCount)
 
 void TMFieldScene::SetCameraView()
 {
+	auto pCamera = g_pObjectManager->m_pCamera;
+	if (pCamera->m_dwSetTime)
+		return;
+
+	m_nCameraMode += 1;
+	if (m_nCameraMode > 2)
+		m_nCameraMode = 0;
+
+	if (m_bIsDungeon == 1 && m_nCameraMode == 1)
+		m_nCameraMode = 2;
+
+	if (m_nCameraMode == 0)
+	{
+		TMVector2 Pos = g_pObjectManager->m_pCamera->GetFocusedObject()->m_vecPosition;
+		if ((int)Pos.x >> 7 > 26 && (int)Pos.x >> 7 < 31 && 
+			(int)Pos.y >> 7 > 20 && (int)Pos.y >> 7 < 25)
+		{
+			pCamera->m_fVerticalAngle = -0.64114136f;
+			pCamera->m_fHorizonAngle = 1.013417f;
+		}
+		else
+		{
+			pCamera->m_fVerticalAngle = -0.76999825f;
+			pCamera->m_fHorizonAngle = 0.80142671f;
+		}
+
+		pCamera->m_nQuaterView = 0;
+		pCamera->m_fSightLength = pCamera->m_fMaxCamLen - 0.0;
+		pCamera->m_fWantLength = pCamera->m_fMaxCamLen - 0.0;
+		pCamera->m_fCamHeight = 0.33f;
+		g_pDevice->m_bFog = 1;
+		m_pSky->m_bVisible = 0;
+		m_bQuater = 0;
+	}
+	else if (m_nCameraMode == 1)
+	{
+		TMVector2 Pos = g_pObjectManager->m_pCamera->GetFocusedObject()->m_vecPosition;
+		if ((int)Pos.x >> 7 > 26 && (int)Pos.x >> 7 < 31 && 
+			(int)Pos.y >> 7 > 20 && (int)Pos.y >> 7 < 25)
+		{
+			pCamera->m_fVerticalAngle = -0.64114136f;
+			pCamera->m_fHorizonAngle = 1.013417f;
+		}
+		else
+		{
+			pCamera->m_fVerticalAngle = -0.76999825f;
+			pCamera->m_fHorizonAngle = 0.80142671f;
+		}
+
+		pCamera->m_nQuaterView = 0;
+		pCamera->m_fSightLength = 11.0f;
+		pCamera->m_fWantLength = 11.0f;
+		pCamera->m_fCamHeight = 0.33f;
+		g_pDevice->m_bFog = 1;
+		m_pSky->m_bVisible = 0;
+		m_bQuater = 0;
+	}
+	else if (m_nCameraMode == 2)
+	{
+		pCamera->m_nQuaterView = 0;
+		pCamera->m_fVerticalAngle = 0.1f;
+		pCamera->m_fSightLength = 3.5f;
+		pCamera->m_fWantLength = 3.5f;
+		pCamera->m_fCamHeight = 0.33f;
+		pCamera->m_fHorizonAngle = 3.1415927f;
+		g_pDevice->m_bFog = 1;
+		m_pSky->m_bVisible = 0;
+		m_bQuater = 0;
+	}
+
+	auto pBtnCamera = (SButton*)m_pControlContainer->FindControl(308);
+	if (pBtnCamera)
+		pBtnCamera->SetSelected(m_bQuater);
 }
 
 void TMFieldScene::InitCameraView()
 {
+	auto pCamera = g_pObjectManager->m_pCamera;
+	pCamera->m_nQuaterView = 0;
+	pCamera->m_fVerticalAngle = -0.78539819f;
+	pCamera->m_fSightLength = pCamera->m_fMaxCamLen;
+	pCamera->m_fWantLength = pCamera->m_fMaxCamLen;
+	pCamera->m_fCamHeight = 0.33000001f;
+	pCamera->m_fHorizonAngle = 0.78539819f;
+	g_pDevice->m_bFog = 1;
+	m_pSky->m_bVisible = 0;
+	m_bQuater = 0;
+	m_bTab = 0;
+	pCamera->EarthQuake(10);
 }
 
 void TMFieldScene::SetPK()
@@ -3509,7 +3621,23 @@ int TMFieldScene::OnKeyVisibleInven(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyVisibleCharInfo(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'c' && iCharCode != 'C')
+		return 0;
+	if (m_pAutoTrade->IsVisible())
+		return 1;
+	if (m_pShopPanel->IsVisible())
+		return 1;
+	if (m_pTradePanel->IsVisible())
+		return 1;
+
+	SetVisibleCharInfo();
+
+	auto pPanel = m_pCPanel;
+	auto pBtnChar = static_cast<SButton*>(m_pControlContainer->FindControl(65790));
+	if (pBtnChar)
+		pBtnChar->SetSelected(pPanel->m_bVisible);
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyVisibleMinimap(char iCharCode, int lParam)
