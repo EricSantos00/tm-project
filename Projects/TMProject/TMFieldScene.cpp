@@ -2642,7 +2642,57 @@ int TMFieldScene::MobMove(D3DXVECTOR3 vec, unsigned int dwServerTime)
 
 int TMFieldScene::MobMove2(TMVector2 vec, unsigned int dwServerTime)
 {
-	return 0;
+	if (m_pMyHuman->m_bSliding == 1)
+		return 1;
+	if (dwServerTime < m_dwGetItemTime + 1000)
+		return 1;
+	if (m_stAutoTrade.TargetID == m_pMyHuman->m_dwID)
+		return 1;
+
+	if (!m_pMyHuman->m_cMount && m_pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_NONE && m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_STAND01 && 
+		m_pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_STAND02	&& m_pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_WALK && 
+		m_pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_RUN && m_pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_LEVELUP)
+	{
+		return 1;
+	}
+	if ((m_pMyHuman->m_pMoveTargetHuman || m_pMyHuman->m_pMoveSkillTargetHuman)
+		&& dwServerTime < m_dwLastSetTargetHuman + 1000)
+	{
+		return 1;
+	}
+
+	if ((int)m_pMyHuman->m_eMotion >= 4 && (int)m_pMyHuman->m_eMotion <= 9)
+	{
+		unsigned int dwMod = MeshManager::m_BoneAnimationList[m_pMyHuman->m_nSkinMeshType].numAniCut[m_pMyHuman->m_pSkinMesh->m_nAniIndex];
+		if (dwMod > 2)
+			dwMod -= 2;
+
+		if (g_pEventTranslator->button[0] && dwServerTime < m_pMyHuman->m_dwStartAnimationTime + 4 * dwMod * m_pMyHuman->m_pSkinMesh->m_dwFPS)
+			return 1;
+	}
+	if (m_pGround)
+	{
+		STRUCT_MOB* pMobData = &g_pObjectManager->m_stMobData;
+		m_pMyHuman->SetSpeed(m_bMountDead);
+
+		if (vec.x == m_pMyHuman->m_vecPosition.x && vec.y == m_pMyHuman->m_vecPosition.y)
+			return 1;
+
+		TMVector2 vecD = vec - m_pMyHuman->m_vecPosition;
+		m_vecMyNext.x = (int)vec.x;
+		m_vecMyNext.y = (int)vec.y;
+
+		if (m_pMyHuman->m_fProgressRate >= 0.89999998f || m_pMyHuman->m_fProgressRate == 0.0f)
+			m_pMyHuman->GetRoute(m_vecMyNext, 0, 0);
+
+		m_pTargetHuman = 0;
+		m_pMyHuman->m_pMoveSkillTargetHuman = 0;
+		m_pMyHuman->m_pMoveTargetHuman = 0;
+		m_pMouseOverHuman = 0;
+		m_pTargetItem = 0;
+	}
+
+	return 1;
 }
 
 void TMFieldScene::DropItem(unsigned int dwServerTime)
