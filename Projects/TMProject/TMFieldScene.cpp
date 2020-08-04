@@ -1199,6 +1199,8 @@ int TMFieldScene::InitializeScene()
 	pTradePanel->SetPos(RenderDevice::m_fWidthRatio * 287.0f,
 		RenderDevice::m_fHeightRatio * 35.0f);
 
+	m_pTradePanel = pTradePanel;
+
 	if (pTradePanel)
 	{
 		pTradePanel->SetVisible(0);
