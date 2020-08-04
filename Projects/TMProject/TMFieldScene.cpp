@@ -2267,6 +2267,35 @@ void TMFieldScene::UpdateSkillBelt()
 
 void TMFieldScene::UpdateMyHuman()
 {
+	STRUCT_MOB* pMobData = &g_pObjectManager->m_stMobData;
+	
+	SANC_INFO stSancInfo{};
+	memcpy(&stSancInfo, &m_pMyHuman->m_stOldSancInfo, sizeof(stSancInfo));
+
+	m_pMyHuman->SetPacketMOBItem(&g_pObjectManager->m_stMobData);
+
+	if ((unsigned char)stSancInfo.Sanc0 > 0 && pMobData->Equip[0].sIndex != 32)
+		memcpy(&m_pMyHuman->m_stSancInfo, &stSancInfo, sizeof(stSancInfo));
+
+	float fCon = (float)m_pMyHuman->m_stScore.Con;
+	m_pMyHuman->SetCharHeight(fCon);
+	m_pMyHuman->SetRace(pMobData->Equip[0].sIndex);
+
+	int nWeaponTypeL = BASE_GetItemAbility(&pMobData->Equip[6], 21);
+	if (nWeaponTypeL == 41)
+	{
+		m_pMyHuman->m_stLookInfo.RightMesh = m_pMyHuman->m_stLookInfo.LeftMesh;
+		m_pMyHuman->m_stLookInfo.RightSkin = m_pMyHuman->m_stLookInfo.LeftSkin;
+		m_pMyHuman->m_stSancInfo.Sanc6 = m_pMyHuman->m_stSancInfo.Sanc7;
+		m_pMyHuman->m_stSancInfo.Legend6 = m_pMyHuman->m_stSancInfo.Legend7;
+	}
+
+	m_pMyHuman->InitObject();
+	m_pMyHuman->CheckWeapon(pMobData->Equip[6].sIndex, pMobData->Equip[7].sIndex);
+	m_pMyHuman->InitAngle(0.0f, m_pMyHuman->m_fAngle, 0.0f);
+
+	m_pMyHuman->CheckAffect();
+	SetSanc();
 }
 
 void TMFieldScene::SetMyHumanExp(long long unExp, int nFakeExp)
