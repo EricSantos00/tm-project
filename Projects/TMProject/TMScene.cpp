@@ -1838,10 +1838,6 @@ int TMScene::GroundGetMask(TMVector2 vecPosition)
 		nYIndex = 255;
 
 	int value = m_HeightMapData[nYIndex][nXIndex];
-
-	if(value != 0)
-		std::cout << "Current Height " << value << '\n';
-
 	return m_HeightMapData[nYIndex][nXIndex];
 }
 

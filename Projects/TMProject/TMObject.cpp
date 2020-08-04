@@ -171,7 +171,7 @@ int TMObject::Render()
 			else
 				m_AlphaColor = m_AlphaColor - 0.02f;
 		}
-		else if (m_AlphaColor >= 0.94f)
+		else if (m_AlphaColor >= 0.94999999f)
 		{
 			m_AlphaColor = 1.0f;
 			m_nAlpha = 0;

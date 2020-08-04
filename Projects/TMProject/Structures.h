@@ -55,6 +55,14 @@ struct TMVector2
 		return ret;
 	}
 
+	TMVector2* operator+=(const TMVector2 other)
+	{
+		this->x = this->x + other.x;
+		this->y = this->y + other.y;
+
+		return this;
+	}
+
 	TMVector2* operator+=(const TMVector2* other)
 	{
 		this->x = this->x + other->x;

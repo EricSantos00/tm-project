@@ -712,15 +712,19 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
         int sw = pHeight[x + g_HeightWidth * (y - g_HeightPosY + 1) - g_HeightPosX - 1];
         int w = pHeight[x + g_HeightWidth * (y - g_HeightPosY) - g_HeightPosX - 1];
         int nw = pHeight[x + g_HeightWidth * (y - g_HeightPosY - 1) - g_HeightPosX - 1];
-
+        if (tx == x && ty == y)
+        {
+            Route[i] = 0;
+            break;
+        }
         if (tx == x && ty > y && s < MH + cul && s > cul - MH)
         {
-            Route[i] = '8';
+            Route[i] = 56;
             ++y;
         }
         else if (tx == x && ty < y && n < MH + cul && n > cul - MH)
         {
-            Route[i] = '2';
+            Route[i] = 50;
             --y;
         }
         else if (tx > x
@@ -729,13 +733,13 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
             && ne > cul - MH
             && (n < MH + cul && n > cul - MH || e < MH + cul && e > cul - MH))
         {
-            Route[i] = '3';
+            Route[i] = 51;
             ++x;
             --y;
         }
         else if (tx > x && ty == y && e < MH + cul && e > cul - MH)
         {
-            Route[i] = '6';
+            Route[i] = 54;
             ++x;
         }
         else if (tx > x
@@ -744,7 +748,7 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
             && se > cul - MH
             && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
         {
-            Route[i] = '9';
+            Route[i] = 57;
             ++x;
             ++y;
         }
@@ -754,13 +758,13 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
             && sw > cul - MH
             && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
         {
-            Route[i] = '7';
+            Route[i] = 55;
             --x;
             ++y;
         }
         else if (tx < x && ty == y && w < MH + cul && w > cul - MH)
         {
-            Route[i] = '4';
+            Route[i] = 52;
             --x;
         }
         else if (tx < x
@@ -769,48 +773,48 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
             && nw > cul - MH
             && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
         {
-            Route[i] = '1';
+            Route[i] = 49;
             --x;
             --y;
         }
         else if (tx > x && ty < y && e < MH + cul && e > cul - MH)
         {
-            Route[i] = '6';
+            Route[i] = 54;
             ++x;
         }
         else if (tx > x && ty < y && n < MH + cul && n > cul - MH)
         {
-            Route[i] = '2';
+            Route[i] = 50;
             --y;
         }
         else if (tx > x && ty > y && e < MH + cul && e > cul - MH)
         {
-            Route[i] = '6';
+            Route[i] = 54;
             ++x;
         }
         else if (tx > x && ty > y && s < MH + cul && s > cul - MH)
         {
-            Route[i] = '8';
+            Route[i] = 56;
             ++y;
         }
         else if (tx < x && ty > y && w < MH + cul && w > cul - MH)
         {
-            Route[i] = '4';
+            Route[i] = 52;
             --x;
         }
         else if (tx < x && ty > y && s < MH + cul && s > cul - MH)
         {
-            Route[i] = '8';
+            Route[i] = 56;
             ++y;
         }
         else if (tx < x && ty < y && w < MH + cul && w > cul - MH)
         {
-            Route[i] = '4';
+            Route[i] = 52;
             --x;
         }
         else if (tx < x && ty < y && n < MH + cul && n > cul - MH)
         {
-            Route[i] = '2';
+            Route[i] = 50;
             --y;
         }
         else
@@ -826,7 +830,7 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
                 && se > cul - MH
                 && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
             {
-                Route[i] = '9';
+                Route[i] = 57;
                 ++x;
                 ++y;
             }
@@ -836,7 +840,7 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
                 && sw > cul - MH
                 && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
             {
-                Route[i] = '7';
+                Route[i] = 55;
                 --x;
                 ++y;
             }
@@ -846,7 +850,7 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
                 && ne > cul - MH
                 && (n < MH + cul && n > cul - MH || e < MH + cul && e > cul - MH))
             {
-                Route[i] = '3';
+                Route[i] = 51;
                 ++x;
                 --y;
             }
@@ -856,7 +860,7 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
                 && nw > cul - MH
                 && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
             {
-                Route[i] = '1';
+                Route[i] = 49;
                 --x;
                 --y;
             }
@@ -866,7 +870,7 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
                 && sw > cul - MH
                 && (s < MH + cul && s > cul - MH || w < MH + cul && w > cul - MH))
             {
-                Route[i] = '7';
+                Route[i] = 55;
                 --x;
                 ++y;
             }
@@ -876,7 +880,7 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
                 && nw > cul - MH
                 && (n < MH + cul && n > cul - MH || w < MH + cul && w > cul - MH))
             {
-                Route[i] = '1';
+                Route[i] = 49;
                 --x;
                 --y;
             }
@@ -886,7 +890,7 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
                 && se > cul - MH
                 && (s < MH + cul && s > cul - MH || e < MH + cul && e > cul - MH))
             {
-                Route[i] = '9';
+                Route[i] = 57;
                 ++x;
                 ++y;
             }
@@ -901,8 +905,7 @@ int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int dis
                     Route[i] = 0;
                     break;
                 }
-
-                Route[i] = '3';
+                Route[i] = 51;
                 ++x;
                 --y;
             }
