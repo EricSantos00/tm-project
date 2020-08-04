@@ -2054,7 +2054,295 @@ int TMFieldScene::OnKeyDownEvent(unsigned int iKeyCode)
 
 int TMFieldScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
 {
-	return 0;
+	DWORD dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (dwServerTime < g_dwStartQuitGameTime + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastLogout + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastSelServer + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastTown + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastResurrect + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastTeleport + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastRelo + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastWhisper + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwNPCClickTime + 1000)
+		return 1;
+
+	if (m_bAirMove == 1)
+		return 0;
+
+	if (TMScene::OnMouseEvent(dwFlags, wParam, nX, nY) == 1)
+		return 1;
+
+	if (g_bActiveWB == 1)
+		return 1;
+
+	if (m_bCriticalError == 1)
+		return 1;
+
+	for (int nModIndex = 0; nModIndex < 8; ++nModIndex)
+	{
+		if (m_pControlContainer->m_pModalControl[nModIndex] &&
+			m_pControlContainer->m_pModalControl[nModIndex]->IsVisible())
+		{
+			if (m_pControlContainer->m_pModalControl[nModIndex] != static_cast<SControl*>(m_pMessageBox))
+				return 1;
+
+			if (m_pMessageBox->m_dwMessage != 601 && m_pMessageBox->m_dwMessage != 927)
+				return 1;
+		}
+	}
+
+	if (nX != m_nLastMousePosX || nY != m_nLastMousePosY || !g_pEventTranslator->button[0] && !g_pEventTranslator->button[1])
+	{
+		m_nLastMousePosX = nX;
+		m_nLastMousePosY = nY;
+		m_dwLastMousePosTime = dwServerTime;
+	}
+
+	if (m_pMessageBox->m_bVisible == 1 && 
+		m_pMessageBox->m_dwMessage == 99 &&
+		g_pObjectManager->m_stMobData.CurrentScore.Hp > 0 &&
+		!m_pMyHuman->m_cDie)
+	{
+		m_pMessageBox->SetVisible(0);
+	}
+
+	auto pMobData = &g_pObjectManager->m_stMobData;
+
+	if (m_cResurrect ||
+		pMobData->Equip[13].sIndex == 769 ||
+		g_pObjectManager->m_stMobData.CurrentScore.Hp > 0 && m_pMyHuman->m_cDie != 1 ||
+		dwFlags != 516 ||
+		wParam & 8 ||
+		nX <= 0 ||
+		nY <= 0 ||
+		nX >= static_cast<int>(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift) ||
+		nY >= static_cast<int>(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift))
+	{
+		if ((g_pObjectManager->m_stMobData.CurrentScore.Hp <= 0 || m_pMyHuman->m_cDie == 1)
+			&& dwFlags == 513
+			&& !m_pMyHuman->m_sFamCount)
+		{
+			POINT pt{};
+			pt.x = static_cast<int>(m_pMyHuman->m_vecPosition.x);
+			pt.y = static_cast<int>(m_pMyHuman->m_vecPosition.y);
+
+			RECT rectTownInCastle{};//??
+
+			if (!m_pMessageBox->IsVisible() && (!m_pMyHuman->IsInTown() || PtInRect(&rectTownInCastle, pt) == 1))
+			{
+				m_pMessageBox->SetMessage(g_pMessageStringTable[27], 11u, 0);
+				m_pMessageBox->SetVisible(1);
+				return 1;
+			}
+		}
+		if (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_DEAD)
+			return 1;
+
+		if (wParam & 4 && dwFlags == 516)
+		{
+			if (m_pMouseOverHuman)
+			{
+				if (m_pMouseOverHuman->m_dwID < 1000)
+				{
+					char szStrTemp[128]{};
+					sprintf_s(szStrTemp, "/%s ", m_pMouseOverHuman->m_szName);
+
+					m_pEditChat->SetText(szStrTemp);
+
+					m_dwOldAttackTime = dwServerTime;
+					return 1;
+				}
+			}
+		}
+
+		auto vec = GroundGetPickPos();
+
+		auto pPanel = m_pInvenPanel;
+
+		if (m_pMyHuman->m_bSliding == 1)
+			return 1;
+
+		if (m_pMyHuman->m_cOnlyMove == 1 
+			&& (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_STAND01 || 
+				m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_STAND02 ||
+				m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_LEVELUP))
+		{
+			m_pMyHuman->m_cOnlyMove = 0;
+			m_pMyHuman->SetSpeed(m_bMountDead);
+		}
+
+		if (m_pMyHuman->m_cOnlyMove == 1)
+			return 1;
+
+		if (m_pMyHuman->m_cSameHeight == 1)
+			return 1;
+
+		if (dwFlags == 512)
+			MouseMove(nX, nY);
+
+		if (dwFlags == 513)
+		{
+			if (m_cLastFlagLButtonUp == 1)
+				m_dwLastMouseDownTime = dwServerTime;
+
+			m_cLastFlagLButtonUp = 0;
+		}
+
+		if (g_pObjectManager->m_stMobData.CurrentScore.Hp > 0)
+		{
+			int SWidth = g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift;
+			int SHeight = g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift;
+
+			if (nX > 0 && nY > 0 && nX < SWidth && nY < SHeight)
+			{
+				if (dwFlags == 517 && wParam & 8)
+				{
+					if (m_stAutoTrade.TargetID == m_pMyHuman->m_dwID)
+						return 1;
+
+					if (m_pMouseOverHuman && m_pMouseOverHuman->m_dwEdgeColor != 0x8800FF00)
+						PGTVisible(dwServerTime);
+
+					return 1;
+				}
+
+				if (dwFlags == 516 && !(wParam & 8))
+				{
+					if (wParam & 4)
+						return SkillUse(nX, nY, vec, dwServerTime, 0, 0);
+					else
+						return SkillUse(nX, nY, vec, dwServerTime, 1, 0);
+				}
+
+				if (dwFlags == 514)
+				{
+					m_cLastFlagLButtonUp = 1;
+					m_bMoveing = 0;
+
+					if (m_pMyHuman->m_cHide == 1)
+						return 1;
+
+					if (m_stAutoTrade.TargetID == m_pMyHuman->m_dwID)
+						return 1;
+
+					return MouseClick_NPC(nX, nY, vec, dwServerTime);
+				}
+
+				if (dwFlags == 513 && !m_pMyHuman->m_cHide && (!m_bMoveing || wParam & 4))
+				{
+					int nRet = MobAttack(wParam, vec, dwServerTime);
+
+					if (!nRet)
+						nRet = CheckMerchant(m_pMouseOverHuman);
+
+					float fHeight = static_cast<float>(GroundGetMask(TMVector2{ vec.x, vec.z })) * 0.1f;
+
+					TMVector3 vecTar{ vec.x, fHeight + 0.30000001f, vec.z };
+
+					m_pTarget1->m_vecPosition = vecTar;
+					m_pTarget2->m_vecPosition = vecTar;
+					m_pTargetBill->m_vecPosition = vecTar;
+
+					m_pTargetBill->m_vecPosition.y -= 0.2f;
+
+					if (nRet)
+						return nRet;
+				}
+
+				if (dwFlags != 513 || wParam & 4 || g_pCursor->m_pAttachedItem || m_pMyHuman->m_cCantMove)
+				{
+					if (dwFlags == 513 && pPanel->IsVisible() == 1 && g_pCursor->m_pAttachedItem)
+					{
+						if (g_pCursor->m_pAttachedItem->m_pItem->sIndex >= 5000 && g_pCursor->m_pAttachedItem->m_pItem->sIndex < 5096)
+							return 1;
+
+						DropItem(dwServerTime);
+						return 1;
+					}
+				}
+				else if (m_pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_SEATING && m_pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_PUNISHING)
+				{
+					if (static_cast<float>(nX) >= (m_pChatBack->GetPos().x + 10.0f) &&
+						abs(static_cast<int>(vec.x - m_pMyHuman->m_vecPosition.x)) < 15 &&
+						abs(static_cast<int>(vec.y - m_pMyHuman->m_vecPosition.y)) > 15)
+					{
+						m_bMoveing = 1;
+
+						float fHeight = static_cast<float>(GroundGetMask(TMVector2{ vec.x, vec.z })) * 0.1f;
+
+						TMVector3 vecTar{ vec.x, fHeight + 0.30000001f, vec.z };
+
+						m_pTarget1->m_vecPosition = vecTar;
+						m_pTarget2->m_vecPosition = vecTar;
+						m_pTargetBill->m_vecPosition = vecTar;
+
+						m_pTargetBill->m_vecPosition.y -= 0.2f;
+						
+						MobMove(vec, dwServerTime);
+					}
+				}
+				else
+				{
+					if (m_pMyHuman->m_SendeMotion != ECHAR_MOTION::ECMOTION_NONE)
+						return 1;
+
+					MSG_Motion stMotion{};
+
+					stMotion.Header.ID = g_pObjectManager->m_dwCharID;
+					stMotion.Header.Type = MSG_Motion_Opcode;
+
+					if (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_SEATING)
+						stMotion.Motion = 25;
+					else
+						stMotion.Motion = 27;
+
+					stMotion.Direction = 0.0f;
+
+					m_pMyHuman->m_SendeMotion = static_cast<ECHAR_MOTION>(stMotion.Motion);
+
+					SendOneMessage((char*)&stMotion, sizeof(stMotion));
+
+					m_dwKeyTime = dwServerTime;
+				}
+			}
+		}
+		return 0;
+	}
+
+	for (int i = 0; i < 20; ++i)
+	{
+		char cSkillIndex = g_pObjectManager->m_cShortSkill[i];
+
+		if (cSkillIndex == 99)
+		{
+			g_pObjectManager->m_cSelectShortSkill = cSkillIndex;
+			
+			UpdateSkillBelt();
+
+			m_pMessageBox->SetMessage(g_pMessageStringTable[227], 99u, 0);
+			m_pMessageBox->SetVisible(1);
+			return 1;
+		}
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)

@@ -684,6 +684,15 @@ struct MSG_Action
 	unsigned short TargetY;
 };
 
+constexpr auto MSG_Motion_Opcode = 0x36A;
+struct MSG_Motion
+{
+	MSG_STANDARD Header;
+	short Motion;
+	short Parm;
+	float Direction;
+};
+
 struct MSG_CAPSULEINFO
 {
 	MSG_STANDARD Header;
