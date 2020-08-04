@@ -14,6 +14,7 @@ char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
 STRUCT_ITEMLIST g_pItemList[6500];
 STRUCT_SPELL g_pSpell[248];
 STRUCT_INITITEM g_pInitItem[100];
+int g_itemicon[6500];
 
 STRUCT_GUILDZONE g_pGuildZone[MAX_GUILDZONE] =
 {
@@ -952,7 +953,15 @@ int BASE_GetSpeed(STRUCT_SCORE* score)
 
 int ReadItemicon()
 {
-	return 0;
+    FILE* fpBin = nullptr;
+    fopen_s(&fpBin, "./itemicon.bin", "rb");
+    if (fpBin)
+    {
+        fread(g_itemicon, sizeof(g_itemicon), 1u, fpBin);
+        fclose(fpBin);
+    }
+
+    return 1;
 }
 
 void ReadItemName()
