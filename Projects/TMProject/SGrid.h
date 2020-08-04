@@ -98,6 +98,9 @@ public:
     int _nCellY;
     unsigned int _dwFlags;
     unsigned int _wParam;
+
+public:
+    static inline short m_sLastMouseOverIndex{-1};
 };
 
 class SGridControlItem : public S3DObj

@@ -2606,6 +2606,80 @@ void TMFieldScene::FrameMove_KhepraDieEffect(unsigned int dwServerTime)
 
 void TMFieldScene::SetVisibleInventory()
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	auto pCargoPanel = m_pCargoPanel;
+	auto pPanel = m_pInvenPanel;
+	auto pCPanel = m_pCPanel;
+	auto pSkillPanel = m_pSkillPanel;
+	auto pSkillMPanel = m_pSkillMPanel;
+	auto pTradePanel = m_pTradePanel;
+	auto pATradePanel = m_pAutoTrade;
+	auto pItemMixPanel = m_pItemMixPanel;
+	auto pItemMixPanel4 = m_pItemMixPanel4;
+	auto pHellgateStore = m_pHellgateStore;
+	auto pGambleStore = m_pGambleStore;
+
+	if (m_pGambleStore->IsVisible() == 1)
+		pPanel->m_bVisible = 0;
+
+	if (pGambleStore->IsVisible() == 1)
+		pCPanel->m_bVisible = 0;
+
+	int bInv = pPanel->m_bVisible == 0;
+
+	if (pATradePanel && pATradePanel->IsVisible() == 1)
+		SetVisibleAutoTrade(0, 0);
+
+	if (pGambleStore && pGambleStore->IsVisible() == 1)
+		SetVisibleGamble(0, 0);
+
+	pPanel->SetVisible(bInv == 0);
+
+	if (!bInv)
+	{
+		ClearCombine();
+		ClearCombine4();
+		ClearMixPannel();
+
+		m_ItemMixClass.m_pMixPanel->SetVisible(0);
+
+		if (m_ItemMixClass.m_pMixPanel)
+			m_ItemMixClass.m_pMixPanel->SetVisible(0);
+
+		ClearMissionPannel();
+
+		m_MissionClass.m_pMissionPanel->SetVisible(0);
+
+		if (m_MissionClass.m_pMissionPanel)
+			m_MissionClass.m_pMissionPanel->SetVisible(0);
+
+		SetVisibleShop(0);
+
+		pCargoPanel->SetVisible(0);
+		pItemMixPanel->SetVisible(0);
+		pItemMixPanel4->SetVisible(0);
+		pHellgateStore->SetVisible(0);
+
+		SetGridState();
+
+		m_pInputGoldPanel->SetVisible(0);
+
+		if (pTradePanel->IsVisible() == 1)
+			SetVisibleTrade(0);
+
+		g_pCursor->DetachItem();
+	}
+
+	pPanel->SetVisible(bInv);
+
+	if (g_pSoundManager)
+	{
+		auto pSoundData = g_pSoundManager->GetSoundData(51);
+
+		if (pSoundData)
+			pSoundData->Play(0, 0);
+	}
 }
 
 void TMFieldScene::SetVisibleCharInfo()
@@ -3307,7 +3381,21 @@ int TMFieldScene::OnKeyCamView(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyVisibleInven(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'i' && iCharCode != 'I' && iCharCode != 'g' && iCharCode != 'G')
+		return 0;
+
+	if (m_pAutoTrade->IsVisible())
+		return 1;
+
+	SetVisibleInventory();
+
+	auto pPanel = m_pInvenPanel;
+	auto pBtnEquip = static_cast<SButton*>(m_pControlContainer->FindControl(65791u));
+
+	if (pBtnEquip)
+		pBtnEquip->SetSelected(pPanel->m_bVisible);
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyVisibleCharInfo(char iCharCode, int lParam)
