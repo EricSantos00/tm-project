@@ -877,18 +877,31 @@ void SText::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParen
 		}
 	}
 	else if (m_dwAlignType == 1)
-	{
-		int len = strlen(m_GCText.strString);
-		m_GCText.nPosX = (float)(ivParentPos.x + m_nPosX)
-			+ (float)((float)(m_nWidth - (float)((float)(6 * len) * fHeightRatio)) / 2.0f);
+	{				
+		// This code is from chinese cliente version.
+		//int len = strlen(m_GCText.strString);
+		//m_GCText.nPosX = (float)(ivParentPos.x + m_nPosX)
+		//	+ (float)((float)(m_nWidth - (float)((float)(6 * len) * fHeightRatio)) / 2.0f);
+				
+		// This code is from WYD BR version.
+		SIZE size;
+		GetTextExtentPoint32(g_pDevice->m_hDC, m_GCText.strString, strlen(m_GCText.strString), &size);
+		m_GCText.nPosX = (float)(ivParentPos.x + m_nPosX) + ((m_nWidth - (float)size.cx) / 2.0f);
+
 		if (m_cComma == 2)
 		{
-			m_GCText2.nPosX = (float)((float)(ivParentPos.x + m_nPosX) + m_nWidth)
-				- (float)((float)(8 * len + 8) * fWidthRatio);
-			m_GCText3.nPosX = (float)((float)(ivParentPos.x + m_nPosX) + m_nWidth)
-				- (float)((float)(8 * len + 8) * fWidthRatio);
-			m_GCText4.nPosX = (float)((float)(ivParentPos.x + m_nPosX) + m_nWidth)
-				- (float)((float)(8 * len + 8) * fWidthRatio);
+			SIZE size2;
+			GetTextExtentPoint32(g_pDevice->m_hDC, m_GCText2.strString, strlen(m_GCText2.strString), &size2);
+			SIZE size3;
+			GetTextExtentPoint32(g_pDevice->m_hDC, m_GCText3.strString, strlen(m_GCText3.strString), &size3);
+			SIZE size4;
+			GetTextExtentPoint32(g_pDevice->m_hDC, m_GCText4.strString, strlen(m_GCText4.strString), &size4);
+
+			auto fullSize = size2.cx + size3.cx + size4.cx;
+			m_GCText.nPosX = (float)(ivParentPos.x + m_nPosX) + ((m_nWidth - (float)fullSize) / 2.0f);
+			m_GCText2.nPosX = (float)(size2.cx / 2) + m_GCText.nPosX;
+			m_GCText3.nPosX = (float)(size3.cx / 2) + m_GCText2.nPosX;
+			m_GCText4.nPosX = (float)(size4.cx / 2) + m_GCText3.nPosX;
 		}
 	}
 	else if (m_dwAlignType == 2)
