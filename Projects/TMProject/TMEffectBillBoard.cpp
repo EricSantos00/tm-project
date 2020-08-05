@@ -248,17 +248,17 @@ int TMEffectBillBoard::FrameMove(unsigned int dwServerTime)
 		m_fProgress = (float)timespent / (float)m_dwLifeTime;
 	}
 
-	if (m_fProgress < 0.0)
+	if (m_fProgress < 0.0f)
 		m_fProgress = 0.0099999998f;
 
-	if (m_fProgress > 1.0)
+	if (m_fProgress > 1.0f)
 		m_fProgress = 1.0f;
 
 	switch (m_nFade)
 	{
 	case 1:
 	{
-		float fAlpha = sinf(m_fProgress * 3.1415927);
+		float fAlpha = sinf(m_fProgress * 3.1415927f);
 
 		DWORD dwA = (unsigned int)((float)m_dwA * fAlpha);
 		DWORD dwR = (unsigned int)((float)m_dwR * fAlpha);
@@ -273,7 +273,7 @@ int TMEffectBillBoard::FrameMove(unsigned int dwServerTime)
 	{
 		DWORD dwThis = (unsigned int)this % 100;
 		float fOther = 1.0f - m_fBaseAlpha;
-		float fVel = (dwServerTime + 200 * dwThis) % 3000 / 3000.0;
+		float fVel = (float)((dwServerTime + 200 * dwThis) % 3000) / 3000.0f;
 
 		DWORD dwA = (unsigned int)(((fOther * fabsf(sinf((fVel * 3.1415927f) * 2.0f))) + m_fBaseAlpha) * (float)m_dwA);
 		DWORD dwR = (unsigned int)(((fOther * fabsf(sinf((fVel * 3.1415927f) * 2.0f))) + m_fBaseAlpha) * (float)m_dwR);
