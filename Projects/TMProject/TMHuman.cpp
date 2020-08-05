@@ -2097,7 +2097,8 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         m_nLastRouteIndex = nRouteIndex % 48;
     }
 
-    float fElapsedAngleToTime = (float)((int)(dwServerTime - m_dwMoveToTime)) * 0.0049999999f;
+    unsigned int value = dwServerTime - m_dwMoveToTime;
+    float fElapsedAngleToTime = (float)(dwServerTime - m_dwMoveToTime) * 0.0049999999f;
     if (fElapsedAngleToTime > 1.0f)
         fElapsedAngleToTime = 1.0f;
 
@@ -4658,31 +4659,19 @@ void TMHuman::MoveTo(TMVector2 vecPos)
         TMVector2 dPosition = vecPos - m_vecPosition;
         m_vecMoveToPos = vecPos;
 
-        m_fWantAngle = atan2f(dPosition.x, dPosition.y) + 1.5707964f;
+        m_fWantAngle = (float)atan2f(dPosition.x, dPosition.y) + D3DXToRadian(90);
 
         if (m_fAngle < 0.0f)
-        {
-            m_fAngle = m_fAngle + 6.2831855f;
-        }
-        else if (m_fAngle > 6.2831855f)
-        {
-            m_fAngle = m_fAngle - 6.2831855f;
-        }
+            m_fAngle = m_fAngle + D3DXToRadian(360);
+        else if (m_fAngle > D3DXToRadian(360))
+            m_fAngle = m_fAngle - D3DXToRadian(360);
 
         m_fMoveToAngle = m_fAngle;
-        if ((float)(m_fWantAngle - m_fMoveToAngle) < 0.0f && 
-            (float)(m_fWantAngle - m_fMoveToAngle) < -3.1415927f)
-        {
-            m_fWantAngle = m_fWantAngle + 6.2831855f;
-        }
-        else if ((float)(m_fWantAngle - m_fMoveToAngle) > 0.0f && (float)(m_fWantAngle - m_fMoveToAngle) > 3.1415927f)
-        {
-            m_fWantAngle = m_fWantAngle - 6.2831855f;
-        }
-
-        printf("Moved to X: %d Y: %d from X: %d Y: %d\n", (int)m_vecMoveToPos.x, (int)m_vecMoveToPos.y,
-            (int)m_vecPosition.x, (int)m_vecPosition.y);
-
+        if ((float)(m_fWantAngle - m_fMoveToAngle) < 0.0f && (float)(m_fWantAngle - m_fMoveToAngle) < -D3DXToRadian(180))
+            m_fWantAngle = m_fWantAngle + D3DXToRadian(360);
+        else if ((float)(m_fWantAngle - m_fMoveToAngle) > 0.0f && (float)(m_fWantAngle - m_fMoveToAngle) > D3DXToRadian(180))
+            m_fWantAngle = m_fWantAngle - D3DXToRadian(360);
+              
         m_vecFromPos = m_vecPosition;
         m_vecDPosition = m_vecMoveToPos - m_vecPosition;
         float fDistance = m_vecDPosition.DistanceFrom(TMVector2(0.0f, 0.0f));
@@ -5453,13 +5442,13 @@ void TMHuman::GetRoute(IVector2 vecTarget, int nCount, int bStop)
         unsigned int dwDealyTime = 1000;
         unsigned int dwServerTime = g_pTimerManager->GetServerTime();
 
-        if (this == g_pCurrentScene->m_pMyHuman && (signed int)m_fMaxSpeed == 4)
+        if (this == g_pCurrentScene->m_pMyHuman && (int)m_fMaxSpeed == 4)
             dwDealyTime = 500;
-        if (this == g_pCurrentScene->m_pMyHuman && (signed int)m_fMaxSpeed == 5)
+        if (this == g_pCurrentScene->m_pMyHuman && (int)m_fMaxSpeed == 5)
             dwDealyTime = 500;
-        if (this == g_pCurrentScene->m_pMyHuman && (signed int)m_fMaxSpeed == 6)
+        if (this == g_pCurrentScene->m_pMyHuman && (int)m_fMaxSpeed == 6)
             dwDealyTime = 100;
-        if (this == g_pCurrentScene->m_pMyHuman && (signed int)m_fMaxSpeed == 7)
+        if (this == g_pCurrentScene->m_pMyHuman && (int)m_fMaxSpeed == 7)
             dwDealyTime = 100;
 
         unsigned int dwTime = g_pTimerManager->GetServerTime();
@@ -5855,7 +5844,7 @@ int TMHuman::ChangeRouteBuffer(int nSX, int nSY, TMVector2* pRouteTable, int* pM
             pRouteTable[i].y != pRouteTable[i + 1].y)
         {
             int tX = (int)pRouteTable[i].x;
-            int tY = (int)pRouteTable[i].y;    
+            int tY = (int)pRouteTable[i].y;
             
             char szBuffer[48]{};
 
