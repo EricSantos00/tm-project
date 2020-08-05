@@ -54,7 +54,7 @@ int TMFont2::SetText(const char* szString, unsigned int dwColor, int bCheckZero)
 
 	sprintf(m_szString, "%s", szString);
 
-	char tempbuff[256];
+	char tempbuff[256]{};
 	char* temp = tempbuff;
 
 	strcpy(tempbuff, m_szString);
@@ -405,7 +405,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
 					(float)RenderDevice::m_nFontSize,
 					(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2) - 1.0f),
-					(float)(nPosYa - 1.0f),
+					(float)(nPosYa - 1),
 					m_pTexture,
 					m_dwShadeColor,
 					m_fSize,
@@ -417,7 +417,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
 					(float)RenderDevice::m_nFontSize,
 					(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2) - 1.0f),
-					(float)(nPosYa + 1.0f),
+					(float)(nPosYa + 1),
 					m_pTexture,
 					m_dwShadeColor,
 					m_fSize,
@@ -429,7 +429,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
 					(float)RenderDevice::m_nFontSize,
 					(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2) + 1.0f),
-					(float)(nPosYa - 1.0f),
+					(float)(nPosYa - 1),
 					m_pTexture,
 					m_dwShadeColor,
 					m_fSize,
@@ -441,7 +441,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
 					(float)RenderDevice::m_nFontSize,
 					(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2) + 1.0f),
-					(float)(nPosYa + 1.0f),
+					(float)(nPosYa + 1),
 					m_pTexture,
 					m_dwShadeColor,
 					m_fSize,
@@ -455,7 +455,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 					(float)nLocLen * (float)(RenderDevice::m_nFontSize / 2.0f),
 					(float)RenderDevice::m_nFontSize,
 					(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2)),
-					(float)(nPosYa + 1.0f),
+					(float)(nPosYa + 1),
 					m_pTexture,
 					m_dwShadeColor,
 					m_fSize,
@@ -464,7 +464,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 
 			g_pDevice->RenderRectC(
 				0.0f,
-				(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
+				(float)nLine * (float)(RenderDevice::m_nFontSize),
 				(float)((float)nLocLen * (float)(RenderDevice::m_nFontSize / 2.0f)) + 5.0f,
 				(float)RenderDevice::m_nFontSize,
 				(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2)),
