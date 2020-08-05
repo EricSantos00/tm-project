@@ -2097,7 +2097,6 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         m_nLastRouteIndex = nRouteIndex % 48;
     }
 
-    unsigned int value = dwServerTime - m_dwMoveToTime;
     float fElapsedAngleToTime = (float)(dwServerTime - m_dwMoveToTime) * 0.0049999999f;
     if (fElapsedAngleToTime > 1.0f)
         fElapsedAngleToTime = 1.0f;
