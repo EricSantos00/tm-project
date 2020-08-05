@@ -22,6 +22,7 @@ public:
     int m_nLineNumber;
     char m_szString[MAX_STRRENDER];
     char m_szStringArray[3][44];
+    short m_szStringSize[3];
     IDirect3DTexture9* m_pTexture;
 	static char* m_pBuffer;
 	static unsigned int m_nLength;

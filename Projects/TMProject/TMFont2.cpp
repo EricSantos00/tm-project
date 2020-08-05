@@ -14,6 +14,8 @@ TMFont2::TMFont2()
 	m_bMultiLine = 0;
 	memset(m_szString, 0, sizeof(m_szString));
 	memset(m_szStringArray, 0, sizeof(m_szStringArray));
+	memset(m_szStringSize, 0, sizeof(m_szStringSize));
+
 	m_nPosX = -1;
 	m_nPosY = -1;
 }
@@ -53,6 +55,8 @@ int TMFont2::SetText(const char* szString, unsigned int dwColor, int bCheckZero)
 	m_dwColor = dwColor;
 
 	sprintf(m_szString, "%s", szString);
+	m_szString[83] = 0;
+	m_szString[82] = 0;
 
 	char tempbuff[256]{};
 	char* temp = tempbuff;
@@ -113,6 +117,7 @@ int TMFont2::SetText(const char* szString, unsigned int dwColor, int bCheckZero)
 
 	if (g_pDevice->m_hbmBitmap != nullptr)
 	{
+		memset(m_szStringSize, 0, sizeof(m_szStringSize));
 		RECT rect;
 		rect.left = 0;
 		rect.top = 0;
@@ -122,23 +127,19 @@ int TMFont2::SetText(const char* szString, unsigned int dwColor, int bCheckZero)
 		FillRect(g_pDevice->m_hDC, &rect, 0);
 		for (int nLine = 0; nLine < m_nLineNumber; ++nLine)
 		{
-			char szTemp[45];
+			char szTemp[45]{};
 			memset(szTemp, ' ', sizeof(szTemp));
 
-			TextOut(g_pDevice->m_hDC, 0, nLine * (RenderDevice::m_nFontSize + 1), szTemp,
-				strlen(szTemp));
+			TextOut(g_pDevice->m_hDC, 0, nLine * (RenderDevice::m_nFontSize + 1), szTemp, strlen(szTemp));
 
 			sprintf(szTemp, "%s ", m_szStringArray[nLine]);
 
-			if (strlen(szTemp) != 0)
-			{
-				TextOut(g_pDevice->m_hDC, 0, nLine * (RenderDevice::m_nFontSize + 1), szTemp,
-					strlen(szTemp));
-			}
+			if(strlen(szTemp))
+				TextOut(g_pDevice->m_hDC, 0, nLine * (RenderDevice::m_nFontSize + 1), szTemp, strlen(szTemp));
 
 			if (bCheckZero)
 			{
-				char szTemp2[45] = { 0, };
+				char szTemp2[45]{};
 
 				bool bFind = false;
 				int nLenTemp = strlen(szTemp);
@@ -164,6 +165,12 @@ int TMFont2::SetText(const char* szString, unsigned int dwColor, int bCheckZero)
 					SetBkMode(g_pDevice->m_hDC, 2);
 				}
 			}
+
+			SIZE size;
+			GetTextExtentPoint32(g_pDevice->m_hDC, m_szStringArray[nLine],
+				strlen(m_szStringArray[nLine]), &size);
+
+			m_szStringSize[nLine] = size.cx;
 		}
 	}
 
@@ -275,7 +282,7 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 	if (m_nPosY != -1)
 		nPosY = m_nPosY;
 
-	int nPosYa = nPosY + 1;
+	nPosY = nPosY + 1;
 	if (m_pTexture == nullptr)
 		SetText(m_szString, m_dwColor, 0);
 
@@ -289,107 +296,31 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 	int nLength = 0;
 	for (int nLine = 0; nLine < m_nLineNumber; ++nLine)
 	{
-		int nLocLen = strlen(m_szStringArray[nLine]);
+		int nLocLen = m_szStringSize[nLine];
 		if (m_bMultiLine == 1)
 		{
-			if (nRenderType == (int)RENDERCTRLTYPE::RENDER_TEXT_FOCUS)
+			if (nRenderType != (int)RENDERCTRLTYPE::RENDER_TEXT)
 			{
 				g_pDevice->RenderRectC(
 					0.0f,
 					(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
-					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
-					(float)RenderDevice::m_nFontSize,
-					(float)(nPosX - 1),
-					(float)(nPosYa - 1) + (float)(RenderDevice::m_nFontSize * nLine),
-					m_pTexture,
-					m_dwShadeColor,
-					1.0f,
-					1.0f);
-
-				g_pDevice->RenderRectC(
-					0.0f,
-					(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
-					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
-					(float)RenderDevice::m_nFontSize,
-					(float)(nPosX - 1),
-					(float)(nPosYa + 1) + (float)(RenderDevice::m_nFontSize * nLine),
-					m_pTexture,
-					m_dwShadeColor,
-					1.0f,
-					1.0f);
-
-				g_pDevice->RenderRectC(
-					0.0f,
-					(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
-					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
+					(float)(nLocLen),
 					(float)RenderDevice::m_nFontSize,
 					(float)(nPosX + 1),
-					(float)(nPosYa - 1) + (float)(RenderDevice::m_nFontSize * nLine),
+					((float)(nPosY + 1) + (float)(nLine * RenderDevice::m_nFontSize)),
 					m_pTexture,
 					m_dwShadeColor,
 					1.0f,
 					1.0f);
-
-				g_pDevice->RenderRectC(
-					0.0f,
-					(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
-					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
-					(float)RenderDevice::m_nFontSize,
-					(float)(nPosX + 1),
-					(float)(nPosYa + 1) + (float)(RenderDevice::m_nFontSize * nLine),
-					m_pTexture,
-					m_dwShadeColor,
-					1.0f,
-					1.0f);
-			}
-			else if (nRenderType > (int)RENDERCTRLTYPE::RENDER_TEXT)
-			{
-				float _cx = 0.0f;
-				float _cy = 0.0f;
-				if (m_nLineNumber <= 1)
-				{
-					_cx = (float)(nPosX + 1) + 2.0f;
-					_cy = (float)(nPosYa + RenderDevice::m_nFontSize * nLine + 1) - 4.0f;
-				}
-				else
-				{
-					_cx = 261.0f;
-					_cy = (float)(nPosYa + RenderDevice::m_nFontSize * nLine + 1) - 8.0f;
-				}
-
-				g_pDevice->RenderRectC(
-					0.0f,
-					(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
-					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
-					(float)RenderDevice::m_nFontSize,
-					_cx,
-					_cy,
-					m_pTexture,
-					m_dwShadeColor,
-					1.0f,
-					1.0f);
-			}
-
-			float _cxa = 0.0f;
-			float _cya = 0.0f;
-			if (m_nLineNumber <= 1)
-			{
-				_cxa = (float)nPosX + 2.0f;
-				_cya = (float)(nPosYa + RenderDevice::m_nFontSize * nLine) - 4.0f;
-			}
-			else
-			{
-				_cxa = 260.0f;
-				_cya = (float)(nPosYa + RenderDevice::m_nFontSize * nLine) - 8.0f;
 			}
 
 			g_pDevice->RenderRectC(
 				0.0f,
 				(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
-				(float)nLocLen * (float)(RenderDevice::m_nFontSize / 2),
+				(float)nLocLen,
 				(float)RenderDevice::m_nFontSize,
-				_cxa,
-				_cya,
+				(float)(nPosX),
+				(float)((float)(nPosY) + (float)(nLine * RenderDevice::m_nFontSize)),
 				m_pTexture,
 				m_dwColor,
 				1.0f,
@@ -397,65 +328,15 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 		}
 		else
 		{
-			if (nRenderType == (int)RENDERCTRLTYPE::RENDER_TEXT_FOCUS)
+			if (nRenderType != (int)RENDERCTRLTYPE::RENDER_TEXT)
 			{
 				g_pDevice->RenderRectC(
 					0.0f,
 					(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
-					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
+					(float)nLocLen,
 					(float)RenderDevice::m_nFontSize,
-					(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2) - 1.0f),
-					(float)(nPosYa - 1),
-					m_pTexture,
-					m_dwShadeColor,
-					m_fSize,
-					m_fSize);
-
-				g_pDevice->RenderRectC(
-					0.0f,
-					(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
-					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
-					(float)RenderDevice::m_nFontSize,
-					(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2) - 1.0f),
-					(float)(nPosYa + 1),
-					m_pTexture,
-					m_dwShadeColor,
-					m_fSize,
-					m_fSize);
-
-				g_pDevice->RenderRectC(
-					0.0f,
-					(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
-					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
-					(float)RenderDevice::m_nFontSize,
-					(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2) + 1.0f),
-					(float)(nPosYa - 1),
-					m_pTexture,
-					m_dwShadeColor,
-					m_fSize,
-					m_fSize);
-
-				g_pDevice->RenderRectC(
-					0.0f,
-					(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
-					(float)((float)nLocLen * (float)RenderDevice::m_nFontSize) / 2.0f,
-					(float)RenderDevice::m_nFontSize,
-					(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2) + 1.0f),
-					(float)(nPosYa + 1),
-					m_pTexture,
-					m_dwShadeColor,
-					m_fSize,
-					m_fSize);
-			}
-			else if (nRenderType > (int)RENDERCTRLTYPE::RENDER_TEXT)
-			{
-				g_pDevice->RenderRectC(
-					0.0f,
-					(float)nLine * (float)RenderDevice::m_nFontSize,
-					(float)nLocLen * (float)(RenderDevice::m_nFontSize / 2.0f),
-					(float)RenderDevice::m_nFontSize,
-					(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2)),
-					(float)(nPosYa + 1),
+					((float)nPosX + (float)nLength) + 1.0f,
+					(float)(nPosY + 1),
 					m_pTexture,
 					m_dwShadeColor,
 					m_fSize,
@@ -464,11 +345,11 @@ int TMFont2::Render(int nPosX, int nPosY, int nRenderType)
 
 			g_pDevice->RenderRectC(
 				0.0f,
-				(float)nLine * (float)(RenderDevice::m_nFontSize),
-				(float)((float)nLocLen * (float)(RenderDevice::m_nFontSize / 2.0f)) + 5.0f,
+				(float)nLine * (float)(RenderDevice::m_nFontSize + 1),
+				(float)nLocLen,
 				(float)RenderDevice::m_nFontSize,
-				(float)((float)nPosX + (float)(RenderDevice::m_nFontSize * nLength / 2)),
-				(float)nPosYa,
+				(float)nPosX + (float)nLength,
+				(float)nPosY,
 				m_pTexture,
 				m_dwColor,
 				m_fSize,

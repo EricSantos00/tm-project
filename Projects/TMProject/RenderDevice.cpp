@@ -1911,16 +1911,16 @@ void RenderDevice::RenderRectC(float iStartX, float iStartY, float iCX, float iC
 	m_CtrlVertex[0].tv = iStartY / (float)RenderDevice::m_nFontTextureSizeY;
 	m_CtrlVertex[1].position.x = (float)(iCX * fScaleX) + iDestX;
 	m_CtrlVertex[1].position.y = iDestY;
-	m_CtrlVertex[1].tu = (float)((float)(iStartX + iCX) + 0.5) / (float)RenderDevice::m_nFontTextureSize;
-	m_CtrlVertex[1].tv = (float)(iStartY + 0.5) / (float)RenderDevice::m_nFontTextureSizeY;
+	m_CtrlVertex[1].tu = (float)((float)(iStartX + iCX) + 0.5f) / (float)RenderDevice::m_nFontTextureSize;
+	m_CtrlVertex[1].tv = (float)(iStartY + 0.5f) / (float)RenderDevice::m_nFontTextureSizeY;
 	m_CtrlVertex[2].position.x = (float)(iCX * fScaleX) + iDestX;
 	m_CtrlVertex[2].position.y = (float)(iCY * fScaleY) + iDestY;
-	m_CtrlVertex[2].tu = (float)((float)(iStartX + iCX) + 0.5) / (float)RenderDevice::m_nFontTextureSize;
-	m_CtrlVertex[2].tv = (float)((float)(iStartY + iCY) + 0.5) / (float)RenderDevice::m_nFontTextureSizeY;
+	m_CtrlVertex[2].tu = (float)((float)(iStartX + iCX) + 0.5f) / (float)RenderDevice::m_nFontTextureSize;
+	m_CtrlVertex[2].tv = (float)((float)(iStartY + iCY) + 0.5f) / (float)RenderDevice::m_nFontTextureSizeY;
 	m_CtrlVertex[3].position.x = iDestX;
 	m_CtrlVertex[3].position.y = (float)(iCY * fScaleY) + iDestY;
 	m_CtrlVertex[3].tu = iStartX / (float)RenderDevice::m_nFontTextureSize;
-	m_CtrlVertex[3].tv = (float)((float)(iStartY + iCY) + 0.5) / (float)RenderDevice::m_nFontTextureSizeY;
+	m_CtrlVertex[3].tv = (float)((float)(iStartY + iCY) + 0.5f) / (float)RenderDevice::m_nFontTextureSizeY;
 
 	for (int j = 0; j < 4; ++j)
 		m_CtrlVertex[j].diffuse = dwColor;
@@ -3274,7 +3274,7 @@ void RenderDevice::RenderGeomControl(GeomControl* ipControl)
 					nUp = -1;
 				ipControl->pFont->Render(
 					(int)ipControl->nPosX,
-					nUp + (int)ipControl->nPosY,
+					(int)ipControl->nPosY + nUp,
 					(int)ipControl->eRenderType);
 			}
 			break;
