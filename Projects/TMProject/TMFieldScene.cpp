@@ -4475,6 +4475,113 @@ void TMFieldScene::SetSkillColor(TMHuman* pAttacker, char cSkillIndex)
 
 void TMFieldScene::OnESC()
 {
+	if (g_bActiveWB == 1)
+	{
+		g_pApp->SwitchWebBrowserState(0);
+	}
+	else if (m_pAutoTrade && m_pAutoTrade->IsVisible() == 1)
+	{
+		SetVisibleAutoTrade(0, 0);
+	}
+	else if (m_pPGTPanel->IsVisible() == 1)
+	{
+		m_pPGTPanel->SetVisible(0);
+	}
+	else if (m_pQuestPanel->IsVisible() == 1)
+	{
+		m_pQuestPanel->SetVisible(0);
+		m_pQuestBtn->SetSelected(0);
+
+		if (g_pSoundManager)
+		{
+			auto pSoundData = g_pSoundManager->GetSoundData(51);
+
+			if (pSoundData)
+				pSoundData->Play(0, 0);
+		}
+	}
+	else if (m_pFireWorkPanel && m_pFireWorkPanel->IsVisible() == 1)
+	{
+		m_pFireWorkPanel->SetVisible(0);
+	}
+	else if (m_pTotoPanel && m_pTotoPanel->IsVisible() == 1)
+	{
+		m_pTotoPanel->SetVisible(0);
+	}
+	else if (m_pInvenPanel->IsVisible() == 1)
+	{
+		OnControlEvent(65562u, 0);
+	}
+	else if (m_pSkillPanel->IsVisible() == 1)
+	{
+		OnControlEvent(65568u, 0);
+	}
+	else if (m_pCPanel->IsVisible() == 1)
+	{
+		OnControlEvent(65769u, 0);
+	}
+	else if (m_pTradePanel->IsVisible() == 1)
+	{
+		SetVisibleTrade(0);
+	}
+	else if (m_pPartyPanel->IsVisible() == 1)
+	{
+		SetVisibleParty();
+	}
+	else if (m_pShopPanel->IsVisible() == 1)
+	{
+		SetVisibleShop(0);
+	}
+	else if (m_pCargoPanel->IsVisible() == 1)
+	{
+		SetVisibleCargo(0);
+	}
+	else if (m_pGambleStore->IsVisible() == 1)
+	{
+		SetVisibleGamble(0, 0);
+	}
+	else if (m_pInputGoldPanel->IsVisible() == 1)
+	{
+		m_pInputGoldPanel->SetVisible(0);
+	}
+	else if (m_pMsgPanel && m_pMsgPanel->IsVisible() == 1)
+	{
+		m_pMsgPanel->SetVisible(0);
+		m_pControlContainer->SetFocusedControl(0);
+	}
+	else if (m_pHelpPanel && m_pHelpPanel->IsVisible() == 1)
+	{
+		m_pHelpPanel->SetVisible(0);
+		m_pHelpBtn->SetSelected(0);
+
+		if (g_pSoundManager)
+		{
+			auto pSoundData = g_pSoundManager->GetSoundData(51);
+
+			if (pSoundData)
+				pSoundData->Play(0, 0);
+		}
+	}
+	else if (m_pServerPanel && m_pServerPanel->IsVisible() == 1)
+	{
+		m_pServerPanel->SetVisible(0);
+	}
+	else if (m_pPotalPanel && m_pPotalPanel->IsVisible() == 1)
+	{
+		m_pPotalPanel->SetVisible(0);
+	}
+	else if (m_pMessageBox && m_pMessageBox->IsVisible() == 1)
+	{
+		m_pMessageBox->SetVisible(0);
+	}
+	else if (!m_pSystemPanel->IsVisible())
+	{
+		m_pSystemPanel->SetVisible(1);
+	}
+	else if (m_pSystemPanel->IsVisible() == 1)
+	{
+		m_pSystemPanel->SetVisible(0);
+	}
 }
 
 void TMFieldScene::FindAuto()
@@ -5103,7 +5210,11 @@ int TMFieldScene::OnKeyVisibleSkill(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyCamView(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 9)
+		return 0;
+
+	SetCameraView();
+	return 1;
 }
 
 int TMFieldScene::OnKeyVisibleInven(char iCharCode, int lParam)
