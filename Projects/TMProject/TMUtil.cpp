@@ -33,8 +33,6 @@ float disTanceSq(float stX, float stY, float taX, float taY)
 void SendOneMessage(char* Msg, int Size)
 {
     MSG_STANDARD* pMsgStandard = (MSG_STANDARD*)Msg;
-    if (pMsgStandard->Type == 0x36C)
-        return;
     if (Msg != nullptr 
         && (LastSendTime + 1000 < CurrentTime || pMsgStandard->Type != MSG_Action_Opcode || g_usLastPacketType != MSG_Action_Opcode)
         && (LastSendTime + 1000 <= CurrentTime || pMsgStandard->Type != MSG_Attack_Multi && pMsgStandard->Type != MSG_Attack_One 
