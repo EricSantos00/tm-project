@@ -14,6 +14,7 @@ char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
 STRUCT_ITEMLIST g_pItemList[6500];
 STRUCT_SPELL g_pSpell[248];
 STRUCT_INITITEM g_pInitItem[100];
+int g_itemicon[6500];
 
 STRUCT_GUILDZONE g_pGuildZone[MAX_GUILDZONE] =
 {
@@ -955,7 +956,15 @@ int BASE_GetSpeed(STRUCT_SCORE* score)
 
 int ReadItemicon()
 {
-	return 0;
+    FILE* fpBin = nullptr;
+    fopen_s(&fpBin, "./itemicon.bin", "rb");
+    if (fpBin)
+    {
+        fread(g_itemicon, sizeof(g_itemicon), 1u, fpBin);
+        fclose(fpBin);
+    }
+
+    return 1;
 }
 
 void ReadItemName()
@@ -1007,6 +1016,26 @@ bool CheckOS()
 
 void DisableSysKey()
 {
+}
+
+int IsSkill(int nSkillIndex)
+{
+    if (nSkillIndex >= 5000 && nSkillIndex <= 5104)
+        return 1;
+    if (nSkillIndex >= 5400 && nSkillIndex <= 5447)
+        return 1;
+
+    return 0;
+}
+
+int GetSkillIndex(int nSkillIndex)
+{
+    if (nSkillIndex >= 5400)
+        nSkillIndex -= 5200;
+    else if (nSkillIndex >= 5000)
+        nSkillIndex -= 5000;
+
+    return nSkillIndex;
 }
 
 int IsClearString(char* str, int target)
@@ -1229,5 +1258,113 @@ int BASE_IsInLowZone(int nX, int nY)
     LOG_WRITELOG("\nWrong Position [X:%d Y:%d]\n");
     MessageBox(g_pApp->m_hWnd, "Wrong Character Information.", "Error", MB_SYSTEMMODAL);
     PostMessage(g_pApp->m_hWnd, 16, 0, 0);
+    return 0;
+}
+
+int BASE_GetItemAmount(STRUCT_ITEM* item)
+{
+    return 0;
+}
+
+int BASE_CanCarry(STRUCT_ITEM* Carry, int pos)
+{
+    return 0;
+}
+
+int BASE_CanTrade(STRUCT_ITEM* Dest, STRUCT_ITEM* Carry, char* MyTrade, STRUCT_ITEM* OpponentTrade)
+{
+    return 0;
+}
+
+int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY)
+{
+    return 0;
+}
+
+int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans)
+{
+    return 0;
+}
+
+unsigned int BASE_GetItemColor(STRUCT_ITEM* item)
+{
+    return 0;
+}
+
+int BASE_GetManaSpent(int SkillNumber, int SaveMana, int Special)
+{
+    return 0;
+}
+
+int BASE_GetSkillDamage(int dam, int ac, int combat)
+{
+    return 0;
+}
+
+int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weapondamage, int OriginalFace)
+{
+    return 0;
+}
+
+int BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace)
+{
+    return 0;
+}
+
+int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type)
+{
+    return 0;
+}
+
+int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type)
+{
+    return 0;
+}
+
+int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char Type)
+{
+    return 0;
+}
+
+unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue)
+{
+    return 0;
+}
+
+int IsPassiveSkill(int nSkillIndex)
+{
+    if (nSkillIndex >= 5400)
+    {
+        nSkillIndex -= 5200;
+    }
+    else if (nSkillIndex >= 5000)
+    {
+        nSkillIndex -= 5000;
+    }
+
+    return g_pSpell[nSkillIndex].Passive == 1;
+}
+
+bool BASE_HasSancAdd(STRUCT_ITEM* item)
+{
+    for (auto i : item->stEffect)
+    {
+        if (i.cEffect == 43 || (i.cEffect >= 155 && i.cEffect <= 126))
+            return true;
+    }
+  
+    return false;
+}
+
+bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect)
+{
+    if (effect.cEffect == 43 || (effect.cEffect >= 155 && effect.cEffect <= 126))
+        return true;
+
+    return false;
+}
+
+int BASE_GetItemSancSuccess(STRUCT_ITEM* item)
+{
     return 0;
 }

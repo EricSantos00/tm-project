@@ -775,7 +775,7 @@ void NewApp::MixHelp()
 			if (szTemp[8] == '\t' || szTemp[8] == ' ')
 				sprintf(g_pItemMixHelp[ItemIndex].Help[j - 1], "%s", &szTemp[9]);
 
-			g_pItemMixHelp[ItemIndex].Color[j] = Color;
+			g_pItemMixHelp[ItemIndex].Color[j - 1] = Color;
 			g_pItemMixHelp[ItemIndex].Icon = Icon;
 			strcpy(g_pItemMixHelp[ItemIndex].Name, Name);
 		}

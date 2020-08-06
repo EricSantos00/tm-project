@@ -24,6 +24,7 @@ struct MSG_STANDARD
 	unsigned int Tick;
 };
 
+constexpr auto MSG_RequestCapsuleInfo_Opcode = 0x2CD;
 struct MSG_STANDARDPARM
 {
 	MSG_STANDARD Header;
@@ -991,6 +992,49 @@ struct MSG_CreateMobTrade
 	char Server;
 };
 
+constexpr auto MSG_SetShortSkill_Opcode = 0x378;
+struct MSG_SetShortSkill
+{
+	MSG_STANDARD Header;
+	char Skill[20];
+};
+
+constexpr auto MSG_SwapItem_Opcode = 0x376;
+struct MSG_SwapItem
+{
+	MSG_STANDARD Header;
+	char SourType;
+	char SourPos;
+	char DestType;
+	char DestPos;
+	unsigned short TargetID;
+};
+
+constexpr auto MSG_RepurchaseItems_Opcode = 0x3E8;
+struct MSG_RepurchaseItems
+{
+	MSG_STANDARD Header;
+	int target;
+	STRUCT_REPURCHASEITEM Repurcharse[10];
+};
+
+constexpr auto MSG_REQShopList_Opcode = 0x27B;
+struct MSG_REQShopList
+{
+	MSG_STANDARD Header;
+	unsigned short TargetID;
+};
+
+constexpr auto MSG_Buy_Opcode = 0x379;
+struct MSG_Buy
+{
+	MSG_STANDARD Header;
+	unsigned short TargetID;
+	short TargetCarryPos;
+	short MyCarryPos;
+	int Coin;
+};
+
 constexpr auto MSG_Attack_Multi = 0x367;
 constexpr auto MSG_Attack_One = 0x39D;
 constexpr auto MSG_Attack_Two = 0x39E;
@@ -1096,6 +1140,61 @@ static int g_nMountHPTable[28] =
   0
 };
 
+static int g_pSuccessRate[10] = { 5, 5, 5, 5, 4, 4, 3, 3, 2, 1 };
+
+static unsigned int dwEFParam[49] =
+{
+  18u,
+  1u,
+  22u,
+  23u,
+  24u,
+  25u,
+  2u,
+  3u,
+  4u,
+  5u,
+  45u,
+  46u,
+  44u,
+  42u,
+  47u,
+  48u,
+  54u,
+  40u,
+  29u,
+  49u,
+  50u,
+  51u,
+  52u,
+  11u,
+  12u,
+  13u,
+  14u,
+  26u,
+  74u,
+  7u,
+  8u,
+  9u,
+  10u,
+  60u,
+  62u,
+  64u,
+  65u,
+  66u,
+  53u,
+  67u,
+  68u,
+  73u,
+  78u,
+  79u,
+  80u,
+  81u,
+  82u,
+  84u,
+  83u
+};
+
 extern HWND hWndMain;
 extern char EncodeByte[4];
 extern int g_nChannelWidth;
@@ -1107,6 +1206,7 @@ extern STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
 extern STRUCT_GUILDZONE g_pGuildZone[MAX_GUILDZONE];
 extern STRUCT_SPELL g_pSpell[248];
 extern STRUCT_INITITEM g_pInitItem[100];
+extern int g_itemicon[6500];
 
 float BASE_ScreenResize(float size);
 void BASE_InitModuleDir();
@@ -1142,6 +1242,27 @@ char BASE_GetAttr(int nX, int nY);
 int BASE_ReadTOTOList(char* szFileName);
 int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type);
 int BASE_IsInLowZone(int nX, int nY);
+int BASE_GetItemAmount(STRUCT_ITEM* item);
+int BASE_CanCarry(STRUCT_ITEM* Carry, int pos);
+int BASE_CanTrade(STRUCT_ITEM* Dest, STRUCT_ITEM* Carry, char* MyTrade, STRUCT_ITEM* OpponentTrade);
+int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY);
+int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans);
+unsigned int BASE_GetItemColor(STRUCT_ITEM* item);
+int BASE_GetManaSpent(int SkillNumber, int SaveMana, int Special);
+int BASE_GetSkillDamage(int dam, int ac, int combat);
+int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weapondamage, int OriginalFace); 
+int BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace);
+int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type);;
+int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type);
+int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char Type);
+unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue);
+
+int IsPassiveSkill(int nSkillIndex);
+
+bool BASE_HasSancAdd(STRUCT_ITEM* item);
+bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect);
+
+int BASE_GetItemSancSuccess(STRUCT_ITEM* item);
 
 /* Read Functions */
 int ReadItemicon();
@@ -1158,3 +1279,7 @@ int IsClearString2(char* str, int nTarget);
 void EnableSysKey();
 bool CheckOS();
 void DisableSysKey();
+
+/* Other funtions */
+int IsSkill(int nSkillIndex);
+int GetSkillIndex(int nSkillIndex);

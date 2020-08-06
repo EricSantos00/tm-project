@@ -38,6 +38,19 @@ enum class TMEGRIDTYPE
     GRID_MISSION_NEED = 27,
     GRID_MISSION_NEEDLIST = 28,
 };
+
+static int g_pItemGridXY[8][2] =
+{
+  { 1, 1 },
+  { 1, 2 },
+  { 1, 3 },
+  { 1, 4 },
+  { 2, 1 },
+  { 2, 2 },
+  { 2, 3 },
+  { 2, 4 }
+};
+
 class SGridControlItem;
 class SGridControl : public SPanel
 {
@@ -50,16 +63,16 @@ public:
     int AddItem(SGridControlItem* ipNewItem, int inCellIndexX, int inCellIndexY);
     int AddSkillItem(SGridControlItem* ipNewItem, int inCellIndexX, int inCellIndexY);
     int SetItem(SGridControlItem* ipNewItem, int inCellIndexX, int inCellIndexY);
-    IVector2* AddItemInEmpty(IVector2* result, SGridControlItem* ipNewItem);
-    IVector2* CanAddItemInEmpty(IVector2* result, int nWidth, int nHeight);
+    IVector2 AddItemInEmpty(SGridControlItem* ipNewItem);
+    IVector2 CanAddItemInEmpty(int nWidth, int nHeight);
     int CanChangeItem(SGridControlItem* ipNewItem, int inCellIndexX, int inCellIndexY, int bOnlyCheck);
     SGridControlItem* PickupItem(int inCellIndexX, int inCellIndexY);
     SGridControlItem* PickupAtItem(int inCellIndexX, int inCellIndexY);
-    SGridControlItem* PickupItem_0(SGridControlItem* ipItem);
+    SGridControlItem* PickupItem(SGridControlItem* ipItem);
     SGridControlItem* SelectItem(int inCellIndexX, int inCellIndexY);
     SGridControlItem* GetItem(int inCellIndexX, int inCellIndexY);
     SGridControlItem* GetAtItem(int inCellIndexX, int inCellIndexY);
-    SGridControlItem* GetItem_0(int nCount);
+    SGridControlItem* GetItem(int nCount);
     int OnKeyDownEvent(unsigned int iKeyCode);
     void Empty();
     short CheckType(TMEITEMTYPE eType, TMEGRIDTYPE eGridType);
@@ -101,6 +114,11 @@ public:
 
 public:
     static inline short m_sLastMouseOverIndex{-1};
+    static SGridControlItem* m_pLastMouseOverItem;
+    static SGridControlItem* m_pLastAttachedItem;
+    static SGridControlItem* m_pSellItem;
+    static int m_bNeedUpdate;
+    static char* m_szParamString[49];
 };
 
 class SGridControlItem : public S3DObj
