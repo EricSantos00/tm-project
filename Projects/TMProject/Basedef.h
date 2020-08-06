@@ -444,7 +444,7 @@ struct STRUCT_RANDOMQUIZ
 
 struct STRUCT_ITEMHELP
 {
-	short Color[9];
+	int Color[9];
 	char Help[9][128];
 };
 
@@ -1248,13 +1248,14 @@ int BASE_CanTrade(STRUCT_ITEM* Dest, STRUCT_ITEM* Carry, char* MyTrade, STRUCT_I
 int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY);
 int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans);
 unsigned int BASE_GetItemColor(STRUCT_ITEM* item);
+int BASE_GetColorCount(unsigned int dwColor);
 int BASE_GetManaSpent(int SkillNumber, int SaveMana, int Special);
 int BASE_GetSkillDamage(int dam, int ac, int combat);
 int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weapondamage, int OriginalFace); 
 int BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace);
 int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type);;
 int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type);
-int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char Type);
+int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char type);
 unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue);
 
 int IsPassiveSkill(int nSkillIndex);

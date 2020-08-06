@@ -132,9 +132,10 @@ int BASE_ReadItemList()
 
         sum = BASE_GetSum2((char*)g_pItemList, size); // Not being used...
 
+#if !defined _DEBUG
         if (tsum != 0x1343B16)
             return 0;
-
+#endif
         for (int j = 0; j < size; ++j)
             temp[j] ^= 0x5A;
     }
@@ -535,6 +536,7 @@ int BASE_GetItemAbility(STRUCT_ITEM* item, char Type)
 
 	return value;
 }
+
 int BASE_DefineSkinMeshType(int nClass)
 {
     switch (nClass)
@@ -1245,7 +1247,149 @@ int BASE_ReadTOTOList(char* szFileName)
 
 int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type)
 {
-    return 0;
+    int value = 0;
+    int idx = item->sIndex;
+
+    if (idx <= 0 || idx > MAX_ITEMLIST)
+        return value;
+
+    int nPos = g_pItemList[idx].nPos;
+
+    if (Type == EF_LEVEL && idx >= 2330 && idx < 2360)
+        value = item->stEffect[1].cEffect - 1;
+    else if (Type == EF_LEVEL)
+        value += g_pItemList[idx].nReqLvl;
+
+    if (Type == EF_REQ_STR)
+        value += g_pItemList[idx].nReqStr;
+
+    if (Type == EF_REQ_INT)
+        value += g_pItemList[idx].nReqInt;
+
+    if (Type == EF_REQ_DEX)
+        value += g_pItemList[idx].nReqDex;
+
+    if (Type == EF_REQ_CON)
+        value += g_pItemList[idx].nReqCon;
+
+    if (Type == EF_POS)
+        value += g_pItemList[idx].nPos;
+
+    if (Type != EF_INCUBATE)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            if (g_pItemList[idx].stEffect[i].sEffect != Type)
+                continue;
+
+            int tvalue = g_pItemList[idx].stEffect[i].sValue;
+
+            if (Type == EF_ATTSPEED && tvalue == 1)
+                tvalue = 10;
+
+            value += tvalue;
+        }
+    }
+
+    if (Type == EF_RESIST1 || Type == EF_RESIST2 || Type == EF_RESIST3 || Type == EF_RESIST4)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            if (g_pItemList[idx].stEffect[i].sEffect == EF_RESISTALL)
+                value += g_pItemList[idx].stEffect[i].sValue;
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (item->stEffect[i].cEffect == EF_RESISTALL)
+                value += item->stEffect[i].cValue;
+        }
+    }
+    if (idx >= 2330 && idx < 2390)
+    {
+        if (Type == EF_MOUNTHP)
+            return item->stEffect[0].sValue;
+
+        else if (Type == EF_MOUNTSANC)
+            return item->stEffect[1].cEffect;
+
+        else if (Type == EF_MOUNTLIFE)
+            return item->stEffect[1].cValue;
+
+        else if (Type == EF_MOUNTFEED)
+            return item->stEffect[2].cEffect;
+
+        else if (Type == EF_MOUNTKILL)
+            return item->stEffect[2].cValue;
+
+        if (idx < 2362 || idx >= 2390 || item->stEffect[0].sValue <= 0)
+            return value;
+
+        int lv = item->stEffect[1].cEffect;
+        int cd = item->sIndex - 2360;
+
+        if (Type == EF_DAMAGE)
+            return g_pMountBonus[cd][0] * (lv + 20) / 100;
+
+        else if (Type == EF_MAGIC)
+            return g_pMountBonus[cd][1] * (lv + 15) / 100;
+
+        else if (Type == EF_PARRY)
+            return g_pMountBonus[cd][2];
+
+        else if (Type == EF_RESIST1 || Type == EF_RESIST2 || Type == EF_RESIST3 || Type == EF_RESIST4)
+            return g_pMountBonus[cd][3];
+        else
+            return value;
+    }
+
+    if (idx >= 3980 && idx <= 3994)
+    {
+
+        if (Type == EF_DAMAGE)
+            return g_pMountBonus2[idx - 3980][0];
+
+        else if (Type == EF_MAGIC)
+            return g_pMountBonus2[idx - 3980][1];
+
+        else if (Type == EF_PARRY)
+            return g_pMountBonus2[idx - 3980][2];
+
+        else if (Type == EF_RESIST1 || Type == EF_RESIST2 || Type == EF_RESIST3 || Type == EF_RESIST4)
+            return g_pMountBonus2[idx - 3980][3];
+        else
+            return value;
+    }
+
+    int sanc = BASE_GetItemSanc(item);
+
+    if (sanc == 9 && (nPos & 0xF00) != 0)
+        sanc = 10;
+
+    if (Type != EF_GRID && Type != EF_CLASS && Type != EF_POS && Type != EF_WTYPE && Type != EF_RANGE && Type != EF_LEVEL &&
+        Type != EF_REQ_STR && Type != EF_REQ_INT && Type != EF_REQ_DEX && Type != EF_REQ_CON && Type != EF_INCUBATE && Type != EF_INCUDELAY)
+    {
+        value *= sanc + 10;
+        value /= 10;
+    }
+
+    if (Type == EF_RUNSPEED)
+    {
+        if (value >= 3)
+            value = 2;
+
+        if (value > 0 && sanc == 9)
+            value++;
+    }
+
+    if (Type == EF_HWORDGUILD || Type == EF_LWORDGUILD)
+    {
+        unsigned char v = value;
+
+        value = v;
+    }
+
+    return value;
 }
 
 int BASE_IsInLowZone(int nX, int nY)
@@ -1288,7 +1432,70 @@ int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, ST
 
 unsigned int BASE_GetItemColor(STRUCT_ITEM* item)
 {
-    return 0;
+    if (!item)
+        return 0xFF99EE99;
+
+    unsigned int dwColor = 0xFFAAAAFF;
+    int nMaxValue = 0;
+    unsigned int dwMaxParm = 0;
+
+    for (int i = 0; i < 49; ++i)
+    {
+        auto parm = dwEFParam[i];
+        if (parm == 45)
+            parm = 69;
+        if (parm == 46)
+            parm = 70;
+
+        int nPos = BASE_GetItemAbility(item, 17);
+        int nValue2 = 0;
+        int nValue3 = 0;
+        unsigned int dwTempColor = 0;
+        if (parm == 42 || parm == 53 || nPos == 32 && parm == 2)
+        {
+            nValue2 = BASE_GetItemAbility(item, parm);
+            nValue3 = BASE_GetItemAbilityNosanc(item, parm);
+            dwTempColor = BASE_GetOptionColor(nPos, parm, nValue3);
+        }
+        else
+        {
+            nValue2 = BASE_GetBonusItemAbility(item, parm);
+            nValue3 = BASE_GetBonusItemAbilityNosanc(item, parm);
+            dwTempColor = BASE_GetOptionColor(nPos, parm, nValue3);
+        }
+
+        if (dwMaxParm && (unsigned __int8)dwMaxParm == parm)
+        {
+            nMaxValue += nValue3;
+            dwColor = BASE_GetOptionColor(nPos, parm, nValue2);
+        }
+        else if (nValue3)
+        {
+            if (BASE_GetColorCount(dwColor) < BASE_GetColorCount(dwTempColor))
+            {
+                nMaxValue = nValue3;
+                dwMaxParm = parm;
+                dwColor = dwTempColor;
+            }
+        }
+    }
+
+    return dwColor;
+}
+
+int BASE_GetColorCount(unsigned int dwColor)
+{
+    unsigned int nCount = 0;
+    if (dwColor == 0xFFAAAAFF)
+        nCount = 1;
+    if (dwColor == 0xFF99EE99)
+        nCount = 2;
+    if (dwColor == 0xFFFFFFAA)
+        nCount = 3;
+    if (dwColor == 0xFFFFAA00)
+        nCount = 4;
+
+    return nCount;
 }
 
 int BASE_GetManaSpent(int SkillNumber, int SaveMana, int Special)
@@ -1308,7 +1515,138 @@ int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weaponda
 
 int BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace)
 {
-    return 0;
+    if (!req)
+        return 0;
+    req->Class = 0;
+    req->Level = 0;
+    req->Str = 0;
+    req->Int = 0;
+    req->Dex = 0;
+    req->Con = 0;
+    int idx = item->sIndex;
+
+    if (idx <= 0 || idx >= 6500)
+        return 0;
+    int nUnique = g_pItemList[idx].nUnique;
+    if (Pos == 15)
+        return 0;
+    int grade = g_pItemList[idx].nGrade;
+
+    if (Pos != -1)
+    {
+        int nPos = BASE_GetItemAbility(item, 17);
+        if (!((nPos >> Pos) & 1))
+            return 0;
+
+        if (Pos == 6 || Pos == 7)
+        {
+            int OtherPos = Pos == 6 ? 7 : 6;
+            int OtherIdx = pBaseEquip[OtherPos].sIndex;
+
+            if (OtherIdx > 0 && OtherIdx < 6500)
+            {
+                int nUnique2 = g_pItemList[OtherIdx].nUnique;
+                int otherpos = BASE_GetItemAbility(&pBaseEquip[OtherPos], 17);
+                if (nPos == 64 || otherpos == 64)
+                {
+                    if (nUnique == 46)
+                    {
+                        if (otherpos != 128)
+                            return 0;
+                    }
+                    else
+                    {
+                        if (nUnique2 != 46)
+                            return 0;
+                        if (nPos != 128)
+                            return 0;
+                    }
+                }
+            }
+        }
+    }
+
+    if (Class >= 22 && Class <= 25 || Class == 32)
+        Class = OriginalFace;
+    int mount = 0;
+    if (idx >= 2300 && idx < 2390)
+        mount = (idx - 2300) % 30;
+    int  trans = Class % 10;
+    if (Pos == 1 && item->sIndex != 747 && trans > 5)
+        return 0;
+    if ((mount == 19 || mount == 20) && trans <= 5)
+        return 0;
+    req->Class = 1;
+    int transitem = BASE_GetItemAbility(item, 112);
+
+    if (transitem == 1)
+    {
+        if (trans < 6)
+            req->Class = 0;
+    }
+    else if (transitem == 2 && trans >= 6)
+    {
+        req->Class = 0;
+    }
+
+    int cls = (BASE_GetItemAbility(item, 18) >> Class / 10) & 1;
+    int tpos = BASE_GetItemAbility(item, 17);
+    if (!cls)
+    {
+        if (trans > 5)
+        {
+            if (tpos != 64 && tpos != 128 && tpos != 192)
+                req->Class = 0;
+        }
+        else
+        {
+            req->Class = 0;
+        }
+    }
+    if (Class <= 31 && Class % 10 != 1 && tpos == 2)
+        req->Class = 0;
+    if (nUnique % 10 >= 9 && nUnique < 40 && trans < 6)
+        req->Class = 0;
+
+    int lvl = BASE_GetItemAbility(item, 1);
+    int str = BASE_GetItemAbility(item, 22);
+    int spt = BASE_GetItemAbility(item, 23);
+    int agi = BASE_GetItemAbility(item, 24);
+    int con = BASE_GetItemAbility(item, 25);
+    int wtype = BASE_GetItemAbility(item, 21);
+    int modweapon = wtype % 10;
+    int divweapon = wtype % 10 / 10;
+    if (Pos == 7 && modweapon)
+    {
+        int rate = 100;
+        if (divweapon || modweapon <= 1)
+        {
+            if (divweapon == 6 && modweapon > 1)
+                rate = 150;
+        }
+        else
+        {
+            rate = 130;
+        }
+        lvl = rate * lvl / 100;
+        str = rate * str / 100;
+        spt = rate * spt / 100;
+        agi = rate * agi / 100;
+        con = rate * con / 100;
+    }
+
+    if (score->Level >= lvl)
+        req->Level = 1;
+    if (score->Str >= str)
+        req->Str = 1;
+    if (score->Int >= spt)
+        req->Int = 1;
+    if (score->Dex >= agi)
+        req->Dex = 1;
+    if (score->Con >= con)
+        req->Con = 1;
+
+    return 1;
 }
 
 int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type)
@@ -1321,13 +1659,390 @@ int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type)
     return 0;
 }
 
-int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char Type)
+int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char type)
 {
-    return 0;
+    // _8
+    int itemId = item->sIndex;
+    // _4
+    int value = 0;
+
+    if (itemId < 0 || itemId >= MAX_ITEMLIST)
+        return value;
+
+    int nUnique = g_pItemList[itemId].nUnique;
+    int nPos = g_pItemList[itemId].nPos;
+
+    if (type == EF_DAMAGEADD || type == EF_MAGICADD)
+    {
+        if (nUnique < 41 || nUnique > 50)
+            return value;
+    }
+
+    if (type == EF_CRITICAL)
+    {
+        if (item->stEffect[1].cEffect == EF_CRITICAL2 || item->stEffect[2].cEffect == EF_CRITICAL2)
+            type = EF_CRITICAL2;
+    }
+
+    if (type == EF_DAMAGE && nPos == 32)
+    {
+        if (item->stEffect[1].cEffect == EF_DAMAGE2 || item->stEffect[2].cEffect == EF_DAMAGE2)
+            type = EF_DAMAGE2;
+    }
+
+    if (type == EF_MPADD)
+    {
+        if (item->stEffect[1].cEffect == EF_MPADD2 || item->stEffect[2].cEffect == EF_MPADD2)
+            type = EF_MPADD2;
+    }
+
+    if (type == EF_HPADD)
+    {
+        if (item->stEffect[1].cEffect == EF_HPADD2 || item->stEffect[2].cEffect == EF_HPADD2)
+            type = EF_HPADD2;
+    }
+
+    if (type == EF_ACADD)
+    {
+        if (item->stEffect[1].cEffect == EF_ACADD2 || item->stEffect[2].cEffect == EF_ACADD2)
+            type = EF_ACADD2;
+    }
+
+    if (type == EF_LEVEL)
+        value += g_pItemList[itemId].nReqLvl;
+
+    if (type == EF_REQ_STR)
+        value += g_pItemList[itemId].nReqStr;
+
+    if (type == EF_REQ_INT)
+        value += g_pItemList[itemId].nReqInt;
+
+    if (type == EF_REQ_DEX)
+        value += g_pItemList[itemId].nReqDex;
+
+    if (type == EF_REQ_CON)
+        value += g_pItemList[itemId].nReqCon;
+
+    if (type == EF_POS)
+        value += g_pItemList[itemId].nPos;
+
+    if (type != EF_INCUBATE)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            if (g_pItemList[itemId].stEffect[i].sEffect != type)
+                continue;
+
+            if (g_pItemList[itemId].stEffect[i].sEffect == EF_HPADD || g_pItemList[itemId].stEffect[i].sEffect == EF_HPADD2)
+                continue;
+
+            int tvalue = g_pItemList[itemId].stEffect[i].sValue;
+
+            if (itemId == EF_ATTSPEED && tvalue == 1)
+                tvalue = 10;
+
+            value += tvalue;
+        }
+    }
+
+    if (itemId >= 2330 && itemId < 2390)
+    {
+        if (type == EF_MOUNTHP)
+            return item->stEffect[0].sValue;
+
+        else if (type == EF_MOUNTSANC)
+            return item->stEffect[1].cEffect;
+
+        else if (type == EF_MOUNTLIFE)
+            return item->stEffect[1].cValue;
+
+        else if (type == EF_MOUNTFEED)
+            return item->stEffect[2].cEffect;
+
+        else if (type == EF_MOUNTKILL)
+            return item->stEffect[2].cValue;
+
+        if (itemId < 2362 || itemId >= 2390 || item->stEffect[0].sValue <= 0)
+            return value;
+
+        int lv = item->stEffect[1].cEffect;
+        int cd = item->sIndex - 2360;
+
+        if (type == EF_DAMAGE)
+            return g_pMountBonus[cd][0] * (lv + 20) / 100;
+
+        else if (type == EF_MAGIC)
+            return g_pMountBonus[cd][1] * (lv + 15) / 100;
+
+        else if (type == EF_PARRY)
+            return g_pMountBonus[cd][2];
+
+        else if (type == EF_RESIST1 || type == EF_RESIST2 || type == EF_RESIST3 || type == EF_RESIST4)
+            return g_pMountBonus[cd][3];
+        else
+            return value;
+    }
+
+    if (itemId >= 3980 && itemId <= 3994)
+    {
+
+        if (type == EF_DAMAGE)
+            return g_pMountBonus2[itemId - 3980][0];
+
+        else if (type == EF_MAGIC)
+            return g_pMountBonus2[itemId - 3980][1];
+
+        else if (type == EF_PARRY)
+            return g_pMountBonus2[itemId - 3980][2];
+
+        else if (type == EF_RESIST1 || type == EF_RESIST2 || type == EF_RESIST3 || type == EF_RESIST4)
+            return g_pMountBonus2[itemId - 3980][3];
+        else
+            return value;
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (item->stEffect[i].cEffect == type)
+        {
+            int total = item->stEffect[i].cValue;
+            if (type == EF_ATTSPEED && total == 1)
+                total = 10;
+
+            value += total;
+        }
+    }
+
+    return value;
 }
 
 unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue)
 {
+    if (nPos >= 64)
+    {
+        if (nPos != 64 && nPos != 128 && nPos != 192)
+        {
+            return 0xFF99EE99;
+        }
+        else if (dwParam == 2 || dwParam == 73 || dwParam == 67)
+        {
+            if (nValue < 45)
+            {
+                return 0xFF99EE99;
+            }
+            else if (nValue < 45 || nValue > 54)
+            {
+                return 0xFFFFAA00;
+            }
+            else
+            {
+                return 0xFFFFFFAA;
+            }
+        }
+        else if (dwParam == 60 || dwParam == 68)
+        {
+            if (nValue < 20)
+            {
+                return 0xFF99EE99;
+            }
+            else if (nValue < 20 || nValue > 24)
+            {
+                return 0xFFFFAA00;
+            }
+            else
+            {
+                return 0xFFFFFFAA;
+            }
+        }
+        else if (dwParam == 26)
+        {
+            if (nValue < 21)
+            {
+                return 0xFF99EE99;
+            }
+            else if (nValue < 21 || nValue > 24)
+            {
+                return 0xFFFFAA00;
+            }
+            else
+            {
+                return 0xFFFFFFAA;
+            }
+        }
+        else if (dwParam == 74)
+        {
+            if (nValue < 21)
+            {
+                return 0xFF99EE99;
+            }
+            else if (nValue < 21 || nValue > 24)
+            {
+                return 0xFFFFAA00;
+            }
+            else
+            {
+                return 0xFFFFFFAA;
+            }
+        }
+        else
+        {
+            return 0xFF99EE99;
+        }
+    }
+    else if (dwParam == 60 || dwParam == 68)
+    {
+        if (nPos == 2)
+        {
+            if (nValue < 12)
+            {
+                return 0xFF99EE99;
+            }
+            else if (nValue < 12 || nValue > 14)
+            {
+                return 0xFFFFAA00;
+            }
+            else
+            {
+                return 0xFFFFFFAA;
+            }
+        }
+        else if (nValue >= 6)
+        {
+            if (nValue == 6)
+                return 0xFFFFFFAA;
+            else
+                return 0xFFFFAA00;
+        }
+        else
+        {
+            return 0xFF99EE99;
+        }
+    }
+    else if (dwParam == 42 || dwParam == 71)
+    {
+        if (nValue < 50)
+        {
+            return 0xFF99EE99;
+        }
+        else if (nValue < 50 || nValue >= 60)
+        {
+            return 0xFFFFAA00;
+        }
+        else
+        {
+            return 0xFFFFFFAA;
+        }
+    }
+    else if (dwParam == 26)
+    {
+        if (nValue < 12)
+        {
+            return 0xFF99EE99;
+        }
+        else if (nValue == 12)
+        {
+            return 0xFFFFFFAA;
+        }
+        else
+        {
+            return 0xFFFFAA00;
+        }
+    }
+    else if (dwParam == 74)
+    {
+        if (nValue < 12)
+        {
+            return 0xFF99EE99;
+        }
+        else if (nValue == 12)
+        {
+            return 0xFFFFFFAA;
+        }
+        else
+        {
+            return 0xFFFFAA00;
+        }
+    }
+    else if (dwParam == 3 || dwParam == 53 || dwParam == 72)
+    {
+        if (nPos == 16)
+        {
+            if (nValue < 30)
+            {
+                return 0xFF99EE99;
+            }
+            else if (nValue == 30)
+            {
+                return 0xFFFFFFAA;
+            }
+            else
+            {
+                return 0xFFFFAA00;
+            }
+        }
+        else if (nValue < 15)
+        {
+            return 0xFF99EE99;
+        }
+        else if (nValue == 15)
+        {
+            return 0xFFFFFFAA;
+        }
+        else
+        {
+            return 0xFFFFAA00;
+        }
+    }
+    else if (dwParam == 2 || dwParam == 73 || dwParam == 67)
+    {
+        if (nPos == 32)
+        {
+            if (nValue < 24)
+            {
+                return 0xFF99EE99;
+            }
+            else if (nValue < 24 || nValue > 30)
+            {
+                return 0xFFFFAA00;
+            }
+            else
+            {
+                return 0xFFFFFFAA;
+            }
+        }
+        else if (nValue < 18)
+        {
+            return 0xFF99EE99;
+        }
+        else if (nValue == 18)
+        {
+            return 0xFFFFFFAA;
+        }
+        else
+        {
+            return 0xFFFFAA00;
+        }
+    }
+    else if (dwParam == 4 || dwParam == 45 || dwParam == 69)
+    {
+        if (nValue < 40)
+        {
+            return 0xFF99EE99;
+        }
+        else if (nValue == 40)
+        {
+            return 0xFFFFFFAA;
+        }
+        else
+        {
+            return 0xFFFFAA00;
+        }
+    }
+    else
+    {
+        return 0xFF99EE99;
+    }
+
     return 0;
 }
 

@@ -11,7 +11,57 @@ SGridControlItem* SGridControl::m_pLastMouseOverItem;
 SGridControlItem* SGridControl::m_pLastAttachedItem;
 SGridControlItem* SGridControl::m_pSellItem;
 int SGridControl::m_bNeedUpdate = 1;
-char* SGridControl::m_szParamString[49]{};
+char* SGridControl::m_szParamString[49] = {
+	g_pMessageStringTable[73],
+	g_pMessageStringTable[74],
+	g_pMessageStringTable[75],
+	g_pMessageStringTable[76],
+	g_pMessageStringTable[77],
+	g_pMessageStringTable[78],
+	g_pMessageStringTable[79],
+	g_pMessageStringTable[80],
+	g_pMessageStringTable[81],
+	g_pMessageStringTable[82],
+	g_pMessageStringTable[83],
+	g_pMessageStringTable[84],
+	g_pMessageStringTable[85],
+	g_pMessageStringTable[86],
+	g_pMessageStringTable[87],
+	g_pMessageStringTable[88],
+	g_pMessageStringTable[89],
+	g_pMessageStringTable[174],
+	g_pMessageStringTable[90],
+	g_pMessageStringTable[91],
+	g_pMessageStringTable[92],
+	g_pMessageStringTable[93],
+	g_pMessageStringTable[94],
+	g_pMessageStringTable[95],
+	g_pMessageStringTable[96],
+	g_pMessageStringTable[97],
+	g_pMessageStringTable[98],
+	g_pMessageStringTable[99],
+	g_pMessageStringTable[140],
+	g_pMessageStringTable[100],
+	g_pMessageStringTable[101],
+	g_pMessageStringTable[102],
+	g_pMessageStringTable[103],
+	g_pMessageStringTable[104],
+	g_pMessageStringTable[105],
+	g_pMessageStringTable[128],
+	g_pMessageStringTable[129],
+	g_pMessageStringTable[130],
+	g_pMessageStringTable[80],
+	g_pMessageStringTable[79],
+	g_pMessageStringTable[104],
+	g_pMessageStringTable[79],
+	g_pMessageStringTable[162],
+	g_pMessageStringTable[163],
+	g_pMessageStringTable[164],
+	g_pMessageStringTable[165],
+	g_pMessageStringTable[166],
+	g_pMessageStringTable[169],
+	g_pMessageStringTable[171]
+};
 
 SGridControl::SGridControl(unsigned int inTextureSetIndex, int inRowGridCount, int inColumnGridCount, float inX, float inY, float inWidth, float inHeight, TMEITEMTYPE type)
 	: SPanel(inTextureSetIndex, inX, inY, inWidth, inHeight, 0xFFFFFFFF, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH)
@@ -2265,7 +2315,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 		}
 	}
 	else if (pItem->m_pItem->sIndex >= 3900 && pItem->m_pItem->sIndex < 3980 && 
-		(pItem->m_pItem->sIndex != 3909 || pItem->m_pItem->sIndex != 3910))
+		(pItem->m_pItem->sIndex != 3909 && pItem->m_pItem->sIndex != 3910))
 	{
 		auto itemEffect = pItem->m_pItem->stEffect;
 
