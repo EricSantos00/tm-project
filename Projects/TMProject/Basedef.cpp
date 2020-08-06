@@ -1025,6 +1025,16 @@ int IsSkill(int nSkillIndex)
     return 0;
 }
 
+int GetSkillIndex(int nSkillIndex)
+{
+    if (nSkillIndex >= 5400)
+        nSkillIndex -= 5200;
+    else if (nSkillIndex >= 5000)
+        nSkillIndex -= 5000;
+
+    return nSkillIndex;
+}
+
 int IsClearString(char* str, int target)
 {
 	int len = strlen(str);
@@ -1269,6 +1279,56 @@ int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY)
 }
 
 int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans)
+{
+    return 0;
+}
+
+unsigned int BASE_GetItemColor(STRUCT_ITEM* item)
+{
+    return 0;
+}
+
+int BASE_GetManaSpent(int SkillNumber, int SaveMana, int Special)
+{
+    return 0;
+}
+
+int BASE_GetSkillDamage(int dam, int ac, int combat)
+{
+    return 0;
+}
+
+int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weapondamage, int OriginalFace)
+{
+    return 0;
+}
+
+int IsPassiveSkill(int nSkillIndex)
+{
+    if (nSkillIndex >= 5400)
+    {
+        nSkillIndex -= 5200;
+    }
+    else if (nSkillIndex >= 5000)
+    {
+        nSkillIndex -= 5000;
+    }
+
+    return g_pSpell[nSkillIndex].Passive == 1;
+}
+
+bool BASE_HasSancAdd(STRUCT_ITEM* item)
+{
+    for (auto i : item->stEffect)
+    {
+        if (i.cEffect == 43 || (i.cEffect >= 155 && i.cEffect <= 126))
+            return true;
+    }
+  
+    return false;
+}
+
+int BASE_GetItemSancSuccess(STRUCT_ITEM* item)
 {
     return 0;
 }

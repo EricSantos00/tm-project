@@ -24,6 +24,7 @@ struct MSG_STANDARD
 	unsigned int Tick;
 };
 
+constexpr auto MSG_RequestCapsuleInfo_Opcode = 0x2CD;
 struct MSG_STANDARDPARM
 {
 	MSG_STANDARD Header;
@@ -1100,6 +1101,61 @@ static int g_nMountHPTable[28] =
   0
 };
 
+static int g_pSuccessRate[10] = { 5, 5, 5, 5, 4, 4, 3, 3, 2, 1 };
+
+static unsigned int dwEFParam[49] =
+{
+  18u,
+  1u,
+  22u,
+  23u,
+  24u,
+  25u,
+  2u,
+  3u,
+  4u,
+  5u,
+  45u,
+  46u,
+  44u,
+  42u,
+  47u,
+  48u,
+  54u,
+  40u,
+  29u,
+  49u,
+  50u,
+  51u,
+  52u,
+  11u,
+  12u,
+  13u,
+  14u,
+  26u,
+  74u,
+  7u,
+  8u,
+  9u,
+  10u,
+  60u,
+  62u,
+  64u,
+  65u,
+  66u,
+  53u,
+  67u,
+  68u,
+  73u,
+  78u,
+  79u,
+  80u,
+  81u,
+  82u,
+  84u,
+  83u
+};
+
 extern HWND hWndMain;
 extern char EncodeByte[4];
 extern int g_nChannelWidth;
@@ -1152,6 +1208,17 @@ int BASE_CanCarry(STRUCT_ITEM* Carry, int pos);
 int BASE_CanTrade(STRUCT_ITEM* Dest, STRUCT_ITEM* Carry, char* MyTrade, STRUCT_ITEM* OpponentTrade);
 int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY);
 int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans);
+unsigned int BASE_GetItemColor(STRUCT_ITEM* item);
+int BASE_GetManaSpent(int SkillNumber, int SaveMana, int Special);
+int BASE_GetSkillDamage(int dam, int ac, int combat);
+int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weapondamage, int OriginalFace); 
+int BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace);
+
+int IsPassiveSkill(int nSkillIndex);
+
+bool BASE_HasSancAdd(STRUCT_ITEM* item);
+
+int BASE_GetItemSancSuccess(STRUCT_ITEM* item);
 
 /* Read Functions */
 int ReadItemicon();
@@ -1171,3 +1238,4 @@ void DisableSysKey();
 
 /* Other funtions */
 int IsSkill(int nSkillIndex);
+int GetSkillIndex(int nSkillIndex);

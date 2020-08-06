@@ -114,6 +114,11 @@ public:
 
 public:
     static inline short m_sLastMouseOverIndex{-1};
+    static SGridControlItem* m_pLastMouseOverItem;
+    static SGridControlItem* m_pLastAttachedItem;
+    static SGridControlItem* m_pSellItem;
+    static int m_bNeedUpdate;
+    static char* m_szParamString[49];
 };
 
 class SGridControlItem : public S3DObj
