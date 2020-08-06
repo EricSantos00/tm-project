@@ -520,3 +520,5 @@ static float fMantuaList[4][20] =
      0.079999998f
   }
 };
+
+bool _locationCheck(float posx, float posy, int mapX, int mapY);

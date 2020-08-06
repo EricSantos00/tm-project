@@ -6367,6 +6367,253 @@ void TMHuman::SetPacketMOBItem(STRUCT_MOB* pMobData)
 
 void TMHuman::SetPacketEquipItem(unsigned short* sEquip)
 {
+    if (!m_dwDelayDel)
+    {
+        m_sHeadIndex = sEquip[0] & 0xFFF;
+        m_sHelmIndex = sEquip[1] & 0xFFF;
+        m_cLegend = g_pItemList[sEquip[0] & 0xFFF].nGrade;
+        m_stLookInfo.FaceMesh = g_pItemList[sEquip[0] & 0xFFF].nIndexMesh;
+        m_stLookInfo.FaceSkin = g_pItemList[sEquip[0] & 0xFFF].nIndexTexture;
+        if ((sEquip[1] & 0xFFF) < 3500 || (sEquip[1] & 0xFFF) > 3502 && (sEquip[1] & 0xFFF) != 3507)
+        {
+            m_stLookInfo.HelmMesh = g_pItemList[sEquip[1] & 0xFFF].nIndexMesh;
+            m_stLookInfo.HelmSkin = g_pItemList[sEquip[1] & 0xFFF].nIndexTexture;
+        }
+        m_stLookInfo.CoatMesh = g_pItemList[sEquip[2] & 0xFFF].nIndexMesh;
+        m_stLookInfo.CoatSkin = g_pItemList[sEquip[2] & 0xFFF].nIndexTexture;
+        m_stLookInfo.PantsMesh = g_pItemList[sEquip[3] & 0xFFF].nIndexMesh;
+        m_stLookInfo.PantsSkin = g_pItemList[sEquip[3] & 0xFFF].nIndexTexture;
+        m_stLookInfo.GlovesMesh = g_pItemList[sEquip[4] & 0xFFF].nIndexMesh;
+        m_stLookInfo.GlovesSkin = g_pItemList[sEquip[4] & 0xFFF].nIndexTexture;
+        m_stLookInfo.BootsMesh = g_pItemList[sEquip[5] & 0xFFF].nIndexMesh;
+        m_stLookInfo.BootsSkin = g_pItemList[sEquip[5] & 0xFFF].nIndexTexture;
+        m_stLookInfo.LeftMesh = g_pItemList[sEquip[6] & 0xFFF].nIndexMesh;
+        m_stLookInfo.LeftSkin = g_pItemList[sEquip[6] & 0xFFF].nIndexTexture;
+        m_stLookInfo.RightMesh = g_pItemList[sEquip[7] & 0xFFF].nIndexMesh;
+        m_stLookInfo.RightSkin = g_pItemList[sEquip[7] & 0xFFF].nIndexTexture;
+        if ((sEquip[15] & 0xFFF) > 0)
+        {
+            m_sMantuaIndex = sEquip[15] & 0xFFF;
+            m_wMantuaSkin = g_pItemList[sEquip[15] & 0xFFF].nIndexTexture;
+            SetMantua(m_wMantuaSkin);
+            m_ucMantuaLegend = g_pItemList[sEquip[15] & 0xFFF].nGrade;
+            m_ucMantuaSanc = m_nTotalKill / 1000;
+            if ((unsigned char)m_ucMantuaSanc > 12)
+                m_ucMantuaSanc = 12;
+        }
+        else
+        {
+            m_cMantua = 0;
+        }
+
+        if ((int)sEquip[12] < 4150 || (int)sEquip[12] > 4200)
+            m_sCostume = 0;
+        else
+            m_sCostume = sEquip[12];
+
+        m_sFamiliar = sEquip[13] & 0xFFF;
+        m_stSancInfo.Sanc0 = (int)sEquip[0] >> 12;
+        m_stSancInfo.Sanc1 = (int)sEquip[1] >> 12;
+        m_stSancInfo.Sanc2 = (int)sEquip[2] >> 12;
+        m_stSancInfo.Sanc3 = (int)sEquip[3] >> 12;
+        m_stSancInfo.Sanc4 = (int)sEquip[4] >> 12;
+        m_stSancInfo.Sanc5 = (int)sEquip[5] >> 12;
+        m_stSancInfo.Sanc7 = (int)sEquip[6] >> 12;
+        m_stSancInfo.Sanc6 = (int)sEquip[7] >> 12;
+
+        if (g_pCurrentScene->m_pMyHuman == this)
+            g_pObjectManager->m_stMobData.Equip[0].stEffect[0].cValue = m_stSancInfo.Sanc0;
+
+        m_sFamCount = 0;
+        if (m_sFamiliar == 769)
+            m_sFamCount = ((int)sEquip[13] >> 12) + 1;
+
+        SetGuildBattleLifeCount();
+        m_cDamageRate = 1;
+        if ((sEquip[13] & 0xFFF) == 786)
+        {
+            int nDmgSanc = (int)sEquip[13] >> 12;
+            if (nDmgSanc >= 2 || (sEquip[13] & 0xFFF) == 786)
+                m_cDamageRate = nDmgSanc;
+            else
+                m_cDamageRate = 2;
+        }
+        if ((sEquip[11] & 0xFFF) == 786)
+            m_cDamageRate += 16 * ((int)sEquip[11] >> 12);
+
+        int nMountIndex = sEquip[14] & 0xFFF;
+        bool bSvadilfari = false;
+        if (nMountIndex == 2383 || nMountIndex == 2382)
+        {
+            nMountIndex = 2387;
+        }
+        else if (nMountIndex == 2387)
+        {
+            bSvadilfari = 1;
+        }
+
+        if (nMountIndex >= 2360 && nMountIndex < 2390
+            || nMountIndex >= 3980 && nMountIndex < 3999
+            || nMountIndex >= 2960 && nMountIndex < 3000)
+        {
+            m_cMount = 1;
+            int sIndex = nMountIndex - 2045;
+            if (nMountIndex == 2389)
+                sIndex = 346;
+            else if (nMountIndex == 2378)
+                sIndex = 333;
+            else if (nMountIndex >= 2387 && nMountIndex <= 2388)
+                sIndex = 336;
+            else if (nMountIndex >= 3980 && nMountIndex <= 3982)
+                sIndex = nMountIndex - 3638;
+            else if (nMountIndex >= 3983 && nMountIndex <= 3985)
+                sIndex = nMountIndex - 3641;
+            else if (nMountIndex >= 3986 && nMountIndex <= 3988)
+                sIndex = nMountIndex - 3644;
+            else if (nMountIndex == 3989)
+                sIndex = 345;
+            else if (nMountIndex == 3990)
+                sIndex = 334;
+            else if (nMountIndex == 3991)
+                sIndex = 335;
+            else if (nMountIndex == 3992)
+                sIndex = 318;
+            else  if (nMountIndex == 3993 || nMountIndex == 3994)
+                sIndex = 200;
+            else if (nMountIndex >= 2960 && nMountIndex <= 2961)
+                sIndex = nMountIndex - 2616;
+
+            STRUCT_ITEM item{};
+
+            item.sIndex = sIndex;
+            m_sMountIndex = sIndex - 315;
+
+            int nMountSanc = (int)sEquip[14] >> 12;
+            int nClass = BASE_GetItemAbility(&item, 18);
+
+            m_nMountSkinMeshType = BASE_DefineSkinMeshType(nClass);
+            m_stMountLook.Mesh0 = g_pItemList[sIndex].nIndexMesh;
+            m_stMountLook.Mesh1 = m_stMountLook.Mesh0;
+            m_stMountLook.Skin0 = g_pItemList[sIndex].nIndexTexture;
+            m_stMountLook.Skin1 = m_stMountLook.Skin0;
+            m_sMountIndex = sIndex - 315;
+            if (nMountIndex == 3993)
+            {
+                m_stMountLook.Mesh2 = 0;
+                m_stMountSanc.Sanc2 = 0;
+                m_stMountSanc.Sanc0 = 12;
+                m_stMountSanc.Sanc1 = 12;
+            }
+            else if (nMountIndex == 3994)
+            {
+                m_stMountLook.Mesh2 = 0;
+                m_stMountSanc.Sanc2 = 0;
+                m_stMountSanc.Sanc0 = 12;
+                m_stMountSanc.Sanc1 = 12;
+                m_stMountLook.Skin0 = 8;
+                m_stMountLook.Skin1 = 8;
+            }
+            else if (sIndex >= 321 && sIndex <= 325)
+            {
+                m_stMountLook.Mesh2 = sIndex - 320;
+                m_stMountSanc.Sanc2 = nMountSanc;
+                m_stMountSanc.Sanc0 = 0;
+                m_stMountSanc.Sanc1 = 0;
+            }
+            else if (sIndex >= 326 && sIndex <= 330)
+            {
+                m_stMountLook.Mesh2 = sIndex - 325;
+                m_stMountSanc.Sanc2 = nMountSanc;
+                m_stMountSanc.Sanc0 = 0;
+                m_stMountSanc.Sanc1 = 0;
+            }
+            else if (sIndex == 334 || sIndex == 335)
+            {
+                m_stMountLook.Mesh2 = m_stMountLook.Mesh0;
+                m_stMountSanc.Sanc2 = nMountSanc;
+                m_stMountSanc.Sanc0 = nMountSanc;
+                m_stMountSanc.Sanc1 = nMountSanc;
+            }
+            else if (sIndex >= 336 && sIndex <= 338)
+            {
+                if (bSvadilfari)
+                {
+                    m_stMountLook.Mesh0 = 10;
+                    m_stMountLook.Mesh1 = 10;
+                    m_stMountLook.Mesh2 = 11;
+                    m_stMountSanc.Sanc2 = nMountSanc;
+                    m_stMountSanc.Sanc0 = 0;
+                    m_stMountSanc.Sanc1 = 0;
+                }
+                else
+                {
+                    m_stMountLook.Mesh2 = m_stMountLook.Mesh0;
+                    m_stMountSanc.Sanc2 = nMountSanc;
+                    m_stMountSanc.Sanc0 = nMountSanc;
+                    m_stMountSanc.Sanc1 = nMountSanc;
+                }
+            }
+            else if (sIndex >= 339 && sIndex <= 341)
+            {
+                m_stMountLook.Mesh2 = sIndex + m_stMountLook.Mesh0 - 339;
+                m_stMountSanc.Sanc2 = nMountSanc;
+                m_stMountSanc.Sanc0 = nMountSanc;
+                m_stMountSanc.Sanc1 = nMountSanc;
+            }
+            else if (sIndex >= 342 && sIndex <= 345)
+            {
+                switch (sIndex)
+                {
+                case 344:
+                    m_stMountLook.Mesh2 = 10;
+                    break;
+                case 345:
+                    m_stMountLook.Mesh2 = 11;
+                    break;
+                case 343:
+                    m_stMountLook.Mesh2 = 11;
+                    break;
+                default:
+                    m_stMountLook.Mesh2 = m_stMountLook.Mesh0;
+                    break;
+                }
+                m_stMountSanc.Sanc0 = 0;
+                m_stMountSanc.Sanc1 = 0;
+                m_stMountSanc.Sanc2 = 0;
+                if (sIndex == 345)
+                    m_stMountSanc.Sanc2 = 7;
+            }
+            else
+            {
+                m_stMountLook.Mesh2 = 0;
+                m_stMountSanc.Sanc2 = 0;
+                m_stMountSanc.Sanc0 = nMountSanc;
+                m_stMountSanc.Sanc1 = nMountSanc;
+            }
+
+            if (nMountIndex >= 2387 && nMountIndex <= 2388 && !bSvadilfari)
+                m_stMountLook.Mesh2 = nMountIndex - 2379;
+
+            m_fMountScale = BASE_GetMountScale(m_nMountSkinMeshType, m_stMountLook.Mesh0);
+            if (sIndex == 333)
+                m_fMountScale = 1.0f;
+        }
+        else
+            m_cMount = 0;
+
+        m_stSancInfo.Legend0 = g_pItemList[sEquip[0] & 0xFFF].nGrade;
+        m_stSancInfo.Legend1 = g_pItemList[sEquip[1] & 0xFFF].nGrade;
+        m_stSancInfo.Legend2 = g_pItemList[sEquip[2] & 0xFFF].nGrade;
+        m_stSancInfo.Legend3 = g_pItemList[sEquip[3] & 0xFFF].nGrade;
+        m_stSancInfo.Legend4 = g_pItemList[sEquip[4] & 0xFFF].nGrade;
+        m_stSancInfo.Legend5 = g_pItemList[sEquip[5] & 0xFFF].nGrade;
+        m_stSancInfo.Legend7 = g_pItemList[sEquip[6] & 0xFFF].nGrade;
+        m_stSancInfo.Legend6 = g_pItemList[sEquip[7] & 0xFFF].nGrade;
+
+        m_stOldSancInfo = m_stSancInfo;
+        m_stOldColorInfo = m_stColorInfo;
+        m_stOldMountSanc = m_stMountSanc;
+    }
 }
 
 void TMHuman::SetColorItem(char* sEquip2)
@@ -7785,3 +8032,9 @@ void TMHuman::RenderEffect_Golem(unsigned int dwServerTime)
 void TMHuman::RenderEffect_Skull()
 {
 }
+
+bool _locationCheck(float posx, float posy, int mapX, int mapY)
+{
+    return (int)(posx * 0.0078125f) == mapX && (int)(posy * 0.0078125f) == mapY;
+}
+

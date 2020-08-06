@@ -952,6 +952,45 @@ struct MSG_MessageLog
 	char String[128];
 };
 
+constexpr auto MSG_CreateMob_Opcode = 0x364;
+struct MSG_CreateMob
+{
+	MSG_STANDARD Header;
+	short PosX;
+	short PosY;
+	unsigned short MobID;
+	char MobName[16];
+	unsigned short Equip[16];
+	unsigned short Affect[32];
+	unsigned short Guild;
+	char GuildLevel;
+	STRUCT_SCORE Score;
+	unsigned short CreateType;
+	char Equip2[16];
+	char Nick[26];
+	char Server;
+};
+
+constexpr auto MSG_CreateMobTrade_Opcode = 0x363;
+struct MSG_CreateMobTrade
+{
+	MSG_STANDARD Header;
+	short PosX;
+	short PosY;
+	unsigned short MobID;
+	char MobName[16];
+	unsigned short Equip[16];
+	unsigned short Affect[32];
+	unsigned short Guild;
+	char GuildLevel;
+	STRUCT_SCORE Score;
+	unsigned short CreateType;
+	char Equip2[16];
+	char Nick[26];
+	char Desc[24];
+	char Server;
+};
+
 constexpr auto MSG_Attack_Multi = 0x367;
 constexpr auto MSG_Attack_One = 0x39D;
 constexpr auto MSG_Attack_Two = 0x39E;
