@@ -1213,10 +1213,15 @@ int BASE_GetManaSpent(int SkillNumber, int SaveMana, int Special);
 int BASE_GetSkillDamage(int dam, int ac, int combat);
 int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weapondamage, int OriginalFace); 
 int BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace);
+int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type);;
+int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type);
+int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char Type);
+unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue);
 
 int IsPassiveSkill(int nSkillIndex);
 
 bool BASE_HasSancAdd(STRUCT_ITEM* item);
+bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect);
 
 int BASE_GetItemSancSuccess(STRUCT_ITEM* item);
 

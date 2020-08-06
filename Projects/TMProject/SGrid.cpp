@@ -425,7 +425,6 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 				}
 
 				int SourPage = 0;
-				int nGridIndex = 0;
 				IVector2 vecGrid{};
 
 				auto pMyGrid = pFScene->m_pGridInv;
@@ -2669,9 +2668,356 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 				}
 			}
 		}
+
+		for (int l = 0; l < 49; ++l)
+		{
+			int nEf = dwEFParam[l];
+			int nValue = 0;
+			int nValueAbility = 0;
+
+			if (nEf == 45)
+				nEf = 69;
+			if (nEf == 46)
+				nEf = 70;
+			int nPos = BASE_GetItemAbility(pItem->m_pItem, 17);
+
+			if (nEf == 42 || nEf == 53 || nPos == 32 && nEf == 2)
+			{
+				nValueAbility = BASE_GetItemAbility(pItem->m_pItem, nEf);
+				nValue = BASE_GetItemAbilityNosanc(pItem->m_pItem, nEf);
+			}
+			else
+			{
+				nValueAbility = BASE_GetBonusItemAbility(pItem->m_pItem, nEf);
+				nValue = BASE_GetBonusItemAbilityNosanc(pItem->m_pItem, nEf);
+			}
+			if (nLineId < 13 && nValueAbility)
+			{
+				if (dwEFParam[l] == 42)
+				{
+					if (nValue == nValueAbility)
+					
+						sprintf(szDesc, "%s : %d.%d%%", SGridControl::m_szParamString[l], nValueAbility / 10, nValueAbility % 10);					
+					else					
+						sprintf(szDesc, "%s : %d.%d%% (%d.%d%%)", SGridControl::m_szParamString[l],
+							nValue / 10,
+							nValue % 10,
+							nValueAbility / 10,
+							nValueAbility % 10);
+													}
+				else if (dwEFParam[l] == 26 || dwEFParam[l] == 60 || dwEFParam[l] == 45 || dwEFParam[l] == 46 || dwEFParam[l] == 68)
+				{
+					if (nValue == nValueAbility)
+						sprintf(szDesc, "%s : %d%%", SGridControl::m_szParamString[l], nValueAbility);
+					else
+						sprintf(szDesc, "%s : %d%% (%d%%)", SGridControl::m_szParamString[l], nValue, nValueAbility);
+				}
+				else if ((dwEFParam[l] != 73 || nPos != 32) && (dwEFParam[l] != 67 || nPos == 64 || nPos == 192) && dwEFParam[l] != 63)
+				{
+					if (nValue == nValueAbility)
+						sprintf(szDesc, "%s : %d", SGridControl::m_szParamString[l], nValueAbility);
+					else
+						sprintf(szDesc, "%s : %d (%d)", SGridControl::m_szParamString[l], nValue, nValueAbility);
+				}
+
+				pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
+				pFScene->m_pParamText[nLineId]->SetTextColor(BASE_GetOptionColor(nPos, dwEFParam[l], nValue));
+				++nLineId;
+				continue;
+			}			
+		}
+
+		if (nLineId < 13 && BASE_GetItemSanc(pItem->m_pItem) >= 9)
+		{
+			int nPos = BASE_GetItemAbility(pItem->m_pItem, 17);
+			if (nPos == 4 || nPos == 8 || nPos == 128)
+			{
+				sprintf(szDesc, "%s : 25", g_pMessageStringTable[80]);
+				pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
+				pFScene->m_pParamText[nLineId]->SetTextColor(0xFF88AAFF);
+				++nLineId;
+			}
+			else if (nPos == 16)
+			{
+				sprintf(szDesc, "%s : 1", g_pMessageStringTable[151]);
+				pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
+				pFScene->m_pParamText[nLineId]->SetTextColor(0xFF88AAFF);
+				++nLineId;
+			}
+			else if (nPos == 64 || nPos == 192)
+			{
+				int nUnique = g_pItemList[pItem->m_pItem->sIndex].nUnique;
+				if (nUnique == 47 || nUnique == 44)
+				{
+					sprintf(szDesc, "%s : 8%%", g_pMessageStringTable[104]);
+					pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
+					pFScene->m_pParamText[nLineId]->SetTextColor(0xFF88AAFF);
+					++nLineId;
+				}
+				else
+				{
+					sprintf(szDesc, "%s : 40", g_pMessageStringTable[79]);
+					pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
+					pFScene->m_pParamText[nLineId]->SetTextColor(0xFF88AAFF);
+					++nLineId;
+				}
+			}
+		}
 	}
-	// TODO
-	return 0;
+
+	int hGuild = BASE_GetItemAbility(pItem->m_pItem, 56);
+	if (hGuild > 0)
+	{
+		sprintf(szDesc, g_pMessageStringTable[439], hGuild / 10, hGuild % 10);
+		pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
+		pFScene->m_pParamText[nLineId]->SetTextColor(0xFFFFF00);
+		++nLineId;
+	}
+	hGuild = BASE_GetItemAbility(pItem->m_pItem, 57);
+	if (hGuild > 0)
+	{
+		sprintf(szDesc, g_pMessageStringTable[440], hGuild / 10, hGuild % 10);
+		pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
+		pFScene->m_pParamText[nLineId]->SetTextColor(0xFFFFF00);
+		++nLineId;
+	}
+
+	int nGrade = g_pItemList[pItem->m_pItem->sIndex].nGrade;
+	if (pItem->m_pItem
+		&& (nGrade >= 5 && nGrade <= 10 || nGrade >= 20 && nGrade <= 22 || nGrade >= 24 && nGrade <= 26 || nSanc >= 10))
+	{
+		if (nSanc >= 10)
+		{
+			int sancValue = 0;
+			if (BASE_HasSancAdd(pItem->m_pItem))
+			{
+				if (BASE_HasSancAdd(pItem->m_pItem->stEffect[0]))
+					sancValue = pItem->m_pItem->stEffect[0].cValue;
+				else if (BASE_HasSancAdd(pItem->m_pItem->stEffect[1]))
+					sancValue = pItem->m_pItem->stEffect[1].cValue;
+				else
+					sancValue = pItem->m_pItem->stEffect[2].cValue;
+			}
+
+			int sancCalc = (sancValue - 230) % 4;
+			int mult = 1;
+			int sanc = BASE_GetItemSanc(pItem->m_pItem) - 9;
+			if (sanc < 0)
+				sanc = 0;
+			if (nGrade >= 5 && nGrade <= 8)
+				mult = 2;
+
+			if (!sancCalc)
+				sprintf(szDesc, g_pMessageStringTable[195], 8 * mult);
+			if (sancCalc == 1)
+				sprintf(szDesc, "%s : %d", g_pMessageStringTable[196], mult * 40 * sanc);
+			if (sancCalc == 2)
+				sprintf(szDesc, g_pMessageStringTable[197], 2 * mult);
+			if (sancCalc == 3)
+				sprintf(szDesc, "%s : %d", g_pMessageStringTable[198], mult * 40 * sanc);
+		}
+		else
+		{
+			if (nGrade == 5)
+				sprintf(szDesc, g_pMessageStringTable[195], 8);
+			if (nGrade == 6)
+				sprintf(szDesc, "%s : %d", g_pMessageStringTable[196], 40);
+			if (nGrade == 7)
+				sprintf(szDesc, g_pMessageStringTable[197], 2);
+			if (nGrade == 8)
+				sprintf(szDesc, "%s : %d", g_pMessageStringTable[198], 40);
+		}
+
+		int sancCalc = 10;
+
+		if (nGrade >= 20)
+			sancCalc = 15;
+		if (nGrade >= 23)
+			sancCalc = 30;
+		if (nGrade >= 26)
+			sancCalc = 40;
+
+		int otherSancCalc = nSanc * sancCalc / 10;
+		if (nSanc >= 9)
+			otherSancCalc = sancCalc;
+
+		switch (nGrade)
+		{
+		case 9:
+			sprintf(szDesc, "%s : %d", g_pMessageStringTable[196], otherSancCalc + sancCalc);
+			break;
+		case 10:
+			sprintf(szDesc, "%s : %d", g_pMessageStringTable[198], otherSancCalc + sancCalc);
+			break;
+		case 20:
+			sprintf(szDesc, "%s : %d", g_pMessageStringTable[196], otherSancCalc + sancCalc);
+			break;
+		case 21:
+			sprintf(szDesc, "%s : %d", g_pMessageStringTable[198], otherSancCalc + sancCalc);
+			break;
+		case 22:
+			sprintf(szDesc, "%s : %d", g_pMessageStringTable[196], otherSancCalc + sancCalc);
+			pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
+			pFScene->m_pParamText[nLineId]->SetTextColor(0xFF88AAFF);
+			++nLineId;
+			sprintf(szDesc, "%s : %d", g_pMessageStringTable[198], otherSancCalc + sancCalc);
+			break;
+		case 24:
+			sprintf(szDesc, "%s : %d", g_pMessageStringTable[196], otherSancCalc + sancCalc);
+			break;
+		case 25:
+			sprintf(szDesc, "%s : %d", g_pMessageStringTable[196], otherSancCalc + sancCalc);
+			pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
+			pFScene->m_pParamText[nLineId]->SetTextColor(0xFF88AAFF);
+			++nLineId;
+			sprintf(szDesc, "%s : %d", g_pMessageStringTable[198], otherSancCalc + sancCalc);
+			break;
+		case 26:
+			sprintf(szDesc, "%s : %d", g_pMessageStringTable[196], otherSancCalc + sancCalc);
+			pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
+			pFScene->m_pParamText[nLineId]->SetTextColor(0xFF88AAFF);
+			++nLineId;
+			sprintf(szDesc, "%s : %d", g_pMessageStringTable[198], otherSancCalc + sancCalc);
+			break;
+		}
+
+		pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
+		pFScene->m_pParamText[nLineId]->SetTextColor(0xFF88AAFF);
+		++nLineId;
+	}
+
+	if (!pParamText)
+		return 1;
+
+	if (m_eGridType != TMEGRIDTYPE::GRID_SHOP)
+	{
+		if (m_eGridType == TMEGRIDTYPE::GRID_SELL)
+		{
+			float fMult = 0.25f;
+
+			int nPrice = 0;
+			if (pItem->m_pItem->sIndex > 0 && pItem->m_pItem->sIndex < 6500)
+				nPrice = g_pItemList[pItem->m_pItem->sIndex].nPrice;
+
+			char szText[128]{};
+
+			if (pItem->m_pItem->sIndex != 412)
+			{
+				if (pItem->m_pItem->sIndex == 413)
+				{
+					nPrice >>= 3;
+				}
+				else
+				{
+					nPrice = (int)((float)nPrice * fMult);
+					if (nPrice >= 5001 && nPrice <= 10000)
+					{
+						nPrice = 2 * nPrice / 3;
+					}
+					else if (nPrice > 10000)
+					{
+						nPrice /= 2;
+					}
+				}
+			}
+
+			sprintf(szText, g_pMessageStringTable[58], nPrice);
+			pParamText->SetText(szText, 0);
+			if ((pItem->m_pItem->sIndex == 412 || pItem->m_pItem->sIndex == 413)
+				&& !g_pItemList[pItem->m_pItem->sIndex].nPrice)
+			{
+				pParamText->SetText(g_pMessageStringTable[340], 0);
+			}
+		}
+		else if (m_eGridType == TMEGRIDTYPE::GRID_SKILLM)
+		{
+			int nSkillPoint = g_pSpell[g_pItemList[pItem->m_pItem->sIndex].nIndexTexture].SkillPoint;
+			char szText[128]{};
+
+			if (nSkillPoint > g_pObjectManager->m_stMobData.SkillBonus)
+				pParamText->SetTextColor(0xFFFF0000);
+
+			sprintf(szText, g_pMessageStringTable[59], nSkillPoint);
+			pParamText->SetText(szText, 0);
+		}
+		else if (m_eGridType == TMEGRIDTYPE::GRID_TRADEMY2 || m_eGridType == TMEGRIDTYPE::GRID_TRADEOP)
+		{
+			char szText[128]{};
+			if (AutoSellShowPrice(szText))
+				pParamText->SetText(szText, 0);
+		}
+		else if (pItem->m_pItem->sIndex >= 666 && pItem->m_pItem->sIndex < 672)
+		{
+			int nSkillPoint = g_pSpell[pItem->m_pItem->sIndex - 570].SkillPoint;
+			char szText[128]{};
+			sprintf(szText, g_pMessageStringTable[59], nSkillPoint);
+			pParamText->SetText(szText, 0);
+		}
+		else
+		{
+			pParamText->SetText((char*)"", 0);
+		}
+		return 1;
+	}
+
+	int nItemPrice = 0;
+	if (pItem->m_pItem->sIndex > 0 && pItem->m_pItem->sIndex < 6500)
+		nItemPrice = g_pItemList[pItem->m_pItem->sIndex].nPrice;
+
+	char szText[128]{};
+
+	float taxPrice = (float)nItemPrice * ((float)g_pObjectManager->m_nTax / 100.0);
+
+	if (pFScene->m_nIsMP == 2)
+	{
+		sprintf(szText, g_pMessageStringTable[487], nItemPrice);
+		sprintf(szText, "%s", szText);
+	}
+	else if (pFScene->m_nIsMP == 1)
+	{
+		sprintf(szText, g_pMessageStringTable[385], nItemPrice);
+		sprintf(szText, "%s", szText);
+	}
+	else
+	{
+		if (!pFScene->m_bIsUndoShoplist)
+		{
+			for (int nn = 0; nn < 10; ++nn)
+			{
+				if (pItem->m_pItem->sIndex == pFScene->m_stRepurcharse[nn].stItem.sIndex)
+					sprintf(szText, g_pMessageStringTable[486], nItemPrice);
+			}
+		}
+		else if (pFScene->m_bEventCouponOpen == 1)
+		{
+			int nItemId = pItem->m_pItem->sIndex;
+			int nCoupons = 0;
+
+			if (nItemId == 3477)
+				nCoupons = 10;
+			else if (nItemId == 3431)
+				nCoupons = 5;
+			else if (nItemId == 2397)
+				nCoupons = 1;
+			else if (nItemId == 4028)
+				nCoupons = 100;
+			else if (nItemId == 4127)
+				nCoupons = 50;
+
+			sprintf(szText, "%s: %d", g_pItemList[4906].Name, nCoupons);
+		}
+		else
+		{
+			sprintf(szText, g_pMessageStringTable[57], nItemPrice + (int)taxPrice);
+			sprintf(szText, "%s (%s:%d%%)", szText, g_pMessageStringTable[146], g_pObjectManager->m_nTax);
+		}
+
+		if (pItem->m_pItem->sIndex == 4998 || pItem->m_pItem->sIndex == 4999)
+			strcpy(szText, "");
+	}
+
+	pParamText->SetText(szText, 0);
+	return 1;
 }
 
 void SGridControl::RButton(int nCellX, int nCellY, int bPtInRect)

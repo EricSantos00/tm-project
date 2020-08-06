@@ -1303,6 +1303,31 @@ int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weaponda
     return 0;
 }
 
+int BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace)
+{
+    return 0;
+}
+
+int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type)
+{
+    return 0;
+}
+
+int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type)
+{
+    return 0;
+}
+
+int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char Type)
+{
+    return 0;
+}
+
+unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue)
+{
+    return 0;
+}
+
 int IsPassiveSkill(int nSkillIndex)
 {
     if (nSkillIndex >= 5400)
@@ -1325,6 +1350,14 @@ bool BASE_HasSancAdd(STRUCT_ITEM* item)
             return true;
     }
   
+    return false;
+}
+
+bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect)
+{
+    if (effect.cEffect == 43 || (effect.cEffect >= 155 && effect.cEffect <= 126))
+        return true;
+
     return false;
 }
 
