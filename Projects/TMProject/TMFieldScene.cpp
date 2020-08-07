@@ -4398,10 +4398,169 @@ void TMFieldScene::SetVisiblePotal(int bShow, int nPos)
 
 void TMFieldScene::SetVisibleMiniMap()
 {
+	if (m_pMiniMapPanel == nullptr)
+		return;
+
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	int bVisible = m_pMiniMapPanel->m_bVisible;
+
+	if (bVisible)
+	{
+		for (int j = 0; j < 256; ++j)
+		{
+			m_pInMiniMapPosPanel[j]->SetVisible(0);
+			m_pInMiniMapPosText[j]->SetVisible(0);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 256; ++i)
+		{
+			m_pInMiniMapPosPanel[i]->SetVisible(0);
+			m_pInMiniMapPosText[i]->SetVisible(0);
+		}
+	}
+
+	if (bVisible == 1)
+	{
+		auto pBGPanel = static_cast<SPanel*>(m_pControlContainer->FindControl(12841u));
+
+		if (pBGPanel)
+			pBGPanel->SetVisible(0);
+
+		if (m_pMiniMapServerPanel)
+			m_pMiniMapServerPanel->SetVisible(0);
+
+		if (m_pMiniMapZoomOut)
+			m_pMiniMapZoomOut->SetVisible(1);
+
+		if (m_pMiniMapZoomIn)
+			m_pMiniMapZoomIn->SetVisible(0);
+
+		if (TMGround::m_fMiniMapScale >= 1.0f)
+		{
+			if (m_pMiniMapPanel)
+			{
+				m_pMiniMapPanel->SetPos((float)g_pDevice->m_dwScreenWidth - m_pMiniMapPanel->m_nWidth, 0);
+				m_pMiniMapPanel->SetVisible(0);
+			}
+		}
+		else
+		{
+			TMGround::m_fMiniMapScale = 1.5f;
+
+			float fHeight = BASE_ScreenResize(400.0f);
+
+			if (m_pMiniMapPanel)
+			{
+				m_pMiniMapPanel->SetSize(fHeight, fHeight);
+
+				m_pMiniMapPanel->SetPos(
+					((float)g_pDevice->m_dwScreenWidth * 0.5f) - (m_pMiniMapPanel->m_nWidth * 0.5f),
+					(((float)g_pDevice->m_dwScreenHeight * 0.5f) - (m_pMiniMapPanel->m_nHeight * 0.5f)) - 15.0f);
+			}
+
+			if (m_pMiniMapDir)
+				m_pMiniMapDir->SetPos(fHeight * 0.5f, fHeight * 0.5f);
+
+			if (m_pPositionText)
+				m_pPositionText->SetPos(10.0f, 0);
+
+			if (m_pMiniMapZoomIn)
+				m_pMiniMapZoomIn->SetPos(fHeight - 134.0f, fHeight + 5.0f);
+
+			if (m_pMiniMapZoomOut)
+				m_pMiniMapZoomOut->SetPos(fHeight - 40.0f, 0);
+
+			if (m_pMiniMapServerPanel)
+				m_pMiniMapServerPanel->SetPos(fHeight - 274.0f, fHeight);
+
+			if (m_pMiniMapZoomIn)
+				m_pMiniMapZoomIn->m_bSelected = 1;
+
+			if (m_pMiniMapZoomOut)
+				m_pMiniMapZoomOut->m_bSelected = 0;
+		}
+	}
+	else
+	{
+		TMGround::m_fMiniMapScale = 0.60000002f;
+
+		auto pBGPanel = static_cast<SPanel*>(m_pControlContainer->FindControl(12841u));
+
+		if (pBGPanel)
+			pBGPanel->SetVisible(1);
+
+		if (m_pMiniMapZoomOut)
+			m_pMiniMapZoomOut->SetVisible(0);
+
+		if (m_pMiniMapZoomIn)
+		{
+			m_pMiniMapZoomIn->SetVisible(1);
+
+			m_pMiniMapZoomIn->SetPos(BASE_ScreenResize(118.0f), -BASE_ScreenResize(18.0f));
+		}
+
+		if (m_pMiniMapPanel)
+		{
+			m_pMiniMapPanel->SetSize(BASE_ScreenResize(137.0f), BASE_ScreenResize(137.0f));
+
+			m_pMiniMapPanel->SetPos(((float)g_pDevice->m_dwScreenWidth - m_pMiniMapPanel->m_nWidth) - 2.0f, 33.0f);
+		}
+
+		m_pMiniMapServerPanel->SetVisible(1);
+
+		if (m_pMiniMapServerPanel)
+		{
+			m_pMiniMapServerPanel->SetPos(0, BASE_ScreenResize(130.0f));
+		}
+
+		if (m_pMiniMapPanel)
+			m_pMiniMapPanel->SetVisible(bVisible == 0);
+
+		if (m_pMiniMapDir)
+		{
+			m_pMiniMapDir->SetPos(BASE_ScreenResize(68.0f), BASE_ScreenResize(68.0f));
+		}
+
+		if (m_pPositionText)
+		{
+			m_pPositionText->SetPos(BASE_ScreenResize(13.0f), BASE_ScreenResize(120.0f));
+		}
+
+		if (m_pMiniMapZoomIn && m_pMiniMapZoomOut)
+		{
+			m_pMiniMapZoomOut->SetPos(BASE_ScreenResize(119.0f), BASE_ScreenResize(142.0f));
+			m_pMiniMapZoomOut->m_bSelected = 1;
+		}
+	}
+
+	bVisible = m_pMiniMapPanel->m_bVisible;
+
+	if (bVisible == 1 && m_pGround)
+		m_pGround->RestoreDeviceObjects();
+
+	auto pBtnMinimap = static_cast<SButton*>(m_pControlContainer->FindControl(296u));
+
+	if (pBtnMinimap)
+		pBtnMinimap->SetSelected(m_pMiniMapPanel->m_bVisible);
+
+	m_pPositionText->SetVisible(bVisible);
+
+	if (g_pSoundManager)
+	{
+		auto pSoundData = g_pSoundManager->GetSoundData(51);
+
+		if (pSoundData)
+			pSoundData->Play(0, 0);
+	}
 }
 
 void TMFieldScene::SetVisibleParty()
 {
+	if (m_pPartyPanel)
+		m_pPartyPanel->SetVisible(m_pPartyPanel->m_bVisible == 0);
 }
 
 void TMFieldScene::SetVisibleSkillMaster()
@@ -5275,12 +5434,20 @@ int TMFieldScene::OnKeyVisibleCharInfo(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyVisibleMinimap(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'm' && iCharCode != 'M')
+		return 0;
+
+	SetVisibleMiniMap();
+	return 1;
 }
 
 int TMFieldScene::OnKeyVisibleParty(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'p' && iCharCode != 'P')
+		return 0;
+
+	SetVisibleParty();
+	return 1;
 }
 
 int TMFieldScene::OnKeyReturn(char iCharCode, int lParam)
