@@ -1651,12 +1651,104 @@ int BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* scor
 
 int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type)
 {
-    return 0;
+    if (item->sIndex >= 2330 && item->sIndex < 2390)
+        return FALSE;
+
+    int value = 0;
+
+    int idx = item->sIndex;
+
+    if (idx <= 0 || idx > MAX_ITEMLIST)
+        return value;
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (item->stEffect[i].cEffect != Type)
+            continue;
+
+        int tvalue = item->stEffect[i].cValue;
+
+        if (Type == EF_ATTSPEED && tvalue == 1)
+            tvalue = 10;
+
+        value += tvalue;
+    }
+
+    if (Type == EF_RESIST1 || Type == EF_RESIST2 || Type == EF_RESIST3 || Type == EF_RESIST4)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            if (g_pItemList[idx].stEffect[i].sEffect == EF_RESISTALL)
+                value += g_pItemList[idx].stEffect[i].sValue;
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (item->stEffect[i].cEffect == EF_RESISTALL)
+                value += item->stEffect[i].cValue;
+        }
+    }
+
+    return value;
 }
 
 int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type)
 {
-    return 0;
+    if (item->sIndex >= 2330 && item->sIndex < 2390)
+        return FALSE;
+
+    int value = 0;
+
+    int idx = item->sIndex;
+
+    if (idx <= 0 || idx > MAX_ITEMLIST)
+        return value;
+
+    int nPos = g_pItemList[idx].nPos;
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (item->stEffect[i].cEffect != Type)
+            continue;
+
+        int tvalue = item->stEffect[i].cValue;
+
+        if (Type == EF_ATTSPEED && tvalue == 1)
+            tvalue = 10;
+
+        value += tvalue;
+    }
+
+    if (Type == EF_RESIST1 || Type == EF_RESIST2 || Type == EF_RESIST3 || Type == EF_RESIST4)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            if (g_pItemList[idx].stEffect[i].sEffect == EF_RESISTALL)
+                value += g_pItemList[idx].stEffect[i].sValue;
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (item->stEffect[i].cEffect == EF_RESISTALL)
+                value += item->stEffect[i].cValue;
+        }
+    }
+
+    int sanc = BASE_GetItemSanc(item);
+
+    if (sanc == 9 && (nPos & 0xF00) != 0)
+        sanc = 10;
+
+    if (sanc == 0)
+        return value;
+
+    if (Type != EF_GRID && Type != EF_CLASS && Type != EF_POS && Type != EF_WTYPE && Type != EF_RANGE && Type != EF_LEVEL && Type != EF_REQ_STR && Type != EF_REQ_INT && Type != EF_REQ_DEX && Type != EF_REQ_CON && Type != EF_VOLATILE && Type != EF_INCUBATE && Type != EF_INCUDELAY)
+    {
+        value *= sanc + 10;
+        value /= 10;
+    }
+
+    return value;
 }
 
 int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char type)

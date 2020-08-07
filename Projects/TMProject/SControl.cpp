@@ -2903,11 +2903,10 @@ void SReelPanel::UpDateJackpot()
 
 int PointInRect(int inPosX, int inPosY, float ifX, float ifY, float ifWidth, float ifHeight)
 {
-	if (inPosX >= ifX && inPosY >= ifY &&
-		inPosX < ifX + ifWidth && inPosY < ifY + ifHeight)
-		return 1;
-
-	return 0;
+	return (float)inPosX >= ifX
+		&& (float)inPosY >= ifY
+		&& (float)(ifX + ifWidth) > (float)inPosX
+		&& (float)(ifY + ifHeight) > (float)inPosY;
 }
 
 void RemoveRenderControlItem(stGeomList* pDrawList, GeomControl* pGeomControl, int nLayer)
