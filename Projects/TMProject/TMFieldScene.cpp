@@ -4349,6 +4349,59 @@ void TMFieldScene::SetVisibleCharInfo()
 
 void TMFieldScene::SetVisibleShop(int bShow)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	if (bShow)
+	{
+		g_pCursor->DetachItem();
+
+		m_pCPanel->SetVisible(0);
+		m_pCargoPanel->SetVisible(0);
+
+		if (m_pAutoTrade && m_pAutoTrade->IsVisible() == 1)
+			SetVisibleAutoTrade(0, 0);
+
+		if (m_pTradePanel && m_pTradePanel->IsVisible() == 1)
+			SetVisibleTrade(0);
+
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+
+		SetEquipGridState(0);
+
+		m_pSkillPanel->SetVisible(0);
+	}
+	else
+	{
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+
+		SetEquipGridState(1);
+
+		g_pObjectManager->m_RMBShopOpen = 0;
+		m_bEventCouponOpen = 0;
+	}
+
+	m_pShopPanel->SetVisible(bShow);
+
+	if (bShow)
+		m_pInvenPanel->SetPos(RenderDevice::m_fWidthRatio * 514.0f, RenderDevice::m_fHeightRatio * 35.0f);
+
+	m_pInvenPanel->SetVisible(bShow);
+
+	UpdateScoreUI(0);
+
+	if (g_pSoundManager)
+	{
+		auto pSoundData = g_pSoundManager->GetSoundData(51);
+
+		if (pSoundData)
+			pSoundData->Play(0, 0);
+	}
 }
 
 void TMFieldScene::SetVisibleCargo(int bShow)
@@ -4568,10 +4621,75 @@ void TMFieldScene::SetVisibleParty()
 
 void TMFieldScene::SetVisibleSkillMaster()
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	int bVisible = m_pSkillMPanel->IsVisible() == 0;
+
+	m_pSkillPanel->SetVisible(m_pSkillMPanel->m_bVisible == 0);
+
+	if (bVisible == 1)
+	{
+		m_pSystemPanel->SetVisible(0);
+		m_pCargoPanel->SetVisible(0);
+
+		if (m_pAutoTrade && m_pAutoTrade->IsVisible() == 1)
+			SetVisibleAutoTrade(0, 0);
+
+		if (m_pTradePanel && m_pTradePanel->IsVisible() == 1)
+			SetVisibleTrade(0);
+
+		m_pInvenPanel->SetVisible(0);
+		m_pCPanel->SetVisible(0);
+		m_pShopPanel->SetVisible(0);
+		m_pSkillMPanel->SetVisible(1);
+		m_pSkillPanel->SetVisible(1);
+		m_pHellgateStore->SetVisible(0);
+		m_pGambleStore->SetVisible(0);
+		m_pSkillPanel->SetPos(RenderDevice::m_fWidthRatio * 287.0f, RenderDevice::m_fHeightRatio * 35.0f);
+	}
+
+	if (g_pSoundManager)
+	{
+		auto pSoundData = g_pSoundManager->GetSoundData(51);
+
+		if (pSoundData)
+			pSoundData->Play(0, 0);
+	}
 }
 
 void TMFieldScene::SetVisibleSkill()
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	int bVisible = m_pSkillPanel->m_bVisible == 0;
+
+	m_pSkillPanel->SetVisible(bVisible);
+
+	if (bVisible == 1)
+	{
+		m_pSkillPanel->SetPos(RenderDevice::m_fWidthRatio * 287.0f, RenderDevice::m_fHeightRatio * 35.0f);
+	}
+	else
+	{
+		m_pShopPanel->SetVisible(0);
+		m_pCargoPanel->SetVisible(0);
+		m_pHellgateStore->SetVisible(0);
+		m_pGambleStore->SetVisible(0);
+		m_pSkillMPanel->SetVisible(0);
+		m_pDescPanel->SetVisible(0);
+		g_pCursor->DetachItem();
+	}
+
+	if (g_pSoundManager)
+	{
+		auto pSoundData = g_pSoundManager->GetSoundData(51);
+
+		if (pSoundData)
+			pSoundData->Play(0, 0);
+	}
+
+	if (m_pCargoPanel->IsVisible())
+		m_pCargoPanel->SetVisible(0);
 }
 
 void TMFieldScene::SetVisibleServerWar()
@@ -4588,10 +4706,52 @@ void TMFieldScene::SetInVisibleInputCoin()
 
 void TMFieldScene::SetGridState()
 {
+	m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+
+	SetEquipGridState(1);
 }
 
 void TMFieldScene::SetEquipGridState(int bDefault)
 {
+	if (bDefault == 1)
+	{
+		m_pGridHelm->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridCoat->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridPants->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridGloves->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridBoots->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridRight->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridLeft->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridGuild->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridEvent->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridRing->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridNecklace->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridOrb->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridCabuncle->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridDRing->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	}
+	else
+	{
+		m_pGridHelm->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridCoat->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridPants->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridGloves->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridBoots->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridRight->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridLeft->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridGuild->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridEvent->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridRing->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridNecklace->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridOrb->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridCabuncle->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridDRing->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+	}
+
+	m_pGridMantua->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
 }
 
 void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
@@ -4878,6 +5038,12 @@ void TMFieldScene::SetPK()
 
 void TMFieldScene::SetVisibleNameLabel()
 {
+	m_bShowNameLabel = m_bShowNameLabel == 0;
+
+	auto pBtnName = static_cast<SButton*>(m_pControlContainer->FindControl(307u));
+
+	if (pBtnName)
+		pBtnName->SetSelected(m_bShowNameLabel == 0);
 }
 
 void TMFieldScene::SetAutoTarget()
@@ -4890,18 +5056,37 @@ void TMFieldScene::SetVisibleAutoTrade(int bShow, int bCargo)
 
 void TMFieldScene::SetWhisper(char cOn)
 {
+	m_cWhisper = cOn;
+
+	m_pChatWhisper->m_bSelected = m_pChatWhisper->m_bSelected == 0;
+	m_pChatWhisper_C->m_bSelected = m_pChatWhisper->m_bSelected == 0;
+
+	m_pChatWhisper->Update();
+	m_pChatWhisper_C->Update();
 }
 
 void TMFieldScene::SetPartyChat(char cOn)
 {
+	m_pChatParty->m_bSelected = m_pChatParty->m_bSelected == 0;
+	m_pChatParty_C->m_bSelected = m_pChatParty->m_bSelected == 0;
+
+	m_pChatParty->Update();
+	m_pChatParty_C->Update();
 }
 
 void TMFieldScene::SetGuildChat(char cOn)
 {
+	m_pChatGuild->m_bSelected = m_pChatGuild->m_bSelected == 0;
+	m_pChatGuild_C->m_bSelected = m_pChatGuild->m_bSelected == 0;
+
+	m_pChatGuild->Update();
+	m_pChatGuild_C->Update();
 }
 
 void TMFieldScene::SetKingDomChat(char cOn)
 {
+	m_pKingDomGuild->m_bSelected = m_pKingDomGuild->m_bSelected == 0;
+	m_pKingDomGuild->Update();
 }
 
 void TMFieldScene::SendReqBuy(unsigned int dwControlID)
@@ -4932,6 +5117,53 @@ void TMFieldScene::SetMyHumanMagic()
 
 void TMFieldScene::SetWeather(int nWeather)
 {
+	g_nWeather = nWeather;
+
+	if (((int)m_pMyHuman->m_vecPosition.x >> 7 == 29 || 
+		(int)m_pMyHuman->m_vecPosition.x >> 7 == 30) &&
+		(int)m_pMyHuman->m_vecPosition.y >> 7 == 22 == 1)
+	{
+		nWeather = 0;
+	}
+	else if ((nWeather == 2 || nWeather == 3) && (RenderDevice::m_bDungeon == 3 || RenderDevice::m_bDungeon == 4))
+	{
+		nWeather = 1;
+	}
+	else
+	{
+		if ((int)m_pMyHuman->m_vecPosition.x >> 7 > 26 &&
+			(int)m_pMyHuman->m_vecPosition.x >> 7 < 31 &&
+			(int)m_pMyHuman->m_vecPosition.y >> 7 > 20 &&
+			(int)m_pMyHuman->m_vecPosition.y >> 7 < 25)
+		{
+			if (nWeather == 1)
+				nWeather = 3;
+			else
+				nWeather = 2;
+		}
+	}
+
+	switch (nWeather)
+	{
+	case 1:
+		m_pRain->m_bVisible = 1;
+		m_pSnow->m_bVisible = 0;
+		m_pSnow2->m_bVisible = 0;
+		m_pSky->SetWeatherState(11);
+		break;
+	case 2:
+		m_pRain->m_bVisible = 0;
+		m_pSnow->m_bVisible = 1;
+		m_pSnow2->m_bVisible = 0;
+		m_pSky->SetWeatherState(11);
+		break;
+	case 3:
+		m_pRain->m_bVisible = 0;
+		m_pSnow->m_bVisible = 1;
+		m_pSnow2->m_bVisible = 1;
+		m_pSky->SetWeatherState(11);
+		break;
+	}
 }
 
 void TMFieldScene::SetVisibleKhepraPortal(bool bVisible)
@@ -5308,7 +5540,14 @@ int TMFieldScene::OnKeyPK(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyName(char iCharCode, int lParam)
 {
-	return 0;
+	if (g_bEvent == 1)
+		return 0;
+
+	if (iCharCode != 'n' && iCharCode != 'N')
+		return 0;
+
+	SetVisibleNameLabel();
+	return 1;
 }
 
 int TMFieldScene::OnKeyAutoTarget(char iCharCode, int lParam)
@@ -5383,7 +5622,16 @@ int TMFieldScene::OnKeyShortSkill(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyVisibleSkill(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 's' && iCharCode != 'S')
+		return 0;
+
+	if (m_pAutoTrade->IsVisible())
+		return 1;
+
+	if (m_pShopPanel->IsVisible() != 1)
+		SetVisibleSkill();
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyCamView(char iCharCode, int lParam)
@@ -5460,7 +5708,81 @@ int TMFieldScene::OnKeyReturn(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyNumPad(unsigned int iKeyCode)
 {
-	return 0;
+	if (iKeyCode < 96 || iKeyCode > 105)
+		return 0;
+
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (m_pControlContainer->m_pFocusControl &&
+		m_pControlContainer->m_pFocusControl->m_eCtrlType == CONTROL_TYPE::CTRL_TYPE_EDITABLETEXT && !g_nKeyType)
+	{
+		return 1;
+	}
+
+	if (m_pMyHuman->m_cMount)
+		return 1;
+
+	if (m_pMyHuman->m_cDie == 1)
+		return 1;
+
+	if (dwServerTime < m_dwKeyTime + 500)
+		return 1;
+
+	if (m_pMyHuman->m_SendeMotion != ECHAR_MOTION::ECMOTION_NONE)
+		return 1;
+
+	if (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_SEAT ||
+		m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_PUNISH ||
+		m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_STAND03 ||
+		m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_PUNEND)
+	{
+		return 1;
+	}
+
+	MSG_Motion stMotion{};
+	
+	stMotion.Header.ID = g_pObjectManager->m_dwCharID;
+	stMotion.Header.Type = MSG_Motion_Opcode;
+	stMotion.Motion = iKeyCode - 81;
+
+	if (iKeyCode == 105)
+	{
+		if (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_SEATING)
+		{
+			stMotion.Motion = 25;
+		}
+		else
+		{
+			if (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_PUNISHING)
+				return 1;
+
+			stMotion.Motion = 13;
+		}
+	}
+	else if (iKeyCode == 96)
+	{
+		if (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_PUNISHING)
+		{
+			stMotion.Motion = 27;
+		}
+		else
+		{
+			if (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_SEATING)
+				return 1;
+
+			stMotion.Motion = 15;
+		}
+	}
+
+	m_pMyHuman->m_SendeMotion = static_cast<ECHAR_MOTION>(stMotion.Motion);
+
+	stMotion.Direction = 0.0f;
+
+	SendOneMessage((char*)&stMotion, sizeof(stMotion));
+
+	m_dwKeyTime = dwServerTime;
+	m_bNumPad = 1;
+	return 1;
 }
 
 int TMFieldScene::OnKeyTotoTab(char iCharCode, int lParam)
