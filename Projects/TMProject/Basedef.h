@@ -746,6 +746,8 @@ struct MSG_CNFAccountLogin
 	int SSN1;
 	int SSN2;
 };
+
+constexpr auto MSG_UseItem_Opcode = 0x373;
 struct MSG_UseItem
 {
 	MSG_STANDARD Header;
