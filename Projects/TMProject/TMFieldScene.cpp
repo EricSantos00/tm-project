@@ -4569,6 +4569,37 @@ void TMFieldScene::SetVisibleSkillMaster()
 
 void TMFieldScene::SetVisibleSkill()
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	int bVisible = m_pSkillPanel->m_bVisible == 0;
+
+	m_pSkillPanel->SetVisible(bVisible);
+
+	if (bVisible == 1)
+	{
+		m_pSkillPanel->SetPos(RenderDevice::m_fWidthRatio * 287.0f, RenderDevice::m_fHeightRatio * 35.0f);
+	}
+	else
+	{
+		m_pShopPanel->SetVisible(0);
+		m_pCargoPanel->SetVisible(0);
+		m_pHellgateStore->SetVisible(0);
+		m_pGambleStore->SetVisible(0);
+		m_pSkillMPanel->SetVisible(0);
+		m_pDescPanel->SetVisible(0);
+		g_pCursor->DetachItem();
+	}
+
+	if (g_pSoundManager)
+	{
+		auto pSoundData = g_pSoundManager->GetSoundData(51);
+
+		if (pSoundData)
+			pSoundData->Play(0, 0);
+	}
+
+	if (m_pCargoPanel->IsVisible())
+		m_pCargoPanel->SetVisible(0);
 }
 
 void TMFieldScene::SetVisibleServerWar()
@@ -5380,7 +5411,16 @@ int TMFieldScene::OnKeyShortSkill(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyVisibleSkill(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 's' && iCharCode != 'S')
+		return 0;
+
+	if (m_pAutoTrade->IsVisible())
+		return 1;
+
+	if (m_pShopPanel->IsVisible() != 1)
+		SetVisibleSkill();
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyCamView(char iCharCode, int lParam)
