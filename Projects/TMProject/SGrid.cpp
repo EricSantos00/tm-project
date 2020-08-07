@@ -1815,7 +1815,143 @@ int SGridControl::SellItem2()
 
 void SGridControl::SwapItem(int nCellX, int nCellY, int nCellVWidth, int nCellVHeight, STRUCT_ITEM* pItem)
 {
-	// TODO
+	auto pGeom = SGridControl::m_pLastAttachedItem->GetGeomControl();
+	auto nWidth = (int)(pGeom->nWidth / (float)nCellVWidth);
+	auto nHeight = (int)(pGeom->nHeight / (float)nCellVHeight);
+	auto nAtItemPos = 0;
+
+	if (SGridControl::m_pLastAttachedItem)
+	{
+		memcpy(pItem, SGridControl::m_pLastAttachedItem->m_pItem, sizeof(STRUCT_ITEM));
+		nAtItemPos = BASE_GetItemAbility(pItem, 17);
+	}
+
+	auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+	int page = pFScene->m_pGridInv->m_dwControlID - 67072;
+	if ((page != 2 || g_pObjectManager->m_stMobData.Carry[60].sIndex == 3467) && 
+		(page != 3 || g_pObjectManager->m_stMobData.Carry[61].sIndex == 3467))
+	{
+		if (m_eItemType == TMEITEMTYPE::ITEMTYPE_NONE)
+		{
+			short sDestType = CheckType(SGridControl::m_pLastAttachedItem->m_pGridControl->m_eItemType, 
+				SGridControl::m_pLastAttachedItem->m_pGridControl->m_eGridType);
+
+			short sDestPos = 0;
+			if (CheckPos(SGridControl::m_pLastAttachedItem->m_pGridControl->m_eItemType) == -1)
+				sDestPos = SGridControl::m_pLastAttachedItem->m_nCellIndexX + 5 * SGridControl::m_pLastAttachedItem->m_nCellIndexY;
+
+			int Sourpage = 0;
+			int Destpage = 0;
+
+			if (m_dwControlID >= 67072 && m_dwControlID <= 67075)
+			{
+				Sourpage = 15 * (m_dwControlID - 67072);
+				if (Sourpage < 0 || Sourpage > 45)
+					Sourpage = 0;
+			}
+			if (SGridControl::m_pLastAttachedItem->m_pGridControl->m_dwControlID >= 67072 && 
+				SGridControl::m_pLastAttachedItem->m_pGridControl->m_dwControlID <= 67075)
+			{
+				Destpage = 15 * (SGridControl::m_pLastAttachedItem->m_pGridControl->m_dwControlID - 67072);
+				if (Destpage < 0 || Destpage > 45)
+					Destpage = 0;
+			}
+			if (m_dwControlID >= 67328 && m_dwControlID <= 67330)
+			{
+				Sourpage = 40 * (m_dwControlID - 67328);
+				if (Sourpage < 0 || Sourpage > 80)
+					Sourpage = 0;
+			}
+			if (SGridControl::m_pLastAttachedItem->m_pGridControl->m_dwControlID >= 67328 && 
+				SGridControl::m_pLastAttachedItem->m_pGridControl->m_dwControlID <= 67330)
+			{
+				Destpage = 40 * (SGridControl::m_pLastAttachedItem->m_pGridControl->m_dwControlID - 67328);
+				if (Destpage < 0 || Destpage > 80)
+					Destpage = 0;
+			}
+
+			MSG_SwapItem stSwapItem{};
+			stSwapItem.Header.ID = g_pObjectManager->m_dwCharID;
+			stSwapItem.Header.Type = MSG_SwapItem_Opcode;
+			stSwapItem.SourType = CheckType(m_eItemType, m_eGridType);
+			stSwapItem.SourPos = Sourpage + nCellX + 5 * nCellY;
+			stSwapItem.DestType = sDestType;
+			stSwapItem.DestPos = Destpage + sDestPos;
+			stSwapItem.TargetID = TMFieldScene::m_dwCargoID;
+
+			if (Destpage + sDestPos != stSwapItem.SourPos || 
+				stSwapItem.SourType != stSwapItem.DestType)
+			{
+				SendOneMessage((char*)&stSwapItem, sizeof(stSwapItem));
+			}
+		}
+		if (((int)m_eItemType & nAtItemPos) != (int)m_eItemType)
+		{
+			short sSrcType = CheckType(m_eItemType, m_eGridType);
+			short sSrcPos = CheckPos(m_eItemType);
+
+			short sDestType = CheckType(SGridControl::m_pLastAttachedItem->m_pGridControl->m_eItemType,
+				SGridControl::m_pLastAttachedItem->m_pGridControl->m_eGridType);
+			short sDestPos = CheckPos(SGridControl::m_pLastAttachedItem->m_pGridControl->m_eItemType);
+
+			int nAX = SGridControl::m_pLastAttachedItem->m_nCellIndexX;
+			int nAY = SGridControl::m_pLastAttachedItem->m_nCellIndexY;
+
+			if (sSrcType || sDestType)
+			{
+				int Sourpage = 0;
+				int Destpage = 0;
+
+				if (sSrcType == 1)
+				{
+					Sourpage = 15 * (m_dwControlID - 67072);
+					if (Sourpage < 0 || Sourpage > 45)
+						Sourpage = 0;
+				}
+				if (sDestType == 1)
+				{
+					Destpage = 15 * (SGridControl::m_pLastAttachedItem->m_pGridControl->m_dwControlID - 67072);
+					if (Destpage < 0 || Destpage > 45)
+						Destpage = 0;
+				}
+				if (sSrcType == 2)
+				{
+					Sourpage = 40 * (m_dwControlID - 67328);
+					if (Sourpage < 0 || Sourpage > 80)
+						Sourpage = 0;
+				}
+				if (sDestType == 2)
+				{
+					Destpage = 40 * (SGridControl::m_pLastAttachedItem->m_pGridControl->m_dwControlID - 67328);
+					if (Destpage < 0 || Destpage > 80)
+						Destpage = 0;
+				}
+
+				MSG_SwapItem stSwapItem{};
+				stSwapItem.Header.ID = g_pObjectManager->m_dwCharID;
+				stSwapItem.Header.Type = MSG_SwapItem_Opcode;
+				stSwapItem.SourType = sSrcType;
+				stSwapItem.SourPos = Sourpage + sSrcPos;
+				stSwapItem.DestType = sDestType;
+				stSwapItem.TargetID = TMFieldScene::m_dwCargoID;
+
+				if (sDestType)
+					stSwapItem.DestPos = Destpage + nAX + 5 * nAY;
+				else
+					stSwapItem.DestPos = sDestPos;
+
+				if (stSwapItem.DestPos != stSwapItem.SourPos ||
+					stSwapItem.SourType != stSwapItem.DestType)
+				{
+					SendOneMessage((char*)&stSwapItem, sizeof(stSwapItem));
+				}
+			}
+		}
+
+		SGridControl::m_pLastAttachedItem = 0;
+		return;
+	}
 }
 
 int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
