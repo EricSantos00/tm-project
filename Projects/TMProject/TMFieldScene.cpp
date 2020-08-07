@@ -28,6 +28,7 @@
 #include "TMSkillJudgement.h"
 #include "TMSkillTownPortal.h"
 #include "TMEffectLevelUp.h"
+#include "TMEffectSkinMesh.h"
 
 RECT TMFieldScene::m_rectWarning[7] =
 {
@@ -2515,9 +2516,11 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 
 	switch (pStd->Type)
 	{
-	case 0x364:
-	case 0x363:
-		return TMFieldScene::OnPacketCreateMob(pStd);
+	case MSG_CreateMob_Opcode:
+	case MSG_CreateMobTrade_Opcode:
+		return OnPacketCreateMob(pStd);
+	case MSG_SwapItem_Opcode:
+		return OnPacketSwapItem(pStd);
 	}
 
 	return 0;
@@ -6269,7 +6272,231 @@ int TMFieldScene::OnPacketAutoTrade(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketSwapItem(MSG_STANDARD* pStd)
 {
-	return 0;
+	MSG_SwapItem* pSwapItem = reinterpret_cast<MSG_SwapItem*>(pStd);
+
+	SGridControl* pSrcGrid = nullptr;
+	SGridControl* pDestGrid = nullptr;
+	SGridControlItem* pSrcItem = nullptr;
+	SGridControlItem* pDestItem = nullptr;
+
+	SGridControl* pGridSrc[16]{};
+
+	if (!pSwapItem->SourType)
+	{
+		pGridSrc[0] = m_pGridInv;
+		pGridSrc[1] = m_pGridHelm;
+		pGridSrc[2] = m_pGridCoat;
+		pGridSrc[3] = m_pGridPants;
+		pGridSrc[4] = m_pGridGloves;
+		pGridSrc[5] = m_pGridBoots;
+		pGridSrc[6] = m_pGridLeft;
+		pGridSrc[7] = m_pGridRight;
+		pGridSrc[8] = m_pGridRing;
+		pGridSrc[9] = m_pGridNecklace;
+		pGridSrc[10] = m_pGridOrb;
+		pGridSrc[11] = m_pGridCabuncle;
+		pGridSrc[12] = m_pGridGuild;
+		pGridSrc[13] = m_pGridEvent;
+		pGridSrc[14] = m_pGridDRing;
+		pGridSrc[15] = m_pGridMantua;
+		pSrcGrid = pGridSrc[pSwapItem->SourPos];
+		pSrcItem = pSrcGrid->PickupItem(0, 0);
+
+		memset(&g_pObjectManager->m_stMobData.Equip[pSwapItem->SourPos], 0, sizeof(STRUCT_ITEM));
+	}
+	else if (pSwapItem->SourType == 1)
+	{
+		pSrcGrid = m_pGridInvList[pSwapItem->SourPos / 15];
+		pSrcItem = pSrcGrid->PickupAtItem(pSwapItem->SourPos % 15 % 5, pSwapItem->SourPos % 15 / 5);
+		memset(&g_pObjectManager->m_stMobData.Carry[pSwapItem->SourPos], 0, sizeof(STRUCT_ITEM));
+	}
+	else if (pSwapItem->SourType == 2)
+	{
+		pSrcGrid = m_pCargoGridList[pSwapItem->SourPos / 40];
+		pSrcItem = pSrcGrid->PickupAtItem(pSwapItem->SourPos % 40 % 5, pSwapItem->SourPos % 40 / 5);
+		memset(&g_pObjectManager->m_stItemCargo[pSwapItem->SourPos], 0, sizeof(STRUCT_ITEM));
+	}
+
+	SGridControl* pGridDest[16]{};
+	if (!pSwapItem->DestType)
+	{
+		pGridDest[0] = m_pGridInv;
+		pGridDest[1] = m_pGridHelm;
+		pGridDest[2] = m_pGridCoat;
+		pGridDest[3] = m_pGridPants;
+		pGridDest[4] = m_pGridGloves;
+		pGridDest[5] = m_pGridBoots;
+		pGridDest[6] = m_pGridLeft;
+		pGridDest[7] = m_pGridRight;
+		pGridDest[8] = m_pGridRing;
+		pGridDest[9] = m_pGridNecklace;
+		pGridDest[10] = m_pGridOrb;
+		pGridDest[11] = m_pGridCabuncle;
+		pGridDest[12] = m_pGridGuild;
+		pGridDest[13] = m_pGridEvent;
+		pGridDest[14] = m_pGridDRing;
+		pGridDest[15] = m_pGridMantua;
+
+		pDestGrid = pGridDest[pSwapItem->DestPos];
+		pDestItem = pDestGrid->PickupItem(0, 0);
+
+		memset(&g_pObjectManager->m_stMobData.Equip[pSwapItem->DestPos], 0, sizeof(STRUCT_ITEM));
+	}
+	else if (pSwapItem->DestType == 1)
+	{
+		pDestGrid = m_pGridInvList[pSwapItem->DestPos / 15];
+		pDestItem = pDestGrid->PickupAtItem(pSwapItem->DestPos % 15 % 5, pSwapItem->DestPos % 15 / 5);
+		memset(&g_pObjectManager->m_stMobData.Carry[pSwapItem->DestPos], 0, sizeof(STRUCT_ITEM));
+	}
+	else if (pSwapItem->DestType == 2)
+	{
+		pDestGrid = m_pCargoGridList[pSwapItem->DestPos / 40];
+		pDestItem = pDestGrid->PickupAtItem(pSwapItem->DestPos % 40 % 5,
+			 pSwapItem->DestPos % 40 / 5);
+		memset(&g_pObjectManager->m_stItemCargo[pSwapItem->DestPos], 0, sizeof(STRUCT_ITEM));
+	}
+
+	if (pDestItem)
+	{
+		if (!pSwapItem->SourType)
+		{
+			if (pDestItem->m_pItem->sIndex > 40)
+			{
+				pSrcGrid->AddItem(pDestItem, 0, 0);
+				if (pDestItem)
+					memcpy(&g_pObjectManager->m_stMobData.Equip[pSwapItem->SourPos], pDestItem->m_pItem, sizeof(STRUCT_ITEM));				
+				else
+					memset(&g_pObjectManager->m_stMobData.Equip[pSwapItem->SourPos], 0, sizeof(STRUCT_ITEM));
+			}
+			else
+			{
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pDestItem)
+					g_pCursor->m_pAttachedItem = nullptr;
+
+				SAFE_DELETE(pDestItem);
+			}
+		}
+		else if (pSwapItem->SourType == 1)
+		{
+			if (pDestItem->m_pItem->sIndex > 40)
+			{				
+				pSrcGrid->AddItem(pDestItem, pSwapItem->SourPos % 15 % 5, pSwapItem->SourPos % 15 / 5);
+				if (pDestItem)
+					memcpy(&g_pObjectManager->m_stMobData.Carry[pSwapItem->SourPos], pDestItem->m_pItem, sizeof(STRUCT_ITEM));
+				else
+					memset(&g_pObjectManager->m_stMobData.Carry[pSwapItem->SourPos], 0, sizeof(STRUCT_ITEM));
+			}
+			else
+			{
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pDestItem)
+					g_pCursor->m_pAttachedItem = nullptr;
+
+				SAFE_DELETE(pDestItem);
+			}
+		}
+		else if (pSwapItem->SourType == 2)
+		{
+			if (pDestItem->m_pItem->sIndex > 40)
+			{				
+				pSrcGrid->AddItem(pDestItem, pSwapItem->SourPos % 40 % 5, pSwapItem->SourPos % 40 / 5);
+				if (pDestItem)
+					memcpy(&g_pObjectManager->m_stItemCargo[pSwapItem->SourPos], pDestItem->m_pItem, sizeof(STRUCT_ITEM));
+				else
+					memset(&g_pObjectManager->m_stItemCargo[pSwapItem->SourPos], 0, sizeof(STRUCT_ITEM));
+			}
+			else
+			{
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pDestItem)
+					g_pCursor->m_pAttachedItem = nullptr;
+
+				SAFE_DELETE(pDestItem);
+			}
+		}
+	}
+	if (pSrcItem)
+	{
+		if (!pSwapItem->DestType)
+		{
+			if (pSrcItem->m_pItem->sIndex > 40)
+			{
+				pDestGrid->AddItem(pSrcItem, 0, 0);
+				if (pSrcItem)
+					memcpy(&g_pObjectManager->m_stMobData.Equip[pSwapItem->DestPos], pSrcItem->m_pItem, sizeof(STRUCT_ITEM));
+				else
+					memset(&g_pObjectManager->m_stMobData.Equip[pSwapItem->DestPos], 0, sizeof(STRUCT_ITEM));
+			}
+			else
+			{
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pSrcItem)
+					g_pCursor->m_pAttachedItem = nullptr;
+
+				SAFE_DELETE(pSrcItem);
+			}
+		}
+		else if (pSwapItem->DestType == 1)
+		{
+			if (pSrcItem->m_pItem->sIndex > 40)
+			{
+				pDestGrid->AddItem(pSrcItem, pSwapItem->DestPos % 15 % 5, pSwapItem->DestPos % 15 / 5);
+				if (pSrcItem)
+					memcpy(&g_pObjectManager->m_stMobData.Carry[pSwapItem->DestPos], pSrcItem->m_pItem, sizeof(STRUCT_ITEM));
+				else
+					memset(&g_pObjectManager->m_stMobData.Carry[pSwapItem->DestPos], 0, sizeof(STRUCT_ITEM));
+			}
+			else
+			{
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pSrcItem)
+					g_pCursor->m_pAttachedItem = nullptr;
+
+				SAFE_DELETE(pSrcItem);
+			}
+		}
+		else if (pSwapItem->DestType == 2)
+		{
+			if (pSrcItem->m_pItem->sIndex > 40)
+			{
+				pDestGrid->AddItem(pSrcItem, pSwapItem->DestPos % 40 % 5, pSwapItem->DestPos % 40 / 5);
+				if (pSrcItem)
+					memcpy(&g_pObjectManager->m_stItemCargo[pSwapItem->DestPos], pSrcItem->m_pItem, sizeof(STRUCT_ITEM));
+				else
+					memset(&g_pObjectManager->m_stItemCargo[pSwapItem->DestPos], 0, sizeof(STRUCT_ITEM));
+			}
+			else
+			{
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pSrcItem)
+					g_pCursor->m_pAttachedItem = 0;
+
+				SAFE_DELETE(pSrcItem);
+			}
+		}
+	}
+
+	auto pMobData = &g_pObjectManager->m_stMobData;
+	if (m_pMyHuman->m_sFamiliar != g_pObjectManager->m_stMobData.Equip[13].sIndex && m_pMyHuman->m_pFamiliar)
+	{
+		g_pObjectManager->DeleteObject(m_pMyHuman->m_pFamiliar);
+		m_pMyHuman->m_pFamiliar = 0;
+	}
+
+	m_pMyHuman->m_sFamiliar = pMobData->Equip[13].sIndex;
+	if (!pMobData->Guild)
+		g_pObjectManager->m_usWarGuild = -1;
+	if (pSwapItem->SourPos == 15 && pSwapItem->DestPos != 15 && m_pMyHuman)
+		m_pMyHuman->m_sMountIndex = 0;
+
+	auto pSoundManager = g_pSoundManager;
+	if (pSoundManager)
+	{
+		auto pSoundData = pSoundManager->GetSoundData(31);
+		if (pSoundData)
+			pSoundData->Play();
+	}
+
+	g_pCursor->DetachItem();
+	SGridControl::m_pLastAttachedItem = 0;
+	UpdateScoreUI(0);
+	UpdateMyHuman();
+	return 1;
 }
 
 int TMFieldScene::OnPacketShopList(MSG_STANDARD* pStd)

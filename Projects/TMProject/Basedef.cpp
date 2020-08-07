@@ -1427,7 +1427,145 @@ int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY)
 
 int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans)
 {
-    return 0;
+    int idx = item->sIndex;
+    if (idx <= 0 || idx >= 6500)
+        return FALSE;
+
+    int nUnique = g_pItemList[idx].nUnique;
+    if (Pos == 15)
+        return FALSE;
+
+    if (Pos != -1)
+    {
+        int tpos = BASE_GetItemAbility(item, EF_POS);
+        int pos = (tpos >> Pos) & 1;
+
+        if (pos == 0)
+            return FALSE;
+
+        if (Pos == 6 || Pos == 7)
+        {
+            int OtherPos = (Pos == 6) ? 7 : 6;
+            int	OtherIdx = pBaseEquip[OtherPos].sIndex;
+
+            if (OtherIdx > 0 && OtherIdx < MAX_ITEMLIST)
+            {
+                int nUnique2 = g_pItemList[OtherIdx].nUnique;
+                int otherpos = BASE_GetItemAbility(&pBaseEquip[OtherPos], EF_POS);
+
+                if (tpos == 64 || otherpos == 64)
+                {
+                    if (nUnique == 46)
+                    {
+                        if (otherpos != 128)
+                            return FALSE;
+                    }
+                    else if (nUnique2 == 46)
+                    {
+                        if (tpos != 128)
+                            return FALSE;
+                    }
+                    else
+                        return FALSE;
+                }
+            }
+        }
+    }
+
+    if (Class >= 22 && Class <= 25 || Class == 32)
+        Class = OriginalFace;
+
+    int trans = Class % 10;
+
+    if (Pos == 1 && trans > 5
+        && item->sIndex != 747
+        && item->sIndex != 3500
+        && item->sIndex != 3507
+        && item->sIndex != 3501
+        && item->sIndex != 3502
+        && item->sIndex != 3303
+        && item->sIndex != 3507)
+    {
+        return FALSE;
+    }
+
+    int transitem = BASE_GetItemAbility(item, EF_TRANS);
+    switch (transitem)
+    {
+    case 1:
+        if (trans < 6)
+            return FALSE;
+        break;
+    case 2:
+        if (trans >= 6)
+            return FALSE;
+        break;
+    case 3:
+        if (trans < 6)
+            return FALSE;
+        if (cktrans != 1)
+            return FALSE;
+        break;
+    }
+
+    if (!((BASE_GetItemAbility(item, EF_CLASS) >> Class / 10) & 1))
+    {
+        if (trans <= 5)
+            return FALSE;
+
+        int pos = BASE_GetItemAbility(item, EF_POS);
+        if (pos != 64 && pos != 128 && pos != 192)
+            return FALSE;
+    }
+    if (nUnique % 10 >= 9 && nUnique < 40 && trans < 6)
+        return FALSE;
+
+    int lvl = BASE_GetItemAbility(item, EF_LEVEL);
+    int str = BASE_GetItemAbility(item, EF_REQ_STR);
+    int spt = BASE_GetItemAbility(item, EF_REQ_INT);
+    int agi = BASE_GetItemAbility(item, EF_REQ_DEX);
+    int con = BASE_GetItemAbility(item, EF_REQ_CON);
+
+    int wtype = BASE_GetItemAbility(item, EF_WTYPE);
+
+    int weapontype = wtype % 10;
+    int modweapon = wtype % 10;
+
+    int divweapon = wtype % 10 / 10;
+    if (Pos == 7 && weapontype)
+    {
+        int rate = 100;
+        if (divweapon || modweapon <= 1)
+        {
+            if (divweapon == 6 && modweapon > 1)
+                rate = 150;
+        }
+        else
+        {
+            rate = 130;
+        }
+        lvl = rate * lvl / 100;
+        str = rate * str / 100;
+        spt = rate * spt / 100;
+        agi = rate * agi / 100;
+        con = rate * con / 100;
+    }
+
+    if (trans < 5)
+    {
+        if (lvl > score->Level)
+            return FALSE;
+        if (str > score->Str)
+            return FALSE;
+        if (spt > score->Int)
+            return FALSE;
+        if (agi > score->Dex)
+            return FALSE;
+        if (con > score->Con)
+            return FALSE;
+    }
+
+    return TRUE;
 }
 
 unsigned int BASE_GetItemColor(STRUCT_ITEM* item)
@@ -2136,6 +2274,10 @@ unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue)
     }
 
     return 0;
+}
+
+void BASE_SetItemAmount(STRUCT_ITEM* item, int amount)
+{
 }
 
 int IsPassiveSkill(int nSkillIndex)

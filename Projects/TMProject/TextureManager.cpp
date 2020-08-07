@@ -182,7 +182,7 @@ void TextureManager::ReleaseNotUsingTexture()
 			if (m_ppModelTexture[nIndex] != nullptr &&
 				dwCurrentTime - m_stModelTextureList[nIndex].dwLastUsedTime > m_stModelTextureList[nIndex].dwShowTime)
 			{
-				SAFE_RELEASE(m_ppEnvTexture[nIndex]);
+				SAFE_RELEASE(m_ppModelTexture[nIndex]);
 			}			
 		}
 
@@ -191,7 +191,7 @@ void TextureManager::ReleaseNotUsingTexture()
 			if (m_ppEnvTexture[nIndex] != nullptr &&
 				dwCurrentTime - m_stEnvTextureList[nIndex].dwLastUsedTime > m_stEnvTextureList[nIndex].dwShowTime)
 			{
-				SAFE_RELEASE(m_ppModelTexture[nIndex]);
+				SAFE_RELEASE(m_ppEnvTexture[nIndex]);
 			}
 		}
 

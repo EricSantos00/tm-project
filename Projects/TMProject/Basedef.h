@@ -1035,6 +1035,15 @@ struct MSG_Buy
 	int Coin;
 };
 
+constexpr auto MSG_Sell_Opcode = 0x37A;
+struct MSG_Sell
+{
+	MSG_STANDARD Header;
+	unsigned short TargetID;
+	short MyType;
+	short MyPos;
+};
+
 constexpr auto MSG_Attack_Multi = 0x367;
 constexpr auto MSG_Attack_One = 0x39D;
 constexpr auto MSG_Attack_Two = 0x39E;
@@ -1257,6 +1266,7 @@ int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type);;
 int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type);
 int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char type);
 unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue);
+void BASE_SetItemAmount(STRUCT_ITEM* item, int amount);
 
 int IsPassiveSkill(int nSkillIndex);
 
