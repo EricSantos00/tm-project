@@ -1381,8 +1381,424 @@ void SGridControl::BuyItem(int nCellX, int nCellY)
 
 int SGridControl::TradeItem(int nCellX, int nCellY)
 {
-	// TODO
-	return 0;
+	auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+	if (m_eGridType == TMEGRIDTYPE::GRID_TRADEINV)
+	{
+		auto pItem = GetItem(nCellX, nCellY);
+		if (pItem && pItem->m_GCObj.dwColor == 0xFFFFFFFF)
+		{
+			int Sourpage = 0;
+			if (m_dwControlID >= 67072 && m_dwControlID <= 67075)
+			{
+				Sourpage = 15 * (m_dwControlID - 67072);
+				if (Sourpage < 0 || Sourpage > 45)
+					Sourpage = 0;
+			}
+
+			int SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+			SGridControl* pGridMyItem[15];
+			for (size_t i = 0; i < 15; ++i)
+				pGridMyItem[i] = (SGridControl*)pFScene->m_pControlContainer->FindControl(i + 8448);
+
+			bool bEmptyFind = false;
+			for (size_t i = 0; i < 15; ++i)
+			{
+				if (!pGridMyItem[i]->GetItem(0, 0))
+				{
+					auto pstItem = new STRUCT_ITEM;
+					memcpy(pstItem, pItem->m_pItem, sizeof(STRUCT_ITEM));
+
+					auto newItem = new SGridControlItem(nullptr, pstItem, 0.0f, 0.0f);
+					if (newItem)
+						pGridMyItem[i]->AddItem(newItem, 0, 0);
+
+					memcpy(&g_pObjectManager->m_stTrade.Item[i], pItem->m_pItem, sizeof(STRUCT_ITEM));
+
+					g_pObjectManager->m_stTrade.CarryPos[i] = Sourpage + SourPos;
+					pItem->m_GCObj.dwColor = 0xFFFF0000;
+					bEmptyFind = true;
+					break;
+				}
+			}
+			if (!bEmptyFind)
+				return 0;
+
+			auto pMyCheck = (SButton*)pFScene->m_pControlContainer->FindControl(617);
+			auto pOPCheck = (SButton*)pFScene->m_pControlContainer->FindControl(601);
+			pMyCheck->m_bSelected = 0;
+			pOPCheck->m_bSelected = 0;
+
+			pFScene->m_dwLastCheckTime = g_pApp->m_pTimerManager->GetServerTime();
+			g_pObjectManager->m_stTrade.MyCheck = pMyCheck->m_bSelected;
+			g_pObjectManager->m_stTrade.Header.Type = 0x383;
+			SendOneMessage((char*)&g_pObjectManager->m_stTrade, sizeof(g_pObjectManager->m_stTrade));
+			return 1;
+		}
+		return 2;
+	}
+	if (m_eGridType == TMEGRIDTYPE::GRID_TRADEINV2)
+	{
+		if (pFScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+		{
+			int page = m_dwControlID - 67328;
+			if (page >= 3)
+				return 0;
+
+			auto pInputGold = (SPanel*)pFScene->m_pControlContainer->FindControl(65885);
+			auto pItem = pFScene->m_pCargoGridList[page]->GetItem(nCellX, nCellY);
+			auto pRunAutoTrade = (SButton*)pFScene->m_pControlContainer->FindControl(667);
+
+			if (!pRunAutoTrade->IsVisible())
+				return 1;
+
+			if (!pItem || !pItem->m_pItem)
+				return 1;
+
+			if (BASE_GetItemAbility(pItem->m_pItem, 111))
+			{
+				pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[309], 2000);
+				pFScene->m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+			if (pItem->m_pItem->sIndex == 508 || pItem->m_pItem->sIndex == 509 || pItem->m_pItem->sIndex == 522 || 
+				pItem->m_pItem->sIndex >= 526 && pItem->m_pItem->sIndex <= 537 || pItem->m_pItem->sIndex == 747 || 
+				pItem->m_pItem->sIndex == 4905)
+			{
+				pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[309], 2000);
+				pFScene->m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+
+			if (!pInputGold->IsVisible() && pItem->m_GCObj.dwColor == -1)
+			{
+				auto pText = (SText*)pFScene->m_pControlContainer->FindControl(65888);
+				auto pEdit = (SEditableText*)pFScene->m_pControlContainer->FindControl(65889);
+
+				pItem->m_GCObj.dwColor = 0xFFFF00FF;
+
+				pFScene->m_nCoinMsgType = 4;
+				pFScene->m_nLastAutoTradePos = 40 * page + 5 * pItem->m_nCellIndexY + pItem->m_nCellIndexX;
+
+				pText->SetText(g_pMessageStringTable[142], 0);
+
+				pFScene->m_pControlContainer->SetFocusedControl(pEdit);
+
+				memset(pEdit->m_strComposeText, 0, sizeof(pEdit->m_strComposeText));
+				pEdit->SetText((char*)"");
+				pInputGold->SetVisible(1);
+				pFScene->m_pChatSelectPanel->SetVisible(0);
+			}
+		}
+		return 1;
+	}
+	if (m_eGridType == TMEGRIDTYPE::GRID_TRADEINV3)
+	{
+		int Sourpage = 0;
+		if (m_dwControlID >= 67072 && m_dwControlID <= 67075)
+		{
+			Sourpage = m_dwControlID - 67072;
+			if (Sourpage < 0 || Sourpage > 3)
+				Sourpage = 0;
+		}
+
+		auto pItem = GetItem(nCellX, nCellY);
+		if (pItem)
+			pFScene->m_MissionClass.ClickInvItem(pItem, pFScene->m_pGridInvList, Sourpage);
+		return 2;
+	}
+	if (m_eGridType == TMEGRIDTYPE::GRID_TRADEINV6)
+	{
+		int Sourpage = 0;
+		if (m_dwControlID >= 67072 && m_dwControlID <= 67075)
+		{
+			Sourpage = 15 * (m_dwControlID - 67072);
+			if (Sourpage < 0 || Sourpage > 45)
+				Sourpage = 0;
+		}
+
+		auto pItem = GetItem(nCellX, nCellY);
+
+		if (!pItem || pItem->m_GCObj.dwColor != 0xFFFFFFFF)
+			return 2;
+
+		int SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+		SourPos += Sourpage;
+
+		SGridControl* pGridMyItem[3];
+		for (size_t i = 0; i < 3; i++)
+			pGridMyItem[i] = (SGridControl*)pFScene->m_pControlContainer->FindControl(6436);
+
+		float nY = 0.0f;
+		float nX = 0.0f;
+		bool bEmptyFind = false;
+		for (int i = 0; i < 3; i++)
+		{
+			if (!pGridMyItem[i] || pGridMyItem[i]->GetItem(0, 0))
+				continue;
+
+			if (i == 0)
+			{
+				int target1trans = BASE_GetItemAbility(pItem->m_pItem, 112);
+				int target1pos = g_pItemList[pItem->m_pItem->sIndex].nPos;
+				int target1look = BASE_GetItemAbility(pItem->m_pItem, 18);
+				int target1Level = BASE_GetItemAbility(pItem->m_pItem, 87);
+				int target1Unique = g_pItemList[pItem->m_pItem->sIndex].nUnique;
+
+				bool bOK = true;
+
+				if (target1trans != 1)
+					bOK = false;
+				if (!bOK)
+				{
+					pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[273], 2000);
+					pFScene->m_pMessagePanel->SetVisible(1, 1);
+					return 1;
+				}
+
+				if (target1Level != 6)
+					bOK = false;
+				if (!bOK)
+				{
+					pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[302], 2000);
+					pFScene->m_pMessagePanel->SetVisible(1, 1);
+					return 1;
+				}
+
+				if (target1pos & 0x3F)
+				{
+					pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[276], 2000);
+					pFScene->m_pMessagePanel->SetVisible(1, 1);
+					return 1;
+				}
+			}
+			if (i == 1)
+			{
+				int target2trans = BASE_GetItemAbility(pItem->m_pItem, 112);
+				int target2grade = g_pItemList[pItem->m_pItem->sIndex].nUnique / 10;
+				int target2pos = g_pItemList[pItem->m_pItem->sIndex].nPos;
+				int target2look = BASE_GetItemAbility(pItem->m_pItem, 18);
+				int target2Unique = g_pItemList[pItem->m_pItem->sIndex].nUnique;
+				int target2Level = BASE_GetItemAbility(pItem->m_pItem, 87);
+
+				bool bOK = true;
+
+				if (target2grade < 4)
+					bOK = false;
+				if (!bOK)
+				{
+					pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[276], 2000);
+					pFScene->m_pMessagePanel->SetVisible(1, 1);
+					return 1;
+				}
+
+				if (target2Level != 6)
+					bOK = false;
+				if (!bOK)
+				{
+					pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[302], 2000);
+					pFScene->m_pMessagePanel->SetVisible(1, 1);
+					return 1;
+				}
+
+				auto pItem1 = pGridMyItem[0]->GetItem(0, 0);
+				int target1grade = g_pItemList[pItem1->m_pItem->sIndex].nUnique % 10;
+				int nPos = g_pItemList[pItem1->m_pItem->sIndex].nPos;
+				int nClass = BASE_GetItemAbility(pItem1->m_pItem, 18);
+				int nUnique = g_pItemList[pItem1->m_pItem->sIndex].nUnique;
+
+				if (nUnique != target2Unique)
+					bOK = nUnique == 45 && target2Unique == 48 && nPos == target2pos;
+				if (nPos != target2pos)
+					bOK = false;
+
+				if (!bOK)
+				{
+					pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[276], 2000);
+					pFScene->m_pMessagePanel->SetVisible(1, 1);
+					return 1;
+				}
+			}
+			if (i == 2)
+			{
+				nX = 13.0f;
+				nY = 28.0f;
+			}
+
+			if (i == 0 || i == 1 || i == 2)
+			{
+				int nItemSanc = BASE_GetItemSanc(pItem->m_pItem);
+				if (nItemSanc < 9 || !g_pItemList[pItem->m_pItem->sIndex].nPos)
+				{
+					pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[192], 2000);
+					pFScene->m_pMessagePanel->SetVisible(1, 1);
+					return 1;
+				}
+			}
+
+			auto dst = new STRUCT_ITEM;
+			memcpy(dst, pItem->m_pItem, sizeof(STRUCT_ITEM));
+
+			auto newItem = new SGridControlItem(nullptr, dst, nX, nY);
+			if (newItem)
+				pGridMyItem[i]->AddItem(newItem, 0, 0);
+
+			memcpy(&g_pObjectManager->m_stCombineItem4.Item[i], pItem->m_pItem, sizeof(STRUCT_ITEM));
+			g_pObjectManager->m_stCombineItem4.CarryPos[i] = SourPos;
+			pItem->m_GCObj.dwColor = 0xFFFF0000;
+			bEmptyFind = true;
+			break;
+		}
+
+		return bEmptyFind != 0;
+	}
+	if (m_eGridType == TMEGRIDTYPE::GRID_TRADEINV8)
+	{
+		int Sourpage = 0;
+		if (m_dwControlID >= 67072 && m_dwControlID <= 67075)
+		{
+			Sourpage = m_dwControlID - 67072;
+			if (Sourpage < 0 || Sourpage > 3)
+				Sourpage = 0;
+		}
+
+		auto pItem = GetItem(nCellX, nCellY);
+		if (pItem)
+			pFScene->m_ItemMixClass.ClickInvItem(pItem, pFScene->m_pGridInvList, Sourpage);
+		return 2;
+	}
+	if (m_eGridType == TMEGRIDTYPE::GRID_TRADEMY)
+		return 1;
+	if (m_eGridType == TMEGRIDTYPE::GRID_ITEMMIX)
+	{
+		auto pItem = GetItem(nCellX, nCellY);
+		if (!pItem)
+			return 1;
+
+		SGridControl* pGridMyItem[13];
+		for (size_t i = 0; i < 13; ++i)
+			pGridMyItem[i] = (SGridControl*)pFScene->m_pControlContainer->FindControl(i + 65861);
+
+		// TODO: review this code latter, possible buffer overflow.
+		for (size_t i = 0; i < 13; ++i)
+		{
+			if (pGridMyItem[i] != this)
+				continue;
+
+			int Page = g_pObjectManager->m_stCombineItem.CarryPos[i] / 15;
+			int CellIndexX = g_pObjectManager->m_stCombineItem.CarryPos[i] % 15 % 5;
+			int CellIndexY = g_pObjectManager->m_stCombineItem.CarryPos[i] % 15 / 5;
+
+			auto pPickupItem = pGridMyItem[i]->PickupItem(0, 0);
+			auto pControlInv = pFScene->m_pGridInvList[Page];
+
+			auto pItemInv = pControlInv->GetItem(CellIndexX, CellIndexY);
+			pItemInv->m_GCObj.dwColor = 0xFFFFFFFF;
+
+			g_pObjectManager->m_stCombineItem.CarryPos[i] = -1;
+
+			memset(&g_pObjectManager->m_stCombineItem.Item[i], 0, sizeof(g_pObjectManager->m_stCombineItem.Item[i]));
+			if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickupItem)
+				g_pCursor->m_pAttachedItem = nullptr;
+
+			SAFE_DELETE(pPickupItem);
+			break;
+		}
+		return 1;
+	}
+	if (m_eGridType == TMEGRIDTYPE::GRID_ITEMMIX4)
+	{
+		auto pItem = GetItem(nCellX, nCellY);
+		if (!pItem)
+			return 1;
+
+		SGridControl* pGridMyItem[3];
+		for (size_t i = 0; i < 3; ++i)
+			pGridMyItem[i] = (SGridControl*)pFScene->m_pControlContainer->FindControl(i + 6436);
+
+		for (size_t i = 0; i < 3; ++i)
+		{
+			if (pGridMyItem[i] != this)
+				continue;
+
+			int Page = g_pObjectManager->m_stCombineItem4.CarryPos[i] / 15;
+			int CellIndexX = g_pObjectManager->m_stCombineItem4.CarryPos[i] % 15 % 5;
+			int CellIndexY = g_pObjectManager->m_stCombineItem4.CarryPos[i] % 15 / 5;
+
+			auto pPickupItem = pGridMyItem[i]->PickupItem(0, 0);
+			auto pControlInv = pFScene->m_pGridInvList[Page];
+
+			auto pItemInv = pControlInv->GetItem(CellIndexX, CellIndexY);
+			pItemInv->m_GCObj.dwColor = 0xFFFFFFFF;
+
+			g_pObjectManager->m_stCombineItem4.CarryPos[i] = -1;
+
+			memset(&g_pObjectManager->m_stCombineItem4.Item[i], 0, sizeof(g_pObjectManager->m_stCombineItem4.Item[i]));
+			if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickupItem)
+				g_pCursor->m_pAttachedItem = nullptr;
+
+			SAFE_DELETE(pPickupItem);
+		}
+
+		return 1;
+	}
+	if (m_eGridType == TMEGRIDTYPE::GRID_TRADEMY2)
+	{
+		auto pItem = GetItem(nCellX, nCellY);
+		if (!pItem)
+			return 1;
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			auto pGrid = pFScene->m_pGridInvList[i];
+			int nGridIndex = BASE_GetItemAbility(pItem->m_pItem, 33);
+
+			IVector2 vecGrid = pGrid->CanAddItemInEmpty(g_pItemGridXY[nGridIndex][0], g_pItemGridXY[nGridIndex][1]);
+
+			if (vecGrid.x > -1 && vecGrid.y > -1 || BASE_GetItemAbility(pItem->m_pItem, 38) == 2)
+			{
+				if (pItem && pFScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+				{
+					pFScene->m_pMessageBox->SetMessage(g_pMessageStringTable[144], 646, 0);
+					pFScene->m_pMessageBox->SetVisible(1);
+					pFScene->m_pMessageBox->m_dwArg = m_dwControlID;
+				}
+				return 1;
+			}
+		}
+
+		auto pListBox = pFScene->m_pChatList;
+
+		auto pItem2 = new SListBoxItem(g_pMessageStringTable[1], 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0,
+			0x77777777, 1, 0);
+		if (pItem2)
+			pListBox->AddItem(pItem2);
+
+		auto pSoundManager = g_pSoundManager;
+		if (pSoundManager)
+		{
+			auto pSoundData = pSoundManager->GetSoundData(33);
+			if (pSoundData)
+				pSoundData->Play(0, 0);
+		}
+		return 1;
+	}
+	if (m_eGridType == TMEGRIDTYPE::GRID_SHOP || m_eGridType == TMEGRIDTYPE::GRID_SKILLM ||
+		m_eGridType == TMEGRIDTYPE::GRID_ITEMMIXRESULT || m_eGridType == TMEGRIDTYPE::GRID_ITEMMIXNEED ||
+		m_eGridType == TMEGRIDTYPE::GRID_MISSION_RESULT || m_eGridType == TMEGRIDTYPE::GRID_MISSION_NEED ||
+		m_eGridType == TMEGRIDTYPE::GRID_MISSION_NEEDLIST)
+	{
+		return 1;
+	}
+
+	auto pItem = SelectItem(nCellX, nCellY);
+	if (pItem && IsPassiveSkill(pItem->m_pItem->sIndex) == 1)
+		return 1;
+
+	if (pItem && pItem->m_GCObj.dwColor != 0xFFFF0000)
+		g_pCursor->AttachItem(pItem);
+	
+	return 1;
 }
 
 int SGridControl::SellItem(int nCellX, int nCellY, unsigned int dwFlags, unsigned int wParam)

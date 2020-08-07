@@ -553,7 +553,7 @@ int SCursor::AttachItem(SGridControlItem* pItem)
 {
 	if (pItem == nullptr)
 		return 0;
-	if (m_eStyle == ECursorStyle::TMC_CURSOR_HAND)
+	if (m_eStyle != ECursorStyle::TMC_CURSOR_HAND)
 		return 0;
 
 	m_eStyle = ECursorStyle::TMC_CURSOR_PICKUP;
