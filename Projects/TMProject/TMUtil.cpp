@@ -35,8 +35,8 @@ void SendOneMessage(char* Msg, int Size)
     MSG_STANDARD* pMsgStandard = (MSG_STANDARD*)Msg;
     if (Msg != nullptr 
         && (LastSendTime + 1000 < CurrentTime || pMsgStandard->Type != MSG_Action_Opcode || g_usLastPacketType != MSG_Action_Opcode)
-        && (LastSendTime + 1000 <= CurrentTime || pMsgStandard->Type != MSG_Attack_Multi && pMsgStandard->Type != MSG_Attack_One 
-        && pMsgStandard->Type != MSG_Attack_Two || g_usLastPacketType != MSG_Attack_Multi && g_usLastPacketType != MSG_Attack_One && g_usLastPacketType != MSG_Attack_Two))
+        && (LastSendTime + 1000 <= CurrentTime || pMsgStandard->Type != MSG_Attack_Multi_Opcode && pMsgStandard->Type != MSG_Attack_One_Opcode
+        && pMsgStandard->Type != MSG_Attack_Two_Opcode || g_usLastPacketType != MSG_Attack_Multi_Opcode && g_usLastPacketType != MSG_Attack_One_Opcode && g_usLastPacketType != MSG_Attack_Two_Opcode))
     {
         g_pSocketManager->SendOneMessage(Msg, Size);
         g_usLastPacketType = pMsgStandard->Type;
