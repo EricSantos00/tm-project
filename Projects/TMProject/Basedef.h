@@ -25,12 +25,15 @@ struct MSG_STANDARD
 };
 
 constexpr auto MSG_RequestCapsuleInfo_Opcode = 0x2CD;
+constexpr auto MSG_DelayStart_Opcode = 0x3AE;
+constexpr auto MSG_UseDeclarationOfWar_Opcode = 0xED7;
 struct MSG_STANDARDPARM
 {
 	MSG_STANDARD Header;
 	int Parm;
 };
 
+constexpr auto MSG_DeleteItem_Opcode = 0x2E4;
 struct MSG_STANDARDPARM2
 {
 	MSG_STANDARD Header;

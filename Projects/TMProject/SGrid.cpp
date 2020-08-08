@@ -4274,69 +4274,361 @@ void SGridControl::RButton(int nCellX, int nCellY, int bPtInRect)
 		return;
 	}
 
-	if (g_pCursor->GetStyle() == ECursorStyle::TMC_CURSOR_HAND && m_eItemType == TMEITEMTYPE::ITEMTYPE_NONE && 
+	if (g_pCursor->GetStyle() == ECursorStyle::TMC_CURSOR_HAND && m_eItemType == TMEITEMTYPE::ITEMTYPE_NONE &&
 		(m_eGridType == TMEGRIDTYPE::GRID_DEFAULT || m_eGridType == TMEGRIDTYPE::GRID_SELL))
-	{		
+	{
 		int page = pFScene->m_pGridInv->m_dwControlID - 67072;
 		unsigned int dwServerTime = g_pTimerManager->GetServerTime();
 
-		if ((!pFScene->m_dwUseItemTime || dwServerTime - pFScene->m_dwUseItemTime >= 200) && 
-			(page != 2 || g_pObjectManager->m_stMobData.Carry[60].sIndex == 3467) && 
-			(page != 3 || g_pObjectManager->m_stMobData.Carry[61].sIndex == 3467))
+		if ((pFScene->m_dwUseItemTime && dwServerTime - pFScene->m_dwUseItemTime < 200) ||
+			(page == 2 && g_pObjectManager->m_stMobData.Carry[60].sIndex != 3467) ||
+			(page == 3 && g_pObjectManager->m_stMobData.Carry[61].sIndex != 3467))
+			return;
+
+		if (!bPtInRect)
+			return;
+
+		if (g_pEventTranslator->m_bRBtn)
+			return;
+
+		auto pItem = GetItem(nCellX, nCellY);
+		if (!pItem)
+			return;
+
+		int nType = BASE_GetItemAbility(pItem->m_pItem, 38);
+		int nItemSIndex = pItem->m_pItem->sIndex;
+
+		int skillId = g_pObjectManager->m_cShortSkill[g_pObjectManager->m_cSelectShortSkill];
+		if (skillId >= 105)
+			skillId += 95;
+
+		if (skillId == 83 && pFScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
 		{
-			if (bPtInRect)
+			if (pFScene->m_dwOldAttackTime + 1000 < g_pTimerManager->GetServerTime())
 			{
-				if (!g_pEventTranslator->m_bRBtn)
+				char szMessage[128]{};
+				sprintf(szMessage, g_pMessageStringTable[149], g_pItemList[pItem->m_pItem->sIndex].Name);
+				pFScene->m_pMessageBox->SetMessage(szMessage, 84, g_pMessageStringTable[150]);
+				pFScene->m_pMessageBox->SetVisible(1);
+
+				short sDestType = CheckType(pItem->m_pGridControl->m_eItemType,
+					pItem->m_pGridControl->m_eGridType);
+				short sDestPos = CheckPos(pItem->m_pGridControl->m_eItemType);
+
+				int Page = 15 * (pItem->m_pGridControl->m_dwControlID - 67072);
+				if (Page < 0 || Page > 45)
+					Page = 0;
+				if (sDestPos == -1)
+					sDestPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+				pFScene->m_sDestType = sDestType;
+				pFScene->m_sDestPos = Page + sDestPos;
+			}
+			return;
+		}
+		if (nItemSIndex == 3207)
+		{
+			if (!pFScene->m_pCargoPanel->IsVisible())
+				pFScene->SetVisibleCargo(1);
+		}
+		if (nItemSIndex >= 3468 && nItemSIndex <= 3471)
+		{
+			int Page = 15 * (pItem->m_pGridControl->m_dwControlID - 67072);
+			if (Page < 0 || Page > 45)
+				Page = 0;
+
+			if (pMyHuman->m_cCancel != 1 &&
+				(!pFScene->m_dwUseItemTime || dwServerTime - pFScene->m_dwUseItemTime >= 200))
+			{
+				short SourType = CheckType(pItem->m_pGridControl->m_eItemType,
+					pItem->m_pGridControl->m_eGridType);
+				short SourPos = CheckPos(pItem->m_pGridControl->m_eItemType);
+				if (SourPos == -1)
+					SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+				SourPos = Page + SourPos;
+
+				auto vec = pMyHuman->m_vecPosition;
+
+				MSG_UseItem stUseItem{};
+				stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+				stUseItem.Header.Type = MSG_UseItem_Opcode;
+				stUseItem.SourType = 1;
+				stUseItem.SourPos = SourPos;
+				stUseItem.ItemID = 0;
+				stUseItem.GridX = (int)vec.x;
+				stUseItem.GridY = (int)vec.y;
+				SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+
+				int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+				if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
+					nAmount = 0;
+				if (nAmount <= 1)
 				{
-					auto pItem = GetItem(nCellX, nCellY);
-					if (pItem)
+					auto pPickedItem = PickupItem(nCellX, nCellY);
+					if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+						g_pCursor->m_pAttachedItem = nullptr;
+					SAFE_DELETE(pPickedItem);
+				}
+				else
+				{
+					BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+					sprintf(pItem->m_GCText.strString, "%2d", nAmount - 1);
+					pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+				}
+
+				if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+					pFScene->UpdateScoreUI(0);
+				if (nAmount <= 1)
+					memset(&g_pObjectManager->m_stMobData.Carry[SourPos], 0, sizeof(STRUCT_ITEM));
+
+				pFScene->m_dwUseItemTime = dwServerTime;
+			}
+			return;
+		}
+		if (nItemSIndex == 3467)
+		{
+			int Page = 15 * (pItem->m_pGridControl->m_dwControlID - 67072);
+			if (Page < 0 || Page > 45)
+				Page = 0;
+
+			if (pMyHuman->m_cCancel != 1 &&
+				(!pFScene->m_dwUseItemTime || dwServerTime - pFScene->m_dwUseItemTime >= 200))
+			{
+				short SourType = CheckType(pItem->m_pGridControl->m_eItemType,
+					pItem->m_pGridControl->m_eGridType);
+				short SourPos = CheckPos(pItem->m_pGridControl->m_eItemType);
+				if (SourPos == -1)
+					SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+				SourPos = Page + SourPos;
+
+				auto vec = pMyHuman->m_vecPosition;
+
+				MSG_UseItem stUseItem{};
+				stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+				stUseItem.Header.Type = MSG_UseItem_Opcode;
+				stUseItem.SourType = 1;
+				stUseItem.SourPos = SourPos;
+				stUseItem.ItemID = 0;
+				stUseItem.GridX = (int)vec.x;
+				stUseItem.GridY = (int)vec.y;
+				SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+
+				pFScene->m_dwUseItemTime = dwServerTime;
+
+				if (g_pObjectManager->m_stMobData.Carry[60].sIndex != 3467 ||
+					g_pObjectManager->m_stMobData.Carry[61].sIndex != 3467)
+				{
+					MSG_STANDARDPARM2 stDeleteItem{};
+					stDeleteItem.Header.ID = g_pCurrentScene->m_pMyHuman->m_dwID;
+					stDeleteItem.Header.Type = MSG_DeleteItem_Opcode;
+					stDeleteItem.Parm1 = SourPos;
+					stDeleteItem.Parm2 = 3467;
+					SendOneMessage((char*)&stDeleteItem, 20);
+				}
+			}
+			return;
+		}
+		if (nType == 14)
+		{
+			pFScene->m_pMessageBox->SetMessage(g_pMessageStringTable[175], 38, 0);
+			pFScene->m_pMessageBox->m_dwArg = nCellY | (nCellX << 16);
+			pFScene->m_pMessageBox->SetVisible(1);
+			return;
+		}
+		if (nType == 11 || nType == 13)
+		{
+			short SourType = CheckType(pItem->m_pGridControl->m_eItemType,
+				pItem->m_pGridControl->m_eGridType);
+			short SourPos = CheckPos(pItem->m_pGridControl->m_eItemType);
+			if (SourPos == -1)
+				SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+			int Page = 15 * (pItem->m_pGridControl->m_dwControlID - 67072);
+			if (Page < 0 || Page > 45)
+				Page = 0;
+
+			if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+			{
+				if (pMyHuman &&
+					pMyHuman->m_fProgressRate < 0.89999998f && pMyHuman->m_fProgressRate > 0.0f)
+				{
+					return;
+				}
+
+				pFScene->m_dwGetItemTime = g_pTimerManager->GetServerTime();
+				pFScene->m_dwLastTeleport = pFScene->m_dwGetItemTime;
+				pFScene->m_cLastTeleport = 1;
+				memset(&pFScene->m_stUseItem, 0, sizeof(pFScene->m_stUseItem));
+				pFScene->m_stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+				pFScene->m_stUseItem.Header.Type = MSG_UseItem_Opcode;
+				pFScene->m_stUseItem.SourType = 1;
+				pFScene->m_stUseItem.SourPos = Page + SourPos;
+				pFScene->m_stUseItem.ItemID = 0;
+				pFScene->m_stUseItem.GridX = (int)pMyHuman->m_vecPosition.x;
+				pFScene->m_stUseItem.GridY = (int)pMyHuman->m_vecPosition.y;
+
+				MSG_STANDARDPARM stDelayStart{};
+				stDelayStart.Header.ID = pMyHuman->m_dwID;
+				stDelayStart.Header.Type = MSG_DelayStart_Opcode;
+				stDelayStart.Parm = 1;
+				SendOneMessage((char*)&stDelayStart, sizeof(stDelayStart));
+			}
+
+			g_pEventTranslator->m_bRBtn = 1;
+
+			int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+			if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
+				nAmount = 0;
+			if (nAmount <= 1)
+			{
+				auto pPickedItem = PickupItem(nCellX, nCellY);
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+					g_pCursor->m_pAttachedItem = nullptr;
+				SAFE_DELETE(pPickedItem);
+			}
+			else
+			{
+				BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+				sprintf(pItem->m_GCText.strString, "%2d", nAmount - 1);
+				pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+			}
+
+			int nSoundIndex = 41;
+			if (nType >= 11 && nType <= 13)
+				nSoundIndex = 54;
+
+			auto pSoundManager = g_pSoundManager;
+			if (pSoundManager)
+			{
+				auto pSoundData = pSoundManager->GetSoundData(nSoundIndex);
+				if (pSoundData)
+					pSoundData->Play(0, 0);
+			}
+
+			if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+				pFScene->UpdateScoreUI(0);
+			if (nAmount <= 1)
+				memset(&g_pObjectManager->m_stMobData.Carry[SourPos], 0, sizeof(STRUCT_ITEM));
+		}
+		if (nItemSIndex == 3336 && g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+		{
+			pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[286], 3000);
+			pFScene->m_pMessagePanel->SetVisible(1, 1);
+			return;
+		}
+		if (nItemSIndex == 3442)
+		{
+			if (!pFScene->m_dwUseItemTime || dwServerTime - pFScene->m_dwUseItemTime >= 200)
+			{
+				pFScene->m_pFireWorkPanel->SetVisible(1);
+				for (int i = 0; i < 100; ++i)
+					pFScene->m_pFireWorkButton[i]->Update();
+
+				pFScene->m_nFireWorkCellX = nCellX;
+				pFScene->m_nFireWorkCellY = nCellY;
+				pFScene->m_dwUseItemTime = dwServerTime;
+				g_pEventTranslator->m_bRBtn = 1;
+			}
+			return;
+		}
+		if (nType == 195)
+		{
+			pFScene->SetVisiblePotal(1, pItem->m_pItem->sIndex - 3432);
+
+			short SourType = CheckType(pItem->m_pGridControl->m_eItemType,
+				pItem->m_pGridControl->m_eGridType);
+			short SourPos = CheckPos(pItem->m_pGridControl->m_eItemType);
+			if (SourPos == -1)
+			{
+				int Page = 15 * (pItem->m_pGridControl->m_dwControlID - 67072);
+				if (Page < 0 || Page > 45)
+					Page = 0;
+
+				SourPos = Page + 5 * pItem->m_nCellIndexY + pItem->m_nCellIndexX;
+			}
+			auto vec = pMyHuman->m_vecPosition;
+
+			memset(&pFScene->m_stPotalItem, 0, sizeof(pFScene->m_stPotalItem));
+			pFScene->m_stPotalItem.Header.ID = g_pObjectManager->m_dwCharID;
+			pFScene->m_stPotalItem.Header.Type = MSG_UseItem_Opcode;
+			pFScene->m_stPotalItem.SourType = 1;
+			pFScene->m_stPotalItem.SourPos = SourPos;
+			pFScene->m_stPotalItem.ItemID = 0;
+			pFScene->m_stPotalItem.GridX = vec.x;
+			pFScene->m_stPotalItem.GridY = vec.y;
+			return;
+		}
+		if (nType == 187 && g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+		{
+
+			pFScene->m_pMessageBox->SetMessage(g_pMessageStringTable[300], 883, 0);
+			pFScene->m_pMessageBox->m_dwArg = nCellY | (nCellX << 16);
+			pFScene->m_pMessageBox->SetVisible(1);
+			return;
+		}
+		if (Check_ItemRightClick(nType, nItemSIndex) && (g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_FIELD ||
+			pMyHuman->m_cCancel != 1 || nType != 1))
+		{
+			if (nType >= 70 && nType < 90)
+			{
+				if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+				{
+					if (pFScene->m_pGridDRing->m_pItemList[0])
 					{
-						int nType = BASE_GetItemAbility(pItem->m_pItem, 38);
-						int nItemSIndex = pItem->m_pItem->sIndex;
-
-						int skillId = g_pObjectManager->m_cShortSkill[g_pObjectManager->m_cSelectShortSkill];
-						if (skillId >= 105)
-							skillId += 95;
-
-						if (skillId == 83 && pFScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
-						{
-							if (pFScene->m_dwOldAttackTime + 1000 < g_pTimerManager->GetServerTime())
-							{
-								char szMessage[128]{};
-								sprintf(szMessage, g_pMessageStringTable[149], g_pItemList[pItem->m_pItem->sIndex].Name);
-								pFScene->m_pMessageBox->SetMessage(szMessage, 84, g_pMessageStringTable[150]);
-								pFScene->m_pMessageBox->SetVisible(1);
-								
-								short sDestType = CheckType(pItem->m_pGridControl->m_eItemType,
-									pItem->m_pGridControl->m_eGridType);
-								short sDestPos = CheckPos(pItem->m_pGridControl->m_eItemType);
-
-								int Page = 15 * (pItem->m_pGridControl->m_dwControlID - 67072);
-								if (Page < 0 || Page > 45)
-									Page = 0;
-								if (sDestPos == -1)
-									sDestPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
-
-								pFScene->m_sDestType = sDestType;
-								pFScene->m_sDestPos = Page + sDestPos;
-							}
-							return;
-						}
-						if (nItemSIndex == 3207)
-						{
-							if (!pFScene->m_pCargoPanel->IsVisible())
-								pFScene->SetVisibleCargo(1);
-						}
-						if (nItemSIndex >= 3468 && nItemSIndex <= 3471)
-						{
-
-						}
+						pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[285], 3000);
+						pFScene->m_pMessagePanel->SetVisible(1, 1);
+						return;
 					}
+				}
+			}
+			else if (nType == 206 && pItem->m_pItem->stEffect[0].cEffect == 59)
+			{
+				if (g_pCurrentScene)
+					pFScene->VisibleInputCharName(pItem, nCellX, nCellY);
+				return;
+			}
+			else if (nType == 206)
+			{
+				pFScene->m_pMessageBox->SetMessage(g_pMessageStringTable[350], 883, 0);
+				pFScene->m_pMessageBox->m_dwArg = nCellY | (nCellX << 16);
+				pFScene->m_pMessageBox->SetVisible(1);
+				return;
+			}
+			else if (nType == 211)
+			{
+				pFScene->m_pMessageBox->SetMessage(g_pMessageStringTable[356], 883, 0);
+				pFScene->m_pMessageBox->m_dwArg = nCellY | (nCellX << 16);
+				pFScene->m_pMessageBox->SetVisible(1);
+				return;
+			}
+
+			if (pMyHuman)
+			{
+				if (nItemSIndex == 4030)
+				{
+					if (!pFScene->m_dwUseItemTime || dwServerTime - pFScene->m_dwUseItemTime >= 200)
+					{
+						MSG_STANDARDPARM stParam{};
+						stParam.Header.Type = MSG_UseDeclarationOfWar_Opcode;
+						stParam.Header.Size = sizeof(stParam);
+						stParam.Header.ID = g_pCurrentScene->m_pMyHuman->m_dwID;
+						stParam.Parm = 0;
+						SendOneMessage((char*)&stParam, sizeof(stParam));
+						pFScene->m_dwUseItemTime = dwServerTime;
+					}
+				}
+				else if (nItemSIndex != 4906 && (nItemSIndex < 4132 || nItemSIndex > 4139))
+				{
+					if (nItemSIndex == 4907)
+						pFScene->m_pRPSGamePanel->SetVisible(1);
+
+					pFScene->UseItem(pItem, nType, nItemSIndex, nCellX, nCellY);
 				}
 			}
 		}
 	}
-	// TODO
 }
 
 void SGridControl::UpdateCapsuleInfo(int nIndex)
