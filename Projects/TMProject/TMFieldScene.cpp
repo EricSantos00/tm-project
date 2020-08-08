@@ -5328,6 +5328,7 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 		{
 			int sIndex = 0;
 			int ItemIndex = 0;
+			// Skill list on "S"
 			for (int i = 0; i < 24; ++i)
 			{
 				unsigned int dwBit = 1 << i;
@@ -5367,6 +5368,7 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 				if(ipCtrlItem)
 					m_pSkillSecGrid[i]->AddItemInEmpty(ipCtrlItem);
 			}
+			// Skill bar 1
 			for (int i = 0; i < 12; ++i)
 			{
 				if (!m_pSkillSecGrid2)
@@ -5402,6 +5404,7 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 				if (ipCtrlItem)
 					m_pSkillSecGrid2[i]->AddItemInEmpty(ipCtrlItem);
 			}
+			// Skill bar 2
 			for (int i = 0; i < 8; ++i)
 			{
 				unsigned int dwBit = 1 << (i + 24);
@@ -5433,7 +5436,7 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pOldItem)
 					g_pCursor->m_pAttachedItem = 0;
 
-				// TODO: check this strange bOld
+				//TODO: check this strange bOld
 				bool bOld = false;
 				if (bOld != 1 && pOldItem)
 				{
@@ -6360,19 +6363,19 @@ void TMFieldScene::InitBoard()
 		if (!g_pObjectManager->m_stMobData.CurrentScore.Level)
 		{
 			STRUCT_MOB* pMobData = &g_pObjectManager->m_stMobData;
-			TMScene::LoadMsgText3(m_pQuestList[0], 
+			LoadMsgText3(m_pQuestList[0], 
 				(char*)"UI\\QuestSubjects.txt",	
 				g_pObjectManager->m_stMobData.CurrentScore.Level + 1, 
 				g_pObjectManager->m_stMobData.Equip[0].sIndex % 10);
-			TMScene::LoadMsgText3(m_pQuestList[1],
+			LoadMsgText3(m_pQuestList[1],
 				(char*)"UI\\QuestSubjects2.txt",
 				pMobData->CurrentScore.Level + 1,
 				pMobData->Equip[0].sIndex % 10);
-			TMScene::LoadMsgText3(m_pQuestList[2],
+			LoadMsgText3(m_pQuestList[2],
 				(char*)"UI\\QuestSubjects3.txt",
 				pMobData->CurrentScore.Level + 1,
 				pMobData->Equip[0].sIndex % 10);
-			TMScene::LoadMsgText3(m_pQuestList[3],
+			LoadMsgText3(m_pQuestList[3],
 				(char*)"UI\\QuestSubjects4.txt",
 				pMobData->CurrentScore.Level + 1,
 				pMobData->Equip[0].sIndex % 10);
@@ -6382,7 +6385,7 @@ void TMFieldScene::InitBoard()
 			char szStr[128]{};
 			unsigned int dwCol = 0xFFAAAAFF;
 			if (m_pLevelQuest[pMobData->CurrentScore.Level] == 100)
-				dwCol = TMScene::LoadMsgText4(					
+				dwCol = LoadMsgText4(					
 					szStr,
 					(char*)"UI\\QuestMessage.txt",
 					pMobData->CurrentScore.Level + 1,
