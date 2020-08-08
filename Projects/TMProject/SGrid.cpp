@@ -216,7 +216,7 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 			{
 				if (m_eGridType == TMEGRIDTYPE::GRID_SKILLB)
 				{
-					pFScene->m_pControlContainer->SetFocusedControl(nullptr);
+					g_pCurrentScene->m_pControlContainer->SetFocusedControl(nullptr);
 					if (nCellX >= 9)
 						pFScene->OnKeyShortSkill(48, 0);
 					else

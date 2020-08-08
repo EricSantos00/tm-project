@@ -3805,7 +3805,7 @@ void TMHuman::UpdateScore(int nGuildLevel)
             auto pCurrentHPText = pScene->m_pCurrentHPText;
             auto pMaxHPText = pScene->m_pMaxHPText;
             auto pCurrentMPText = pScene->m_pCurrentMPText;
-            auto pMaxMPText = pScene->m_pMaxMHPText;
+            auto pMaxMPText = pScene->m_pMaxMPText;
             auto pCurrentMHPText = pScene->m_pCurrentMHPText;
             auto pMaxMHPText = pScene->m_pMaxMHPText;
 
@@ -3837,7 +3837,6 @@ void TMHuman::UpdateScore(int nGuildLevel)
                 sprintf_s(szMP, "/ %d", m_stScore.MaxMp);
                 pMaxMPText->SetText(szMP, 0);
             }
-
             if (pHPBar)
             {
                 pHPBar->SetMaxProgress(m_stScore.MaxHp);
@@ -3872,16 +3871,12 @@ void TMHuman::UpdateScore(int nGuildLevel)
 
             if (pScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
             {
-                bool v5 = m_dwID == 0;
-                if (m_dwID < 0x3E8 && (m_nCurrentKill || m_nTotalKill > 0))
+                if ((m_dwID > 0 && m_dwID < 1000) && (m_nCurrentKill || m_nTotalKill > 0))
                 {
-                    // I couldn't understand
-                    bool v20 = (signed int)m_vecPosition.x >> 7 <= 16
-                        || (signed int)m_vecPosition.x >> 7 >= 20
-                        || (signed int)m_vecPosition.y >> 7 <= 29 ? 0 : 1;
+                    bool isInPos = (int)m_vecPosition.x >> 7 <= 16 || (int)m_vecPosition.x >> 7 >= 20 || 
+                        (int)m_vecPosition.y >> 7 <= 29 ? 0 : 1;
 
-                    bool v19 = v20 == 1 ? pScene->m_pMyHuman == this : 1;
-                    if (v19)
+                    if (isInPos == 1 ? pScene->m_pMyHuman == this : 1)
                     {
                         char szTemp[128] = { 0 };
                         sprintf_s(szTemp, "%d", m_nCurrentKill);

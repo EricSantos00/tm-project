@@ -211,25 +211,25 @@ void SControlContainer::SetFocusedControl(SControl* pControl)
 			m_pFocusControl->SetFocused(1);
 
 		TMScene* pScene = g_pCurrentScene;
-		if (g_pCurrentScene)
+		if (pScene)
 		{
-			if (m_pFocusControl != nullptr && m_pFocusControl->m_eCtrlType != CONTROL_TYPE::CTRL_TYPE_EDITABLETEXT)
+			if (m_pFocusControl != nullptr && m_pFocusControl->m_eCtrlType == CONTROL_TYPE::CTRL_TYPE_EDITABLETEXT)
 			{
-				g_pCurrentScene->m_pAlphaNative->SetVisible(1);
+				pScene->m_pAlphaNative->SetVisible(1);
 				g_pEventTranslator->UpdateCompositionPos();
 
-				SPanel* panel = static_cast<SPanel*>(g_pCurrentScene->m_pControlContainer->FindControl(P_CHAT));
+				SPanel* panel = static_cast<SPanel*>(pScene->m_pControlContainer->FindControl(P_CHAT));
 				if (panel && panel->m_bVisible && pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
 					static_cast<TMFieldScene*>(pScene)->m_pChatSelectPanel->SetVisible(1);
 			}
 			else
 			{
-				g_pCurrentScene->m_pAlphaNative->SetVisible(0);
+				pScene->m_pAlphaNative->SetVisible(0);
 
 				if (pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
 				{
-					static_cast<TMFieldScene*>(pScene)->m_pChatSelectPanel->SetVisible(1);
-					static_cast<TMFieldScene*>(pScene)->m_pChatListPanel->SetVisible(1);
+					static_cast<TMFieldScene*>(pScene)->m_pChatSelectPanel->SetVisible(0);
+					static_cast<TMFieldScene*>(pScene)->m_pChatListPanel->SetVisible(0);
 				}
 
 				pScene->m_pTextIMEDesc->SetVisible(0);

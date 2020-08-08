@@ -5034,6 +5034,7 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 	if (m_pCHP)
 		m_pCHP->SetText(szStr, 0);
 
+	// HP on "C"
 	sprintf(szStr, "%d", pMobData->CurrentScore.Hp);
 	if (m_pCIHP)
 		m_pCIHP->SetText(szStr, 0);
@@ -5042,11 +5043,13 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 	if (m_pMPBar)
 		m_pMPBar->SetCurrentProgress(pMobData->CurrentScore.Mp);
 
+	// MP on "C"
 	sprintf(szStr, "%d", pMobData->CurrentScore.Mp);
 	if (m_pCMP)
 		m_pCMP->SetText(szStr, 0);
 	if (m_pCIMP)
 		m_pCIMP->SetText(szStr, 0);
+
 	if (m_pMainCharName)
 		m_pMainCharName->SetText(pMobData->MobName, 0);
 
@@ -5368,7 +5371,7 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 				if(ipCtrlItem)
 					m_pSkillSecGrid[i]->AddItemInEmpty(ipCtrlItem);
 			}
-			// Skill bar 1
+			// Skill bar 2
 			for (int i = 0; i < 12; ++i)
 			{
 				if (!m_pSkillSecGrid2)
@@ -5404,7 +5407,7 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 				if (ipCtrlItem)
 					m_pSkillSecGrid2[i]->AddItemInEmpty(ipCtrlItem);
 			}
-			// Skill bar 2
+			// Skill bar 1
 			for (int i = 0; i < 8; ++i)
 			{
 				unsigned int dwBit = 1 << (i + 24);
@@ -5795,6 +5798,57 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 
 void TMFieldScene::UpdateSkillBelt()
 {
+	auto pSkillBelt2 = m_pGridSkillBelt2;
+	for (int i = 0; i < 10; ++i)
+	{
+		auto pReturnItem2 = pSkillBelt2->PickupItem(i, 0);
+		if (g_pObjectManager->m_cShortSkill[i] < 248)
+		{
+			auto pStructItem2 = new STRUCT_ITEM;
+			memset(pStructItem2, 0, sizeof(STRUCT_ITEM));
+
+			pStructItem2->sIndex = g_pObjectManager->m_cShortSkill[i] < 105 ? g_pObjectManager->m_cShortSkill[i] + 5000 :
+				g_pObjectManager->m_cShortSkill[i] + 5295;
+			
+			auto pSkillItem = new SGridControlItem(0, pStructItem2, 0.0f, 0.0f);
+
+			if (pSkillItem)
+				pSkillBelt2->AddSkillItem(pSkillItem, i, 0);
+
+			if (g_pObjectManager->m_cSelectShortSkill == i)
+				pSkillItem->m_GCObj.nTextureSetIndex = 200;
+		}
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pReturnItem2)
+			g_pCursor->m_pAttachedItem = nullptr;
+
+		SAFE_DELETE(pReturnItem2);
+	}
+
+	auto pSkillBelt3 = m_pGridSkillBelt3;
+	for (int i = 0; i < 10; ++i)
+	{
+		auto pReturnItem3 = pSkillBelt3->PickupItem(i, 0);
+		if (g_pObjectManager->m_cShortSkill[i + 10] < 248)
+		{
+			auto pStructItem3 = new STRUCT_ITEM;
+			memset(pStructItem3, 0, sizeof(STRUCT_ITEM));
+
+			pStructItem3->sIndex = g_pObjectManager->m_cShortSkill[i + 10] < 105 ? g_pObjectManager->m_cShortSkill[i + 10] + 5000 :
+				g_pObjectManager->m_cShortSkill[i + 10] + 5295;
+
+			auto pSkillItem = new SGridControlItem(0, pStructItem3, 0.0f, 0.0f);
+
+			if (pSkillItem)
+				pSkillBelt3->AddSkillItem(pSkillItem, i, 0);
+
+			if (g_pObjectManager->m_cSelectShortSkill == i + 10)
+				pSkillItem->m_GCObj.nTextureSetIndex = 200;
+		}
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pReturnItem3)
+			g_pCursor->m_pAttachedItem = nullptr;
+
+		SAFE_DELETE(pReturnItem3);
+	}
 }
 
 void TMFieldScene::UpdateMyHuman()
@@ -6652,7 +6706,139 @@ int TMFieldScene::OnKeyGuildOnOff(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyShortSkill(char iCharCode, int lParam)
 {
-	return 0;
+	if ((iCharCode < '0' || iCharCode > '9') && iCharCode != '!' && iCharCode != '@' && 
+		iCharCode != '#' && iCharCode != '$' && iCharCode != '%' && iCharCode != '¨' && 
+		iCharCode != '&' && iCharCode != '*' && iCharCode != '(' && iCharCode != ')')
+	{
+		return 0;
+	}
+
+	if (m_bNumPad == 1)
+	{
+		m_bNumPad = 0;
+		return 1;
+	}
+
+	if (iCharCode >= '0' && iCharCode <= '9')
+	{
+		g_pObjectManager->m_cSelectShortSkill = iCharCode - '1';
+		if (iCharCode == 48)
+			g_pObjectManager->m_cSelectShortSkill = 9;
+	}
+	else
+	{
+		switch (iCharCode)
+		{
+		case '!':
+			g_pObjectManager->m_cSelectShortSkill = 0;
+			break;
+		case '@':
+			g_pObjectManager->m_cSelectShortSkill = 1;
+			break;
+		case '#':
+			g_pObjectManager->m_cSelectShortSkill = 2;
+			break;
+		case '$':
+			g_pObjectManager->m_cSelectShortSkill = 3;
+			break;
+		case '%':
+			g_pObjectManager->m_cSelectShortSkill = 4;
+			break;
+		case '¨':
+			g_pObjectManager->m_cSelectShortSkill = 5;
+			break;
+		case '&':
+			g_pObjectManager->m_cSelectShortSkill = 6;
+			break;
+		case '*':
+			g_pObjectManager->m_cSelectShortSkill = 7;
+			break;
+		case '(':
+			g_pObjectManager->m_cSelectShortSkill = 8;
+			break;
+		case ')':
+			g_pObjectManager->m_cSelectShortSkill = 9;
+			break;
+		}
+	}
+	if (m_pGridSkillBelt3->IsVisible())
+		g_pObjectManager->m_cSelectShortSkill += 10;
+
+	if (g_pObjectManager->m_cSelectShortSkill < 10)
+	{
+		auto pBeltGrid2 = m_pGridSkillBelt2;
+		for (int i = 0; i < 10; ++i)
+		{
+			auto ipCtrlItem2 = pBeltGrid2->GetItem(i, 0);
+			if (ipCtrlItem2)
+			{
+				if (i == g_pObjectManager->m_cSelectShortSkill)
+					ipCtrlItem2->m_GCObj.nTextureSetIndex = 200;
+				else
+					ipCtrlItem2->m_GCObj.nTextureSetIndex = 199;
+			}
+		}
+	}
+	else
+	{
+		auto pBeltGrid3 = m_pGridSkillBelt3;
+		for (int j = 0; j < 10; ++j)
+		{
+			auto ipCtrlItem3 = pBeltGrid3->GetItem(j, 0);
+			if (j + 10 == g_pObjectManager->m_cSelectShortSkill && ipCtrlItem3)
+				ipCtrlItem3->m_GCObj.nTextureSetIndex = 200;
+			else if (ipCtrlItem3)
+				ipCtrlItem3->m_GCObj.nTextureSetIndex = 199;
+		}
+	}
+
+	int cSkillIndex = g_pObjectManager->m_cShortSkill[g_pObjectManager->m_cSelectShortSkill];
+	if (cSkillIndex >= 105)
+		cSkillIndex += 95;
+	if (cSkillIndex >= 0 && cSkillIndex < 248)
+	{
+		SetMyHumanMagic();
+
+		int nIdx = g_pObjectManager->m_stMobData.Equip[6].sIndex;
+		auto pMobData = &g_pObjectManager->m_stMobData;
+		int nWeather = g_nWeather;
+		if (g_nWeather == 3)
+			nWeather = 2;
+
+		if ((int)m_pMyHuman->m_vecPosition.x >> 7 > 26 && (int)m_pMyHuman->m_vecPosition.x >> 7 < 31 && 
+			(int)m_pMyHuman->m_vecPosition.y >> 7 > 20 && (int)m_pMyHuman->m_vecPosition.y >> 7 < 25)
+		{
+			nWeather = 2;
+		}
+
+		int nSkillDam = BASE_GetSkillDamage(cSkillIndex, pMobData, nWeather, GetWeaponDamage(), 
+			g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][0].sIndex);
+		auto pSkillDam = (SText*)m_pControlContainer->FindControl(65735);
+
+		char szStr[128]{};
+		if (nSkillDam < 0)
+		{
+			sprintf(szStr, "%d", -nSkillDam);
+			pSkillDam->SetText(szStr, 0);
+			pSkillDam->SetTextColor(0xFFAAFFAA);
+		}
+		else
+		{
+			sprintf(szStr, "%d", nSkillDam);
+			pSkillDam->SetText(szStr, 0);
+			pSkillDam->SetTextColor(0xFFBBBBFF);
+		}
+	}
+	else
+	{
+		auto pText = static_cast<SText*>(m_pControlContainer->FindControl(65735));
+		
+		char szStr[128]{};
+		sprintf(szStr, "%d", 0);
+		pText->SetText(szStr, 0);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyVisibleSkill(char iCharCode, int lParam)
