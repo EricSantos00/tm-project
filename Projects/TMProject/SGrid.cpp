@@ -4699,7 +4699,7 @@ void SGridControl::UpdateCapsuleInfo(int nIndex)
 			strcat(szStr, g_pItemList[nSkill2 + 5000].Name);
 
 		pScene->m_pParamText[6]->SetText(szStr, 0);
-		pScene->m_pParamText[6]->SetTextColor(-17409u);
+		pScene->m_pParamText[6]->SetTextColor(0xFFFFBBFF);
 
 		nSkill0 = g_pObjectManager->m_stCapsuleInfo[nIndex].skill[3];
 		nSkill1 = g_pObjectManager->m_stCapsuleInfo[nIndex].skill[4];

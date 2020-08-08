@@ -6026,6 +6026,18 @@ void TMFieldScene::SetAutoOption(int nIndex, char* szString)
 
 void TMFieldScene::SetAutoSkillNum(int nCount)
 {
+	m_nAutoSkillNum = nCount;
+
+	if (m_pAutoSkillPanel)
+	{
+		for (int i = 1; i <= 10; ++i)
+		{
+			if (i > nCount)
+				m_pAutoSkillPanelChild[i - 1]->SetVisible(0);
+			else
+				m_pAutoSkillPanelChild[i - 1]->SetVisible(1);
+		}
+	}
 }
 
 void TMFieldScene::SetCameraView()
@@ -6137,6 +6149,17 @@ void TMFieldScene::SetVisibleNameLabel()
 
 void TMFieldScene::SetAutoTarget()
 {
+	m_cAutoAttack = m_cAutoAttack == 0;
+
+	auto pBtnAuto = static_cast<SButton*>(m_pControlContainer->FindControl(312u));
+
+	if (m_cAutoAttack == 0)
+		m_pTargetHuman = nullptr;
+
+	if (pBtnAuto)
+		pBtnAuto->SetSelected(m_cAutoAttack);
+
+	m_pAutoSkillPanel->SetVisible(m_cAutoAttack);
 }
 
 void TMFieldScene::SetVisibleAutoTrade(int bShow, int bCargo)
@@ -6614,7 +6637,19 @@ int TMFieldScene::OnKeySkill(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyDash(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != '-' && iCharCode != '_')
+		return 0;
+
+	if (m_cAutoAttack == 1)
+	{
+		int nCount = m_nAutoSkillNum + 1;
+
+		if (nCount > 10)
+			nCount = 1;
+
+		SetAutoSkillNum(nCount);
+	}
+	return 1;
 }
 
 int TMFieldScene::OnKeyPlus(char iCharCode, int lParam)
@@ -6641,7 +6676,11 @@ int TMFieldScene::OnKeyName(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyAutoTarget(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'Y' && iCharCode != 'y')
+		return 0;
+
+	SetAutoTarget();
+	return 1;
 }
 
 int TMFieldScene::OnKeyAuto(char iCharCode, int lParam)
