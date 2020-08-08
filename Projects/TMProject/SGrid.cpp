@@ -231,21 +231,19 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 				if (nRet != 2)
 					return nRet;
 
-				if (m_eGridType == TMEGRIDTYPE::GRID_ITEMMIXRESULT
-					&& m_pLastMouseOverItem
-					&& SGridControl::m_pLastMouseOverItem->m_pItem
-					&& SGridControl::m_pLastMouseOverItem->m_pItem->sIndex > 0
-					&& SGridControl::m_pLastMouseOverItem->m_pItem->sIndex < 11500)
+				if (m_eGridType == TMEGRIDTYPE::GRID_ITEMMIXRESULT && m_pLastMouseOverItem && 
+					SGridControl::m_pLastMouseOverItem->m_pItem	&& 
+					SGridControl::m_pLastMouseOverItem->m_pItem->sIndex > 0	&& 
+					SGridControl::m_pLastMouseOverItem->m_pItem->sIndex < 11500)
 				{
 					pFScene->m_ItemMixClass.Set_NeedItemList(SGridControl::m_pLastMouseOverItem->m_pItem->sIndex);
 					pFScene->m_ItemMixClass.CheckInv(pFScene->m_pGridInvList);
 				}
 
-				if (m_eGridType == TMEGRIDTYPE::GRID_MISSION_RESULT
-					&& SGridControl::m_pLastMouseOverItem
-					&& SGridControl::m_pLastMouseOverItem->m_pItem
-					&& SGridControl::m_pLastMouseOverItem->m_pItem->sIndex > 0
-					&& SGridControl::m_pLastMouseOverItem->m_pItem->sIndex < 11600)
+				if (m_eGridType == TMEGRIDTYPE::GRID_MISSION_RESULT && SGridControl::m_pLastMouseOverItem && 
+					SGridControl::m_pLastMouseOverItem->m_pItem && 
+					SGridControl::m_pLastMouseOverItem->m_pItem->sIndex > 0	&&
+					SGridControl::m_pLastMouseOverItem->m_pItem->sIndex < 11600)
 				{
 					pFScene->m_MissionClass.Set_NeedItemList(SGridControl::m_pLastMouseOverItem->m_pItem->sIndex);
 					pFScene->m_MissionClass.CheckInv(pFScene->m_pGridInvList);
@@ -2154,8 +2152,199 @@ int SGridControl::SellItem(int nCellX, int nCellY, unsigned int dwFlags, unsigne
 
 int SGridControl::SellItem2()
 {
-	// TODO
-	return 0;
+	int nCellX = _nCellX;
+	int nCellY = _nCellY;
+	unsigned int dwFlags = _dwFlags;
+	int wParam = _wParam;
+
+	auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+	if (m_eGridType == TMEGRIDTYPE::GRID_SHOP)
+	{
+		auto pScene = g_pCurrentScene;
+		SGridControl::m_pSellItem = g_pCursor->m_pAttachedItem;
+		if (!SGridControl::m_pSellItem)
+			return 1;
+
+		if (!g_pEventTranslator->m_bCtrl)
+		{
+			char szMessage[128]{};
+			sprintf(szMessage, g_pMessageStringTable[342], g_pItemList[SGridControl::m_pSellItem->m_pItem->sIndex].Name);
+			pScene->m_pMessageBox->SetMessage(szMessage, 890, g_pMessageStringTable[343]);
+			pScene->m_pMessageBox->SetVisible(1);
+			g_pCursor->m_pAttachedItem = 0;
+		}
+		else
+		{
+			short sDestType = CheckType(SGridControl::m_pSellItem->m_pGridControl->m_eItemType,
+				SGridControl::m_pSellItem->m_pGridControl->m_eGridType);
+			short sDestPos = CheckPos(SGridControl::m_pSellItem->m_pGridControl->m_eItemType);
+			if (sDestPos == -1)
+				sDestPos = SGridControl::m_pSellItem->m_nCellIndexX + 5 * SGridControl::m_pSellItem->m_nCellIndexY;
+
+			MSG_Sell stSell{};
+			stSell.Header.ID = g_pCurrentScene->m_pMyHuman->m_dwID;
+			stSell.Header.Type = MSG_Sell_Opcode;
+			stSell.TargetID = m_dwMerchantID;
+			stSell.MyType = sDestType;
+			stSell.MyPos = sDestPos;
+			SendOneMessage((char*)&stSell, sizeof(stSell));
+			SGridControl::m_pSellItem = 0;
+		}
+		m_dwEnableColor = 0;
+		return 2;
+	}
+	if (m_eGridType == TMEGRIDTYPE::GRID_SKILLB)
+	{
+		if (!IsSkill(g_pCursor->m_pAttachedItem->m_pItem->sIndex))
+			return 1;
+
+		int nSeg = 0;
+		if (m_dwControlID == 65645)
+			nSeg = 10;
+
+		auto pReturnItem = PickupItem(nCellX, nCellY);
+
+		auto pNewItem = new STRUCT_ITEM;
+		memcpy(pNewItem, g_pCursor->m_pAttachedItem->m_pItem, sizeof(STRUCT_ITEM));
+			
+		auto pNewControlItem = new SGridControlItem(0, pNewItem, 0.0, 0.0);
+		AddItem(pNewControlItem, nCellX, nCellY);
+
+		if (g_pObjectManager->m_cSelectShortSkill - nSeg == nCellX)
+			pNewControlItem->m_GCObj.nTextureSetIndex = 200;
+
+		g_pCursor->DetachItem();
+
+		SAFE_DELETE(pReturnItem);
+
+		auto pMobData = &g_pObjectManager->m_stMobData;
+		g_pObjectManager->m_cShortSkill[nSeg + nCellX] = g_pItemList[pNewItem->sIndex].nIndexTexture;
+
+		MSG_SetShortSkill stSetShortSkill{};
+		stSetShortSkill.Header.ID = g_pCurrentScene->m_pMyHuman->m_dwID;
+		stSetShortSkill.Header.Type = MSG_SetShortSkill_Opcode;
+		memcpy(stSetShortSkill.Skill, g_pObjectManager->m_cShortSkill, sizeof(stSetShortSkill.Skill));
+
+		for (int i = 0; i < 20; ++i)
+		{
+			if (stSetShortSkill.Skill[i] >= 0 && stSetShortSkill.Skill[i] < 96)
+			{
+				stSetShortSkill.Skill[i] -= 24 * g_pObjectManager->m_stMobData.Class;
+			}
+			else if (stSetShortSkill.Skill[i] >= 105 && stSetShortSkill.Skill[i] < 153)
+			{
+				stSetShortSkill.Skill[i] -= 12 * g_pObjectManager->m_stMobData.Class;
+			}
+		}
+
+		SendOneMessage((char*)&stSetShortSkill, sizeof(stSetShortSkill));
+
+		auto pSoundManager = g_pSoundManager;
+		if (pSoundManager)
+		{
+			auto pSoundData = pSoundManager->GetSoundData(31);
+			if(pSoundData)
+				pSoundData->Play(0, 0);
+		}
+
+		pFScene->UpdateScoreUI(0);
+		pFScene->UpdateSkillBelt();
+		return 2;
+	}
+	
+	auto pItem = GetItem(nCellX, nCellY);
+	int nVolatile = BASE_GetItemAbility(g_pCursor->m_pAttachedItem->m_pItem, 38);
+	int nDestVolatile = -1;
+	if (pItem)
+		nDestVolatile = BASE_GetItemAbility(pItem->m_pItem, 38);
+
+	short sDestType = CheckType(m_eItemType, m_eGridType);
+	short sDestPos = CheckPos(m_eItemType);
+	if (((nVolatile >= 4 && nVolatile <= 6
+		|| nVolatile == 9
+		|| nVolatile == 15
+		|| nVolatile == 16
+		|| nVolatile >= 180 && nVolatile <= 183
+		|| nVolatile >= 235 && nVolatile <= 238
+		|| nVolatile >= 239 && nVolatile <= 240
+		|| nVolatile >= 90 && nVolatile < 95
+		|| nVolatile == 179
+		|| nVolatile == 186
+		|| nVolatile == 196)
+		&& !sDestType
+		|| nVolatile == 190 && sDestType == 1 && m_dwEnableColor == 0x330000FF)
+		&& !nDestVolatile
+		&& pItem)
+	{
+		unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+		if (pFScene->m_dwUseItemTime && dwServerTime - pFScene->m_dwUseItemTime < 200)
+			return 1;
+
+		short sSrcType = CheckType(g_pCursor->m_pAttachedItem->m_pGridControl->m_eItemType,
+			g_pCursor->m_pAttachedItem->m_pGridControl->m_eGridType);
+
+		short sSrcPos = CheckPos(g_pCursor->m_pAttachedItem->m_pGridControl->m_eItemType);
+
+		if (sSrcPos == -1)
+			sSrcPos = g_pCursor->m_pAttachedItem->m_nCellIndexX	+ 5 * g_pCursor->m_pAttachedItem->m_nCellIndexY;
+
+		if (sDestPos == -1)
+			sDestPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+		pFScene->m_dwUseItemTime = dwServerTime;
+		int nCellTempX = g_pCursor->m_pAttachedItem->m_nCellIndexX;
+		int nCellTempY = g_pCursor->m_pAttachedItem->m_nCellIndexY;
+		auto pGrid = g_pCursor->m_pAttachedItem->m_pGridControl;
+		auto pPickedItem = pGrid->GetItem(nCellTempX, nCellTempY);
+		int nAmount = 0;
+
+		if (pPickedItem)
+		{
+			nAmount = BASE_GetItemAmount(pPickedItem->m_pItem);
+			if (pPickedItem->m_pItem->sIndex >= 2330 && pPickedItem->m_pItem->sIndex < 2390)
+				nAmount = 0;
+			if (nAmount <= 1)
+			{
+				pGrid->PickupItem(nCellTempX, nCellTempY);
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+					g_pCursor->m_pAttachedItem = 0;
+
+				SAFE_DELETE(pPickedItem);
+			}
+			else
+			{
+				BASE_SetItemAmount(pPickedItem->m_pItem, nAmount - 1);
+				auto pGItem = pPickedItem;
+				sprintf(pPickedItem->m_GCText.strString, "%2d", nAmount - 1);
+				pGItem->m_GCText.pFont->SetText(pGItem->m_GCText.strString, pGItem->m_GCText.dwColor, 0);
+			}
+		}
+
+		g_pCursor->DetachItem();
+		if (nAmount <= 1)
+		{
+			if (!sSrcType)
+				memset(&g_pObjectManager->m_stMobData.Equip[sSrcPos], 0, sizeof(STRUCT_ITEM));
+			else if (sSrcType == 1)
+				memset(&g_pObjectManager->m_stMobData.Carry[sSrcPos], 0, sizeof(STRUCT_ITEM));
+			else if (sSrcType == 2)
+				memset(&g_pObjectManager->m_stItemCargo[sSrcPos], 0, sizeof(STRUCT_ITEM));
+		}
+	}
+	else if (nVolatile == 190 && sDestType == 1 && m_dwEnableColor != 0x330000FF && pItem)
+	{
+		pFScene->m_pMessagePanel->SetMessage(g_pMessageStringTable[303], 3000);
+		pFScene->m_pMessagePanel->SetVisible(1, 1);
+	}
+	else if (CanChangeItem(g_pCursor->m_pAttachedItem, nCellX, nCellY, 0))
+	{
+		SGridControl::m_pLastAttachedItem = g_pCursor->m_pAttachedItem;
+
+		auto vecPos = g_pCursor->GetPos();
+		pFScene->OnMouseEvent(dwFlags, wParam, (int)vecPos.x, (int)vecPos.y);
+	}
+
+	return 2;
 }
 
 void SGridControl::SwapItem(int nCellX, int nCellY, int nCellVWidth, int nCellVHeight, STRUCT_ITEM* pItem)
@@ -3974,7 +4163,126 @@ void SGridControl::RButton(int nCellX, int nCellY, int bPtInRect)
 
 void SGridControl::UpdateCapsuleInfo(int nIndex)
 {
-	// TODO
+	if (SGridControl::m_bNeedUpdate && nIndex >= 0 && nIndex <= 11)
+	{
+		auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+		auto pNameText = pScene->m_pDescNameText;
+
+		int nClass = g_pObjectManager->m_stCapsuleInfo[nIndex].Class;
+		int nVisualClass = -1;
+		if (nClass % 10 > 5)
+		{
+			nClass = nClass % 10 - 6;
+			nVisualClass = g_pObjectManager->m_stCapsuleInfo[nIndex].Class / 10;
+		}
+		else
+			nClass = nClass / 10;
+
+		char szStr[256]{};
+		sprintf(szStr, "%s", g_pItemList[3443].Name);
+		pNameText->SetText(szStr, 0);
+		pNameText->SetTextColor(0xFFFFFFAA);
+
+		if (nVisualClass >= 0)
+			sprintf(szStr, "%s : %s[%s]", g_pMessageStringTable[73], g_pMessageStringTable[nClass + 121], 
+				g_pMessageStringTable[nVisualClass + 121]);
+		else
+			sprintf(szStr, "%s : %s", g_pMessageStringTable[73], g_pMessageStringTable[nClass + 121]);
+
+		pScene->m_pParamText[0]->SetText(szStr, 0);
+		pScene->m_pParamText[0]->SetTextColor(0xFFAAFFFF);
+
+		sprintf(szStr, "%s : %d", g_pMessageStringTable[167], g_pObjectManager->m_stCapsuleInfo[nIndex].Level + 1);
+		pScene->m_pParamText[1]->SetText(szStr, 0);
+		pScene->m_pParamText[1]->SetTextColor(0xFFFFFFFF);
+
+		sprintf(szStr, "%s : %d", g_pMessageStringTable[100], g_pObjectManager->m_stCapsuleInfo[nIndex].sStr);
+		pScene->m_pParamText[2]->SetText(szStr, 0);
+		pScene->m_pParamText[2]->SetTextColor(0xFFFFFFFF);
+
+		sprintf(szStr, "%s : %d", g_pMessageStringTable[101], g_pObjectManager->m_stCapsuleInfo[nIndex].sInt);
+		pScene->m_pParamText[3]->SetText(szStr, 0);
+		pScene->m_pParamText[3]->SetTextColor(0xFFFFFFFF);
+
+		sprintf(szStr, "%s : %d", g_pMessageStringTable[102], g_pObjectManager->m_stCapsuleInfo[nIndex].sDex);
+		pScene->m_pParamText[4]->SetText(szStr, 0);
+		pScene->m_pParamText[4]->SetTextColor(0xFFFFFFFF);
+
+		sprintf(szStr, "%s : %d", g_pMessageStringTable[103], g_pObjectManager->m_stCapsuleInfo[nIndex].sCon);
+		pScene->m_pParamText[5]->SetText(szStr, 0);
+		pScene->m_pParamText[5]->SetTextColor(0xFFFFFFFF);
+
+		int nSkill0 = g_pObjectManager->m_stCapsuleInfo[nIndex].skill[0];
+		int nSkill1 = g_pObjectManager->m_stCapsuleInfo[nIndex].skill[1];
+		int nSkill2 = g_pObjectManager->m_stCapsuleInfo[nIndex].skill[2];
+
+		memset(szStr, 0, 4u);
+		if (nSkill0 > 0 && nSkill0 < 110)
+			strcat(szStr, g_pItemList[nSkill0 + 5000].Name);
+
+		strcat(szStr, " ");
+		if (nSkill1 > 0 && nSkill1 < 110)
+			strcat(szStr, g_pItemList[nSkill1 + 5000].Name);
+
+		strcat(szStr, " ");
+		if (nSkill2 > 0 && nSkill2 < 110)
+			strcat(szStr, g_pItemList[nSkill2 + 5000].Name);
+
+		pScene->m_pParamText[6]->SetText(szStr, 0);
+		pScene->m_pParamText[6]->SetTextColor(-17409u);
+
+		nSkill0 = g_pObjectManager->m_stCapsuleInfo[nIndex].skill[3];
+		nSkill1 = g_pObjectManager->m_stCapsuleInfo[nIndex].skill[4];
+		nSkill2 = g_pObjectManager->m_stCapsuleInfo[nIndex].skill[5];
+
+		memset(szStr, 0, 4u);
+		if (nSkill0 > 0 && nSkill0 < 110)
+			strcat(szStr, g_pItemList[nSkill0 + 5000].Name);
+
+		strcat(szStr, " ");
+		if (nSkill1 > 0 && nSkill1 < 110)
+			strcat(szStr, g_pItemList[nSkill1 + 5000].Name);
+
+		strcat(szStr, " ");
+		if (nSkill2 > 0 && nSkill2 < 110)
+			strcat(szStr, g_pItemList[nSkill2 + 5000].Name);
+
+		pScene->m_pParamText[7]->SetText(szStr, 0);
+		pScene->m_pParamText[7]->SetTextColor(0xFFFFBBFF);
+
+		nSkill0 = g_pObjectManager->m_stCapsuleInfo[nIndex].skill[6];
+		nSkill1 = g_pObjectManager->m_stCapsuleInfo[nIndex].skill[7];
+		nSkill2 = g_pObjectManager->m_stCapsuleInfo[nIndex].skill[8];
+
+		memset(szStr, 0, 4u);
+		if (nSkill0 > 0 && nSkill0 < 110)
+			strcat(szStr, g_pItemList[nSkill0 + 5000].Name);
+
+		strcat(szStr, " ");
+		if (nSkill1 > 0 && nSkill1 < 110)
+			strcat(szStr, g_pItemList[nSkill1 + 5000].Name);
+
+		strcat(szStr, " ");
+		if (nSkill2 > 0 && nSkill2 < 110)
+			strcat(szStr, g_pItemList[nSkill2 + 5000].Name);
+
+		pScene->m_pParamText[8]->SetText(szStr, 0);
+		pScene->m_pParamText[8]->SetTextColor(0xFFFFBBFF);
+
+		int nQuest = 0;
+		if (g_pObjectManager->m_stCapsuleInfo[nIndex].Quest & 1)
+			nQuest = 1;
+		if (g_pObjectManager->m_stCapsuleInfo[nIndex].Quest & 0x11)
+			nQuest = 2;
+		if (g_pObjectManager->m_stCapsuleInfo[nIndex].Quest & 0x111)
+			nQuest = 3;
+		if (g_pObjectManager->m_stCapsuleInfo[nIndex].Quest & 0x1111)
+			nQuest = 4;
+
+		sprintf(szStr, "%s : %d", g_pMessageStringTable[358], nQuest);
+		pScene->m_pParamText[9]->SetText(szStr, 0);
+		pScene->m_pParamText[9]->SetTextColor(0xFFFFFFFF);
+	}
 }
 
 char SGridControl::AutoSellShowPrice(char* Price)
