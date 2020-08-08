@@ -30,6 +30,7 @@
 #include "TMEffectLevelUp.h"
 #include "TMEffectSkinMesh.h"
 #include "SGrid.h"
+#include "ItemEffect.h"
 
 RECT TMFieldScene::m_rectWarning[7] =
 {
@@ -2215,6 +2216,245 @@ int TMFieldScene::OnCharEvent(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyDownEvent(unsigned int iKeyCode)
 {
+	DWORD dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (dwServerTime < g_dwStartQuitGameTime + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastLogout + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastSelServer + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastTown + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastResurrect + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastTeleport + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastRelo + 6000)
+		return 1;
+
+	if (dwServerTime < m_dwLastWhisper + 6000)
+		return 1;
+
+	if (TMScene::OnKeyDownEvent(iKeyCode) == 1)
+		return 1;
+
+	if (iKeyCode == 45)
+	{
+		MSG_MessageWhisper stWhisper{};
+
+		stWhisper.Header.ID = g_pObjectManager->m_dwCharID;
+		stWhisper.Header.Type = MSG_MessageWhisper_Opcode;
+
+		sprintf_s(stWhisper.MobName, "time");
+
+		SendOneMessage((char*)&stWhisper, sizeof(stWhisper));
+	}
+
+	if (iKeyCode >= 112 && iKeyCode <= 115)
+	{
+		if (!m_pInvenPanel->IsVisible())
+			SetVisibleInventory();
+
+		switch (iKeyCode)
+		{
+		case 112:
+			m_pGridInvList[0]->SetVisible(0);
+			m_pGridInvList[1]->SetVisible(0);
+			m_pGridInvList[2]->SetVisible(0);
+			m_pGridInvList[3]->SetVisible(0);
+			m_pGridInv = m_pGridInvList[0];
+			m_pGridInv->SetVisible(1);
+			m_pInvPageBtn1->SetTextureSetIndex(527);
+			m_pInvPageBtn2->SetTextureSetIndex(528);
+			m_pInvPageBtn3->SetTextureSetIndex(528);
+			m_pInvPageBtn4->SetTextureSetIndex(528);
+			break;
+		case 113:
+			m_pGridInvList[0]->SetVisible(0);
+			m_pGridInvList[1]->SetVisible(0);
+			m_pGridInvList[2]->SetVisible(0);
+			m_pGridInvList[3]->SetVisible(0);
+			m_pGridInv = m_pGridInvList[1];
+			m_pGridInv->SetVisible(1);
+			m_pInvPageBtn1->SetTextureSetIndex(528);
+			m_pInvPageBtn2->SetTextureSetIndex(527);
+			m_pInvPageBtn3->SetTextureSetIndex(528);
+			m_pInvPageBtn4->SetTextureSetIndex(528);
+			break;
+		case 114:
+			m_pGridInvList[0]->SetVisible(0);
+			m_pGridInvList[1]->SetVisible(0);
+			m_pGridInvList[2]->SetVisible(0);
+			m_pGridInvList[3]->SetVisible(0);
+			m_pGridInv = m_pGridInvList[2];
+			m_pGridInv->SetVisible(1);
+			m_pInvPageBtn1->SetTextureSetIndex(528);
+			m_pInvPageBtn2->SetTextureSetIndex(528);
+			m_pInvPageBtn3->SetTextureSetIndex(527);
+			m_pInvPageBtn4->SetTextureSetIndex(528);
+			break;
+		case 115:
+			m_pGridInvList[0]->SetVisible(0);
+			m_pGridInvList[1]->SetVisible(0);
+			m_pGridInvList[2]->SetVisible(0);
+			m_pGridInvList[3]->SetVisible(0);
+			m_pGridInv = m_pGridInvList[3];
+			m_pGridInv->SetVisible(1);
+			m_pInvPageBtn1->SetTextureSetIndex(528);
+			m_pInvPageBtn2->SetTextureSetIndex(528);
+			m_pInvPageBtn3->SetTextureSetIndex(528);
+			m_pInvPageBtn4->SetTextureSetIndex(527);
+			break;
+		}
+	}
+
+	if (iKeyCode == 122)
+	{
+		if (dwServerTime < m_dwKeyTime + 500 || m_bAirMove == 1)
+			return 1;
+
+		if (m_pMyHuman && m_pMyHuman->m_fProgressRate > 0.0f && m_pMyHuman->m_fProgressRate < 0.89999998f)
+			return 1;
+
+		int page{};
+
+		SGridControl* pGridInv{};
+		SGridControlItem* pItem{};
+		int nX{};
+		int nY{};
+		int bFind{};
+
+		for (int i = 0; i < 4; ++i)
+		{
+			pGridInv = m_pGridInvList[i];
+
+			for (nY = 0; nY < 3; ++nY)
+			{
+				for (nX = 0; nX < 5; ++nX)
+				{
+					pItem = pGridInv->GetItem(nX, nY);
+
+					if (pItem && BASE_GetItemAbility(pItem->m_pItem, EF_VOLATILE) == 11)
+					{
+						bFind = 1;
+						page = 15 * i;
+						break;
+					}
+				}
+				if (bFind == 1)
+					break;
+			}
+			if (bFind == 1)
+				break;
+		}
+
+		if (bFind == 1 && pItem)
+		{
+			if (BASE_GetItemAbility(pItem->m_pItem, 38) == 11)
+			{
+				short SourPos = nX + 5 * nY;
+				m_dwGetItemTime = g_pTimerManager->GetServerTime();
+				m_dwLastTeleport = m_dwGetItemTime;
+				m_cLastTeleport = 1;
+
+				MSG_STANDARDPARM stDelayStart{};
+
+				stDelayStart.Header.ID = m_pMyHuman->m_dwID;
+				stDelayStart.Header.Type = 942;
+				stDelayStart.Parm = 1;
+				SendOneMessage((char*)&stDelayStart, sizeof(MSG_STANDARDPARM));
+
+				m_stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+				m_stUseItem.Header.Type = MSG_UseItem_Opcode;
+				m_stUseItem.SourType = 1;
+				m_stUseItem.SourPos = page + SourPos;
+				m_stUseItem.ItemID = 0;
+				m_stUseItem.GridX = static_cast<unsigned short>(m_pMyHuman->m_vecPosition.x);
+				m_stUseItem.GridY = static_cast<unsigned short>(m_pMyHuman->m_vecPosition.y);
+
+				int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+
+				if (nAmount > 1)
+				{
+					BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+
+					sprintf_s(pItem->m_GCText.strString, "%2d", nAmount - 1);
+
+					pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+				}
+				else
+				{
+					auto pPickedItem = pGridInv->PickupItem(nX, nY);
+
+					if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+						g_pCursor->m_pAttachedItem = nullptr;
+
+					if (pPickedItem)
+						delete pPickedItem;
+				}
+
+				if (nAmount <= 1)
+					memset(&g_pObjectManager->m_stMobData.Carry[SourPos], 0, sizeof(STRUCT_ITEM));
+
+				if (g_pSoundManager)
+				{
+					auto pSoundData = g_pSoundManager->GetSoundData(54);
+
+					if (pSoundData)
+						pSoundData->Play(0, 0);
+				}
+			}
+
+			UpdateScoreUI(0);
+
+			m_dwKeyTime = dwServerTime;
+		}
+
+		return 1;
+	}
+
+	if (iKeyCode >= 96 && iKeyCode <= 105)
+	{
+		return OnKeyNumPad(iKeyCode);
+	}
+
+	if (iKeyCode == 33)
+	{
+		SListBox* pChatList{};
+
+		if (m_pMsgPanel && m_pMsgPanel->IsVisible() == 1)
+			pChatList = m_pMsgList;
+		else
+			pChatList = m_pChatList;
+
+		if (pChatList && pChatList->IsVisible() == 1 && pChatList->m_pScrollBar)
+			pChatList->m_pScrollBar->Up();
+
+		return 1;
+	}
+
+	if (iKeyCode == 34)
+	{
+		SListBox* pChatList{};
+
+		if (m_pMsgPanel && m_pMsgPanel->IsVisible() == 1)
+			pChatList = m_pMsgList;
+		else
+			pChatList = m_pChatList;
+
+		if (pChatList && pChatList->IsVisible() == 1 && pChatList->m_pScrollBar)
+			pChatList->m_pScrollBar->Down();
+
+		return 1;
+	}
+
 	return 0;
 }
 
