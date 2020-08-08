@@ -1046,9 +1046,75 @@ struct MSG_Sell
 	short MyPos;
 };
 
-constexpr auto MSG_Attack_Multi = 0x367;
-constexpr auto MSG_Attack_One = 0x39D;
-constexpr auto MSG_Attack_Two = 0x39E;
+constexpr auto MSG_Attack_Multi_Opcode = 0x367;
+constexpr auto MSG_Attack_One_Opcode = 0x39D;
+constexpr auto MSG_Attack_Two_Opcode = 0x39E;
+
+struct MSG_Attack
+{
+	MSG_STANDARD Header;
+	int FakeExp;
+	int ReqMp;
+	long long CurrentExp;
+	short Rsv;
+	unsigned short PosX;
+	unsigned short PosY;
+	unsigned short TargetX;
+	unsigned short TargetY;
+	unsigned short AttackerID;
+	unsigned short Progress;
+	char Motion;
+	char FlagLocal;
+	char DoubleCritical;
+	char SkillParm;
+	int CurrentMp;
+	short SkillIndex;
+	STRUCT_DAM Dam[13];
+};
+
+struct MSG_AttackTwo
+{
+	MSG_STANDARD Header;
+	int FakeExp;
+	int ReqMp;
+	long long CurrentExp;
+	short Rsv;
+	unsigned short PosX;
+	unsigned short PosY;
+	unsigned short TargetX;
+	unsigned short TargetY;
+	unsigned short AttackerID;
+	unsigned short Progress;
+	char Motion;
+	char FlagLocal;
+	char DoubleCritical;
+	char SkillParm;
+	int CurrentMp;
+	short SkillIndex;
+	STRUCT_DAM Dam[2];
+};
+
+struct MSG_AttackOne
+{
+	MSG_STANDARD Header;
+	int FakeExp;
+	int ReqMp;
+	long long CurrentExp;
+	short Rsv;
+	unsigned short PosX;
+	unsigned short PosY;
+	unsigned short TargetX;
+	unsigned short TargetY;
+	unsigned short AttackerID;
+	unsigned short Progress;
+	char Motion;
+	char FlagLocal;
+	char DoubleCritical;
+	char SkillParm;
+	int CurrentMp;
+	short SkillIndex;
+	STRUCT_DAM Dam[1];
+};
 
 static int g_pDistanceTable[7][7] =
 {
@@ -2164,3 +2230,4 @@ void DisableSysKey();
 int IsSkill(int nSkillIndex);
 int GetSkillIndex(int nSkillIndex);
 int IsValidSkill(int nSkillIndex);
+int IsValidClassSkill(int nSkillIndex);

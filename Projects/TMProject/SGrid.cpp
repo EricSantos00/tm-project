@@ -4158,6 +4158,184 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 
 void SGridControl::RButton(int nCellX, int nCellY, int bPtInRect)
 {
+	auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+	if (!pFScene || !pFScene->m_pMyHuman)
+		return;
+
+	auto pMyHuman = pFScene->m_pMyHuman;
+
+	if (g_pCursor->GetStyle() == ECursorStyle::TMC_CURSOR_HAND && bPtInRect == 1 &&
+		m_dwControlID >= 65574 && m_dwControlID <= 65597 &&
+		pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_WALK &&
+		pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_RUN)
+	{
+		auto pItem = GetAtItem(0, 0);
+		if (!pItem)
+			return;
+
+		unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+		int cSkillIndex = pItem->m_pItem->sIndex + 120;
+		if (cSkillIndex >= 0 && cSkillIndex < 248 &&
+			IsValidClassSkill(cSkillIndex) &&
+			(!g_pSpell[cSkillIndex].TargetType || g_pSpell[cSkillIndex].TargetType == 2) &&
+			g_pSpell[cSkillIndex].Aggressive != 1 &&
+			(g_pSpell[cSkillIndex].AffectType > 0 || g_pSpell[cSkillIndex].TickType > 0) &&
+			g_pSpell[cSkillIndex].Passive != 1)
+		{
+			int Delay = g_pSpell[cSkillIndex].Delay;
+			if (pFScene->m_nMySanc >= 9 && Delay >= 2)
+				--Delay;
+			if (pMyHuman->m_DilpunchJewel == 1)
+				--Delay;
+			if (Delay < 1)
+				Delay = 1;
+
+			if (dwServerTime < pFScene->m_dwSkillLastTime[cSkillIndex] + 1000 * Delay ||
+				dwServerTime < pFScene->m_dwSkillLastTime[cSkillIndex] + 1000 ||
+				dwServerTime < pFScene->m_dwOldAttackTime + 1000)
+				return;
+
+			int nSpecial = pMyHuman->m_stScore.Level;
+			if (cSkillIndex < 96)
+				nSpecial = g_pObjectManager->m_stMobData.CurrentScore.Special[
+					(cSkillIndex - 24 * g_pObjectManager->m_stMobData.Class) / 8 + 1];
+
+			if (BASE_GetManaSpent(cSkillIndex, g_pObjectManager->m_stMobData.SaveMana, nSpecial) <=
+				g_pObjectManager->m_stMobData.CurrentScore.Mp)
+			{
+				MSG_Attack stAttack{};
+
+				stAttack.Header.Type = MSG_Attack_Multi_Opcode;
+				stAttack.Header.ID = pMyHuman->m_dwID;
+				stAttack.AttackerID = pMyHuman->m_dwID;
+				stAttack.PosX = (int)pMyHuman->m_vecPosition.x;
+				stAttack.PosY = (int)pMyHuman->m_vecPosition.y;
+				stAttack.TargetX = (int)pMyHuman->m_vecPosition.x;
+				stAttack.TargetY = (int)pMyHuman->m_vecPosition.y;
+				stAttack.CurrentMp = -1;
+				stAttack.SkillIndex = cSkillIndex;
+				stAttack.SkillParm = 0;
+				stAttack.Motion = -1;
+				stAttack.FlagLocal = 0;
+				stAttack.Dam[0].Damage = -1;
+				stAttack.Dam[0].TargetID = pMyHuman->m_dwID;
+
+				int nSize = sizeof(MSG_Attack);
+
+				if (g_pSpell[cSkillIndex].MaxTarget != 1)
+				{
+					if (g_pSpell[cSkillIndex].MaxTarget == 2)
+					{
+						stAttack.Header.Type = MSG_Attack_Two_Opcode;
+						nSize = sizeof(MSG_AttackTwo);
+					}
+					SendOneMessage((char*)&stAttack, nSize);
+				}
+				else
+				{
+					stAttack.Header.Type = MSG_Attack_One_Opcode;
+					nSize = sizeof(MSG_AttackOne);
+					SendOneMessage((char*)&stAttack, 72);
+				}
+
+				MSG_Attack stAttackLocal{};
+				memcpy(&stAttackLocal, &stAttack, nSize);
+
+				stAttackLocal.Header.ID = m_dwID;
+				stAttackLocal.FlagLocal = 1;
+				pFScene->OnPacketEvent(stAttack.Header.Type, (char*)&stAttackLocal);
+				pFScene->m_dwOldAttackTime = dwServerTime;
+				pFScene->m_pTargetHuman = 0;
+				pFScene->m_dwSkillLastTime[cSkillIndex] = dwServerTime;
+			}
+			else
+			{
+				auto pChatList = pFScene->m_pChatList;
+				pChatList->AddItem(new SListBoxItem(g_pMessageStringTable[30], 0xFFFFAAAA, 0.0f, 0.0f, 280.0f,
+					16.0f, 0, 0x77777777, 1, 0));
+
+				auto pSoundManager = g_pSoundManager;
+				if (pSoundManager)
+				{
+					auto pSoundData = pSoundManager->GetSoundData(33);
+					if (pSoundData)
+						pSoundData->Play(0, 0);
+				}
+			}
+		}
+		return;
+	}
+	if (g_pCursor->GetStyle() == ECursorStyle::TMC_CURSOR_PICKUP && g_pCursor->m_pAttachedItem)
+	{
+		g_pCursor->DetachItem();
+		g_pEventTranslator->m_bRBtn = 1;
+		return;
+	}
+
+	if (g_pCursor->GetStyle() == ECursorStyle::TMC_CURSOR_HAND && m_eItemType == TMEITEMTYPE::ITEMTYPE_NONE && 
+		(m_eGridType == TMEGRIDTYPE::GRID_DEFAULT || m_eGridType == TMEGRIDTYPE::GRID_SELL))
+	{		
+		int page = pFScene->m_pGridInv->m_dwControlID - 67072;
+		unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+		if ((!pFScene->m_dwUseItemTime || dwServerTime - pFScene->m_dwUseItemTime >= 200) && 
+			(page != 2 || g_pObjectManager->m_stMobData.Carry[60].sIndex == 3467) && 
+			(page != 3 || g_pObjectManager->m_stMobData.Carry[61].sIndex == 3467))
+		{
+			if (bPtInRect)
+			{
+				if (!g_pEventTranslator->m_bRBtn)
+				{
+					auto pItem = GetItem(nCellX, nCellY);
+					if (pItem)
+					{
+						int nType = BASE_GetItemAbility(pItem->m_pItem, 38);
+						int nItemSIndex = pItem->m_pItem->sIndex;
+
+						int skillId = g_pObjectManager->m_cShortSkill[g_pObjectManager->m_cSelectShortSkill];
+						if (skillId >= 105)
+							skillId += 95;
+
+						if (skillId == 83 && pFScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+						{
+							if (pFScene->m_dwOldAttackTime + 1000 < g_pTimerManager->GetServerTime())
+							{
+								char szMessage[128]{};
+								sprintf(szMessage, g_pMessageStringTable[149], g_pItemList[pItem->m_pItem->sIndex].Name);
+								pFScene->m_pMessageBox->SetMessage(szMessage, 84, g_pMessageStringTable[150]);
+								pFScene->m_pMessageBox->SetVisible(1);
+								
+								short sDestType = CheckType(pItem->m_pGridControl->m_eItemType,
+									pItem->m_pGridControl->m_eGridType);
+								short sDestPos = CheckPos(pItem->m_pGridControl->m_eItemType);
+
+								int Page = 15 * (pItem->m_pGridControl->m_dwControlID - 67072);
+								if (Page < 0 || Page > 45)
+									Page = 0;
+								if (sDestPos == -1)
+									sDestPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+								pFScene->m_sDestType = sDestType;
+								pFScene->m_sDestPos = Page + sDestPos;
+							}
+							return;
+						}
+						if (nItemSIndex == 3207)
+						{
+							if (!pFScene->m_pCargoPanel->IsVisible())
+								pFScene->SetVisibleCargo(1);
+						}
+						if (nItemSIndex >= 3468 && nItemSIndex <= 3471)
+						{
+
+						}
+					}
+				}
+			}
+		}
+	}
 	// TODO
 }
 

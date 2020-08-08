@@ -1083,6 +1083,28 @@ int IsValidSkill(int nSkillIndex)
     return 0;
 }
 
+int IsValidClassSkill(int nSkillIndex)
+{
+    if (nSkillIndex >= 0 && nSkillIndex < 96)
+    {
+        if (nSkillIndex / 24 != (unsigned __int8)g_pObjectManager->m_stMobData.Class)
+            return 0;
+        if (!((1 << nSkillIndex % 24) & g_pObjectManager->m_stMobData.LearnedSkill[0]))
+            return 0;
+
+        int kind = nSkillIndex % 24 / 8 + 1;
+        if (kind <= 0 || kind > 3)
+            return 0;
+    }
+    else if (nSkillIndex < 96 || nSkillIndex > 103 && 
+        ((1 << (nSkillIndex - 72)) & g_pObjectManager->m_stMobData.LearnedSkill[0]))
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
 int IsClearString(char* str, int target)
 {
 	int len = strlen(str);
