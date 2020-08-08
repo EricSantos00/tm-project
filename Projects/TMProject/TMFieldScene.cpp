@@ -29,6 +29,7 @@
 #include "TMSkillTownPortal.h"
 #include "TMEffectLevelUp.h"
 #include "TMEffectSkinMesh.h"
+#include "SGrid.h"
 
 RECT TMFieldScene::m_rectWarning[7] =
 {
@@ -4756,6 +4757,797 @@ void TMFieldScene::SetEquipGridState(int bDefault)
 
 void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 {
+	auto pMobData = &g_pObjectManager->m_stMobData;
+	if (g_pObjectManager->m_stMobData.Equip[13].sIndex == 769)
+	{
+		int sanc = BASE_GetItemSanc(&pMobData->Equip[13]);
+		int hpprogress = 0;
+
+		if (sanc > 6)
+			hpprogress = 545;
+		else if (sanc > 3)
+			hpprogress = 546;
+		else if (sanc > 0)
+			hpprogress = 547;
+		else
+			hpprogress = 538;
+		m_pHPBar->m_GCProgress.nTextureSetIndex = hpprogress;
+		m_pHPBar->Update();
+	}
+	else
+	{
+		m_pHPBar->m_GCProgress.nTextureSetIndex = 538;
+		m_pHPBar->Update();
+	}
+
+	if (pMobData->CurrentScore.Hp > pMobData->CurrentScore.MaxHp)
+		pMobData->CurrentScore.Hp = pMobData->CurrentScore.MaxHp;
+
+	if (m_pHPBar)
+		m_pHPBar->SetMaxProgress(pMobData->CurrentScore.MaxHp);
+
+	if (m_pHPBar)
+		m_pHPBar->SetCurrentProgress(pMobData->CurrentScore.Hp);
+
+	char szStr[128]{};
+	sprintf(szStr, "%d", pMobData->CurrentScore.Hp);
+	if (m_pCHP)
+		m_pCHP->SetText(szStr, 0);
+
+	sprintf(szStr, "%d", pMobData->CurrentScore.Hp);
+	if (m_pCIHP)
+		m_pCIHP->SetText(szStr, 0);
+	if (m_pMPBar)
+		m_pMPBar->SetMaxProgress(pMobData->CurrentScore.MaxMp);
+	if (m_pMPBar)
+		m_pMPBar->SetCurrentProgress(pMobData->CurrentScore.Mp);
+
+	sprintf(szStr, "%d", pMobData->CurrentScore.Mp);
+	if (m_pCMP)
+		m_pCMP->SetText(szStr, 0);
+	if (m_pCIMP)
+		m_pCIMP->SetText(szStr, 0);
+	if (m_pMainCharName)
+		m_pMainCharName->SetText(pMobData->MobName, 0);
+
+	if (!(unFlag & 0x10))
+	{
+		sprintf(szStr, "%I64d", pMobData->Exp);
+		if (m_pCIEXP)
+		{
+			m_pCIEXP->m_cComma = 1;
+			m_pCIEXP->SetText(szStr, 0);
+		}
+
+		int nLevelCount = 0;
+		int ckind = m_pMyHuman->Is2stClass();
+		int CurLevel = pMobData->CurrentScore.Level;
+		if (ckind == 2)
+			nLevelCount = (g_pNextLevel_G2[CurLevel + 1] + g_pNextLevel_G2[CurLevel]) / 10;
+		else
+			nLevelCount = (g_pNextLevel[CurLevel + 1] + g_pNextLevel[CurLevel]) / 10;
+
+		nLevelCount = static_cast<int>((((float)g_pObjectManager->m_nFakeExp * 100.0f) / (float)nLevelCount));
+		sprintf(szStr, g_pMessageStringTable[304], g_pObjectManager->m_nFakeExp, nLevelCount);
+		if (m_pGridCharFace)
+		{
+			m_pGridCharFace->m_GCPanel.nTextureSetIndex = 541;
+			m_pGridCharFace->m_GCPanel.nTextureIndex = ckind + 3 * pMobData->Class;
+		}
+		if (m_pCIFakeExp)
+		{
+			m_pCIFakeExp->SetText(szStr, 0);
+			if (nLevelCount < 80)
+				m_pCIFakeExp->SetTextColor(0xFFFFFFFF);
+			else
+				m_pCIFakeExp->SetTextColor(0xFFFF0000);
+		}
+		if (m_pExpHold)
+		{
+			if (g_pObjectManager->m_nFakeExp <= 0)
+				m_pExpHold->SetVisible(0);
+			else
+				m_pExpHold->SetVisible(1);
+		}
+
+		sprintf(szStr, "%d", pMobData->CurrentScore.Level + 1);
+		m_Level = pMobData->CurrentScore.Level + 1;
+		if (m_pCLevel)
+			m_pCLevel->SetText(szStr, 0);
+		if (m_pMainInfo2_Lv)
+			m_pMainInfo2_Lv->SetText(szStr, 0);
+
+		ckind = m_pMyHuman->Is2stClass();
+		CurLevel = pMobData->CurrentScore.Level;
+		if (ckind == 2)
+			sprintf(szStr, "%I64d", g_pNextLevel_G2[CurLevel + 1]);
+		else
+			sprintf(szStr, "%I64d", g_pNextLevel[CurLevel + 1]);
+
+		char strEXP[256]{};
+		if (m_pCIEXPE)
+		{
+			m_pCIEXPE->m_cComma = 1;
+			m_pCIEXPE->SetText(szStr, 0);
+		}
+
+		sprintf(szStr, "%d", pMobData->ScoreBonus);
+		if (m_pScBonus)
+			m_pScBonus->SetText(szStr, 0);
+
+		sprintf(szStr, "%d", pMobData->SpecialBonus);
+		if (m_pSpBonus)
+			m_pSpBonus->SetText(szStr, 0);
+		if (m_pSkBonus)
+			m_pSkBonus->SetText(szStr, 0);
+
+		char szMoeny[64]{};
+		char szRMoeny[64]{};
+		sprintf(szMoeny, "%10d", pMobData->Coin);
+		sprintf(szRMoeny, "%10d", g_pObjectManager->m_RMBCount);
+		m_Coin = pMobData->Coin;
+		m_RMB = g_pObjectManager->m_RMBCount;
+		if (m_pMoney1)
+		{
+			m_pMoney1->m_cComma = 1;
+			m_pMoney1->SetText(szMoeny, 0);
+		}
+		if (m_pMoney4)
+		{
+			m_pMoney4->m_cComma = 1;
+			m_pMoney4->SetText(szRMoeny, 0);
+		}
+		if (m_pMoney2)
+		{
+			m_pMoney2->m_cComma = 1;
+			m_pMoney2->SetText(szMoeny, 0);
+		}
+
+		sprintf(szMoeny, "%10d", pMobData->Coin - m_nBet);
+		if (m_pMoney3)
+		{
+			m_pMoney3->m_cComma = 1;
+			m_pMoney3->SetText(szMoeny, 0);
+		}
+
+		char szNameTemp[128]{};
+		sprintf(szNameTemp, "[%s]:%d", pMobData, strlen(pMobData->MobName));
+		if (m_pCIName)
+			m_pCIName->SetText(szNameTemp, 1);
+
+		static const char* szClass[4] = {
+			g_pMessageStringTable[121],
+			g_pMessageStringTable[122],
+			g_pMessageStringTable[123],
+			g_pMessageStringTable[124]
+		};
+			
+		char szValue[256]{};
+		sprintf(szValue, "%d", m_pMyHuman->m_nTotalKill);
+		m_pMyHuman->m_pKillLabel->SetText(szValue, 0);
+		m_pCIGuild->SetText(szValue, 0);
+		m_pCIGuild->SetTextColor(0xFFAAAAAA);
+		if (pMobData->Equip[0].sIndex >= 40)
+		{
+			m_pCIClass->SetText((char*)"Monster", 0);
+			m_pCIClass2->SetText((char*)" ", 0);
+		}
+		else if (pMobData->Equip[0].sIndex % 10 >= 6)
+		{
+			m_pCIClass->SetText((char*)szClass[pMobData->Class], 0);
+			m_pCIClass2->SetText((char*)szClass[pMobData->Equip[0].sIndex / 10], 0);
+		}
+		else
+		{
+			m_pCIClass->SetText((char*)szClass[pMobData->Class], 0);
+			m_pCIClass2->SetText((char*)" ", 0);
+		}
+
+		sprintf(szStr, "%d", pMobData->CurrentScore.Str);
+		if (m_pCIStr)
+			m_pCIStr->SetText(szStr, 0);
+		sprintf(szStr, "%d", pMobData->CurrentScore.Int);
+		if (m_pCIInt)
+			m_pCIInt->SetText(szStr, 0);
+		sprintf(szStr, "%d", pMobData->CurrentScore.Dex);
+		if (m_pCIDex)
+			m_pCIDex->SetText(szStr, 0);
+		sprintf(szStr, "%d", pMobData->CurrentScore.Con);
+		if (m_pCICon)
+			m_pCICon->SetText(szStr, 0);
+
+		int nMaxLevel = 0;
+		if (m_pMyHuman->Is2stClass() == 2)
+		{
+			nMaxLevel = 200;
+		}
+		else
+		{
+			nMaxLevel = 3 * (pMobData->CurrentScore.Level + 1) / 2;
+			if (nMaxLevel > 200)
+				nMaxLevel = 200;
+		}
+
+		int nMax3 = nMaxLevel;
+		int nMax2 = nMaxLevel;
+		int nMax1 = nMaxLevel;
+		if (!pMobData->Class && IsValidSkill(205) == 1)
+			nMaxLevel = 280;
+		else if (pMobData->Class == 2 && IsValidSkill(233) == 1)
+			nMaxLevel = 230;
+		if (pMobData->Class == 3 && IsValidSkill(238) == 1)
+			nMax1 = 400;
+		else if (IsValidSkill(200) == 1)
+			nMax1 = 320;
+		else if (IsValidSkill(31) == 1)
+			nMax1 = 255;
+		if (IsValidSkill(204) == 1)
+			nMax2 = 320;
+		else if (IsValidSkill(39) == 1)
+			nMax2 = 255;
+		if (IsValidSkill(208) == 1)
+			nMax3 = 320;
+		else if (IsValidSkill(47) == 1)
+			nMax3 = 255;
+
+		sprintf(szStr, "%3d/%3d", pMobData->CurrentScore.Special[0], nMaxLevel);
+		if (m_pCISpecial1)
+			m_pCISpecial1->SetText(szStr, 0);
+		sprintf(szStr, "%3d/%3d", pMobData->CurrentScore.Special[1], nMax1);
+		if (m_pCISpecial2)
+			m_pCISpecial2->SetText(szStr, 0);
+		sprintf(szStr, "%3d/%3d", pMobData->CurrentScore.Special[2], nMax2);
+		if (m_pCISpecial3)
+			m_pCISpecial3->SetText(szStr, 0);
+		sprintf(szStr, "%3d/%3d", pMobData->CurrentScore.Special[3], nMax3);
+		if (m_pCISpecial4)
+			m_pCISpecial4->SetText(szStr, 0);
+
+		long long nMax = 0;
+		long long nCur = 0;
+		if (ckind == 2)
+		{
+			nMax = (g_pNextLevel_G2[CurLevel + 1] - g_pNextLevel_G2[CurLevel]);
+			nCur = pMobData->Exp - g_pNextLevel_G2[CurLevel];
+		}
+		else
+		{
+			nMax = g_pNextLevel[CurLevel + 1] -g_pNextLevel[CurLevel];
+			nCur = pMobData->Exp - g_pNextLevel[CurLevel];
+		}
+
+		int nLamp = nMax / 4;
+		int nGrid = 4;
+
+		if (nCur >= nMax / 4)
+		{
+			if (nCur < static_cast<long long>(2 * static_cast<long long>(nLamp)))
+			{
+				nGrid = 2;
+			}
+			else
+			{				
+				if (nCur < static_cast<long long>(3 * static_cast<long long>(nLamp)))
+					nGrid = 3;
+			}
+		}
+		else
+		{
+			nGrid = 1;
+		}
+
+		for (int l = 0; l < 3; ++l)
+		{
+			if (m_pExpLamp[l])
+				m_pExpLamp[l]->m_GCPanel.nTextureIndex = l < nGrid - 1;
+		}
+
+		nCur -= (static_cast<long long>(nGrid) - 1) * static_cast<long long>(nLamp);
+		nMax = static_cast<long long>((double)nLamp * 0.1);
+
+		for (int n = 0; n < 10; ++n)
+		{
+			if (nCur > nMax)
+			{
+				nCur -= nMax;
+				if (m_pExpProgress[n])
+				{
+					m_pExpProgress[n]->SetMaxProgress(nMax);
+					m_pExpProgress[n]->SetCurrentProgress(nMax);
+				}
+			}
+			else if (m_pExpProgress[n])
+			{
+				m_pExpProgress[n]->SetMaxProgress(nMax);
+				m_pExpProgress[n]->SetCurrentProgress(nCur);
+				nCur = 0;
+			}
+		}
+
+		int face = pMobData->Equip[0].sIndex;
+		int cls = 0;
+		if (face < 40)
+		{
+			if (face == 32)
+			{
+				cls = 2;
+			}
+			else
+			{
+				int mod = face % 10;
+				int div = face / 10;
+				if (face % 10 < 6 || mod > 9)
+					cls = div;
+				else
+					cls = mod - 6;
+			}
+			pMobData->Class = cls;
+		}
+
+		if (!(unFlag & 1))
+		{
+			int sIndex = 0;
+			int ItemIndex = 0;
+			for (int i = 0; i < 24; ++i)
+			{
+				unsigned int dwBit = 1 << i;
+
+				if (!m_pSkillSecGrid[i])
+					continue;
+
+				if ((dwBit & pMobData->LearnedSkill[0]) != dwBit)
+				{
+					m_pSkillSecGrid[i]->Empty();
+					continue;
+				}
+
+				auto pSkillItem = m_pSkillSecGrid[i]->GetItem(0, 0);
+				sIndex = 24 * pMobData->Class + i + 5000;
+
+				if (pSkillItem)
+				{
+					auto pstOldItem = pSkillItem->GetItem();
+					ItemIndex = pstOldItem->sIndex;
+
+					if (ItemIndex > 0 && sIndex == ItemIndex)
+					{
+						pSkillItem = 0;
+						continue;
+					}
+				}
+
+				m_pSkillSecGrid[i]->Empty();
+
+				auto pStructItem = new STRUCT_ITEM;
+				memset(pStructItem, 0, sizeof(STRUCT_ITEM));
+
+				pStructItem->sIndex = sIndex;
+
+				auto ipCtrlItem = new SGridControlItem(0, pStructItem, 0.0f, 0.0f);
+				if(ipCtrlItem)
+					m_pSkillSecGrid[i]->AddItemInEmpty(ipCtrlItem);
+			}
+			for (int i = 0; i < 12; ++i)
+			{
+				if (!m_pSkillSecGrid2)
+					continue;
+
+				if (((1 << i) & pMobData->LearnedSkill[1]) != 1 << i)
+				{
+					m_pSkillSecGrid2[i]->Empty();
+					continue;
+				}
+
+				SGridControlItem* pSkillItem = m_pSkillSecGrid2[i]->GetItem(0, 0);
+				sIndex = 12 * pMobData->Class + i + 5400;
+
+				if (pSkillItem)
+				{
+					auto pstOldItem = pSkillItem->GetItem();
+					if (ItemIndex > 0 && sIndex == ItemIndex)
+					{
+						pSkillItem = nullptr;
+						continue;
+					}
+				}
+
+				m_pSkillSecGrid2[i]->Empty();
+
+				auto pStructItem = new STRUCT_ITEM;
+				memset(pStructItem, 0, sizeof(STRUCT_ITEM));
+
+				pStructItem->sIndex = sIndex;
+
+				auto ipCtrlItem = new SGridControlItem(0, pStructItem, 0.0f, 0.0f);
+				if (ipCtrlItem)
+					m_pSkillSecGrid2[i]->AddItemInEmpty(ipCtrlItem);
+			}
+			for (int i = 0; i < 8; ++i)
+			{
+				unsigned int dwBit = 1 << (i + 24);
+				if (!m_pGridSkillBelt)
+					continue;
+
+				auto pSkillItem = m_pGridSkillBelt->GetItem(i % 4, i / 4);
+				sIndex = i + 5096;
+				if (pSkillItem)
+				{
+					auto pstOldItem = pSkillItem->GetItem();
+					ItemIndex = pstOldItem->sIndex;
+					if (ItemIndex > 0 && sIndex == ItemIndex)
+					{
+						pSkillItem = 0;
+						continue;
+					}				
+				}
+
+				auto pOldItem = m_pGridSkillBelt->PickupItem(i % 4, i / 4);
+				if ((dwBit & pMobData->LearnedSkill[0]) == dwBit)
+				{
+					auto pItem = new STRUCT_ITEM;
+					memset(pItem, 0, sizeof(STRUCT_ITEM));
+					pItem->sIndex = i + 5096;
+
+					m_pGridSkillBelt->AddItem(new SGridControlItem(0, pItem, 0.0f, 0.0f), i % 4, i / 4);
+				}
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pOldItem)
+					g_pCursor->m_pAttachedItem = 0;
+
+				// TODO: check this strange bOld
+				bool bOld = false;
+				if (bOld != 1 && pOldItem)
+				{
+					SAFE_DELETE(pOldItem);
+				}
+			}
+		}
+		if (m_pSLPanel1 && !pMobData->Class)
+			m_pSLPanel1->SetVisible(0);
+		else if (m_pSLPanel1)
+		{
+			m_pSLPanel1->SetVisible(1);
+			if (pMobData->Class == 1)
+				m_pSLPanel1->m_GCPanel.nTextureIndex = 0;
+			if (pMobData->Class == 2)
+				m_pSLPanel1->m_GCPanel.nTextureIndex = 1;
+			if (pMobData->Class == 3)
+				m_pSLPanel1->m_GCPanel.nTextureIndex = 2;
+		}
+		if (m_pSLPanel2 && !pMobData->Class)
+			m_pSLPanel2->SetVisible(0);
+		else if (m_pSLPanel2)
+		{
+			m_pSLPanel2->SetVisible(1);
+			if (pMobData->Class == 1)
+				m_pSLPanel2->m_GCPanel.nTextureIndex = 0;
+			if (pMobData->Class == 2)
+				m_pSLPanel2->m_GCPanel.nTextureIndex = 1;
+			if (pMobData->Class == 3)
+				m_pSLPanel2->m_GCPanel.nTextureIndex = 2;
+		}
+		if (m_pSLPanel3 && !pMobData->Class)
+			m_pSLPanel3->SetVisible(0);
+		else if (m_pSLPanel3)
+		{
+			m_pSLPanel3->SetVisible(1);
+			if (pMobData->Class == 1)
+				m_pSLPanel3->m_GCPanel.nTextureIndex = 0;
+			if (pMobData->Class == 2)
+				m_pSLPanel3->m_GCPanel.nTextureIndex = 1;
+			if (pMobData->Class == 3)
+				m_pSLPanel3->m_GCPanel.nTextureIndex = 2;
+		}
+		if (m_pSkillCover && !pMobData->Class)
+			m_pSkillCover->SetVisible( 0);
+		else if (m_pSkillCover)
+		{
+			m_pSkillCover->SetVisible(1);
+			if (pMobData->Class == 1)
+				m_pSkillCover->m_GCPanel.nTextureIndex = 0;
+			if (pMobData->Class == 2)
+				m_pSkillCover->m_GCPanel.nTextureIndex = 1;
+			if (pMobData->Class == 3)
+				m_pSkillCover->m_GCPanel.nTextureIndex = 2;
+		}
+
+		switch (pMobData->Class)
+		{
+		case 0:
+			m_pCISp1Caption->SetText(g_pMessageStringTable[242], 0);
+			m_pCISp2Caption->SetText(g_pMessageStringTable[243], 0);
+			m_pCISp3Caption->SetText(g_pMessageStringTable[244], 0);
+			m_pCISp4Caption->SetText(g_pMessageStringTable[245], 0);
+			m_pSkillSec1->SetText(g_pMessageStringTable[107], 0);
+			m_pSkillSec2->SetText(g_pMessageStringTable[108], 0);
+			m_pSkillSec3->SetText(g_pMessageStringTable[109], 0);
+			break;
+		case 1:
+			m_pCISp1Caption->SetText(g_pMessageStringTable[246], 0);
+			m_pCISp2Caption->SetText(g_pMessageStringTable[247], 0);
+			m_pCISp3Caption->SetText(g_pMessageStringTable[248], 0);
+			m_pCISp4Caption->SetText(g_pMessageStringTable[249], 0);
+			m_pSkillSec1->SetText(g_pMessageStringTable[110], 0);
+			m_pSkillSec2->SetText(g_pMessageStringTable[111], 0);
+			m_pSkillSec3->SetText(g_pMessageStringTable[112], 0);
+			break;
+		case 2:
+			m_pCISp1Caption->SetText(g_pMessageStringTable[250], 0);
+			m_pCISp2Caption->SetText(g_pMessageStringTable[251], 0);
+			m_pCISp3Caption->SetText(g_pMessageStringTable[252], 0);
+			m_pCISp4Caption->SetText(g_pMessageStringTable[253], 0);
+			m_pSkillSec1->SetText(g_pMessageStringTable[113], 0);
+			m_pSkillSec2->SetText(g_pMessageStringTable[114], 0);
+			m_pSkillSec3->SetText(g_pMessageStringTable[115], 0);
+			break;
+		case 3:
+			m_pCISp1Caption->SetText(g_pMessageStringTable[254], 0);
+			m_pCISp2Caption->SetText(g_pMessageStringTable[255], 0);
+			m_pCISp3Caption->SetText(g_pMessageStringTable[256], 0);
+			m_pCISp4Caption->SetText(g_pMessageStringTable[257], 0);
+			m_pSkillSec1->SetText(g_pMessageStringTable[133], 0);
+			m_pSkillSec2->SetText(g_pMessageStringTable[134], 0);
+			m_pSkillSec3->SetText(g_pMessageStringTable[135], 0);
+			break;
+		}
+
+		int nRate = pMobData->CurrentScore.Special[0];
+		int nDamageValue = pMobData->CurrentScore.Damage;
+		if (nRate > 100)
+			nRate = 100;
+
+		sprintf(szStr, "%d", nDamageValue);
+		if (m_pDamage)
+			m_pDamage->SetText(szStr, 0);
+
+		int cSkillIndex = g_pObjectManager->m_cShortSkill[g_pObjectManager->m_cSelectShortSkill];
+		if (cSkillIndex >= 0 && cSkillIndex < 248)
+		{
+			SetMyHumanMagic();
+			int nIdx = g_pObjectManager->m_stMobData.Equip[6].sIndex;
+			int nWeather = g_nWeather;
+			if (g_nWeather == 3)
+				nWeather = 2;
+
+			if ((int)m_pMyHuman->m_vecPosition.x >> 7 > 26 && (int)m_pMyHuman->m_vecPosition.x >> 7 < 31 && 
+				(int)m_pMyHuman->m_vecPosition.y >> 7 > 20 && (int)m_pMyHuman->m_vecPosition.y >> 7 < 25)
+				nWeather = 2;
+
+			int nSkillDam = BASE_GetSkillDamage(cSkillIndex, pMobData, nWeather, GetWeaponDamage(),
+				g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][0].sIndex);
+			if (nSkillDam >= 0)
+			{
+				sprintf(szStr, "%d", nSkillDam);
+				if (m_pSkillDam)
+					m_pSkillDam->SetText(szStr, 0);
+				if (m_pSkillDam)
+					m_pSkillDam->SetTextColor(0xFFBBBBFF);
+			}
+			else
+			{
+				sprintf(szStr, "%d", -nSkillDam);
+				if (m_pSkillDam)
+					m_pSkillDam->SetText(szStr, 0);
+				if (m_pSkillDam)
+					m_pSkillDam->SetTextColor(0xFFBBBBFF);
+			}
+		}
+		else
+		{
+			sprintf(szStr, "%d", 0);
+			if (m_pSkillDam)
+				m_pSkillDam->SetText(szStr, 0);
+		}
+
+		if (!m_pMyHuman->m_cOnlyMove)
+			m_pMyHuman->SetSpeed(m_bMountDead);
+
+		int nSpeedValue = (int)m_pMyHuman->m_fMaxSpeed;
+
+		sprintf(szStr, "%d", nSpeedValue);
+		if (m_pSpeed)
+			m_pSpeed->SetText(szStr, 0);
+
+		int nACValue = pMobData->CurrentScore.Ac;
+		sprintf(szStr, "%d", nACValue);
+		if (m_pDefence)
+			m_pDefence->SetText(szStr, 0);
+
+		int nDef = BASE_GetMobAbility(pMobData, 53) + (BASE_GetMobAbility(pMobData, 3) + pMobData->BaseScore.Ac);
+		sprintf(szStr, "%d", nDef);
+		int nSpeedClass = 0;
+
+		if (m_pMyHuman->m_nClass == 26 && !m_pMyHuman->m_stLookInfo.FaceMesh)
+		{
+			nSpeedClass = 10;
+			if (pMobData->LearnedSkill[0] & 0x20000)
+				nSpeedClass = 20;
+		}
+		else if (m_pMyHuman->m_nClass == 26 && m_pMyHuman->m_stLookInfo.FaceMesh == 1)
+			nSpeedClass = 0;
+		else if (m_pMyHuman->m_nClass == 33)
+		{
+			nSpeedClass = 20;
+			if (pMobData->LearnedSkill[0] & 0x200000)
+				nSpeedClass = 40;
+		}
+		else if(m_pMyHuman->m_nClass == 40)
+			nSpeedClass = 20;
+		else if (m_pMyHuman->m_nClass == 63)
+			nSpeedClass = 30;
+		
+		int nAttSpeedValue = (pMobData->CurrentScore.Special[2] / 10 + 10)
+			* (m_pMyHuman->m_cSpeedUp - m_pMyHuman->m_cSpeedDown)
+			+ pMobData->CurrentScore.Dex / 5
+			+ nSpeedClass
+			+ BASE_GetMobAbility(pMobData, 26)
+			+ 100;
+
+		if (m_pMyHuman->m_cFreeze == 1)
+			nAttSpeedValue -= 30;
+
+		sprintf(szStr, "%d%%", nAttSpeedValue);
+		if (m_pAttackSpeed)
+			m_pAttackSpeed->SetText(szStr, 0);
+		int nCriticalValue = pMobData->Critical;
+		nCriticalValue *= 4;
+
+		sprintf(szStr, "%d.%d%%", nCriticalValue / 10, nCriticalValue % 10);
+		if (m_pCritical)
+			m_pCritical->SetText(szStr, 0);
+		sprintf(szStr, "%d", pMobData->Resist[2]);
+		if (m_pRegist1)
+			m_pRegist1->SetText(szStr, 0);
+		sprintf(szStr, "%d", pMobData->Resist[3]);
+		if (m_pRegist2)
+			m_pRegist2->SetText(szStr, 0);
+		sprintf(szStr, "%d", pMobData->Resist[0]);
+		if (m_pRegist3)
+			m_pRegist3->SetText(szStr, 0);
+		sprintf(szStr, "%d", pMobData->Resist[1]);
+		if (m_pRegist4)
+			m_pRegist4->SetText(szStr, 0);
+
+		for (int i = 0; i < 32; ++i)
+		{
+			int nType = (signed int)m_pMyHuman->m_usAffect[i] >> 8;
+			if (m_pAffectL[i])
+			{
+				if (nType >= 0 && nType < 50)
+					m_pAffectL[i]->SetText(g_pAffectTable[nType], 0);
+				else
+					m_pAffectL[i]->SetText((char*)" ", 0);
+			}
+		}
+
+		char szVal[32]{};
+
+		for (int i = 0; i < 32; ++i)
+		{
+			if (m_pMyHuman->m_stAffect[i].Type > 0)
+			{
+				if (m_pMyHuman->m_stAffect[i].Time < 1000000)
+				{
+					sprintf(szVal, "%5d", m_pMyHuman->m_stAffect[i].Time);					
+				}
+				else
+				{
+					int add = m_pMyHuman->m_stAffect[i].Time / 1000000;
+					int Year = m_pMyHuman->m_stAffect[i].Time % 1000000 / 10000;
+					int Day = m_pMyHuman->m_stAffect[i].Time % 10000;
+					int nYearDay = 365;
+					if (!(Year % 4))
+						nYearDay = 366;
+					int nDafaultDay = 0;
+					switch (add)
+					{
+					case 4:
+						nDafaultDay = 7;
+						break;
+					case 5:
+						nDafaultDay = 15;
+						break;
+					case 6:
+						nDafaultDay = 30;
+						break;
+					}
+
+					if (add)
+					{
+						int freeDay = nDafaultDay - nYearDay * (m_nYear - Year) - (m_nDays - Day);
+						sprintf(szVal, g_pMessageStringTable[291], freeDay);
+					}
+				}
+				if (m_pAffectL[i] && !i)
+				{
+					int sTime = m_pMyHuman->m_stAffect[0].Time;
+					if (sTime >= 7375)
+					{
+						m_pAffect[i]->SetTextColor(0xFFFFFFFF);
+					}
+					else
+					{
+						for (int nJ = 0; nJ < 7; ++nJ)
+						{
+							if (sTime < g_sTimeTable[nJ])
+							{
+								m_pAffect[i]->SetTextColor(g_dwFoodColor[nJ]);
+								break;
+							}
+						}
+					}
+				}
+				if (m_pMiniPanel)
+				{
+					if (m_pMyHuman->m_stAffect[i].Type < 50)
+						m_pAffectIcon[i]->m_GCPanel.nTextureIndex = g_AffectSkillType[m_pMyHuman->m_stAffect[i].Type];
+					else
+						m_pAffectIcon[i]->m_GCPanel.nTextureIndex = 0;
+					m_pAffectIcon[i]->m_GCPanel.nLayer = 29;
+				}
+			}	
+			else
+			{
+				if (m_pAffectL[i])
+					m_pAffectL[i]->SetVisible(0);
+				if (m_pAffectIcon[i] && m_pMiniPanel)
+				{
+					m_pAffectIcon[i]->SetVisible(0);
+					m_dwAffectBlinkTime[i] = 0;
+				}
+			}
+		}
+		if (m_pCargoCoin)
+		{
+			sprintf(szVal, "%10d", g_pObjectManager->m_nCargoCoin);
+			m_pCargoCoin->m_cComma = 1;
+			m_pCargoCoin->SetText(szVal, 0);
+			if (m_pMyCargoCoin)
+				m_pMyCargoCoin->SetText(szVal, 0);
+		}
+
+		if (!m_pMyHuman->m_pMantua)
+			m_pKingDomFlag->SetVisible(0);
+		else if (m_pMyHuman->m_pMantua->m_Look.Skin0 == 19)
+			m_pKingDomFlag->SetVisible(0);
+		else
+		{
+			char szTemp[256]{};
+			m_pKingDomFlag->m_GCPanel.nTextureIndex = m_pMyHuman->m_pMantua->m_Look.Skin0;
+			if ((m_pMyHuman->m_sHelmIndex == 3503 || m_pMyHuman->m_sHelmIndex == 3504 || 
+				m_pMyHuman->m_sHelmIndex == 3505 || m_pMyHuman->m_sHelmIndex == 3506) && 
+				m_pMyHuman->m_pMantua->m_Look.Skin0 == 2)
+			{
+				m_pKingDomFlag->m_GCPanel.nTextureIndex = 33;
+			}
+
+			m_pKingDomFlag->m_GCPanel.nTextureIndex = m_pMyHuman->UnSetCitizenMantle(m_pKingDomFlag->m_GCPanel.nTextureIndex);
+			m_pFlagDescText[0]->SetText(g_pItemList[pMobData->Equip[15].sIndex].Name, 0);
+
+			sprintf(szTemp, "%s %d", g_pMessageStringTable[80], BASE_GetItemAbility(&pMobData->Equip[15], 3));
+			m_pFlagDescText[1]->SetText(szTemp, 0);
+
+			sprintf(szTemp, "%s %d", g_pMessageStringTable[81], BASE_GetItemAbility(&pMobData->Equip[15], 4));
+			m_pFlagDescText[2]->SetText(szTemp, 0);
+			m_pKingDomFlag->SetVisible(1);
+		}
+
+		if (m_pMyHuman->m_cMount == 1 && 
+			(m_pMyHuman->m_nMountSkinMeshType == 31	|| m_pMyHuman->m_nMountSkinMeshType == 40 || 
+			 m_pMyHuman->m_nMountSkinMeshType == 20 && m_pMyHuman->m_stMountLook.Mesh0 != 7 || m_pMyHuman->m_nMountSkinMeshType == 39))
+		{
+			if (m_pBtnMountRun)
+			{
+				m_pBtnMountRun->m_bEnable = 1;
+				m_pBtnMountRun->m_bSelected = g_bRunning;
+			}
+		}
+		else if (m_pBtnMountRun)
+		{
+			m_pBtnMountRun->m_bEnable = 0;
+		}
+
+		SetPosPKRun();
+	}
 }
 
 void TMFieldScene::UpdateSkillBelt()
@@ -5708,7 +6500,7 @@ int TMFieldScene::OnKeyReturn(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyNumPad(unsigned int iKeyCode)
 {
-	if (iKeyCode < 96 || iKeyCode > 105)
+	if (iKeyCode < VK_NUMPAD0 || iKeyCode > VK_NUMPAD9)
 		return 0;
 
 	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
@@ -5745,7 +6537,7 @@ int TMFieldScene::OnKeyNumPad(unsigned int iKeyCode)
 	stMotion.Header.Type = MSG_Motion_Opcode;
 	stMotion.Motion = iKeyCode - 81;
 
-	if (iKeyCode == 105)
+	if (iKeyCode == VK_NUMPAD9)
 	{
 		if (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_SEATING)
 		{
@@ -5759,7 +6551,7 @@ int TMFieldScene::OnKeyNumPad(unsigned int iKeyCode)
 			stMotion.Motion = 13;
 		}
 	}
-	else if (iKeyCode == 96)
+	else if (iKeyCode == VK_NUMPAD0)
 	{
 		if (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_PUNISHING)
 		{
@@ -6680,6 +7472,7 @@ int TMFieldScene::OnPacketSwapItem(MSG_STANDARD* pStd)
 
 	if (pDestItem)
 	{
+		sizeof(STRUCT_MOB);
 		if (!pSwapItem->SourType)
 		{
 			if (pDestItem->m_pItem->sIndex > 40)

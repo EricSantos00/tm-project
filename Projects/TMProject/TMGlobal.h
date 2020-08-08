@@ -151,6 +151,7 @@ extern char g_TempNick[26];
 
 extern int g_bEffectFirst;
 extern int g_bEvent;
+extern int g_bRunning;
 
 static stTeleportPos g_TeleportTable[37] =
 {

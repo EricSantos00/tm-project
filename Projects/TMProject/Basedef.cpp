@@ -1040,6 +1040,49 @@ int GetSkillIndex(int nSkillIndex)
     return nSkillIndex;
 }
 
+int IsValidSkill(int nSkillIndex)
+{
+    if (nSkillIndex >= 0 && nSkillIndex < 104)
+    {
+        if (nSkillIndex >= 96)
+        {
+            if (!((1 << (nSkillIndex - 72)) & g_pObjectManager->m_stMobData.LearnedSkill[0]))
+                return 0;
+        }
+        else if (!((1 << nSkillIndex % 24) & g_pObjectManager->m_stMobData.LearnedSkill[0]))
+        {
+            return 0;
+        }
+        return 1;
+    }
+    else if (nSkillIndex == 205 && g_pObjectManager->m_stMobData.LearnedSkill[1] & 0x20)
+    {
+        return 1;
+    }
+    else if (nSkillIndex == 233 && g_pObjectManager->m_stMobData.LearnedSkill[1] & 0x200)
+    {
+        return 1;
+    }
+    else if (nSkillIndex == 238 && g_pObjectManager->m_stMobData.LearnedSkill[1] & 4)
+    {
+        return 1;
+    }
+    else if (nSkillIndex < 200 || nSkillIndex >= 247)
+    {
+        return 0;
+    }
+    else if (nSkillIndex == 205 || nSkillIndex == 233 || nSkillIndex == 238)
+    {
+        return 0;
+    }
+    else
+    {
+        return ((1 << 4 * ((nSkillIndex - 200) / 4)) & g_pObjectManager->m_stMobData.LearnedSkill[1]) != 0;
+    }
+
+    return 0;
+}
+
 int IsClearString(char* str, int target)
 {
 	int len = strlen(str);
@@ -2278,6 +2321,11 @@ unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue)
 
 void BASE_SetItemAmount(STRUCT_ITEM* item, int amount)
 {
+}
+
+int BASE_GetMobAbility(STRUCT_MOB* mob, char Type)
+{
+    return 0;
 }
 
 int IsPassiveSkill(int nSkillIndex)
