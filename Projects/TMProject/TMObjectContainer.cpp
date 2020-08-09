@@ -325,33 +325,79 @@ int TMObjectContainer::Load(const char* szFileName)
 			m_pObjectList[m_nObjectIndex] = new TMFloat(dwObjType);
 		else if (dwObjType == 5)
 			m_pObjectList[m_nObjectIndex] = new TMFloat(dwObjType);
-		else if (dwObjType >= 251 && dwObjType <= 254
-			|| dwObjType == 474
-			|| dwObjType == 273
-			|| dwObjType == 274
-			|| dwObjType == 292
-			|| dwObjType == 607
-			|| dwObjType == 610
-			|| dwObjType == 614
-			|| dwObjType == 195
-			|| dwObjType == 697
-			|| dwObjType == 699
-			|| dwObjType == 490
-			|| dwObjType == 1520
-			|| dwObjType == 1535
-			|| dwObjType == 1526
-			|| dwObjType == 1665
-			|| dwObjType == 1993
-			|| dwObjType == 2005
-			|| dwObjType == 1695
-			|| dwObjType == 1696
-			|| dwObjType == 1750
-			|| dwObjType == 1739
-			|| dwObjType == 1711
-			|| dwObjType == 1855)
+		else if (dwObjType >= 251 && dwObjType <= 254//
+			|| dwObjType == 474//
+			|| dwObjType == 273//
+			|| dwObjType == 274//
+			|| dwObjType == 292//
+			|| dwObjType == 607//
+			|| dwObjType == 610//
+			|| dwObjType == 614//
+			|| dwObjType == 195//
+			|| dwObjType == 697//
+			|| dwObjType == 699//
+			|| dwObjType == 490//
+			|| dwObjType == 1520//
+			|| dwObjType == 1535//
+			|| dwObjType == 1526//
+			|| dwObjType == 1665//
+			|| dwObjType == 1993//
+			|| dwObjType == 2005//
+			|| dwObjType == 1695//
+			|| dwObjType == 1696//
+			|| dwObjType == 1750//
+			|| dwObjType == 1739//
+			|| dwObjType == 1711//
+			|| dwObjType == 1855)//
 		{
-			// TODO: 
-			continue;
+			char cHouseType = 0;
+			switch (dwObjType)
+			{
+			case 474: 
+				cHouseType = 1;
+				break;
+			case 195:
+			case 273:
+			case 274:
+			case 1520:
+			case 1535:
+			case 1695:
+			case 697:
+			case 699:
+			case 1993:
+				cHouseType = 2;
+				break;
+			case 607:
+				cHouseType = 4;
+				break;
+			case 292:
+			case 1526:
+			case 1665:
+			case 2005:
+			case 490:
+				cHouseType = 3;
+				break;
+			case 610:
+				cHouseType = 5;
+				break;
+			case 614:
+				cHouseType = 6;
+				break;
+			case 1750:
+				cHouseType = 7;
+				break;
+			case 1739:
+				cHouseType = 8;
+				break;
+			case 1711:
+				cHouseType = 9;
+				break;
+			case 1855:
+				cHouseType = 11;
+				break;
+			}
+
+			m_pObjectList[m_nObjectIndex] = new TMHouse(cHouseType);
 		}
 		else if (dwObjType == 121)
 			continue;
