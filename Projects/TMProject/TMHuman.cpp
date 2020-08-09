@@ -4692,11 +4692,11 @@ void TMHuman::LabelPosition()
         if (pFScene->m_pMouseOverHuman != this
             && (m_nClass != 1 && m_nClass != 2 && m_nClass != 4 && m_nClass != 8 && m_nClass != 26 && 
                 (m_nClass != 33 || m_stLookInfo.FaceMesh) || 
-                (m_dwID <= 0 || m_dwID >= 1000)) && 
+                (m_dwID < 0 || m_dwID >= 1000)) && 
             !IsMerchant() && 
             m_bParty != 1 && 
             (int)m_usGuild <= 0 && 
-            (m_dwID <= 0 || m_dwID >= 1000) &&
+            (m_dwID < 0 || m_dwID >= 1000) &&
             (m_sHeadIndex != 271 || !(m_stScore.Reserved & 0xF)) && 
             bTargetMob != 1)
         {

@@ -7310,7 +7310,7 @@ int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
 		pHuman->InitPosition(vecPosition.x, GroundGetMask(vecPosition) * 0.1f, vecPosition.y);
 
 		pHuman->m_cHide = (pHuman->m_dwID >= 0 && pHuman->m_dwID < 1000) && pHuman->m_stScore.Reserved & 1;
-		if ((pHuman->m_dwID <= 0 || pHuman->m_dwID > 1000) && (pHuman->IsMerchant() || (pHuman->m_stScore.Reserved & 0xF) == 15))
+		if ((pHuman->m_dwID < 0 || pHuman->m_dwID > 1000) && (pHuman->IsMerchant() || (pHuman->m_stScore.Reserved & 0xF) == 15))
 			pHuman->m_pNameLabel->SetTextColor(0xFFAAFFAA);
 
 		int nItemCode = pCreateMob->Equip[13] & 0xFFF;
@@ -7345,7 +7345,7 @@ int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
 		if (pHuman->m_nClass == 56 && !pHuman->m_stLookInfo.FaceMesh)
 			m_dwKhepraID = pHuman->m_dwID;
 
-		if ((pHuman->m_dwID <= 0 || pHuman->m_dwID > 1000) &&
+		if ((pHuman->m_dwID < 0 || pHuman->m_dwID > 1000) &&
 			(int)vecPosition.x >> 7 >= 28 && (int)vecPosition.x >> 7 <= 30 && 
 			(int)vecPosition.y >> 7 >= 27 && (int)vecPosition.y >> 7 <= 28)
 		{
@@ -7543,10 +7543,10 @@ int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
 		}
 
 		pHuman->m_cHide = (pHuman->m_dwID >= 0 && pHuman->m_dwID < 1000) && pHuman->m_stScore.Reserved & 1;
-		if ((pHuman->m_dwID <= 0 || pHuman->m_dwID > 1000) && (pHuman->m_stScore.Reserved & 0xF) >= 1 && (pHuman->m_stScore.Reserved & 0xF) <= 15)
+		if ((pHuman->m_dwID < 0 || pHuman->m_dwID > 1000) && (pHuman->m_stScore.Reserved & 0xF) >= 1 && (pHuman->m_stScore.Reserved & 0xF) <= 15)
 			pHuman->m_pNameLabel->SetTextColor(0xFFAAFFAA);
 
-		if ((pHuman->m_dwID <= 0 || pHuman->m_dwID > 1000) && pHuman->m_sHeadIndex == 54)
+		if ((pHuman->m_dwID < 0 || pHuman->m_dwID > 1000) && pHuman->m_sHeadIndex == 54)
 			pHuman->m_pNameLabel->SetTextColor(0xFFAAFFAA);
 
 		if (pHuman == m_pMyHuman)
@@ -7592,7 +7592,7 @@ int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
 	if (pHuman)
 	{
 		pHuman->m_pNameLabel->m_GCBorder.dwColor = 0x55AA0000;
-		if ((pHuman->m_dwID <= 0 || pHuman->m_dwID > 1000) && !pHuman->m_stScore.Ac)
+		if ((pHuman->m_dwID < 0 || pHuman->m_dwID > 1000) && !pHuman->m_stScore.Ac)
 		{
 			pHuman->m_pNameLabel->m_GCBorder.dwColor = 0x5500AA00;
 			pHuman->m_pNameLabel->m_cBorder = 1;
@@ -7670,7 +7670,7 @@ int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
 				else
 				{
 					int nType = 1;
-					if ((pHuman->m_dwID <= 0 || pHuman->m_dwID > 1000))
+					if ((pHuman->m_dwID < 0 || pHuman->m_dwID > 1000))
 						nType = 3;
 
 					auto pPortal = new TMSkillTownPortal(vecEffectPos, nType);
