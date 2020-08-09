@@ -3871,7 +3871,7 @@ void TMHuman::UpdateScore(int nGuildLevel)
 
             if (pScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
             {
-                if ((m_dwID > 0 && m_dwID < 1000) && (m_nCurrentKill || m_nTotalKill > 0))
+                if ((m_dwID >= 0 && m_dwID < 1000) && (m_nCurrentKill || m_nTotalKill > 0))
                 {
                     bool isInPos = (int)m_vecPosition.x >> 7 <= 16 || (int)m_vecPosition.x >> 7 >= 20 || 
                         (int)m_vecPosition.y >> 7 <= 29 ? 0 : 1;
@@ -4612,14 +4612,139 @@ void TMHuman::AnimationFrame(int nWalkSndIndex)
 
 void TMHuman::LabelPosition()
 {
+    auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    if (!pFScene || g_pCurrentScene->GetSceneType() != ESCENE_TYPE::ESCENE_FIELD)
+        return;
+
+    if (m_dwDelayDel)
+        return;
+
+    if (m_cHide == 1 || m_cShadow == 1 && pFScene->m_pMyHuman != this &&
+        !pFScene->m_pMyHuman->m_JewelGlasses)
+    {
+        m_pNameLabel->SetVisible(0);
+        m_pProgressBar->SetVisible(0);
+        m_pMountHPBar->SetVisible(0);
+
+        if (m_stGuildMark.pGuildMark)
+            m_stGuildMark.pGuildMark->SetVisible( 0);
+
+        m_pAutoTradeDesc->SetVisible(0);
+        m_pAutoTradePanel->SetVisible(0);
+        m_pKillLabel->SetVisible(0);
+        m_pTitleProgressBar->SetVisible(0);
+        m_pTitleNameLabel->SetVisible(0);
+        return;
+    }
+
+    if (pFScene->m_pMHPBar && pFScene->m_pMHPBarT)
+    {
+        if (m_cMount == 1 && m_sMountIndex != 27 && m_sMountIndex != 28 && 
+            m_sMountIndex != 29 && m_sMountIndex != 30 && !pFScene->m_bAirMove)
+        {
+            pFScene->m_pMHPBar->SetVisible(1);
+            pFScene->m_pMHPBarT->SetVisible(1);
+        }
+        else
+        {
+            pFScene->m_pMHPBar->SetVisible(0);
+            pFScene->m_pMHPBarT->SetVisible(0);
+        }
+    }
+
+    m_pTitleNameLabel->SetVisible(0);
+    m_pTitleProgressBar->SetVisible(0);
+    bool bTargetMob = false;
+    if (pFScene->m_pMyHuman && m_dwID == pFScene->m_pMyHuman->m_nAttackDestID && !m_cDie)
+    {
+        bTargetMob = 1;
+        m_pTitleProgressBar->SetVisible(1);
+    }
+    if (pFScene->m_pMouseOverHuman != this && 
+        (m_sHeadIndex == 216 || m_sHeadIndex == 226 || m_sHeadIndex == 298))
+    {
+        m_pNameLabel->SetVisible(0);
+        m_pProgressBar->SetVisible(0);
+        m_pMountHPBar->SetVisible(0);
+
+        if (m_stGuildMark.pGuildMark)
+            m_stGuildMark.pGuildMark->SetVisible(0);
+
+        m_pAutoTradeDesc->SetVisible(0);
+        m_pAutoTradePanel->SetVisible(0);
+        m_pKillLabel->SetVisible(0);
+        m_pNickNameLabel->SetVisible(0);
+        return;
+    }
+
+    if (g_nUpdateGuildName > 0)
+    {
+        if (m_dwID >= 0 && m_dwID < 1000 && (int)m_usGuild > 0)
+            UpdateGuildName();
+    }
+
+    if (m_pNameLabel)
+    {
+        if (g_bEvent == 1)
+            return;
+
+        if (pFScene->m_pMouseOverHuman != this
+            && (m_nClass != 1 && m_nClass != 2 && m_nClass != 4 && m_nClass != 8 && m_nClass != 26 && 
+                (m_nClass != 33 || m_stLookInfo.FaceMesh) || 
+                (m_dwID <= 0 || m_dwID >= 1000)) && 
+            !IsMerchant() && 
+            m_bParty != 1 && 
+            (int)m_usGuild <= 0 && 
+            (m_dwID <= 0 || m_dwID >= 1000) &&
+            (m_sHeadIndex != 271 || !(m_stScore.Reserved & 0xF)) && 
+            bTargetMob != 1)
+        {
+            m_pNameLabel->SetVisible(0);
+            m_pKillLabel->SetVisible(0);
+            m_pProgressBar->SetVisible(0);
+            m_pMountHPBar->SetVisible(0);
+            if (m_stGuildMark.pGuildMark)
+                m_stGuildMark.pGuildMark->SetVisible(0);
+            m_pAutoTradeDesc->SetVisible(0);
+            m_pAutoTradePanel->SetVisible(0);
+            m_pNickNameLabel->SetVisible(0);
+            m_pTitleProgressBar->SetVisible( 0);
+            m_pTitleNameLabel->SetVisible(0);
+            if (m_nClass == 56 && !m_stLookInfo.FaceMesh && m_cDie != 1)
+            {
+                m_pTitleProgressBar->SetVisible(1);
+                m_pTitleNameLabel->SetVisible(1);
+            }          
+        }
+        else
+        {
+
+        }
+    }
+
 }
 
 void TMHuman::LabelPosition2()
 {
+
 }
 
 void TMHuman::HideLabel()
 {
+    m_pProgressBar->SetVisible(0);
+    m_pMountHPBar->SetVisible(0);
+    m_pNameLabel->SetVisible(0);
+    if (m_stGuildMark.pGuildMark)
+        m_stGuildMark.pGuildMark->SetVisible(0);
+
+    m_pNickNameLabel->SetVisible(0);
+    m_pAutoTradeDesc->SetVisible(0);
+    m_pAutoTradePanel->SetVisible(0);
+    m_pKillLabel->SetVisible(0);
+    m_pChatMsg->SetVisible(0);
+    m_pTitleProgressBar->SetVisible(0);
+    m_pTitleNameLabel->SetVisible(0);
 }
 
 void TMHuman::RenderEffect()
@@ -7256,7 +7381,7 @@ void TMHuman::DelayDelete()
 void TMHuman::SetCharHeight(float fCon)
 {
     float fRatio = 0.0f;
-    if (m_dwID > 0 && m_dwID < 1000 || g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELCHAR)
+    if (m_dwID >= 0 && m_dwID < 1000 || g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELCHAR)
     {
         fRatio = 4000.0f;
         if (fCon > 500.0f && m_stScore.Level < 500)

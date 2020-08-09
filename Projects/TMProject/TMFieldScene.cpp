@@ -1714,7 +1714,7 @@ int TMFieldScene::InitializeScene()
 
 	SetSanc();
 
-	m_pMyHuman->m_cHide = (m_pMyHuman->m_dwID > 0 && m_pMyHuman->m_dwID < 1000) == 1 && m_pMyHuman->m_stScore.Reserved & 1;
+	m_pMyHuman->m_cHide = (m_pMyHuman->m_dwID >= 0 && m_pMyHuman->m_dwID < 1000) == 1 && m_pMyHuman->m_stScore.Reserved & 1;
 	m_pHumanContainer->AddChild(m_pMyHuman);
 
 	auto pSoundManager = g_pSoundManager;
@@ -2245,7 +2245,7 @@ int TMFieldScene::OnKeyDownEvent(unsigned int iKeyCode)
 	if (TMScene::OnKeyDownEvent(iKeyCode) == 1)
 		return 1;
 
-	if (iKeyCode == 45)
+	if (iKeyCode == VK_INSERT)
 	{
 		MSG_MessageWhisper stWhisper{};
 
@@ -2257,7 +2257,7 @@ int TMFieldScene::OnKeyDownEvent(unsigned int iKeyCode)
 		SendOneMessage((char*)&stWhisper, sizeof(stWhisper));
 	}
 
-	if (iKeyCode >= 112 && iKeyCode <= 115)
+	if (iKeyCode >= VK_F1 && iKeyCode <= VK_F4)
 	{
 		if (!m_pInvenPanel->IsVisible())
 			SetVisibleInventory();
@@ -2313,9 +2313,12 @@ int TMFieldScene::OnKeyDownEvent(unsigned int iKeyCode)
 			m_pInvPageBtn4->SetTextureSetIndex(527);
 			break;
 		}
+
+		// Fix the "lock" missing on change inv
+		Bag_View();
 	}
 
-	if (iKeyCode == 122)
+	if (iKeyCode == VK_F11)
 	{
 		if (dwServerTime < m_dwKeyTime + 500 || m_bAirMove == 1)
 			return 1;
@@ -2420,12 +2423,12 @@ int TMFieldScene::OnKeyDownEvent(unsigned int iKeyCode)
 		return 1;
 	}
 
-	if (iKeyCode >= 96 && iKeyCode <= 105)
+	if (iKeyCode >= VK_NUMPAD0 && iKeyCode <= VK_NUMPAD9)
 	{
 		return OnKeyNumPad(iKeyCode);
 	}
 
-	if (iKeyCode == 33)
+	if (iKeyCode == VK_PRIOR)
 	{
 		SListBox* pChatList{};
 
@@ -2440,7 +2443,7 @@ int TMFieldScene::OnKeyDownEvent(unsigned int iKeyCode)
 		return 1;
 	}
 
-	if (iKeyCode == 34)
+	if (iKeyCode == VK_NEXT)
 	{
 		SListBox* pChatList{};
 
@@ -6918,7 +6921,7 @@ int TMFieldScene::OnKeyVisibleInven(char iCharCode, int lParam)
 
 	if (pBtnEquip)
 		pBtnEquip->SetSelected(pPanel->m_bVisible);
-
+		
 	return 1;
 }
 
@@ -7306,7 +7309,7 @@ int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
 				
 		pHuman->InitPosition(vecPosition.x, GroundGetMask(vecPosition) * 0.1f, vecPosition.y);
 
-		pHuman->m_cHide = (pHuman->m_dwID > 0 && pHuman->m_dwID < 1000) && pHuman->m_stScore.Reserved & 1;
+		pHuman->m_cHide = (pHuman->m_dwID >= 0 && pHuman->m_dwID < 1000) && pHuman->m_stScore.Reserved & 1;
 		if ((pHuman->m_dwID <= 0 || pHuman->m_dwID > 1000) && (pHuman->IsMerchant() || (pHuman->m_stScore.Reserved & 0xF) == 15))
 			pHuman->m_pNameLabel->SetTextColor(0xFFAAFFAA);
 
@@ -7539,7 +7542,7 @@ int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
 				Guildmark_Create(&pHuman->m_stGuildMark);
 		}
 
-		pHuman->m_cHide = (pHuman->m_dwID > 0 && pHuman->m_dwID < 1000) && pHuman->m_stScore.Reserved & 1;
+		pHuman->m_cHide = (pHuman->m_dwID >= 0 && pHuman->m_dwID < 1000) && pHuman->m_stScore.Reserved & 1;
 		if ((pHuman->m_dwID <= 0 || pHuman->m_dwID > 1000) && (pHuman->m_stScore.Reserved & 0xF) >= 1 && (pHuman->m_stScore.Reserved & 0xF) <= 15)
 			pHuman->m_pNameLabel->SetTextColor(0xFFAAFFAA);
 
@@ -8300,6 +8303,108 @@ void TMFieldScene::GetTimeString(char* szVal, int sTime, int nTime, int i)
 
 void TMFieldScene::Bag_View()
 {
+	char str[128]{};
+	if (g_pObjectManager->m_stMobData.Carry[60].sIndex == 3467)
+	{
+		if (m_bJPNBag[2])
+			m_pInvPageBtn3->SetTextureSetIndex(527);
+		else
+			m_pInvPageBtn3->SetTextureSetIndex(528);
+
+		auto pEffect = g_pObjectManager->m_stMobData.Carry[60].stEffect;
+
+		char szStrDay[128]{};
+		char szStrMonth[128]{};
+
+		int nMonth = 0;
+		int nDate = 0;
+		for (int i = 0; i < 3; ++i)
+		{
+			if (pEffect[i].cEffect == EF_DATE)
+			{
+				nDate = (unsigned char)pEffect[i].cValue;
+			}
+			else if (pEffect[i].cEffect == 110)
+			{
+				nMonth = (unsigned char)pEffect[i].cValue;
+			}
+		}
+
+		if (nDate)
+			sprintf(szStrDay, g_pMessageStringTable[291], nDate);
+		else
+			sprintf(szStrDay, (char*)"");
+		if (nMonth)
+			sprintf(szStrMonth, g_pMessageStringTable[296], nMonth);
+		else
+			sprintf(szStrMonth, (char*)"");
+		if (nDate)
+			sprintf(str, "%s%s", szStrMonth, szStrDay);
+		else
+			sprintf(str, (char*)"");
+
+		m_pJPNBag_Day1->SetText(str, 0);
+		m_pJPNBag_Day1->SetTextColor(0xFFFFFF00);
+	}
+	else if (m_bJPNBag[2])
+	{
+		m_pInvPageBtn3->SetTextureSetIndex(548);
+	}
+	else
+	{
+		m_pInvPageBtn3->SetTextureSetIndex(549);
+	}
+
+	if (g_pObjectManager->m_stMobData.Carry[61].sIndex == 3467)
+	{
+		if (m_bJPNBag[3])
+			m_pInvPageBtn3->SetTextureSetIndex(527);
+		else
+			m_pInvPageBtn3->SetTextureSetIndex(528);
+
+		auto pEffect = g_pObjectManager->m_stMobData.Carry[61].stEffect;
+
+		char szStrDay[128]{};
+		char szStrMonth[128]{};
+
+		int nMonth = 0;
+		int nDate = 0;
+		for (int i = 0; i < 3; ++i)
+		{
+			if (pEffect[i].cEffect == EF_DATE)
+			{
+				nDate = (unsigned char)pEffect[i].cValue;
+			}
+			else if (pEffect[i].cEffect == 110)
+			{
+				nMonth = (unsigned char)pEffect[i].cValue;
+			}
+		}
+
+		if (nDate)
+			sprintf(szStrDay, g_pMessageStringTable[291], nDate);
+		else
+			sprintf(szStrDay, (char*)"");
+		if (nMonth)
+			sprintf(szStrMonth, g_pMessageStringTable[296], nMonth);
+		else
+			sprintf(szStrMonth, (char*)"");
+		if (nDate)
+			sprintf(str, "%s%s", szStrMonth, szStrDay);
+		else
+			sprintf(str, (char*)"");
+
+		m_pJPNBag_Day2->SetText(str, 0);
+		m_pJPNBag_Day2->SetTextColor(0xFFFFFF00);
+	}
+	else if (m_bJPNBag[3])
+	{
+		m_pInvPageBtn4->SetTextureSetIndex(548);
+	}
+	else
+	{
+		m_pInvPageBtn4->SetTextureSetIndex(549);
+	}
 }
 
 void TMFieldScene::AirMove_Main(unsigned int dwServerTime)
