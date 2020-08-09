@@ -2217,7 +2217,10 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
     else
         SetPosition(m_vecPosition.x, m_fHeight, m_vecPosition.y);
 
-    TMHuman* pFocused = g_pCurrentScene->m_pMyHuman;
+    TMHuman* pFocused = nullptr;
+    if(pScene)
+        pFocused = g_pCurrentScene->m_pMyHuman;
+
     if (pFocused != this && g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
     {
         TMFieldScene* pFieldScene = (TMFieldScene*)g_pCurrentScene;
@@ -2343,7 +2346,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
     }
 
     int nWalkSndIndex = g_pCurrentScene->GroundGetTileType(m_vecPosition);
-    if (pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+    if (pScene && pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
     {
         if (nWalkSndIndex == 8)
             nWalkSndIndex = 8;
@@ -2361,7 +2364,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
     if ((m_nClass != 45 || !m_cHide) && !m_cShadow)
     {
         int nDust = 1;
-        if (pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+        if (pScene && pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
         {
             if (g_nWeather == 1 || 
                 ((int)m_vecPosition.x >> 7 <= 26 || (int)m_vecPosition.x >> 7 >= 31 || 
@@ -3471,7 +3474,7 @@ int TMHuman::OnPacketMove(MSG_Action* pAction)
 
     if (m_cOnlyMove)
     {
-        if (g_pCurrentScene->m_pMyHuman == this)
+        if (g_pCurrentScene && g_pCurrentScene->m_pMyHuman == this)
         {
             TMFieldScene* pFScene = (TMFieldScene*)g_pCurrentScene;
             pFScene->m_stMoveStop.LastX = pAction->PosX;
@@ -3901,21 +3904,25 @@ void TMHuman::UpdateScore(int nGuildLevel)
                     m_ucChaosLevel = 5;
 
                 int nIndex = (m_ucChaosLevel - 5) / 20;
-                float fPos = (m_ucChaosLevel - (20 * nIndex + 5)) / 20.0f;
+                float fPos = (float)(m_ucChaosLevel - (20 * nIndex + 5)) / 20.0f;
 
-                int dwR = (int)((((m_dwNameColor[nIndex] & 0xFF0000) >> 16) * (1.0f - fPos)) + ((m_dwNameColor[nIndex + 1] & 0xFF0000) >> 16) * fPos) << 16;
-                int dwG = (int)((((m_dwNameColor[nIndex] & 0xFF00) >> 8) * (1.0f - fPos)) + ((m_dwNameColor[nIndex + 1] & 0xFF00) >> 8)) << 8;
-                int dwB = (int)((m_dwNameColor[nIndex] & 0xFF) * (1.0f - fPos) + ((m_dwNameColor[nIndex + 1] & 0xFF) * fPos));
+                unsigned int dwR = (unsigned int)(((float)(((unsigned int)0xFF0000 & TMHuman::m_dwNameColor[nIndex]) >> 16) * (1.0f - fPos)) + 
+                    ((float)(((unsigned int)0xFF0000 & TMHuman::m_dwNameColor[nIndex + 1]) >> 16) * fPos)) << 16;
+                unsigned int dwG = (unsigned int)(((float)((TMHuman::m_dwNameColor[nIndex] & 0xFF00) >> 8) * (1.0f - fPos)) + 
+                    ((float)((TMHuman::m_dwNameColor[nIndex + 1] & 0xFF00) >> 8) * fPos)) << 8;
+                unsigned int dwB = (unsigned int)(((float)(TMHuman::m_dwNameColor[nIndex] & 0xFF) * (1.0f - fPos)) + 
+                    ((float)(TMHuman::m_dwNameColor[nIndex + 1] & 0xFF) * fPos));
+
                 m_pNameLabel->SetTextColor(dwB | dwG | dwR | 0xFF000000);
 
                 // this && was added to prevent null dereferencing
-                if (m_dwID < 1000 && m_pNameLabel)
+                if (m_dwID > 0 && m_dwID < 1000 && m_pNameLabel)
                     m_pNameLabel->m_cBorder = 0;
             }
 
             m_pNameLabel->SetSize(strlen(m_szName) * 6.0f + 18.0f, 16.0f);
 
-            if (m_pNameLabel->m_cBorder)
+            if (m_pNameLabel && m_pNameLabel->m_cBorder)
                 m_cSummons = 0;
         }
         else
@@ -4719,10 +4726,340 @@ void TMHuman::LabelPosition()
         }
         else
         {
+            D3DXVECTOR3 vTemp;
+            D3DXVECTOR3 vPosTransformed;
+            D3DXVECTOR3 vecPos;
 
+            vecPos.x = m_vecPosition.x;
+            vecPos.z = m_vecPosition.y;
+            vecPos.y = ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight) + 0.2f;
+            D3DXVec3TransformCoord(&vTemp, &vecPos, &g_pDevice->m_matView);
+            D3DXVec3TransformCoord(&vPosTransformed, &vTemp, &g_pDevice->m_matProj);
+            if (vPosTransformed.z < 0.0f || vPosTransformed.z >= 1.0f)
+            {
+                m_pNameLabel->SetVisible(0);
+                m_pKillLabel->SetVisible(0);
+                m_pProgressBar->SetVisible(0);
+                m_pMountHPBar->SetVisible(0);
+
+                if (m_stGuildMark.pGuildMark)
+                    m_stGuildMark.pGuildMark->SetVisible(0);
+
+                m_pAutoTradeDesc->SetVisible(0);
+                m_pAutoTradePanel->SetVisible(0);
+                m_pNickNameLabel->SetVisible( 0);
+                m_pChatMsg->SetVisible(0);
+                m_pTitleProgressBar->SetVisible(0);
+                m_pTitleNameLabel->SetVisible(0);
+                if (m_nClass == 56 && !m_stLookInfo.FaceMesh && m_cDie != 1)
+                {
+                    m_pTitleProgressBar->SetVisible(1);
+                    m_pTitleNameLabel->SetVisible(1);
+                }
+            }
+            else
+            {
+                int vPosInX = (int)(((vPosTransformed.x + 1.0f) * (float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)) / 2.0f);
+                int vPosInY = 0;
+                if (m_cMount)
+                    vPosInY = (int)((-vPosTransformed.y + 0.76f) * (float)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift - 1) / 2.0f)
+                    + (int)(g_pObjectManager->m_pCamera->m_fSightLength * 3.5f);
+                else
+                    vPosInY = (int)((-vPosTransformed.y + 1.16f) * (float)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift - 1) / 2.0f)
+                    - 3 * (int)g_pObjectManager->m_pCamera->m_fSightLength;
+
+                if (vPosInX <= 0 || vPosInX >= (int)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift) || 
+                    vPosInY <= 0 || vPosInY >= (int)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift))
+                {
+                    m_pNameLabel->SetVisible(0);
+                    m_pKillLabel->SetVisible(0);
+                    m_pProgressBar->SetVisible(0);
+                    m_pMountHPBar->SetVisible(0);
+                    if (m_stGuildMark.pGuildMark)
+                        m_stGuildMark.pGuildMark->SetVisible(0);
+                    m_pAutoTradeDesc->SetVisible(0);
+                    m_pAutoTradePanel->SetVisible(0);
+                    m_pNickNameLabel->SetVisible(0);
+                    m_pChatMsg->SetVisible(0);
+                    m_pTitleProgressBar->SetVisible(0);
+                    m_pTitleNameLabel->SetVisible(0);
+                    if (m_nClass == 56 && !m_stLookInfo.FaceMesh && m_cDie != 1)
+                    {
+                        m_pTitleProgressBar->SetVisible(1);
+                        m_pTitleNameLabel->SetVisible(1);
+                    }
+                }
+                else
+                {
+                    if (!m_ucChaosLevel)
+                    {                   
+                        float fProgress = (float)(g_pTimerManager->GetServerTime() % 2000);
+                        fProgress = sinf((float)(fProgress * D3DXToRadian(180)) / 2000.0f);
+                        m_pNameLabel->SetTextColor(((unsigned int)(float)(fProgress * 255.0f) << 16) | 0xFF000000);
+                    }
+
+                    short sLevel = pFScene->m_pMyHuman->m_stScore.Level;
+                    if (pFScene->m_pMyHuman->Is2stClass() == 2)
+                        sLevel += 400;
+
+                    if (sLevel - 40 >= m_stScore.Level && 
+                        m_sHeadIndex > 40 && m_stScore.Level < 350 && m_sHeadIndex > 40)
+                    {
+                        m_pTitleProgressBar->m_GCProgress.dwColor = 0xFF737373;
+                    }
+                    if (sLevel - 40 < m_stScore.Level && 
+                        m_sHeadIndex > 40 || m_stScore.Level >= 350 && m_sHeadIndex > 40)
+                    {
+                        m_pTitleProgressBar->m_GCProgress.dwColor = 0xFFFF0000;
+                    }
+                    m_pNameLabel->SetVisible(1);
+                    if (m_pTitleProgressBar->m_bVisible == 1)
+                        m_pTitleNameLabel->SetVisible(1);
+
+                    if (m_stGuildMark.pGuildMark && m_stGuildMark.nGuild != -1 && 
+                        m_stGuildMark.pGuildMark->m_GCPanel.nMarkIndex >= 0)
+                    {
+                        int nMark = m_stGuildMark.pGuildMark->m_GCPanel.nMarkIndex;
+                        if (nMark < 0 || nMark > 64 || m_stGuildMark.nGuild == (g_pTextureManager->m_stGuildMark[nMark].nGuild & 0xFFFF) && 
+                            g_pTextureManager->m_stGuildMark[nMark].nGuild >> 16 == m_stGuildMark.nGuildChannel)
+                        {
+                            if (!m_stGuildMark.bHideGuildmark)
+                                m_stGuildMark.pGuildMark->SetVisible(1);
+                        }
+                        else
+                        {
+                            m_stGuildMark.pGuildMark->m_GCPanel.nMarkIndex = -1;
+                            m_stGuildMark.pGuildMark->SetVisible(0);
+                        }
+                    }
+                    m_pNickNameLabel->SetVisible(1);
+                    if (m_cDie == 1)
+                        m_pNameLabel->SetVisible(0);
+
+                    if (m_dwID >= 0 && m_dwID < 1000 && (m_nCurrentKill > 0 || (int)m_nTotalKill > 0))
+                    {
+                        m_pKillLabel->SetVisible(1);
+                        if ((int)m_vecPosition.x >> 7 > 16 && (int)m_vecPosition.x >> 7 < 20 && (int)m_vecPosition.y >> 7 > 29 &&
+                            pFScene->m_pMyHuman != this)
+                        {
+                            m_pKillLabel->SetVisible(0);
+                        }
+
+                        if ((int)m_vecPosition.x >> 7 == 17 && (int)m_vecPosition.y >> 7 == 28)
+                            m_pKillLabel->SetVisible(0);
+                    }
+
+                    if (m_TradeDesc[0])
+                    {
+                        m_pAutoTradeDesc->SetVisible(1);
+                        m_pAutoTradePanel->SetVisible(1);
+                    }
+                    else
+                    {
+                        m_pAutoTradeDesc->SetVisible(0);
+                        m_pAutoTradePanel->SetVisible(0);
+                    }
+                    if (g_pCurrentScene->m_pMyHuman != this)
+                    {
+                        if (m_nClass != 56 || m_stLookInfo.FaceMesh)
+                        {
+                            m_pProgressBar->SetVisible(1);
+                            m_pMountHPBar->SetVisible(0);
+                        }
+                        else
+                        {
+                            m_pProgressBar->SetVisible(0);
+                            m_pMountHPBar->SetVisible(0);
+                        }
+                    }
+
+                    vPosInY = (int)((float)vPosInY + (RenderDevice::m_fHeightRatio * 13.0f));
+                    float fWidthRatio = RenderDevice::m_fWidthRatio;
+                    if (m_cMount)
+                        vPosInY = vPosInY + (int)((RenderDevice::m_fHeightRatio * 2.0f) * 4.0f);
+                    else
+                        vPosInY = vPosInY - (int)((RenderDevice::m_fHeightRatio * 2.0f) * 16.0f);
+
+                    if (1.0 == RenderDevice::m_fHeightRatio)
+                    {
+                        if (m_cMount)
+                            vPosInY -= (int)(RenderDevice::m_fHeightRatio * 8.0f);
+                        else
+                            vPosInY += (int)(RenderDevice::m_fHeightRatio * 10.0f);
+                    }
+                    else if (RenderDevice::m_fHeightRatio >= 1.7)
+                    {
+                        if (m_cMount)
+                            vPosInY += (int)(RenderDevice::m_fHeightRatio * 15.0f);
+                        else
+                            vPosInY -= (int)(RenderDevice::m_fHeightRatio * 6.0f);
+                    }
+                    if (m_nClass == 56 && !m_stLookInfo.FaceMesh)
+                    {
+                        m_pTitleProgressBar->SetVisible(1);
+                        m_pTitleNameLabel->SetVisible(1);
+                    }
+                    else
+                    {
+                        if (m_cMount)
+                            m_pProgressBar->SetRealPos((float)vPosInX - BASE_ScreenResize(35.0f), 
+                                ((float)vPosInY - BASE_ScreenResize(10.0f)) - 15.0f);
+                        else
+                            m_pProgressBar->SetRealPos((float)vPosInX - BASE_ScreenResize(35.0f), 
+                                (float)vPosInY - BASE_ScreenResize(10.0f));
+
+                        m_pMountHPBar->SetRealPos((float)vPosInX - BASE_ScreenResize(35.0f), 
+                            ((float)vPosInY - BASE_ScreenResize(16.0f)) - 14.0f);
+
+                        m_pProgressBar->SetSize(BASE_ScreenResize(72.0f), BASE_ScreenResize(2.0f) + 6.0f);
+                        m_pMountHPBar->SetSize(BASE_ScreenResize(72.0f), BASE_ScreenResize(2.0f) + 5.0f);
+
+                        m_pMountHPBar->Update();
+                        m_pProgressBar->Update();
+                        m_pProgressBar->m_GCProgress.nWidth = m_pProgressBar->m_nProgressWidth;
+                        m_pProgressBar->m_GCProgress.nHeight = m_pProgressBar->m_nHeight - 4.0f;
+                        m_pMountHPBar->m_GCProgress.nWidth = m_pMountHPBar->m_nProgressWidth;
+                        m_pMountHPBar->m_GCProgress.nHeight = m_pMountHPBar->m_nHeight - 4.0f;
+                    }
+
+                    int nLen2 = strlen(m_pNameLabel->GetText());
+                    int nLen3 = strlen(m_TradeDesc);
+                    int nLen4 = strlen(m_pNickNameLabel->GetText());
+
+                    m_pChatMsg->SetRealPos((float)vPosInX - (float)(m_pChatMsg->m_nWidth / 2.0f), (float)vPosInY - 60.0f);
+                    m_pAutoTradeDesc->SetRealPos((float)vPosInX - ((150.0f * fWidthRatio) / 2.0f), (float)vPosInY - (float)(3.0f * RenderDevice::m_fHeightRatio));
+                    m_pAutoTradePanel->SetRealPos((float)vPosInX - ((150.0f * fWidthRatio) / 2.0f), (float)vPosInY - (float)(3.0f * RenderDevice::m_fHeightRatio));
+
+                    float nPosY = (float)vPosInY;
+                    if (m_cMount && !m_pAutoTradeDesc->IsVisible())
+                        nPosY = nPosY - 20.0f;
+
+                    fWidthRatio = RenderDevice::m_fWidthRatio;
+                    m_pNameLabel->SetRealPos((float)vPosInX - (((float)(6 * (nLen2 + 2)) * RenderDevice::m_fWidthRatio) / 2.0f), 
+                        nPosY);
+
+                    if (m_stGuildMark.pGuildMark)
+                        m_stGuildMark.pGuildMark->SetRealPos(((float)vPosInX - (((float)(6 * (nLen2 + 2)) * fWidthRatio) / 2.0f)) - 10.0f, 
+                            nPosY + 2.0f);
+
+                    m_pNickNameLabel->SetRealPos((float)vPosInX - (((float)(6 * (nLen4 + 2)) * fWidthRatio) / 2.0f), 
+                        nPosY - (float)(28.0f * fWidthRatio));
+
+                    if ((int)m_vecPosition.x >> 7 > 1 && (int)m_vecPosition.x >> 7 < 11 && (int)m_vecPosition.y >> 7 < 5)
+                    {
+                        m_pProgressBar->SetVisible(1);
+                        m_pMountHPBar->SetVisible(0);
+                        m_pTitleProgressBar->SetVisible(0);
+                        m_pTitleNameLabel->SetVisible(0);
+                    }
+
+                    else if (m_nClass == 1 || m_nClass == 2 || m_nClass == 4 || m_nClass == 8 || m_nClass == 26 || m_nClass == 33 && 
+                        !m_stLookInfo.FaceMesh || m_sHeadIndex == 271 && m_stScore.Reserved & 0xF)
+                    {
+                        if (_locationCheck(m_vecPosition, 14, 28) && m_sHeadIndex == 51)
+                        {
+                            m_pProgressBar->SetVisible(1);
+                            m_pMountHPBar->SetVisible(0);
+                        }
+                        else
+                        {
+                            m_pProgressBar->SetVisible(0);
+                            m_pMountHPBar->SetVisible(0);
+                            m_pTitleProgressBar->SetVisible(0);
+                            m_pTitleNameLabel->SetVisible(0);
+                        }
+                    }
+
+                    auto pFocused = g_pCurrentScene->m_pMyHuman;
+                    if (pFocused)
+                    {
+                        if (!IsMerchant() && m_sHeadIndex != 57 && !m_pAutoTradeDesc->IsVisible())
+                        {
+                            m_pProgressBar->SetVisible(1);
+                            if (g_pCurrentScene->m_pMyHuman != this && g_pCurrentScene->m_pMouseOverHuman == this)
+                            {
+                                if (m_nClass == 56 && !m_stLookInfo.FaceMesh)
+                                    m_pProgressBar->SetVisible(0);
+
+                                m_pTitleNameLabel->SetVisible(1);
+                                m_pTitleProgressBar->SetVisible(1);
+                            }
+                        }
+
+                        if (pFocused == this && m_cMount == 1 && m_sMountIndex != 27 && m_sMountIndex != 28 && m_sMountIndex != 29 && m_sMountIndex != 30)
+                            m_pMountHPBar->SetVisible(1);
+                        else
+                            m_pMountHPBar->SetVisible(0);
+
+                        if (pFocused == this&& m_cMount == 1)
+                        {
+                            int MountIndex = g_pObjectManager->m_stMobData.Equip[14].sIndex;
+                            if (MountIndex >= 3980 && MountIndex <= 3999)
+                                m_pMountHPBar->SetVisible(0);
+                        }
+
+                        m_pProgressBar->m_GCProgress.dwColor = 0xFFFF0000;
+
+                        if (g_bCastleWar)
+                        {
+                            if (pFocused->m_cMantua > 0 && m_cMantua > 0 && pFocused->m_cMantua == m_cMantua)
+                                m_pProgressBar->m_GCProgress.dwColor = 0xFF1E821E;
+                        }
+                        else if (pFocused->m_cMantua > 0 && m_cMantua > 0 && pFocused->m_cMantua == m_cMantua)
+                        {
+                            if (m_dwID < 0 || m_dwID >= 1000 && !TMFieldScene::m_bPK)
+                                m_pProgressBar->m_GCProgress.dwColor = 0xFF1E821E;
+                        }
+                        if (pFocused != this && m_citizen == pFocused->m_citizen && m_sHeadIndex < 40)
+                        {
+                            m_pProgressBar->m_GCProgress.dwColor = 0xFF00FF00;
+                            m_pTitleProgressBar->m_GCProgress.dwColor = 0xFF00FF00;
+                        }
+                        if (IsInCastleZone2() && !g_bCastleWar)
+                        {
+                            m_pProgressBar->m_GCProgress.dwColor = 0xFFFF0000;
+                            m_pTitleProgressBar->m_GCProgress.dwColor = 0xFFFF0000;
+                        }
+                        if (pFocused == this || m_bParty == 1 || m_usGuild && 
+                            (m_usGuild == pFocused->m_usGuild || g_pObjectManager->m_usAllyGuild == m_usGuild))
+                        {
+                            m_pProgressBar->m_GCProgress.dwColor = 0xFF1E821E;
+                            m_pTitleProgressBar->m_GCProgress.dwColor = 0xFF006400;
+                        }
+                    }
+                }
+            }
         }
     }
+    if (IsInTown() == 1 && m_nClass == 16)
+        m_pProgressBar->SetVisible(0);
 
+    if (m_pAutoTradeDesc->IsVisible() == 1)
+    {
+        m_pProgressBar->SetVisible(0);
+        m_pKillLabel->SetVisible(0);
+        m_stGuildMark.pGuildMark->SetVisible(0);
+    }
+    else if (!m_stGuildMark.bLoadedGuildmark)
+    {
+        if (!strlen(m_TradeDesc) && m_stGuildMark.sGuildIndex && m_stGuildMark.nGuild != -1 && !m_pAutoTradeDesc->IsVisible())
+            pFScene->Guildmark_Create(&m_stGuildMark);
+    }
+    if (m_bIgnoreHeight == 1)
+        m_pMountHPBar->SetVisible(0);
+
+    if (!pFScene->m_bShowNameLabel && pFScene->m_pMouseOverHuman != this && !bTargetMob)
+    {
+        m_pNameLabel->SetVisible(0);
+        m_pProgressBar->SetVisible(0);
+        m_pMountHPBar->SetVisible(0);
+        if (m_stGuildMark.pGuildMark)
+            m_stGuildMark.pGuildMark->SetVisible(0);
+        m_pAutoTradeDesc->SetVisible(0);
+        m_pAutoTradePanel->SetVisible(0);
+        m_pKillLabel->SetVisible(0);
+        m_pNickNameLabel->SetVisible(0);
+    }
 }
 
 void TMHuman::LabelPosition2()
@@ -6379,7 +6716,8 @@ void TMHuman::SetPacketMOBItem(STRUCT_MOB* pMobData)
                 pFScene->m_pCurrentMHPText->SetText(buffer, 0);
             }
 
-            pFScene->m_pMHPBar->SetCurrentProgress(0);
+            if(pFScene)
+                pFScene->m_pMHPBar->SetCurrentProgress(0);
         }
 
         pMobData->Equip[14].sIndex = tempIndex;
@@ -6467,10 +6805,10 @@ void TMHuman::SetPacketMOBItem(STRUCT_MOB* pMobData)
         }
 
         TMFieldScene* pFScene = nullptr;
-        if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+        if (g_pCurrentScene && g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
             pFScene = (TMFieldScene*)g_pCurrentScene;
 
-        if (g_pCurrentScene->m_pMyHuman == this && pFScene)
+        if (g_pCurrentScene && g_pCurrentScene->m_pMyHuman == this && pFScene)
         {
             int nValue = BASE_GetStaticItemAbility(&pMobData->Equip[14], 80);
             if (pMobData->Equip[14].sIndex < 3980 || pMobData->Equip[14].sIndex >= 3999)
