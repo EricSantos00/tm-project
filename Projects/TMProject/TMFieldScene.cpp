@@ -9484,7 +9484,16 @@ int TMFieldScene::OnPacketCancelSummon(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketAction(MSG_STANDARD* pStd)
 {
-	return 0;
+	if (g_pObjectManager->GetHumanByID(pStd->ID))
+		return 0;
+	
+	MSG_REQMobByID stReqMobById{};
+
+	stReqMobById.Header.ID = g_pObjectManager->m_dwCharID;
+	stReqMobById.Header.Type = MSG_REQMobByID_Opcode;
+	stReqMobById.MobID = pStd->ID;
+	SendOneMessage((char*)&stReqMobById, sizeof(stReqMobById));
+	return 1;
 }
 
 int TMFieldScene::OnPacketSoundEffect(MSG_STANDARD* pStd)
