@@ -35,6 +35,7 @@ struct MSG_STANDARDPARM
 };
 
 constexpr auto MSG_DeleteItem_Opcode = 0x2E4;
+constexpr auto MSG_SplitItem_Opcode = 0x2E5;
 constexpr auto MSG_DoJackpotBet_Opcode = 0x2BE;
 constexpr auto MSG_InviteGuild_Opcode = 0x3D5;
 struct MSG_STANDARDPARM2
@@ -42,6 +43,14 @@ struct MSG_STANDARDPARM2
 	MSG_STANDARD Header;
 	int Parm1;
 	int Parm2;
+};
+
+struct MSG_STANDARDPARM3
+{
+	MSG_STANDARD Header;
+	int Parm1;
+	int Parm2;
+	int Parm3;
 };
 
 struct STRUCT_SCORE
@@ -715,6 +724,7 @@ struct MSG_CAPSULEINFO
 	short Quest;
 };
 
+constexpr auto MSG_Trade_Opcode = 0x383;
 struct MSG_Trade
 {
 	MSG_STANDARD Header;
@@ -724,6 +734,9 @@ struct MSG_Trade
 	char MyCheck;
 	unsigned short OpponentID;
 };
+
+constexpr auto MSG_Withdraw_Opcode = 0x387;
+constexpr auto MSG_Deposit_Opcode = 0x388;
 
 struct MSG_CombineItem
 {
