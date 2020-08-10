@@ -1932,9 +1932,9 @@ void SScrollBar::Update()
 	{
 		m_nScrollPos = (int)((((float)m_nScrollLength - m_nBarSize) * (float)m_nCurrent) / (float)m_nMax);
 		if (m_dwStyle == 0)
-			SetPos(m_pBar->m_nPosX, (float)m_nScrollPos + m_nBtnSize);
+			m_pBar->SetPos(m_pBar->m_nPosX, (float)m_nScrollPos + m_nBtnSize);
 		else
-			SetPos((float)m_nScrollPos + m_nBtnSize, 0.0f);
+			m_pBar->SetPos((float)m_nScrollPos + m_nBtnSize, 0.0f);
 
 		if (m_pEventListener != nullptr)
 			m_pEventListener->OnControlEvent(m_dwControlID, m_nCurrent);
