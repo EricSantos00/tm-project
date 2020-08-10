@@ -2352,7 +2352,7 @@ int BASE_GetMobAbility(STRUCT_MOB* mob, char Type)
 
 char BASE_CheckChatValid(char* Chat)
 {
-    return 0;
+    return 1;
 }
 
 char CheckGuildName(char* GuildName, bool bSubguild)

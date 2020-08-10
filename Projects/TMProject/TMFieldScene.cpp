@@ -959,7 +959,7 @@ int TMFieldScene::InitializeScene()
 
 	if (m_pEditChatPanel)
 	{
-		m_pEditChatPanel->m_nPosY = m_pControlContainer->FindControl(65672)->m_nWidth - (float)(2.0f * RenderDevice::m_fHeightRatio);
+		m_pEditChatPanel->m_nPosY = m_pControlContainer->FindControl(65672)->m_nPosY - (float)(2.0f * RenderDevice::m_fHeightRatio);
 		m_pEditChatPanel->m_nPosX = m_pChatSelectPanel->m_nPosX	+ m_pChatSelectPanel->m_nWidth;
 
 		if (g_nKeyType != 1)
@@ -3878,7 +3878,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 		{
 			m_pBtnPGTParty->SetVisible(0);
 			m_pBtnPGTGuild->SetVisible(0);
-			m_pBtnPGTTrade->SetVisible((0);
+			m_pBtnPGTTrade->SetVisible(0);
 			m_pBtnPGTChallenge->SetVisible(0);
 			m_pBtnPGT1_V_1->SetVisible(1);
 			m_pBtnPGT5_V_5->SetVisible(1);
@@ -9355,7 +9355,74 @@ int TMFieldScene::OnKeyVisibleParty(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyReturn(char iCharCode, int lParam)
 {
-	return 0;
+	if (!m_pEditChatPanel)
+		return 0;
+	if (!m_pEditChat)
+		return 0;
+	if (iCharCode != 13)
+		return 0;
+
+	auto pEdit = m_pEditChat;
+	if (pEdit->IsFocused())
+	{
+		m_pEditChatPanel->SetVisible(0);
+		m_pChatPanel->SetVisible(1);
+		m_pControlContainer->SetFocusedControl(0);
+		return 1;
+	}
+
+	m_pEditChatPanel->SetVisible(1);
+	m_pChatPanel->SetVisible(0);
+	m_pControlContainer->SetFocusedControl(pEdit);
+	auto Button = (SButton*)m_pControlContainer->FindControl(90130u);
+	auto Button1 = (SButton*)m_pControlContainer->FindControl(90114u);
+	auto Button2 = (SButton*)m_pControlContainer->FindControl(90129u);
+	auto Button3 = (SButton*)m_pControlContainer->FindControl(90131u);
+	auto Button4 = (SButton*)m_pControlContainer->FindControl(90132u);
+	auto Button5 = (SButton*)m_pControlContainer->FindControl(90133u);
+	auto Button6 = (SButton*)m_pControlContainer->FindControl(90134u);
+	auto Button7 = (SButton*)m_pControlContainer->FindControl(90135u);
+	auto Button8 = (SButton*)m_pControlContainer->FindControl(90136u);
+
+	if (!strcmp(Button1->m_GCPanel.strString, Button2->m_GCPanel.strString))
+	{
+		pEdit->SetText((char*)"");
+	}
+	else if (!strcmp(Button1->m_GCPanel.strString, Button3->m_GCPanel.strString))
+	{
+		pEdit->SetText((char*)"=");
+	}
+	else if (!strcmp(Button1->m_GCPanel.strString, Button4->m_GCPanel.strString))
+	{
+		pEdit->SetText((char*)"-");
+	}
+	else if (!strcmp(Button1->m_GCPanel.strString, Button5->m_GCPanel.strString))
+	{
+		pEdit->SetText((char*)"--");
+	}
+	else if (!strcmp(Button1->m_GCPanel.strString, Button6->m_GCPanel.strString))
+	{
+		pEdit->SetText((char*)"@@");
+	}
+	else if (!strcmp(Button1->m_GCPanel.strString, Button7->m_GCPanel.strString))
+	{
+		pEdit->SetText((char*)"@");
+	}
+	else if (!strcmp(Button1->m_GCPanel.strString, Button8->m_GCPanel.strString))
+	{
+		char temp[32]{};
+		sprintf(temp, "/%s ", g_pMessageStringTable[389]);
+
+		pEdit->SetText(temp);
+	}
+	else if (!strcmp(Button1->m_GCPanel.strString, Button->m_GCPanel.strString))
+	{
+		char temp[32]{};
+		sprintf(temp, "/%s ", m_cWhisperName);
+		pEdit->SetText(temp);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyNumPad(unsigned int iKeyCode)
@@ -9448,7 +9515,7 @@ int TMFieldScene::OnKeyTotoEnter(char iCharCode, int lParam)
 }
 
 int TMFieldScene::OnPacketMessageChat(MSG_STANDARD* pStd)
-{
+{	
 	return 0;
 }
 

@@ -3548,7 +3548,75 @@ int TMHuman::OnPacketSetHpDam(MSG_STANDARD* pStd)
 
 int TMHuman::OnPacketMessageChat(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pMsgChat = reinterpret_cast<MSG_MessageChat*>(pStd);
+
+    pMsgChat->String[127] = 0;
+    pMsgChat->String[126] = 0;
+
+    auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    if (!pScene->m_pChatGeneral)
+        return 0;
+    if (pScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD && !pScene->m_pChatGeneral->m_bSelected)
+        return 1;
+
+    auto pChatList = pScene->m_pChatList;
+    int nIndex = 0;
+
+    if (pMsgChat->String[0] == '*')
+    {
+        nIndex = 1;
+        m_dwChatDelayTime = 10000;
+    }
+    else
+        m_dwChatDelayTime = 3000;
+
+    char szMsg[128]{};
+
+    if (strlen(pMsgChat->String) + strlen(m_szName) <= 50)
+    {
+        sprintf(szMsg, "[%s]> %s", m_szName, &pMsgChat->String[nIndex]);
+
+        auto ipNewItem = new SListBoxItem(szMsg, 0xFFFFFFFF, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+
+        if (ipNewItem && pChatList)
+            pChatList->AddItem(ipNewItem);
+    }
+    else
+    {
+        char szMsg3[128]{};
+        char szMsg2[128]{};
+        if (IsClearString(pMsgChat->String, 39))
+        {
+            strncpy(szMsg3, pMsgChat->String, 40);
+            sprintf(szMsg2, "%s", &pMsgChat->String[40]);
+        }
+        else
+        {
+            strncpy(szMsg3, pMsgChat->String, 39);
+            sprintf(szMsg2, "%s", &pMsgChat->String[39]);
+        }
+
+        sprintf(szMsg, "[%s]> %s", m_szName, &szMsg3[nIndex]);
+
+        auto ipNewItem = new SListBoxItem(szMsg, 0xFFFFFFFF, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1u, 0);
+
+        if (ipNewItem && pChatList)
+            pChatList->AddItem(ipNewItem);
+
+        auto ipNewItem2 = new SListBoxItem(szMsg2, 0xFFFFFFFF, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1u, 0);
+
+        if (strlen(pMsgChat->String) > 40 && ipNewItem2 && pChatList)
+            pChatList->AddItem(ipNewItem2);
+    }
+
+    sprintf(szMsg, "[%s]> %s", m_szName, &pMsgChat->String[nIndex]);
+    pScene->m_dwChatTime = g_pTimerManager->GetServerTime();
+
+    if (pMsgChat->String[0] != '=' && pMsgChat->String[0] != '-' && pMsgChat->String[0] != '@')
+        SetChatMessage(&pMsgChat->String[nIndex]);
+
+    return 1;
 }
 
 int TMHuman::OnPacketMessageChat_Index(MSG_STANDARD* pStd)
@@ -7013,17 +7081,19 @@ void TMHuman::SetChatMessage(const char* szString)
 {
     if (!m_dwDelayDel)
     {
-        int nHeight = 25;
+        int nHeight = 35;
         m_dwStartChatMsgTime = g_pTimerManager->GetServerTime();
 
-        char temp[256] = { 0 };
+        char temp[256]{ 0 };
         sprintf_s(temp, "%s", m_pNameLabel->GetText());
 
         GetChatLen(temp, &nHeight);
         sprintf_s(temp, "%s", szString);
 
         m_pChatMsg->SetText(temp, 0);
-        m_pChatMsg->SetSize(GetChatLen(temp, &nHeight) * RenderDevice::m_fWidthRatio, nHeight * RenderDevice::m_fHeightRatio);
+
+        float width = (float)GetChatLen(temp, &nHeight) * RenderDevice::m_fWidthRatio;
+        m_pChatMsg->SetSize(width, (float)nHeight * RenderDevice::m_fHeightRatio);
     }
 }
 
@@ -7035,13 +7105,18 @@ int TMHuman::GetChatLen(const char* szString, int* pHeight)
     int len = strlen(szString);
     int nLen = 0;
     if (len >= 41)
+        nLen = 256;
+    else
+        nLen = 6 * len;
+
+    if (len >= 41)
     {
-        nLen = 256 * 1;
+        nLen = (int)((float)nLen * 1.0f);
         *pHeight = 50;
     }
     else
     {
-        nLen = static_cast<int>((6 * 1.0f)) + 20;
+        nLen = (int)((float)nLen * 1.0f) + 20;
         *pHeight = 40;
     }
 
