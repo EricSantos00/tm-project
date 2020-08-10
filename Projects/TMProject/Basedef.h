@@ -998,6 +998,13 @@ struct MSG_CreateMobTrade
 	char Server;
 };
 
+constexpr auto MSG_REQMobByID_Opcode = 0x369;
+struct MSG_REQMobByID
+{
+	MSG_STANDARD Header;
+	short MobID;
+};
+
 constexpr auto MSG_SetShortSkill_Opcode = 0x378;
 struct MSG_SetShortSkill
 {
