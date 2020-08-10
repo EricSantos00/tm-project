@@ -31,6 +31,7 @@
 #include "TMEffectSkinMesh.h"
 #include "SGrid.h"
 #include "ItemEffect.h"
+#include "TMUtil.h"
 
 RECT TMFieldScene::m_rectWarning[7] =
 {
@@ -2051,6 +2052,192 @@ int TMFieldScene::InitializeScene()
 
 int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEvent)
 {
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+	if (dwServerTime < g_dwStartQuitGameTime + 6000)
+		return 1;
+	if (dwServerTime < m_dwLastLogout + 6000)
+		return 1;
+	if (dwServerTime < m_dwLastSelServer + 6000)
+		return 1;
+	if (dwServerTime < m_dwLastTown + 6000)
+		return 1;
+	if (dwServerTime < m_dwLastResurrect + 6000)
+		return 1;
+	if (dwServerTime < m_dwLastTeleport + 6000)
+		return 1;
+	if (dwServerTime < m_dwLastRelo + 6000)
+		return 1;
+	if (dwServerTime < m_dwLastWhisper + 6000)
+		return 1;
+
+	auto pMobData = &g_pObjectManager->m_stMobData;
+	int cktrans = 0;
+	if (pMobData && pMobData->LearnedSkill[0] & 0x20000000)
+		cktrans = 1;
+
+	if (idwControlID == TMB_IME_BUTTON)
+	{
+		if (m_pControlContainer->m_pFocusControl
+			&& m_pControlContainer->m_pFocusControl->m_eCtrlType == CONTROL_TYPE::CTRL_TYPE_EDITABLETEXT && m_pControlContainer->m_pFocusControl->m_bVisible)
+		{
+			if (g_pEventTranslator->IsNative())
+				g_pEventTranslator->SetIMEAlphaNumeric();
+			else
+				g_pEventTranslator->SetIMENative();
+		}
+	}
+	else if (idwControlID == E_CHAT && idwEvent == 8)
+		return 1;
+	else if (idwControlID == TMB_HELLSTORE_OK)
+	{
+		if (!m_pMessageBox->IsVisible())
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[144], m_nHellStoreValue, 0);
+			m_pMessageBox->m_dwArg = m_dwHellStoreID;
+			m_pMessageBox->SetVisible(1);
+		}
+		return 1;
+	}
+	else if (idwControlID >= TMB_HELLSTORE_SELECT_1 && idwControlID <= TMB_HELLSTORE_SELECT_4)
+	{
+		switch (idwControlID)
+		{
+		case TMB_HELLSTORE_SELECT_1:
+			if (m_pHellStoreDesc)
+				TMScene::LoadMsgText2(m_pHellStoreDesc, (char*)"UI\\hellStoredesc.txt", 21, 40);
+			break;
+		case TMB_HELLSTORE_SELECT_2:
+			if (m_pHellStoreDesc)
+				TMScene::LoadMsgText2(m_pHellStoreDesc, (char*)"UI\\hellStoredesc.txt", 41, 60);
+			break;
+		case TMB_HELLSTORE_SELECT_3:
+			if (m_pHellStoreDesc)
+				TMScene::LoadMsgText2(m_pHellStoreDesc, (char*)"UI\\hellStoredesc.txt", 61, 80);
+			break;
+		case TMB_HELLSTORE_SELECT_4:
+			if (m_pHellStoreDesc)
+				TMScene::LoadMsgText2(m_pHellStoreDesc, (char*)"UI\\hellStoredesc.txt", 81, 100);
+			break;
+		}
+
+		m_nHellStoreValue = idwControlID;
+		auto pHellgateStore = m_pHellgateStore;
+		SButton* pHellSelect = nullptr;
+		for (int i = 0; i < 4; ++i)
+		{
+			pHellSelect = (SButton*)m_pControlContainer->FindControl(i + TMB_HELLSTORE_SELECT_1);
+			if (pHellSelect)
+			{
+				if (i + 6193 == idwControlID)
+					pHellSelect->SetSelected(pHellgateStore->m_bVisible);
+				else
+					pHellSelect->SetSelected(0);
+			}
+		}
+		return 1;
+	}
+	else if (idwControlID >= TMB_GAMBLE_LEFTX2 && idwControlID <= TMB_GAMBLE_RIGHT)
+	{
+		switch (idwControlID)
+		{
+		case TMB_GAMBLE_LEFTX2:
+			m_nBet -= 10000;
+			if (m_nBet < 1000)
+				m_nBet = 1000;
+			break;
+		case TMB_GAMBLE_LEFT:
+			m_nBet -= 1000;
+			if (m_nBet < 1000)
+				m_nBet = 1000;
+			break;
+		case TMB_GAMBLE_RIGHTX2:
+			if (g_pObjectManager->m_stMobData.Coin - m_nBet < 10000)
+				return 1;
+			m_nBet += 10000;
+			if (m_nBet > 100000)
+				m_nBet = 100000;
+			break;
+		case TMB_GAMBLE_RIGHT:
+			if (g_pObjectManager->m_stMobData.Coin - m_nBet < 1000)
+				return 1;
+			m_nBet += 1000;
+			if (m_nBet > 100000)
+				m_nBet = 100000;
+			break;
+		}
+
+		auto pText = static_cast<SText*>(m_pControlContainer->FindControl(TMT_GAMBLE_BETCOUNT));
+		
+		char szText[128]{};
+		sprintf(szText, "%6d", m_nBet);
+		pText->SetText(szText, 0);
+
+		sprintf(szText, "%10d", g_pObjectManager->m_stMobData.Coin - m_nBet);
+
+		m_pMoney3->m_cComma = 1;
+		m_pMoney3->SetText(szText, 0);
+		return 1;
+	}
+	else if (idwControlID == TMB_GAMBLE_START)
+	{
+		if (m_pReelPanel2->m_dwStopTime || m_pReelPanel2->m_bRoling == 1)
+			return 1;
+		if (m_pReelPanel->m_dwStopTime || m_pReelPanel->m_bRoling == 1)
+			return 1;
+
+		auto pGridInv = m_pGridInv;
+		auto vec = pGridInv->CanAddItemInEmpty(1, 1);
+		if (vec.x < 0 || vec.y < 0)
+		{
+			auto pChatList = m_pChatList;
+
+			auto ipNewItem = new SListBoxItem(g_pMessageStringTable[1],
+				0xFFFFAAAA,
+				0.0,
+				0.0,
+				300.0f,
+				16.0f,
+				0,
+				0x77777777,
+				1u,
+				0);
+
+			if (ipNewItem)
+				pChatList->AddItem(ipNewItem);
+
+			GetSoundAndPlay(33, 0, 0);
+			return 1;
+		}
+
+		if (pMobData->Coin - m_nBet >= 0)
+		{
+			MSG_STANDARDPARM2 stParm2{};
+			stParm2.Header.ID = g_pObjectManager->m_dwCharID;
+			stParm2.Header.Type = MSG_DoJackpotBet_Opcode;
+			stParm2.Parm1 = 1;
+			stParm2.Parm2 = m_nBet;
+			SendOneMessage((char*)&stParm2, sizeof(stParm2));
+
+			m_pReelPanel->m_dwBatCoin = m_nBet;
+			m_pReelPanel2->m_dwBatCoin = m_nBet;
+
+			m_pReelPanel->SetRoll(1, 0, 0, 0, 3000);
+			m_pReelPanel2->SetRoll(1, 0, 0, 0, 3000);
+			pMobData->Coin -= m_nBet;
+
+			GetSoundAndPlay(338, 0, 0);
+
+			UpdateScoreUI(0);
+			return 1;
+		}
+		return 1;
+	}
+	else if (idwControlID == TMB_GAMBLE_QUIT)
+	{
+		SetVisibleGamble(0, 0);
+	}
+
+
 	return 0;
 }
 

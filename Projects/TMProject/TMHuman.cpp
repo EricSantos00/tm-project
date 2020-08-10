@@ -6311,6 +6311,10 @@ void TMHuman::PlayPunchedSound(int nType, int nLR)
 
 void TMHuman::SetMotion(ECHAR_MOTION eMotion, float fAngle)
 {
+    if (m_dwDelayDel)
+        return;
+
+    SetAnimation(eMotion, 0);
 }
 
 void TMHuman::GetRoute(IVector2 vecTarget, int nCount, int bStop)
@@ -6775,6 +6779,234 @@ void TMHuman::SetHandEffect(int nHandEffect)
 
 void TMHuman::CheckAffect()
 {
+    if (m_dwDelayDel)
+        return;
+
+    if (!m_pSkinMesh)
+        return;
+
+    m_cPoison = 0;
+    m_cHaste = 0;
+    m_cAssert = 0;
+    m_cFreeze = 0;
+    m_cSlowSlash = 0;
+    m_cPowerUp = 0;
+    m_cSpeedUp = 0;
+    m_cSpeedDown = 0;
+    m_cShield = 0;
+    m_cCancel = 0;
+    m_cAurora = 0;
+    m_cWeapon = 0;
+    m_cSKillAmp = 0;
+    m_cLighten = 0;
+    m_cWaste = 0;
+    m_cProtector = 0;
+    m_cEnchant = 0;
+    m_cShadow = 0;
+    m_cLifeDrain = 0;
+    if (m_nClass != 34 && (m_nClass != 21 || m_stLookInfo.FaceMesh != 10))
+        m_cDodge = 0;
+    m_cHuntersVision = 0;
+    m_cOverExp = 0;
+    m_cGodCos = 0;
+    m_cManaControl = 0;
+    m_cImmunity = 0;
+    m_cArmorClass = 0;
+    m_cCoinArmor = 0;
+    m_cElimental = 0;
+    m_cCantMove = 0;
+    m_cCriticalArmor = 0;
+    m_cSoul = 0;
+    m_bSkillBlack = 0;
+    m_cCantMove = 0;
+    m_cCantAttk = 0;
+    m_bShield2 = 0;
+    SetAvatar(0);
+
+    for (int i = 0; i < 32; ++i)
+    {
+        switch (m_usAffect[i] >> 8)
+        {
+        case 1:
+            m_cFreeze = 1;
+            break;
+        case 2:
+            m_cHaste = 1;
+            break;
+        case 3:
+            m_cSlowSlash = 1;
+            break;
+        case 4:
+            m_cPowerUp = 1;
+            break;
+        case 5:
+            m_bSkillBlack = 1;
+            break;
+        case 6:
+            m_bShield2 = 1;
+            break;
+        case 7:
+            m_cSpeedDown = 1;
+            break;
+        case 8:
+            if (m_stAffect[i].Value & 1)
+                m_DilpunchJewel = 1;
+            break;
+        case 9:
+            m_cWeapon = 1;
+            break;
+        case 10:
+            m_cWaste = 1;
+            break;
+        case 11:
+            m_cShield = 1;
+            break;
+        case 12:
+        case 14:
+        case 16:
+        case 33:
+        case 34:
+        case 35:
+        case 36:
+        case 38:
+        case 41:
+        case 42:
+        case 43:
+            continue;
+        case 13:
+            m_cAssert = 1;
+            break;
+        case 15:
+            m_cSKillAmp = 1;
+            break;
+        case 17:
+            m_cAurora = 1;
+            break;
+        case 18:
+            m_cManaControl = 1;
+            break;
+        case 19:
+            m_cImmunity = 1;
+            break;
+        case 20:
+            m_cPoison = 1;
+            break;
+        case 21:
+            m_cArmorClass = 1;
+            break;
+        case 22:
+            m_cLighten = 1;
+            break;
+        case 23:
+            m_cElimental = 1;
+            break;
+        case 24:
+            m_cCriticalArmor = 1;
+            break;
+        case 25:
+            m_cProtector = 1;
+            break;
+        case 26:
+            m_cDodge = 1;
+            break;
+        case 27:
+            m_cEnchant = 1;
+            break;
+        case 28:
+            m_cShadow = 1;
+            break;
+        case 29:
+            TMHuman::SetAvatar(1);
+            break;
+        case 30:
+            m_cHuntersVision = 1;
+            break;
+        case 31:
+            m_cCoinArmor = 1;
+            break;
+        case 32:
+            m_cCancel = 1;
+            break;
+        case 37:
+            m_cSoul = 1;
+            break;
+        case 39:
+            m_cOverExp = 1;
+            break;
+        case 40:
+            m_cCantMove = 1;
+            m_cCantAttk = 1;
+            m_bSkillBlack = 1;
+            break;
+        case 44:
+            m_cCantMove = 1;
+            break;
+        case 45:
+            m_cCantMove = 1;
+            m_cCantAttk = 1;
+            break;
+        }
+    }
+
+    if (m_pSkinMesh->m_pSwingEffect[0])
+        m_pSkinMesh->m_pSwingEffect[0]->m_cArmorClass = m_cArmorClass;
+    if (m_pSkinMesh->m_pSwingEffect[1])
+        m_pSkinMesh->m_pSwingEffect[1]->m_cArmorClass = m_cArmorClass;
+    if (m_pSkinMesh->m_pSwingEffect[0])
+        m_pSkinMesh->m_pSwingEffect[0]->m_cAssert = m_cAssert;
+    if (m_pSkinMesh->m_pSwingEffect[1])
+        m_pSkinMesh->m_pSwingEffect[1]->m_cAssert = m_cAssert;
+    if (m_pSkinMesh->m_pSwingEffect[0])
+        m_pSkinMesh->m_pSwingEffect[0]->m_bEnchant = m_cEnchant;
+    if (m_pSkinMesh->m_pSwingEffect[1])
+        m_pSkinMesh->m_pSwingEffect[1]->m_bEnchant = m_cEnchant;
+    if (m_cSpeedUp != 1 || m_cSpeedDown)
+    {
+        if (m_pSkinMesh->m_pSwingEffect[0])
+            m_pSkinMesh->m_pSwingEffect[0]->m_nHandEffect = 0;
+        if (m_pSkinMesh->m_pSwingEffect[1])
+            m_pSkinMesh->m_pSwingEffect[1]->m_nHandEffect = 0;
+    }
+    else
+    {
+        if (m_pSkinMesh->m_pSwingEffect[0])
+            m_pSkinMesh->m_pSwingEffect[0]->m_nHandEffect = 1;
+        if (m_pSkinMesh->m_pSwingEffect[1])
+            m_pSkinMesh->m_pSwingEffect[1]->m_nHandEffect = 1;
+    }
+    if (m_cWeapon == 1)
+    {
+        if (m_pSkinMesh->m_pSwingEffect[0] && m_sRightIndex && !m_cHasShield)
+            m_pSkinMesh->m_pSwingEffect[0]->m_cMagicWeapon = 1;
+        else if (m_pSkinMesh->m_pSwingEffect[0])
+            m_pSkinMesh->m_pSwingEffect[0]->m_cMagicWeapon = 0;
+        if (m_pSkinMesh->m_pSwingEffect[1] && m_sLeftIndex)
+            m_pSkinMesh->m_pSwingEffect[1]->m_cMagicWeapon = 1;
+        else if (m_pSkinMesh->m_pSwingEffect[1])
+            m_pSkinMesh->m_pSwingEffect[1]->m_cMagicWeapon = 0;
+    }
+    else
+    {
+        if (m_pSkinMesh->m_pSwingEffect[0])
+            m_pSkinMesh->m_pSwingEffect[0]->m_cMagicWeapon = 0;
+        if (m_pSkinMesh->m_pSwingEffect[1])
+            m_pSkinMesh->m_pSwingEffect[1]->m_cMagicWeapon = 0;
+    }
+
+    TMFieldScene* pFScene = nullptr;
+    if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+        pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    if (g_pCurrentScene->m_pMyHuman == this && pFScene)
+    {
+        pFScene->UpdateScoreUI(0);
+        if (!m_cOnlyMove)
+            SetSpeed(pFScene->m_bMountDead);
+    }
+    else if (!m_cOnlyMove)
+    {
+        SetSpeed(0);
+    }
 }
 
 void TMHuman::SetChatMessage(const char* szString)
