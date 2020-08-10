@@ -2669,7 +2669,7 @@ int TMGround::LoadTileMap(const char* szFileName)
         {
             for (int i3 = 113; i3 < 128; ++i3)
             {
-                for (int i4 = 0; i4 < 128; ++i4)
+                for (int i4 = 0; i4 < 16; ++i4)
                     m_pMaskData[i4][i3] = 127;
             }
         }
