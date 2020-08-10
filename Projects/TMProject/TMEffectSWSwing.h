@@ -5,6 +5,39 @@
 
 class TMEffectBillBoard;
 class TMSkinMesh;
+
+struct stSwingScale
+{
+    int nType;
+    float Scale;
+};
+
+static stSwingScale sSwingScale[22] =
+{
+  { 1,  1.0f },
+  { 2,  1.0f },
+  { 3,  1.0f },
+  { 11,  1.0f },
+  { 12,  1.0f },
+  { 13,  1.0f },
+  { 21,  1.0f },
+  { 22,  1.0f },
+  { 23,  1.0f },
+  { 31,  1.0f },
+  { 32,  1.0f },
+  { 33,  1.3f },
+  { 41,  1.0f },
+  { 51,  1.0f },
+  { 61,  1.0f },
+  { 62,  1.0f },
+  { 63,  1.0f },
+  { 101,  1.0f },
+  { 102,  1.0f },
+  { 103,  1.0f },
+  { 104,  1.0f },
+  { 105,  1.0f }
+};
+
 class TMEffectSWSwing : public TMEffect
 {
 public:
