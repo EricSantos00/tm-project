@@ -2678,7 +2678,933 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 			m_pMyHuman->SetChatMessage(istrText);
 		return 0;
 	}
-	// FREEDOM
+	if (idwControlID == E_CHAT && (idwEvent == 2 || idwEvent == 3))
+	{
+		char szText[128]{};
+		sprintf_s(szText, m_szLastChatList[m_sChatIndex]);
+
+		m_pEditChat->SetText(szText);
+		++m_sChatIndex;
+		m_sChatIndex %= 5;
+		return 0;
+	}
+	if (idwControlID == E_CHAT && (idwEvent == 4 || idwEvent == 5))
+	{
+		char szWhisperList[19]{};
+		sprintf(szWhisperList, "/%s ", m_szWhisperList[m_sWhisperIndex]);
+
+		m_pEditChat->SetText(szWhisperList);
+		++m_sWhisperIndex;
+		m_sWhisperIndex %= 5;
+		return 0;
+	}
+	if (idwControlID == E_CHAT && idwEvent == 6)
+	{
+		m_pEditChat->SetText((char*)"");
+		return 0;
+	}
+	if (idwControlID == B_MONEY)
+	{
+		if (m_pMyHuman->m_cDie == 1)
+			return 1;
+
+		auto pText = static_cast<SText*>(m_pControlContainer->FindControl(T_INPUT_GOLD));
+		auto pEdit = m_pControlContainer->FindControl(E_INPUT_GOLD);
+
+		if (m_pCargoPanel1->IsVisible() == 1)
+		{
+			m_nCoinMsgType = 0;
+			pText->SetText(g_pMessageStringTable[136], 0);
+			m_pControlContainer->SetFocusedControl(pEdit);
+			m_pInputGoldPanel->SetVisible(1);
+		}
+		if (m_pCargoPanel->IsVisible() == 1)
+		{
+			m_nCoinMsgType = 0;
+			pText->SetText(g_pMessageStringTable[136], 0);
+			m_pControlContainer->SetFocusedControl(pEdit);
+			m_pInputGoldPanel->SetVisible(1);
+		}
+		else if (m_pTradePanel->IsVisible() == 1)
+		{
+			if (g_pObjectManager->m_stTrade.TradeMoney > 0)
+				return 1;
+
+			m_nCoinMsgType = 1;
+			pText->SetText(g_pMessageStringTable[137], 0);
+			m_pControlContainer->SetFocusedControl(pEdit);
+			m_pInputGoldPanel->SetVisible(1);
+		}
+		else
+		{
+			m_pInputGoldPanel->SetVisible(0);
+		}
+
+		m_pChatSelectPanel->SetVisible(0);
+		return 0;
+	}
+	if (idwControlID == B_CARGO_MONEY)
+	{
+		if (m_pMyHuman->m_cDie == 1)
+			return 1;
+
+		if (!m_pAutoTrade || m_pAutoTrade->IsVisible() != 1)
+		{
+			auto pText = static_cast<SText*>(m_pControlContainer->FindControl(T_INPUT_GOLD));
+
+			if (m_pCargoPanel->IsVisible() == 1)
+			{
+				m_nCoinMsgType = 2;
+				pText->SetText(g_pMessageStringTable[138], 0);
+				m_pControlContainer->SetFocusedControl(m_pControlContainer->FindControl(E_INPUT_GOLD));
+				m_pInputGoldPanel->SetVisible(1);
+				m_pChatSelectPanel->SetVisible(0);
+			}
+		}
+		return 1;
+	}
+	if (idwControlID == B_IG_OK)
+	{
+		auto pInputText = static_cast<SEditableText*>(m_pControlContainer->FindControl(E_INPUT_GOLD));
+
+		char* inputText = pInputText->GetText();
+
+		int inputTextLen = strlen(inputText);
+
+		if (strcmp(inputText, "all"))
+		{
+			bool bFind = false;
+
+			for (int n = 0; n < inputTextLen; ++n)
+			{
+				if (inputText[n] < '0' || inputText[n] > '9')
+				{
+					bFind = true;
+					break;
+				}
+			}
+
+			for (int n = 0; n < inputTextLen; ++n)
+			{
+				if (inputText[n] == '%')
+					inputText[n] = '!';
+			}
+
+			long long nInputValue = _atoi64(pInputText->GetText());
+
+			if (strlen(pInputText->GetText()) <= 0)
+			{
+				m_pControlContainer->SetFocusedControl(pInputText);
+				return 1;
+			}
+
+			if (m_nCoinMsgType != 12 &&
+				m_nCoinMsgType != 11 &&
+				m_nCoinMsgType != 8 &&
+				m_nCoinMsgType != 3 &&
+				m_nCoinMsgType != 6)
+			{
+				if (bFind == true || nInputValue < 0 || nInputValue > g_pObjectManager->m_stMobData.Coin && !m_nCoinMsgType)
+				{
+					m_pMessagePanel->SetMessage(g_pMessageStringTable[34], 1000);
+					m_pMessagePanel->SetVisible(1, 1);
+					m_pControlContainer->SetFocusedControl(pInputText);
+					m_pChatSelectPanel->SetVisible(0);
+					return 1;
+				}
+			}
+
+			if (bFind == true && m_nCoinMsgType == 12)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[409], 1000);
+				m_pMessagePanel->SetVisible(1, 1);
+				m_pControlContainer->SetFocusedControl(pInputText);
+				return 1;
+			}
+
+			if (m_nCoinMsgType == 4 && nInputValue > 1999999999)
+			{
+				char istrMessage[128]{};
+
+				sprintf_s(istrMessage, g_pMessageStringTable[143], 2000000000);
+
+				m_pMessagePanel->SetMessage(istrMessage, 1000);
+				m_pMessagePanel->SetVisible(1, 1);
+
+				m_pControlContainer->SetFocusedControl(pInputText);
+				return 1;
+			}
+
+			switch (m_nCoinMsgType)
+			{
+			case 2:
+			{
+				MSG_STANDARDPARM stWithdraw{};
+
+				stWithdraw.Header.Type = MSG_Withdraw_Opcode;
+				stWithdraw.Header.ID = m_pMyHuman->m_dwID;
+				stWithdraw.Parm = static_cast<int>(nInputValue);
+				SendOneMessage((char*)&stWithdraw, sizeof(stWithdraw));
+			}
+			break;
+			case 0:
+			{
+				MSG_STANDARDPARM stDeposit{};
+
+				stDeposit.Header.Type = MSG_Deposit_Opcode;
+				stDeposit.Header.ID = m_pMyHuman->m_dwID;
+				stDeposit.Parm = static_cast<int>(nInputValue);
+				SendOneMessage((char*)&stDeposit, sizeof(stDeposit));
+			}
+			break;
+			case 1:
+			{
+				auto pMyCheckButton = static_cast<SButton*>(m_pControlContainer->FindControl(617u));
+				auto pOpCheckButton = static_cast<SButton*>(m_pControlContainer->FindControl(601u));
+
+				pMyCheckButton->m_bSelected = 0;
+				pOpCheckButton->m_bSelected = 0;
+
+				m_dwLastCheckTime = g_pApp->m_pTimerManager->GetServerTime();
+
+				g_pObjectManager->m_stTrade.MyCheck = pMyCheckButton->m_bSelected;
+				g_pObjectManager->m_stTrade.TradeMoney = static_cast<int>(nInputValue);
+				g_pObjectManager->m_stTrade.Header.Type = MSG_Trade_Opcode;
+
+				SendOneMessage((char*)&g_pObjectManager->m_stTrade, sizeof(g_pObjectManager->m_stTrade));
+
+				auto pMyGold = static_cast<SText*>(m_pControlContainer->FindControl(619u));
+
+				char szText[11]{};
+
+				sprintf_s(szText, "%10lld", nInputValue);
+
+				pMyGold->SetText(szText, 0);
+			}
+			break;
+			case 3:
+			{
+				auto pATradeTitle = (SText*)m_pControlContainer->FindControl(TMT_ATRADE_TITLE);
+				auto pATradeName = (SText*)m_pControlContainer->FindControl(TMT_ATRADE_ID);
+
+				if (pATradeTitle)
+				{
+					pATradeTitle->SetText(pInputText->GetText(), 0);
+				}
+
+				pATradeName->SetText(m_pMyHuman->m_szName, 1);
+
+				m_stAutoTrade.TargetID = m_pMyHuman->m_dwID;
+
+				sprintf_s(m_stAutoTrade.Desc, "%s", pInputText->GetText());
+
+				if (m_pInputBG2)
+					m_pInputBG2->SetVisible(0);
+
+				pInputText->m_nMaxStringLen = 10;
+
+				for (int i = 0; i < 10; ++i)
+				{
+					SGridControlItem* pAutoTradeItem = m_pGridAutoTrade[i]->PickupAtItem(0, 0);
+
+					auto pCargoItem = m_pCargoGrid->GetAtItem(m_stAutoTrade.CarryPos[i] % 5, m_stAutoTrade.CarryPos[i] / 5);
+
+					if (pCargoItem)
+						pCargoItem->m_GCObj.dwColor = -1;
+
+					if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pAutoTradeItem)
+						g_pCursor->m_pAttachedItem = nullptr;
+
+					if (pAutoTradeItem)
+					{
+						delete pAutoTradeItem;
+
+						pAutoTradeItem = nullptr;
+					}
+				}
+				SetVisibleAutoTrade(1, 1);
+			}
+			break;
+			case 11:
+			{
+				sprintf_s(m_stPass, "%s", pInputText->GetText());
+
+				m_pitemPassGrid->SellItem2();
+
+				memset(m_stPass, 0, sizeof(m_stPass));
+			}
+			break;
+			case 4:
+			{
+				if (m_nLastAutoTradePos >= 0)
+				{
+					for (int j = 0; j < 10; ++j)
+					{
+						SGridControl* pParent = m_pGridAutoTrade[j];
+						SGridControlItem* pAutoTradeItem = pParent->GetAtItem(0, 0);
+
+						SGridControl* pCargoGrid = m_pCargoGridList[m_nLastAutoTradePos / 40];
+						SGridControlItem* pCargoItem = pCargoGrid->GetAtItem(m_nLastAutoTradePos % 40 % 5, m_nLastAutoTradePos % 40 / 5);
+
+						if (!pAutoTradeItem)
+						{
+							if (!pCargoItem)
+								return 1;
+
+							auto pItem = new STRUCT_ITEM();
+
+							memcpy(pItem, pCargoItem->m_pItem, sizeof(STRUCT_ITEM));
+
+							pParent->AddItem(new SGridControlItem(pParent, pItem, 0.0f, 0.0f), 0, 0);
+
+							pCargoItem->m_GCObj.dwColor = 0xFFFF0000;
+
+							m_stAutoTrade.CarryPos[j] = m_nLastAutoTradePos;
+							m_stAutoTrade.TradeMoney[j] = static_cast<int>(nInputValue);
+
+							memcpy(&m_stAutoTrade.Item[j], pItem, sizeof(STRUCT_ITEM));
+
+							pParent->m_nTradeMoney = static_cast<int>(nInputValue);
+							break;
+						}
+
+						if (pAutoTradeItem && j == 11)
+						{
+							m_pMessagePanel->SetMessage(g_pMessageStringTable[1], 2000);
+							m_pMessagePanel->SetVisible(1, 1);
+
+							pCargoItem->m_GCObj.dwColor = 0xFFFFFFFF;
+						}
+					}
+					m_nLastAutoTradePos = -1;
+				}
+			}
+			break;
+			case 6:
+				SendCapsuleItem();
+				break;
+			case 7:
+			{
+				MSG_STANDARDPARM stPacket{};
+
+				stPacket.Header.Type = 977;
+				stPacket.Header.ID = m_pMyHuman->m_dwID;
+				stPacket.Parm = static_cast<int>(nInputValue);
+				SendOneMessage((char*)&stPacket, sizeof(stPacket));
+			}
+			break;
+			case 8:
+			{
+				char str2[128]{};
+
+				sprintf_s(str2, "%s %s", m_pPGTOver->m_szName, inputText);
+
+				MSG_MessageWhisper stMessageWhisper{};
+
+				stMessageWhisper.Header.ID = g_pObjectManager->m_dwCharID;
+				stMessageWhisper.Header.Type = MSG_MessageWhisper_Opcode;
+				sprintf_s(stMessageWhisper.MobName, "subcreate");
+				sprintf_s(stMessageWhisper.String, "%s", str2);
+
+				if (strlen(str2) >= 16)
+				{
+					str2[15] = 0;
+					str2[14] = 0;
+				}
+
+				if (!CheckGuildName(stMessageWhisper.String, 1))
+				{
+					m_pMessagePanel->SetMessage(g_pMessageStringTable[370], 2000);
+					m_pMessagePanel->SetVisible(1, 1);
+					return 1;
+				}
+				if (m_szWhisperList[0][0])
+				{
+					if (strcmp((char*)m_szWhisperList, str2) != 0)
+					{
+						for (int i = 4; i > 0; --i)
+							memcpy(m_szWhisperList[i], m_szWhisperList[i - 1], 16);
+
+						sprintf_s(m_szWhisperList[0], "%s", str2);
+					}
+				}
+				else
+				{
+					for (int i = 0; i < 5; ++i)
+						sprintf_s(m_szWhisperList[i], "%s", str2);
+				}
+				m_sWhisperIndex = 0;
+
+				char* text = pInputText->GetText();
+
+				if (text[strlen(str2) + 1])
+				{
+					sprintf(stMessageWhisper.String, "%s", &text[strlen(str2) + 2]);
+				}
+
+				BASE_TransCurse(stMessageWhisper.String);
+				pInputText->SetText((char*)"");
+				SendOneMessage((char*)&stMessageWhisper, sizeof(stMessageWhisper));
+			}
+			break;
+			case 9:
+			{
+				MSG_STANDARDPARM stPacket{};
+
+				stPacket.Header.Type = 0xED7;
+				stPacket.Header.ID = m_pMyHuman->m_dwID;
+				stPacket.Parm = static_cast<int>(nInputValue);
+				SendOneMessage((char*)&stPacket, sizeof(stPacket));
+			}
+			break;
+			case 10:
+			{
+				MSG_STANDARDPARM stPacket{};
+
+				stPacket.Header.Type = 0xED8;
+				stPacket.Header.ID = m_pMyHuman->m_dwID;
+				stPacket.Parm = static_cast<int>(nInputValue);
+				SendOneMessage((char*)&stPacket, sizeof(stPacket));
+			}
+			break;
+			case 12:
+			{
+				int nItemAmount = BASE_GetItemAmount(SGridControl::m_pSellItem->m_pItem);
+
+				if (nInputValue >= nItemAmount)
+				{
+					m_pControlContainer->SetFocusedControl(nullptr);
+					m_pInputGoldPanel->SetVisible(0);
+					pInputText->SetText((char*)"");
+					return 0;
+				}
+
+				if (m_pGridInv->CheckType(
+					SGridControl::m_pSellItem->m_pGridControl->m_eItemType,
+					SGridControl::m_pSellItem->m_pGridControl->m_eGridType) != 1)
+				{
+					return 1;
+				}
+
+				int pos = SGridControl::m_pSellItem->m_nCellIndexX + 5 * SGridControl::m_pSellItem->m_nCellIndexY;
+				int page = 15 * (SGridControl::m_pSellItem->m_pGridControl->m_dwControlID - 67072);
+
+				if (page < 0 || page > 45)
+					page = 0;
+
+				pos += page;
+
+				MSG_STANDARDPARM3 stPacket{};
+
+				stPacket.Header.Type = MSG_SplitItem_Opcode;
+				stPacket.Header.ID = m_pMyHuman->m_dwID;
+				stPacket.Parm1 = pos;
+				stPacket.Parm2 = SGridControl::m_pSellItem->m_pItem->sIndex;
+				stPacket.Parm3 = static_cast<int>(nInputValue);
+				SendOneMessage((char*)&stPacket, sizeof(stPacket));
+			}
+			break;
+			}
+
+			m_pControlContainer->SetFocusedControl(0);
+			m_pInputGoldPanel->SetVisible(0);
+
+			pInputText->SetText((char*)"");
+
+			if (g_nKeyType == 1)
+				m_pControlContainer->SetFocusedControl(m_pEditChat);
+		}
+		else
+		{
+			char szText[11]{};
+
+			if (!m_nCoinMsgType || m_nCoinMsgType == 1 || m_nCoinMsgType == 7)
+			{
+				sprintf_s(szText, "%d", g_pObjectManager->m_stMobData.Coin);
+
+				pInputText->SetText(szText);
+			}
+			else if (m_nCoinMsgType == 2)
+			{
+				sprintf_s(szText, "%d", g_pObjectManager->m_nCargoCoin);
+
+				pInputText->SetText(szText);
+			}
+		}
+
+		return 1;
+	}
+	if (idwControlID == E_INPUT_GOLD)
+	{
+		if (m_pMyHuman->m_cDie == 1 || m_nCoinMsgType == 5)
+			return 1;
+
+		OnControlEvent(B_IG_OK, 0);
+		return 1;
+	}
+	if (idwControlID == B_IG_CANCEL)
+	{
+		SetInVisibleInputCoin();
+		return 0;
+	}
+	if (idwControlID == B_INV_CLOSE)
+	{
+		SetVisibleInventory();
+
+		auto pEquipBtn = static_cast<SButton*>(m_pControlContainer->FindControl(B_EQUIP));
+
+		pEquipBtn->SetSelected(m_pInvenPanel->m_bVisible);
+
+		if (g_nKeyType == 1)
+			m_pControlContainer->SetFocusedControl(m_pEditChat);
+
+		return 0;
+	}
+	if (idwControlID == B_CHAR_CLOSE)
+	{
+		SetVisibleCharInfo();
+
+		auto pCharBtn = static_cast<SButton*>(m_pControlContainer->FindControl(B_CHAR));
+
+		pCharBtn->SetSelected(m_pCPanel->m_bVisible);
+
+		if (g_nKeyType == 1)
+			m_pControlContainer->SetFocusedControl(m_pEditChat);
+
+		return 0;
+	}
+	if (idwControlID == B_SKILL_CLOSE)
+	{
+		SetVisibleSkill();
+
+		if (g_nKeyType == 1)
+			m_pControlContainer->SetFocusedControl(m_pEditChat);
+
+		return 0;
+	}
+	if (idwControlID == B_CHAR)
+	{
+		auto pATradePanel = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_ATRADE_PANEL));
+
+		if (pATradePanel && pATradePanel->IsVisible())
+			return 1;
+
+		if (m_pShopPanel->IsVisible() == 1)
+			return 1;
+
+		if (m_pTradePanel->IsVisible() != 1)
+		{
+			auto pCharBtn = static_cast<SButton*>(m_pControlContainer->FindControl(B_CHAR));
+
+			pCharBtn->SetSelected(pCharBtn->m_bSelected == 0);
+
+			SetVisibleCharInfo();
+
+			return 0;
+		}
+
+		return 1;
+	}
+	if (idwControlID == B_EQUIP)
+	{
+		auto pEquipBtn = static_cast<SButton*>(m_pControlContainer->FindControl(B_EQUIP));
+
+		pEquipBtn->SetSelected(pEquipBtn->m_bSelected == 0);
+
+		SetVisibleInventory();
+		return 0;
+	}
+	if (idwControlID == B_CCMODE_SYSTEM)
+	{
+		if (m_pccmode->IsVisible())
+		{
+			m_pccmode->SetVisible(0);
+		}
+		else
+		{
+			m_pccmode->SetVisible(1);
+
+			char szText[128]{};
+
+			sprintf_s(szText, g_pMessageStringTable[476], g_GameAuto_hpValue, g_GameAuto_mountValue);
+
+			auto pChatItem = new SListBoxItem(szText, 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+
+			if (pChatItem)
+				m_pChatList->AddItem(pChatItem);
+		}
+
+		return 0;
+	}
+	if (idwControlID == B_CCMODE_DLG_MOUNT)
+	{
+		g_GameAuto_mountValue += 10;
+
+		if (g_GameAuto_mountValue > 90)
+			g_GameAuto_mountValue = 30;
+
+		char szText[128]{};
+
+		if (g_GameAuto_mountValue)
+			sprintf_s(szText, g_pMessageStringTable[478], g_GameAuto_mountValue);
+		else
+			sprintf_s(szText, g_pMessageStringTable[477]);
+
+		auto pChatItem = new SListBoxItem(szText, 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+
+		if (pChatItem)
+			m_pChatList->AddItem(pChatItem);
+
+		sprintf_s(szText, "%d%%", g_GameAuto_mountValue);
+
+		m_pCCModeMountSte->SetText(szText, 0);
+
+		return 0;
+	}
+	if (idwControlID == B_CCMODE_DLG_HP)
+	{
+		g_GameAuto_hpValue += 10;
+
+		if (g_GameAuto_hpValue > 90)
+			g_GameAuto_hpValue = 0;
+
+		char szText[128]{};
+
+		if (g_GameAuto_hpValue)
+			sprintf_s(szText, g_pMessageStringTable[480], g_GameAuto_hpValue);
+		else
+			sprintf_s(szText, g_pMessageStringTable[479]);
+
+		auto pChatItem = new SListBoxItem(szText, 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+
+		if (pChatItem)
+			m_pChatList->AddItem(pChatItem);
+
+		sprintf_s(szText, "%d%%", g_GameAuto_hpValue);
+
+		m_pCCModeHpSte->SetText(szText, 0);
+		return 0;
+	}
+	if (idwControlID == B_CCMODE_DLG_MODE)
+	{
+		if (++g_GameAuto > 3)
+			g_GameAuto = 0;
+
+		switch (g_GameAuto)
+		{
+		case 0:
+			m_pMGameAutoBtn->SetTextureSetIndex(458);
+			m_pMGameAutoBtn->m_pAltText->SetText(g_UIString[229], 0);
+			break;
+		case 1:
+			m_pMGameAutoBtn->SetTextureSetIndex(455);
+			m_pMGameAutoBtn->m_pAltText->SetText(g_UIString[226], 0);
+			break;
+		case 2:
+			m_pMGameAutoBtn->SetTextureSetIndex(456);
+			m_pMGameAutoBtn->m_pAltText->SetText(g_UIString[227], 0);
+			break;
+		case 3:
+			m_pMGameAutoBtn->SetTextureSetIndex(459);
+			m_pMGameAutoBtn->m_pAltText->SetText(g_UIString[230], 0);
+			break;
+		}
+
+		return 0;
+	}
+	if (idwControlID == P_CARGO_PANEL)
+	{
+		OnKeyPlus(43, 0);
+		return 0;
+	}
+	if (idwControlID == T_CARGO_CAPTION)
+	{
+		// TODO
+		return 0;
+	}
+	if (idwControlID == B_CHAT_SELECT)
+	{
+		if (m_pChatListPanel->IsVisible())
+			m_pChatListPanel->SetVisible(0);
+		else
+			m_pChatListPanel->SetVisible(1);
+
+		return 0;
+	}
+	if (idwControlID >= B_CHAT_SELECT_NOMAL && idwControlID <= B_CHAT_SELECT_SHOUT)
+	{
+		auto pBtn = static_cast<SButton*>(m_pControlContainer->FindControl(idwControlID));
+
+		switch (idwControlID)
+		{
+		case B_CHAT_SELECT_NOMAL:
+			strcpy(m_cChatType, "");
+			break;
+		case B_CHAT_SELECT_WHISPER:
+			sprintf(m_cChatType, "/%s ", m_cWhisperName);
+			break;
+		case B_CHAT_SELECT_PARTY:
+			strcpy(m_cChatType, "=");
+			break;
+		case B_CHAT_SELECT_GUILD:
+			strcpy(m_cChatType, "-");
+			break;
+		case B_CHAT_SELECT_GUILD2:
+			strcpy(m_cChatType, "--");
+			break;
+		case B_CHAT_SELECT_CITY:
+			strcpy(m_cChatType, "@@");
+			break;
+		case B_CHAT_SELECT_KINGDOM:
+			strcpy(m_cChatType, "@");
+			break;
+		case B_CHAT_SELECT_SHOUT:
+			char src[128]{};
+			sprintf(src, "/%s ", g_pMessageStringTable[389]);
+			strcpy(m_cChatType, src);
+			break;
+		}
+
+		strcpy(m_cChatSelect, pBtn->m_GCPanel.strString);
+
+		auto pChatSelectBtn = static_cast<SButton*>(m_pControlContainer->FindControl(B_CHAT_SELECT));
+
+		pChatSelectBtn->SetText(pBtn->m_GCPanel.strString);
+
+		m_pChatListPanel->SetVisible(0);
+
+		m_pEditChat->SetText(m_cChatType);
+
+		return 0;
+	}
+	if (idwControlID == B_INV_PAGE1)
+	{
+		m_bJPNBag[0] = 1;
+		m_bJPNBag[3] = 0;
+		m_bJPNBag[2] = 0;
+		m_bJPNBag[1] = 0;
+		m_pGridInvList[0]->SetVisible(0);
+		m_pGridInvList[1]->SetVisible(0);
+		m_pGridInvList[2]->SetVisible(0);
+		m_pGridInvList[3]->SetVisible(0);
+		m_pGridInv = m_pGridInvList[0];
+		m_pGridInv->SetVisible(1);
+		m_pInvPageBtn1->SetTextureSetIndex(527);
+		m_pInvPageBtn2->SetTextureSetIndex(528);
+
+		if (g_pObjectManager->m_stMobData.Carry[60].sIndex == 3467)
+			m_pInvPageBtn3->SetTextureSetIndex(528);
+		else
+			m_pInvPageBtn3->SetTextureSetIndex(549);
+
+		if (g_pObjectManager->m_stMobData.Carry[61].sIndex == 3467)
+			m_pInvPageBtn4->SetTextureSetIndex(528);
+		else
+			m_pInvPageBtn4->SetTextureSetIndex(549);
+
+		return 0;
+	}
+	if (idwControlID == B_INV_PAGE2)
+	{
+		m_bJPNBag[1] = 1;
+		m_bJPNBag[3] = 0;
+		m_bJPNBag[2] = 0;
+		m_bJPNBag[0] = 0;
+		m_pGridInvList[0]->SetVisible(0);
+		m_pGridInvList[1]->SetVisible(0);
+		m_pGridInvList[2]->SetVisible(0);
+		m_pGridInvList[3]->SetVisible(0);
+		m_pGridInv = m_pGridInvList[1];
+		m_pGridInv->SetVisible(1);
+		m_pInvPageBtn1->SetTextureSetIndex(528);
+		m_pInvPageBtn2->SetTextureSetIndex(527);
+
+		if (g_pObjectManager->m_stMobData.Carry[60].sIndex == 3467)
+			m_pInvPageBtn3->SetTextureSetIndex(528);
+		else
+			m_pInvPageBtn3->SetTextureSetIndex(549);
+
+		if (g_pObjectManager->m_stMobData.Carry[61].sIndex == 3467)
+			m_pInvPageBtn4->SetTextureSetIndex(528);
+		else
+			m_pInvPageBtn4->SetTextureSetIndex(549);
+
+		return 0;
+	}
+	if (idwControlID == B_INV_PAGE3)
+	{
+		m_bJPNBag[2] = 1;
+		m_bJPNBag[3] = 0;
+		m_bJPNBag[1] = 0;
+		m_bJPNBag[0] = 0;
+		m_pGridInvList[0]->SetVisible(0);
+		m_pGridInvList[1]->SetVisible(0);
+		m_pGridInvList[2]->SetVisible(0);
+		m_pGridInvList[3]->SetVisible(0);
+		m_pGridInv = m_pGridInvList[2];
+		m_pGridInv->SetVisible(1);
+		m_pInvPageBtn1->SetTextureSetIndex(528);
+		m_pInvPageBtn2->SetTextureSetIndex(528);
+
+		if (g_pObjectManager->m_stMobData.Carry[60].sIndex == 3467)
+			m_pInvPageBtn3->SetTextureSetIndex(527);
+		else
+			m_pInvPageBtn3->SetTextureSetIndex(548);
+
+		if (g_pObjectManager->m_stMobData.Carry[61].sIndex == 3467)
+			m_pInvPageBtn4->SetTextureSetIndex(528);
+		else
+			m_pInvPageBtn4->SetTextureSetIndex(549);
+
+		return 0;
+	}
+	if (idwControlID == B_INV_PAGE4)
+	{
+		m_bJPNBag[3] = 1;
+		m_bJPNBag[2] = 0;
+		m_bJPNBag[1] = 0;
+		m_bJPNBag[0] = 0;
+		m_pGridInvList[0]->SetVisible(0);
+		m_pGridInvList[1]->SetVisible(0);
+		m_pGridInvList[2]->SetVisible(0);
+		m_pGridInvList[3]->SetVisible(0);
+		m_pGridInv = m_pGridInvList[3];
+		m_pGridInv->SetVisible(1);
+		m_pInvPageBtn1->SetTextureSetIndex(528);
+		m_pInvPageBtn2->SetTextureSetIndex(528);
+
+		if (g_pObjectManager->m_stMobData.Carry[60].sIndex == 3467)
+			m_pInvPageBtn3->SetTextureSetIndex(528);
+		else
+			m_pInvPageBtn3->SetTextureSetIndex(549);
+
+		if (g_pObjectManager->m_stMobData.Carry[61].sIndex == 3467)
+			m_pInvPageBtn4->SetTextureSetIndex(527);
+		else
+			m_pInvPageBtn4->SetTextureSetIndex(548);
+
+		return 0;
+	}
+	if (idwControlID == B_CARGO_PAGE1)
+	{
+		m_pCargoGridList[0]->SetVisible(0);
+		m_pCargoGridList[1]->SetVisible(0);
+		m_pCargoGridList[2]->SetVisible(0);
+		m_pCargoGrid = m_pCargoGridList[0];
+		m_pCargoGrid->SetVisible(1);
+		m_pStorePageBtn1->SetTextureSetIndex(532);
+		m_pStorePageBtn2->SetTextureSetIndex(533);
+		m_pStorePageBtn3->SetTextureSetIndex(535);
+		return 0;
+	}
+	if (idwControlID == B_CARGO_PAGE2)
+	{
+		m_pCargoGridList[0]->SetVisible(0);
+		m_pCargoGridList[1]->SetVisible(0);
+		m_pCargoGridList[2]->SetVisible(0);
+		m_pCargoGrid = m_pCargoGridList[1];
+		m_pCargoGrid->SetVisible(1);
+		m_pStorePageBtn1->SetTextureSetIndex(531);
+		m_pStorePageBtn2->SetTextureSetIndex(534);
+		m_pStorePageBtn3->SetTextureSetIndex(535);
+		return 0;
+	}
+	if (idwControlID == B_CARGO_PAGE3)
+	{
+		m_pCargoGridList[0]->SetVisible(0);
+		m_pCargoGridList[1]->SetVisible(0);
+		m_pCargoGridList[2]->SetVisible(0);
+		m_pCargoGrid = m_pCargoGridList[2];
+		m_pCargoGrid->SetVisible(1);
+		m_pStorePageBtn1->SetTextureSetIndex(531);
+		m_pStorePageBtn2->SetTextureSetIndex(533);
+		m_pStorePageBtn3->SetTextureSetIndex(536);
+		return 0;
+	}
+	if (idwControlID == P_CCMODE_DLG_PONT)
+	{
+		int posX = 0;
+		int posY = 0;
+
+		if (++m_AutoPostionUse >= 3)
+			m_AutoPostionUse = 0;
+
+		if (m_AutoPostionUse == 0)
+		{
+			m_pSetType->SetTextureSetIndex(463);
+			m_pSetType->m_pAltText->SetText(g_UIString[232], 0);
+		}
+		else if (m_AutoPostionUse == 1)
+		{
+			m_pSetType->SetTextureSetIndex(464);
+
+			posX = static_cast<int>(m_pMyHuman->m_vecPosition.x);
+			posY = static_cast<int>(m_pMyHuman->m_vecPosition.y);
+
+			m_pSetType->m_pAltText->SetText(g_UIString[233], 0);
+		}
+		else if (m_AutoPostionUse == 2)
+		{
+			m_pSetType->SetTextureSetIndex(465);
+			m_pSetType->m_pAltText->SetText((char*)"", 0);
+		}
+
+		m_AutoStartPointX = posX;
+		m_AutoStartPointY = posY;
+
+		return 0;
+	}
+	if (idwControlID == TMB_MINIMAP)
+	{
+		SetVisibleMiniMap();
+		return 0;
+	}
+	if (idwControlID == B_SYSTEM)
+	{
+		m_pSystemPanel->SetVisible(1);
+		g_pCursor->DetachItem();
+		return 1;
+	}
+	if (idwControlID == TMB_CAMERABTN)
+	{
+		SetCameraView();
+		return 1;
+	}
+	if (idwControlID == TMB_PKBTN)
+	{
+		SetPK();
+		return 1;
+	}
+	if (idwControlID == TMB_NAMEBTN)
+	{
+		SetVisibleNameLabel();
+		return 1;
+	}
+	if (idwControlID == TMB_AUTOTARGETBTN)
+	{
+		SetAutoTarget();
+		return 1;
+	}
+	if (idwControlID == TMB_HPOTION)
+	{
+		UseHPotion();
+		return 1;
+	}
+	if (idwControlID == TMB_MPOTION)
+	{
+		UseMPotion();
+		return 1;
+	}
+	if (idwControlID == TMB_PPOTION)
+	{
+		UsePPotion();
+		return 1;
+	}
+	if (idwControlID == TMB_PARTY_AUTOOK)
+	{
+		m_bAutoParty = m_bAutoParty == 0;
+		return 1;
+	}
 	if (idwControlID == TMB_MSG_OK)
 	{
 		m_pMsgPanel->SetVisible(0);
