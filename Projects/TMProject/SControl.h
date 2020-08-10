@@ -531,7 +531,7 @@ public:
     SListBoxItem* GetItem(int inItemIndex);
     void Empty();
     void SetStartItemIndex(int nIndex);
-    int GetSelectIndex();
+    int GetSelectedIndex();
     void SetSelectedIndex(int nIndex);
     void SetSize(float nWidth, float nHeight) override;
     void SetPickSize(float nWidth, float nHeight);

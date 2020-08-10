@@ -2405,7 +2405,7 @@ void SListBox::Empty()
 		m_pScrollBar->SetMaxValue(m_nNumItem);
 }
 
-int SListBox::GetSelectIndex()
+int SListBox::GetSelectedIndex()
 {
 	return m_nSelectedItem;
 }

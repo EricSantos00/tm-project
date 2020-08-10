@@ -27,6 +27,7 @@ struct MSG_STANDARD
 constexpr auto MSG_RequestCapsuleInfo_Opcode = 0x2CD;
 constexpr auto MSG_DelayStart_Opcode = 0x3AE;
 constexpr auto MSG_UseDeclarationOfWar_Opcode = 0xED7;
+constexpr auto MSG_SysQuit_Opcode = 0x3AE;
 struct MSG_STANDARDPARM
 {
 	MSG_STANDARD Header;
@@ -35,6 +36,7 @@ struct MSG_STANDARDPARM
 
 constexpr auto MSG_DeleteItem_Opcode = 0x2E4;
 constexpr auto MSG_DoJackpotBet_Opcode = 0x2BE;
+constexpr auto MSG_InviteGuild_Opcode = 0x3D5;
 struct MSG_STANDARDPARM2
 {
 	MSG_STANDARD Header;
@@ -857,6 +859,7 @@ struct MSG_Encode
 	int Parm[42];
 };
 
+constexpr auto MSG_MessageChat_Opcode = 0x333;
 struct MSG_MessageChat
 {
 	MSG_STANDARD Header;
@@ -1118,6 +1121,39 @@ struct MSG_AttackOne
 	int CurrentMp;
 	short SkillIndex;
 	STRUCT_DAM Dam[1];
+};
+
+struct PARTY
+{
+	char Class;
+	char PartyIndex;
+	short Level;
+	short MaxHp;
+	short Hp;
+	unsigned short ID;
+	char Name[16];
+};
+
+constexpr auto MSG_REQParty_Opcode = 0x37F;
+struct MSG_REQParty
+{
+	MSG_STANDARD Header;
+	PARTY Leader;
+	int TargetID;
+};
+
+struct MSG_AddParty
+{
+	MSG_STANDARD Header;
+	PARTY Party;
+};
+
+constexpr auto MSG_CNFParty2_Opcode = 0x3AB;
+struct MSG_CNFParty2
+{
+	MSG_STANDARD Header;
+	short LeaderID;
+	char LeaderName[16];
 };
 
 static int g_pDistanceTable[7][7] =
@@ -2206,6 +2242,9 @@ int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char type);
 unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue);
 void BASE_SetItemAmount(STRUCT_ITEM* item, int amount);
 int BASE_GetMobAbility(STRUCT_MOB* mob, char Type);
+char BASE_CheckChatValid(char* Chat);
+char CheckGuildName(char* GuildName, bool bSubguild);
+void BASE_GetHitPosition(int sx, int sy, int* tx, int* ty, char* pHeight, int MH);
 
 int IsPassiveSkill(int nSkillIndex);
 

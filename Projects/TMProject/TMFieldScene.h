@@ -254,6 +254,8 @@ private:
 	int MouseClick_QuestNPC(unsigned int dwServerTime, TMHuman* pOver);
 	void NewCCMode();
 	
+	void InsertInChatList(SListBox* pChatList, STRUCT_MOB* pMobData, SEditableText* pEditChat, unsigned int dwColor, int colorId, unsigned int startId);
+
 public:
 	int m_bAirMove;
 	int m_nOldMountSkinMeshType;

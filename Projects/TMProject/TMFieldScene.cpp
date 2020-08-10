@@ -2088,7 +2088,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 	}
 	else if (idwControlID == E_CHAT && idwEvent == 8)
 		return 1;
-	else if (idwControlID == TMB_HELLSTORE_OK)
+	if (idwControlID == TMB_HELLSTORE_OK)
 	{
 		if (!m_pMessageBox->IsVisible())
 		{
@@ -2098,7 +2098,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 		}
 		return 1;
 	}
-	else if (idwControlID >= TMB_HELLSTORE_SELECT_1 && idwControlID <= TMB_HELLSTORE_SELECT_4)
+	if (idwControlID >= TMB_HELLSTORE_SELECT_1 && idwControlID <= TMB_HELLSTORE_SELECT_4)
 	{
 		switch (idwControlID)
 		{
@@ -2136,7 +2136,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 		}
 		return 1;
 	}
-	else if (idwControlID >= TMB_GAMBLE_LEFTX2 && idwControlID <= TMB_GAMBLE_RIGHT)
+	if (idwControlID >= TMB_GAMBLE_LEFTX2 && idwControlID <= TMB_GAMBLE_RIGHT)
 	{
 		switch (idwControlID)
 		{
@@ -2178,7 +2178,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 		m_pMoney3->SetText(szText, 0);
 		return 1;
 	}
-	else if (idwControlID == TMB_GAMBLE_START)
+	if (idwControlID == TMB_GAMBLE_START)
 	{
 		if (m_pReelPanel2->m_dwStopTime || m_pReelPanel2->m_bRoling == 1)
 			return 1;
@@ -2232,11 +2232,2213 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 		}
 		return 1;
 	}
-	else if (idwControlID == TMB_GAMBLE_QUIT)
+	if (idwControlID == TMB_GAMBLE_QUIT)
 	{
 		SetVisibleGamble(0, 0);
+		return 0;
+	}
+	if (idwControlID == E_CHAT && !idwEvent)
+	{
+		auto pEditChat = m_pEditChat;
+		if (!strlen(pEditChat->GetText()))
+		{
+			if (!g_nKeyType)
+			{
+				m_pEditChatPanel->SetVisible(0);
+				m_pChatPanel->SetVisible(1);
+				m_pControlContainer->SetFocusedControl(0);
+			}
+			return 1;
+		}
+
+		unsigned int dwLastChatTime = m_dwLastChatTime[3];
+		m_dwLastChatTime[3] = m_dwLastChatTime[2];
+		m_dwLastChatTime[2] = m_dwLastChatTime[1];
+		m_dwLastChatTime[1] = m_dwLastChatTime[0];
+		m_dwLastChatTime[0] = dwServerTime;
+
+		char istrText[128]{};
+
+		if (dwServerTime - dwLastChatTime < 4000)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[33], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			pEditChat->SetText((char*)"");
+			m_pControlContainer->SetFocusedControl(0);
+			return 1;
+		}
+
+		if (m_szLastChatList[0][0])
+		{
+			if (strcmp(m_szLastChatList[0], pEditChat->GetText()))
+			{
+				for (int j = 4; j > 0; --j)
+					memcpy(m_szLastChatList[j], m_szLastChatList[j - 1], 128);
+
+				sprintf(m_szLastChatList[0], "%s", pEditChat->GetText());
+			}
+		}
+		else
+		{
+			for (int k = 0; k < 5; ++k)
+			{
+				sprintf(m_szLastChatList[k], "%s", pEditChat->GetText());
+			}
+		}
+
+		m_sChatIndex = 0;
+
+		if (!strcmp(pEditChat->GetText(), g_pMessageStringTable[191]))
+		{
+			pEditChat->SetText((char*)"");
+			m_pControlContainer->SetFocusedControl(0);
+			return 1;
+		}
+		if (!strcmp(pEditChat->GetText(), "/help"))
+		{
+			OnKeyHelp(104, 0);
+			pEditChat->SetText((char*)"");
+			return 1;
+		}
+		if (!strcmp(pEditChat->GetText(), "effects"))
+		{
+			if (g_bHideEffect)
+			{
+				g_bHideEffect = 0;
+				g_bHideSkillBuffEffect = 1;
+				g_bHideSkillBuffEffect2 = 0;
+			}
+			else
+			{
+				g_bHideEffect = 1;
+				g_bHideSkillBuffEffect = 0;
+				g_bHideSkillBuffEffect2 = 1;
+			}
+
+			pEditChat->SetText((char*)"");
+			m_pControlContainer->SetFocusedControl(0);
+			return 1;
+		}
+		if (!strcmp(pEditChat->GetText(), "fps"))
+		{
+			g_pDevice->m_bDrawFPS = g_pDevice->m_bDrawFPS == 0;
+			pEditChat->SetText((char*)"");
+			m_pControlContainer->SetFocusedControl(0);
+			UpdateScoreUI(0);
+			return 1;
+		}
+		if (!strcmp(pEditChat->GetText(), "effect"))
+		{
+			g_pDevice->m_bShowEffects = g_pDevice->m_bShowEffects == 0;
+			pEditChat->SetText((char*)"");
+			m_pControlContainer->SetFocusedControl(0);
+			return 1;
+		}
+		if (!strcmp(pEditChat->GetText(), "exp"))
+		{
+			m_bShowExp = m_bShowExp == 0;
+			char str[128]{};
+			if (m_bShowExp)
+				sprintf(str, "Show Exp : OFF");
+			else
+				sprintf(str, "Show Exp : ON");
+
+			SysMsgChat(str);
+			return 1;
+		}
+
+		unsigned int idwFontColor = 0xFFFFAAAA;
+
+		char Chat[128]{};
+		sprintf(Chat, "%s", pEditChat->GetText());
+		if (!BASE_CheckChatValid(Chat))
+			pEditChat->SetText(g_pMessageStringTable[1521]);
+
+		auto pPartyList = m_pPartyList;
+		auto pChatList = m_pChatList;
+		int idx = 0;
+		switch (Chat[0])
+		{
+		case '-':
+		{
+			idwFontColor = 0xFFAAFFFF;
+			idx = 1;
+			int nStartIndex = 1;
+			if (Chat[1] == '-')
+			{
+				idwFontColor = 0xFF00FFFF;
+				nStartIndex = 2;
+				idx = 2;
+			}
+
+			InsertInChatList(pChatList, pMobData, pEditChat, idwFontColor, 3, nStartIndex);
+		}
+		break;
+		case '=':
+		{
+			if (pPartyList->m_nNumItem <= 0)
+			{
+				pEditChat->SetText((char*)"");
+				return 0;
+			}
+			idx = 2;
+			idwFontColor = 0xFFFF99FF;
+
+			InsertInChatList(pChatList, pMobData, pEditChat, idwFontColor, 1, 1);
+		}
+		break;
+		case '@':
+		{
+			idwFontColor = 0xFFAAFFFF;
+
+			int nStartIndex = 1;
+			if (Chat[1] == '@')
+			{
+				idwFontColor = 0xF0F60AFF;
+				idx = 3;
+				nStartIndex = 2;
+			}
+			else
+			{
+				idwFontColor = 0xFF00AAFF;
+				idx = 2;
+				nStartIndex = 1;
+			}
+
+			InsertInChatList(pChatList, pMobData, pEditChat, idwFontColor, 3, nStartIndex);
+
+		}
+		break;
+		case '/':
+		{
+			idx = 3;
+			char str1[128]{};
+			sscanf(Chat, "/%s", str1);
+
+			if (!strcmp(str1, "relo") || !strcmp(str1, g_pMessageStringTable[234]) || !strcmp(str1, "Relocate") || !strcmp(str1, "relocate"))
+			{
+				if (!m_pAutoTrade->IsVisible())
+				{
+					sscanf(Chat, "/%s %s", str1, m_szSummoner2);
+
+					m_cLastRelo = 2;
+					m_dwLastRelo = g_pTimerManager->GetServerTime();
+
+					pEditChat->SetText((char*)"");
+
+					m_pControlContainer->SetFocusedControl(0);
+					m_pEditChatPanel->SetVisible(0);
+					m_pChatPanel->SetVisible(0);
+				}
+				return 1;
+			}
+
+			idwFontColor = 0xFFFFFF00;
+
+			MSG_MessageWhisper stMsgWhisper{};
+			stMsgWhisper.Header.ID = g_pObjectManager->m_dwCharID;
+			stMsgWhisper.Header.Type = MSG_MessageWhisper_Opcode;
+
+			sprintf(stMsgWhisper.MobName, "%s", str1);
+			strcpy(m_cWhisperName, str1);
+
+			if (strlen(str1) >= 16)
+			{
+				str1[15] = 0;
+				str1[14] = 0;
+			}
+			if (m_szWhisperList[0][0])
+			{
+				if (strcmp(m_szWhisperList[0], str1))
+				{
+					for (int l = 4; l > 0; --l)
+						memcpy(m_szWhisperList[l], m_szWhisperList[l - 1], 16);
+
+					sprintf(m_szWhisperList[0], "%s", str1);
+				}
+			}
+			else
+			{
+				for (int m = 0; m < 5; ++m)
+					sprintf(m_szWhisperList[m], "%s", str1);
+			}
+
+			m_sWhisperIndex = 0;
+			auto pChatText = pEditChat->GetText();
+			char* str = &pChatText[strlen(str1) + 1];
+			if (str[0])
+			{
+				sprintf(stMsgWhisper.String, "%s", &pChatText[strlen(str1) + 2]);
+			}
+
+			BASE_TransCurse(stMsgWhisper.String);
+
+			if (!strcmp(str1, "summonguild"))
+			{
+				if (m_pMyHuman->m_fProgressRate < 0.89999998f && m_pMyHuman->m_fProgressRate > 0.0f)
+					return 1;
+
+				SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+			}
+			else if (!strcmp(str1, "king") || !strcmp(str1, "kingdom") || !strcmp(str1, "King") || !strcmp(str1, "Kingdom"))
+			{
+				if (m_pMyHuman->m_fProgressRate < 0.89999998f && m_pMyHuman->m_fProgressRate > 0.0f)
+					return 1;
+
+				m_stLastWhisper = stMsgWhisper;
+				m_cLastWhisper = 1;
+				m_dwLastWhisper = g_pTimerManager->GetServerTime();
+			}
+			else if (!strcmp(str1, g_pMessageStringTable[389]))
+			{
+				sprintf(stMsgWhisper.MobName, "%s", "spk");
+				strcpy(m_cWhisperName, g_pMessageStringTable[389]);
+				SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+			}
+			else if (!strcmp(str1, g_pMessageStringTable[386]))
+			{
+				if (m_pMyHuman->m_sGuildLevel)
+				{
+					m_pMessagePanel->SetMessage(g_pMessageStringTable[370], 2000);
+					m_pMessagePanel->SetVisible(1, 1);
+					return 1;
+				}
+				if (!CheckGuildName(stMsgWhisper.String, 0))
+				{
+					m_pMessagePanel->SetMessage(g_pMessageStringTable[370], 2000);
+					m_pMessagePanel->SetVisible(1, 1);
+					return 1;
+				}
+				sprintf(stMsgWhisper.MobName, "%s", "create");
+				SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+			}
+			else if (!strcmp(str1, g_pMessageStringTable[387]))
+			{
+				if (m_pMyHuman->m_sGuildLevel != 9 && (m_pMyHuman->m_sGuildLevel < 3 || m_pMyHuman->m_sGuildLevel > 8))
+				{
+					m_pMessagePanel->SetMessage(g_pMessageStringTable[373], 2000);
+					m_pMessagePanel->SetVisible(1, 1);
+					return 1;
+				}
+				sprintf(stMsgWhisper.MobName, "%s", "handover");
+				SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+			}
+			else if (!strcmp(str1, g_pMessageStringTable[391]))
+			{
+				sprintf(stMsgWhisper.MobName, "%s", "getout");
+				SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+			}
+			else if (!strcmp(str1, g_pMessageStringTable[390]))
+			{
+				sprintf(stMsgWhisper.MobName, "%s", "war");
+				SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+			}
+			else if (!strcmp(str1, "srv"))
+			{
+				return 1;
+			}
+			else if (!strcmp(str1, g_pMessageStringTable[496]))
+			{
+				sprintf(stMsgWhisper.MobName, "%s", "item_lock");
+				SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+			}
+			else if (!strcmp(str1, g_pMessageStringTable[497]))
+			{
+				sprintf(stMsgWhisper.MobName, "%s", "item_unlock");
+				SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+			}
+			else if (!strcmp(str1, "tab"))
+			{
+				if (m_pMyHuman->m_fProgressRate < 0.89999998f && m_pMyHuman->m_fProgressRate > 0.0f)
+					return 1;
+
+				if (!strcmp(m_pMyHuman->m_szNickName, stMsgWhisper.String))
+					return 1;
+
+				sprintf(g_TempNick, "%s", stMsgWhisper.String);
+
+				SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+			}
+			else
+				SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+
+			if (!strcmp(str1, "r") || !(strcmp(str1, "re")))
+			{
+				sprintf(str1, g_pMessageStringTable[61]);
+				sprintf(istrText, "[%s] [%s]> %s", &g_pObjectManager->m_stMobData, str1, stMsgWhisper.String);
+			}
+			else
+			{
+				sprintf(istrText, "[%s] : %s> %s", &g_pObjectManager->m_stMobData, str1, stMsgWhisper.String);
+			}
+
+			int len = strlen(istrText) + strlen(pMobData->MobName);
+			int maxLen = 55;
+			if (len <= maxLen)
+			{
+				auto ipNewItem = new SListBoxItem(istrText, idwFontColor, 0.0, 0.0, 300.0f, 16.0f, 0, 0x77777777, 1, 0);
+				if (ipNewItem && pChatList)
+					pChatList->AddItem(ipNewItem);
+			}
+			else
+			{
+				char dest[128]{};
+				char dest2[128]{};
+				if (IsClearString(stMsgWhisper.String, maxLen - 1))
+				{
+					strncpy(dest, stMsgWhisper.String, maxLen);
+					sprintf(dest2, "%s", &stMsgWhisper.String[maxLen]);
+				}
+				else
+				{
+					strncpy(dest, stMsgWhisper.String, maxLen - 1);
+					sprintf(dest2, "%s", &stMsgWhisper.MobName[maxLen + 15]);
+				}
+
+				auto ipNewItem = new SListBoxItem(istrText, idwFontColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0);
+				if (ipNewItem && pChatList)
+					pChatList->AddItem(ipNewItem);
+
+				auto ipNewItem2 = new SListBoxItem(dest2, idwFontColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0);
+				if (strlen(istrText) > maxLen && ipNewItem && pChatList)
+					pChatList->AddItem(ipNewItem);
+			}
+		}
+		break;
+		default:
+		{
+			idx = 0;
+			MSG_MessageChat stMsgChat{};
+			stMsgChat.Header.ID = g_pObjectManager->m_dwCharID;
+			stMsgChat.Header.Type = MSG_MessageChat_Opcode;
+
+			sprintf(stMsgChat.String, "%s", pEditChat->GetText());
+
+			BASE_TransCurse(stMsgChat.String);
+
+			pEditChat->SetText((char*)"");
+
+			SendOneMessage((char*)&stMsgChat, sizeof(stMsgChat));
+
+			int len = strlen(stMsgChat.String) + strlen(pMobData->MobName);
+			int maxLen = 40;
+			if (len <= maxLen)
+			{
+				sprintf(istrText, "[%s]> %s", pMobData->MobName, stMsgChat.String);
+
+				auto ipNewItem = new SListBoxItem(istrText, idwFontColor, 0.0, 0.0, 300.0f, 16.0f, 0, 0x77777777, 1, 0);
+				if (ipNewItem && pChatList)
+					pChatList->AddItem(ipNewItem);
+			}
+			else
+			{
+				char dest[128]{};
+				char dest2[128]{};
+				if (IsClearString(stMsgChat.String, maxLen - 1))
+				{
+					strncpy(dest, stMsgChat.String, maxLen);
+					dest[maxLen] = 0;
+					dest[maxLen + 1] = 0;
+					sprintf(dest2, "%s", &stMsgChat.String[maxLen]);
+				}
+				else
+				{
+					strncpy(dest, stMsgChat.String, maxLen - 1);
+					dest2[maxLen - 1] = 0;
+					sprintf(dest2, "%s", &stMsgChat.String[maxLen - 1]);
+				}
+
+				sprintf(istrText, "[%s]> %s", &g_pObjectManager->m_stMobData, dest);
+
+				auto ipNewItem = new SListBoxItem(istrText, idwFontColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0);
+				if (ipNewItem && pChatList)
+					pChatList->AddItem(ipNewItem);
+
+				auto ipNewItem2 = new SListBoxItem(dest2, idwFontColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0);
+				if (strlen(stMsgChat.String) > maxLen && ipNewItem && pChatList)
+					pChatList->AddItem(ipNewItem);
+			}
+
+			sprintf(istrText, "%s", stMsgChat.String);
+			if (stMsgChat.String[0] == '*')
+			{
+				m_pMyHuman->m_dwChatDelayTime = 10000;
+				sprintf(istrText, "%s", stMsgChat.String[1]);
+			}
+			else
+			{
+				m_pMyHuman->m_dwChatDelayTime = 3000;
+			}
+		}
+		break;
+		}
+
+		m_dwChatTime = g_pTimerManager->GetServerTime();
+		if (strncmp(Chat, "+set ", 4) && !idx)
+			m_pMyHuman->SetChatMessage(istrText);
+		return 0;
+	}
+	// FREEDOM
+	if (idwControlID == TMB_MSG_OK)
+	{
+		m_pMsgPanel->SetVisible(0);
+		m_pControlContainer->SetFocusedControl(0);
+		return 1;
+	}
+	if (idwControlID == B_AUTOTRADEBTN)
+	{
+		if (!m_pMyHuman->IsInTown())
+			return 1;
+
+		if (m_pAutoTrade && m_pAutoTrade->IsVisible() == 1)
+			SetVisibleAutoTrade(0, 0);
+		else
+			VisibleInputTradeName();
+		return 1;
+	}
+	if (idwControlID == B_CHAT_WHISPER)
+	{
+		MSG_MessageChat stMsgChat{};
+		stMsgChat.Header.ID = g_pObjectManager->m_dwCharID;
+		stMsgChat.Header.Type = MSG_MessageChat_Opcode;
+		sprintf(stMsgChat.String, "whisper");
+		SendOneMessage((char*)&stMsgChat, sizeof(stMsgChat));
+		return 1;
+	}
+	if (idwControlID == B_CHAT_PARTY)
+	{
+		MSG_MessageChat stMsgChat{};
+		stMsgChat.Header.ID = g_pObjectManager->m_dwCharID;
+		stMsgChat.Header.Type = MSG_MessageChat_Opcode;
+		sprintf(stMsgChat.String, "partychat");
+		SendOneMessage((char*)&stMsgChat, sizeof(stMsgChat));
+		return 1;
+	}
+	if (idwControlID == B_CHAT_KINGDOM)
+	{
+		MSG_MessageChat stMsgChat{};
+		stMsgChat.Header.ID = g_pObjectManager->m_dwCharID;
+		stMsgChat.Header.Type = MSG_MessageChat_Opcode;
+		sprintf(stMsgChat.String, "kingdomchat");
+		SendOneMessage((char*)&stMsgChat, sizeof(stMsgChat));
+		return 1;
+	}
+	if (idwControlID == B_CHAT_GUILD)
+	{
+		MSG_MessageChat stMsgChat{};
+		stMsgChat.Header.ID = g_pObjectManager->m_dwCharID;
+		stMsgChat.Header.Type = MSG_MessageChat_Opcode;
+		sprintf(stMsgChat.String, "guildchat");
+		SendOneMessage((char*)&stMsgChat, sizeof(stMsgChat));
+		return 1;
+	}
+	if (idwControlID == TMB_GUILDONOFF)
+	{
+		MSG_MessageChat stMsgChat{};
+		stMsgChat.Header.ID = g_pObjectManager->m_dwCharID;
+		stMsgChat.Header.Type = MSG_MessageChat_Opcode;
+
+		if (m_pBtnGuildOnOff)
+		{
+			if(m_pBtnGuildOnOff->m_bSelected == 1)
+				sprintf(stMsgChat.String, "guildon");
+			else
+				sprintf(stMsgChat.String, "guildoff");
+		}
+		else
+		{
+			m_cGuildOnOff = m_cGuildOnOff == 0;
+			if (m_cGuildOnOff == 1)
+				sprintf(stMsgChat.String, "guildon");
+			else
+				sprintf(stMsgChat.String, "guildoff");
+		}
+		SendOneMessage((char*)&stMsgChat, sizeof(stMsgChat));
+		return 1;
+	}
+	if (idwControlID == TMB_RUNMODE)
+	{
+		SetRunMode();
+		return 0;
+	}
+	if (idwControlID == B_SYS_QUIT)
+	{
+		SetRunMode();
+		if (g_dwStartQuitGameTime)
+			return 1;
+
+		g_dwStartQuitGameTime = g_pTimerManager->GetServerTime();
+
+		MSG_STANDARDPARM stParm{};
+		stParm.Header.ID = m_pMyHuman->m_dwID;
+		stParm.Header.Type = MSG_SysQuit_Opcode;
+		g_pSocketManager->SendOneMessage((char*)&stParm, sizeof(stParm));
+		return 0;
+	}
+	if (idwControlID == P_MINIBTNPANEL_BTN)
+	{
+		if (m_pMiniPanel->m_bVisible)
+			m_pMiniPanel->SetVisible(0);
+		else
+			m_pMiniPanel->SetVisible(1);
+		if (m_pMiniBtn)
+			m_pMiniBtn->m_bSelected = m_pMiniPanel->m_bVisible;
+		return 0;
+	}
+	if (idwControlID == B_SYS_SERVER)
+	{
+		if (!m_pServerPanel)
+		{
+			m_dwLastSelServer = g_pTimerManager->GetServerTime();
+			MSG_STANDARDPARM stParm{};
+			stParm.Header.ID = m_pMyHuman->m_dwID;
+			stParm.Header.Type = MSG_SysQuit_Opcode;
+			g_pSocketManager->SendOneMessage((char*)&stParm, sizeof(stParm));
+			return 1;
+		}
+
+		// TODO: serverlist stuffs
+		return 0;
 	}
 
+	if (idwControlID == B_QUEST_BUTTON)
+	{
+		if (m_pQuestList[0])
+		{
+			m_pQuestList[0]->SetVisible(1);
+			m_pQuestList[0]->m_bSelectEnable = 1;
+		}
+		if (m_pQuestContentList[0])
+			m_pQuestContentList[0]->SetVisible(1);
+		if (m_pQuestList[1])
+		{
+			m_pQuestList[1]->SetVisible(0);
+			m_pQuestList[1]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[1])
+			m_pQuestContentList[1]->SetVisible(0);
+		if (m_pQuestList[2])
+		{
+			m_pQuestList[2]->SetVisible(0);
+			m_pQuestList[2]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[2])
+			m_pQuestContentList[2]->SetVisible(0);
+		if (m_pQuestList[3])
+		{
+			m_pQuestList[3]->SetVisible(0);
+			m_pQuestList[3]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[3])
+			m_pQuestContentList[3]->SetVisible(0);
+
+		m_pQuestMemo->SetVisible(0);
+
+		return 1;
+	}
+	if (idwControlID == B_QUEST_BUTTON2)
+	{
+		if (m_pQuestList[0])
+		{
+			m_pQuestList[0]->SetVisible(0);
+			m_pQuestList[0]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[0])
+			m_pQuestContentList[0]->SetVisible(0);
+		if (m_pQuestList[1])
+		{
+			m_pQuestList[1]->SetVisible(1);
+			m_pQuestList[1]->m_bSelectEnable = 1;
+		}
+		if (m_pQuestContentList[1])
+			m_pQuestContentList[1]->SetVisible(1);
+		if (m_pQuestList[2])
+		{
+			m_pQuestList[2]->SetVisible(0);
+			m_pQuestList[2]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[2])
+			m_pQuestContentList[2]->SetVisible(0);
+		if (m_pQuestList[3])
+		{
+			m_pQuestList[3]->SetVisible(0);
+			m_pQuestList[3]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[3])
+			m_pQuestContentList[3]->SetVisible(0);
+
+		m_pQuestMemo->SetVisible(0);
+		return 1;
+	}
+	if (idwControlID == B_QUEST_BUTTON3)
+	{
+		if (m_pQuestList[0])
+		{
+			m_pQuestList[0]->SetVisible(0);
+			m_pQuestList[0]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[0])
+			m_pQuestContentList[0]->SetVisible(0);
+		if (m_pQuestList[1])
+		{
+			m_pQuestList[1]->SetVisible(0);
+			m_pQuestList[1]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[1])
+			m_pQuestContentList[1]->SetVisible(0);
+		if (m_pQuestList[2])
+		{
+			m_pQuestList[2]->SetVisible(1);
+			m_pQuestList[2]->m_bSelectEnable = 1;
+		}
+		if (m_pQuestContentList[2])
+			m_pQuestContentList[2]->SetVisible(1);
+		if (m_pQuestList[3])
+		{
+			m_pQuestList[3]->SetVisible(0);
+			m_pQuestList[3]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[3])
+			m_pQuestContentList[3]->SetVisible(0);
+
+		m_pQuestMemo->SetVisible(0);
+		return 1;
+	}
+	if (idwControlID == B_QUEST_BUTTON4)
+	{
+		if (m_pQuestList[0])
+		{
+			m_pQuestList[0]->SetVisible(0);
+			m_pQuestList[0]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[0])
+			m_pQuestContentList[0]->SetVisible(0);
+		if (m_pQuestList[1])
+		{
+			m_pQuestList[1]->SetVisible(0);
+			m_pQuestList[1]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[1])
+			m_pQuestContentList[1]->SetVisible(0);
+		if (m_pQuestList[2])
+		{
+			m_pQuestList[2]->SetVisible(0);
+			m_pQuestList[2]->m_bSelectEnable = 0;
+		}
+		if (m_pQuestContentList[2])
+			m_pQuestContentList[2]->SetVisible(0);
+		if (m_pQuestList[3])
+		{
+			m_pQuestList[3]->SetVisible(1);
+			m_pQuestList[3]->m_bSelectEnable = 1;
+		}
+		if (m_pQuestContentList[3])
+			m_pQuestContentList[3]->SetVisible(1);
+		m_pQuestMemo->SetVisible(0);
+		return 1;
+	}
+	if (idwControlID == B_QUEST_MEMO)
+	{
+		if (m_pQuestPanel)
+		{
+			m_pQuestPanel->SetVisible(1);
+			m_pQuestMemo->SetVisible(0);
+
+			TMScene::LoadMsgText3(
+				m_pQuestList[0],
+				(char*)"UI\\QuestSubjects.txt",
+				pMobData->CurrentScore.Level + 1,
+				pMobData->Equip[0].sIndex % 10);
+			TMScene::LoadMsgText3(
+				m_pQuestList[1],
+				(char*)"UI\\QuestSubjects2.txt",
+				pMobData->CurrentScore.Level + 1,
+				pMobData->Equip[0].sIndex % 10);
+			TMScene::LoadMsgText3(
+				m_pQuestList[2],
+				(char*)"UI\\QuestSubjects3.txt",
+				pMobData->CurrentScore.Level + 1,
+				pMobData->Equip[0].sIndex % 10);
+			TMScene::LoadMsgText3(
+				m_pQuestList[3],
+				(char*)"UI\\QuestSubjects4.txt",
+				pMobData->CurrentScore.Level + 1,
+				pMobData->Equip[0].sIndex % 10);
+
+			switch (m_pLevelQuest[pMobData->CurrentScore.Level])
+			{
+			case 97:
+				OnControlEvent(1054259, 0);
+				break;
+			case 98:
+				OnControlEvent(1054262, 0);
+				break;
+			case 99:
+				OnControlEvent(1054265, 0);
+				break;
+			case 101:
+				OnControlEvent(1054268, 0);
+				break;
+			}		
+		}	
+		return 1;
+	}
+	if (idwControlID == TMB_HELP_BUTTON1)
+	{
+		if (m_pHelpInterface)
+			m_pHelpInterface->SetVisible(1);
+		if (m_pHelpList[1])
+			m_pHelpList[1]->SetVisible(0);
+		if (m_pHelpList[2])
+			m_pHelpList[2]->SetVisible(0);
+		if (m_pHelpList[3])
+			m_pHelpList[3]->SetVisible(0);
+		return 1;
+	}
+	if (idwControlID == TMB_HELP_BUTTON2)
+	{
+		if (m_pHelpInterface)
+			m_pHelpInterface->SetVisible(0);
+		if (m_pHelpList[1])
+			m_pHelpList[1]->SetVisible(1);
+		if (m_pHelpList[2])
+			m_pHelpList[2]->SetVisible(0);
+		if (m_pHelpList[3])
+			m_pHelpList[3]->SetVisible(0);
+		return 1;
+	}
+	if (idwControlID == TMB_HELP_BUTTON3)
+	{
+		if (m_pHelpInterface)
+			m_pHelpInterface->SetVisible(0);
+		if (m_pHelpList[1])
+			m_pHelpList[1]->SetVisible(0);
+		if (m_pHelpList[2])
+			m_pHelpList[2]->SetVisible(1);
+		if (m_pHelpList[3])
+			m_pHelpList[3]->SetVisible(0);
+		return 1;
+	}
+	if (idwControlID == TMB_HELP_BUTTON4)
+	{
+		if (m_pHelpInterface)
+			m_pHelpInterface->SetVisible(0);
+		if (m_pHelpList[1])
+			m_pHelpList[1]->SetVisible(0);
+		if (m_pHelpList[2])
+			m_pHelpList[2]->SetVisible(0);
+		if (m_pHelpList[3])
+			m_pHelpList[3]->SetVisible(1);
+		return 1;
+	}
+	if (idwControlID == TMB_HELP_BUTTON5)
+	{
+		m_pHelpPanel->SetVisible(0);
+		return 1;
+	}
+	if (idwControlID == TMB_HELP_MEMO)
+	{
+		if (m_pHelpPanel)
+		{
+			m_pHelpPanel->SetVisible(1);
+			m_pHelpBtn->SetSelected(1);
+			OnControlEvent(873, 0);
+		}
+		return 1;
+	}
+	if (idwControlID == TMB_HELP_SUMMON)
+	{
+		char szStr[128]{};
+		sprintf(szStr, g_pMessageStringTable[228], m_szSummoner);
+
+		m_pMessageBox->SetMessage(szStr, 228u, g_pMessageStringTable[229]);
+		m_pMessageBox->SetVisible(1);
+		m_pHelpSummon->SetVisible(0);
+
+		return 0;
+	}
+	if (idwControlID == TMB_HELP_OK)
+	{
+		if (m_pHelpPanel)
+		{
+			m_pHelpPanel->SetVisible(0);
+			m_pHelpBtn->SetSelected(0);
+		}
+
+		return 0;
+	}
+	if (idwControlID == B_QUEST_QUIT)
+	{
+		if (m_pQuestPanel)
+		{
+			m_pQuestPanel->SetVisible(0);
+			m_pQuestBtn->SetSelected(0);
+		}
+
+		return 0;
+	}
+	if (idwControlID == B_CCATTACK)
+	{
+		if (++g_GameAuto >= 4)
+			g_GameAuto = 0;
+		if (m_pMyHuman)
+			m_pMyHuman->_dwAttackDelay = 0;
+		if (g_GameAuto)
+		{
+			m_pSGameAutoBtn->SetVisible(1);
+			m_pSetType->SetVisible(1);
+		}
+		else
+		{
+			m_pSGameAutoBtn->SetVisible(0);
+			m_pSetType->SetVisible(0);
+		}
+
+		switch (g_GameAuto)
+		{
+		case 0:
+			m_pMGameAutoBtn->SetTextureSetIndex(458);
+			m_pMGameAutoBtn->m_pAltText->SetText(
+				g_UIString[229],
+				0);
+			break;
+		case 1:
+			m_pMGameAutoBtn->SetTextureSetIndex(455);
+			m_pMGameAutoBtn->m_pAltText->SetText(
+				g_UIString[226],
+				0);
+			break;
+		case 2:
+			m_pMGameAutoBtn->SetTextureSetIndex(456);
+			m_pMGameAutoBtn->m_pAltText->SetText(
+				g_UIString[227],
+				0);
+			break;
+		case 3:
+			m_pMGameAutoBtn->SetTextureSetIndex(459);
+			m_pMGameAutoBtn->m_pAltText->SetText(
+				g_UIString[230],
+				0);
+			break;
+		}
+		return 1;
+	}
+	if (idwControlID == B_CCPOTION)
+	{
+		if (++m_AutoHpMp >= 4)
+			m_AutoHpMp = 0;
+		if (m_AutoHpMp)
+		{
+			switch (m_AutoHpMp)
+			{
+			case 1:
+				m_pSGameAutoBtn->SetTextureSetIndex(461);
+				break;
+			case 2:
+				m_pSGameAutoBtn->SetTextureSetIndex(460);
+				break;
+			case 3:
+				m_pSGameAutoBtn->SetTextureSetIndex(466);
+				break;
+			}
+		}
+		else
+		{
+			m_pSGameAutoBtn->SetTextureSetIndex(462);
+		}
+		return 1;
+	}
+	if (idwControlID == B_CCMOVE)
+	{
+		if (++m_AutoPostionUse >= 3)
+			m_AutoPostionUse = 0;
+
+		int nAutoPostionUse = m_AutoPostionUse;
+
+		int startX = 0;
+		int startY = 0;
+		if (!nAutoPostionUse)
+		{
+			m_pSetType->SetTextureSetIndex(463);
+			m_pSetType->m_pAltText->SetText(g_UIString[233], 0);
+		}
+		else if (nAutoPostionUse == 1)
+		{
+			m_pSetType->SetTextureSetIndex(464);
+			startX = (int)m_pMyHuman->m_vecPosition.x;
+			startY = (int)m_pMyHuman->m_vecPosition.y;
+			m_pSetType->m_pAltText->SetText(g_UIString[234], 0);
+		}
+		else if (nAutoPostionUse == 2)
+		{
+			m_pSetType->SetTextureSetIndex(465);
+			m_pSetType->m_pAltText->SetText(g_UIString[232], 0);
+		}
+
+		m_AutoStartPointX = startX;
+		m_AutoStartPointY = startY;
+		return 1;
+	}
+	if (idwControlID == B_ITEMMIX_RUN)
+	{
+		m_pMessageBox->SetMessage(g_pMessageStringTable[319], B_ITEMMIX_RUN, 0);
+		m_pMessageBox->SetVisible(1);
+		return 1;
+	}
+	if (idwControlID == TMB_ITEMMIX4_RUN)
+	{
+		m_pMessageBox->SetMessage(g_pMessageStringTable[319], TMB_ITEMMIX4_RUN, 0);
+		m_pMessageBox->SetVisible(1);
+		return 1;
+	}
+	if (idwControlID == B_ITEM_MIX_RUN)
+	{
+		m_pMessageBox->SetMessage(g_pMessageStringTable[319], B_ITEM_MIX_RUN, 0);
+		m_pMessageBox->SetVisible(1);
+		return 1;
+	}
+	if (idwControlID == B_MISSION_RUN)
+	{
+		m_pMessageBox->SetMessage(g_pMessageStringTable[319], B_MISSION_RUN, 0);
+		m_pMessageBox->SetVisible(1);
+		return 1;
+	}
+	if (idwControlID == B_SHORTSKILL_TGL1)
+	{
+		m_pGridSkillBelt2->SetVisible(1);
+		m_pGridSkillBelt3->SetVisible(0);
+
+		m_pShortSkillTglBtn1->SetSelected(1);
+		m_pShortSkillTglBtn2->SetSelected(0);
+
+		GetSoundAndPlay(53, 0, 0);
+		
+		m_pControlContainer->SetFocusedControl(0);
+		m_pShortSkill_Txt->SetText((char*)"1", 0);
+		OnKeyShortSkill(49, 0);
+		m_bSkillBeltSwitch = 0;
+
+		return 0;
+	}
+	if (idwControlID == B_SHORTSKILL_TGL2)
+	{
+		m_pGridSkillBelt2->SetVisible(0);
+		m_pGridSkillBelt3->SetVisible(1);
+
+		m_pShortSkillTglBtn1->SetSelected(0);
+		m_pShortSkillTglBtn2->SetSelected(1);
+
+		GetSoundAndPlay(53, 0, 0);
+
+		m_pControlContainer->SetFocusedControl(0);
+		m_pShortSkill_Txt->SetText((char*)"2", 0);
+		OnKeyShortSkill(49, 0);
+		m_bSkillBeltSwitch = 1;
+
+		return 0;
+	}
+	if (idwControlID == B_HELP)
+	{
+		m_pControlContainer->SetFocusedControl(0);
+		OnKeyHelp(104, 0);
+
+		return 0;
+	}
+	if (idwControlID == B_COMMUNITY)
+	{
+		g_pApp->SwitchWebBoard();
+
+		return 0;
+	}
+	if (idwControlID == B_QUESTLOG)
+	{
+		int nIsVisible = m_pQuestPanel->IsVisible() == 0;
+		m_pQuestPanel->SetVisible(nIsVisible);
+		m_pQuestBtn->SetSelected(nIsVisible);
+
+		if (!nIsVisible)
+		{
+			TMScene::LoadMsgText3(
+				m_pQuestList[0],
+				(char*)"UI\\QuestSubjects.txt",
+				pMobData->CurrentScore.Level + 1,
+				pMobData->Equip[0].sIndex % 10);
+			TMScene::LoadMsgText3(
+				m_pQuestList[1],
+				(char*)"UI\\QuestSubjects2.txt",
+				pMobData->CurrentScore.Level + 1,
+				pMobData->Equip[0].sIndex % 10);
+			TMScene::LoadMsgText3(
+				m_pQuestList[2],
+				(char*)"UI\\QuestSubjects3.txt",
+				pMobData->CurrentScore.Level + 1,
+				pMobData->Equip[0].sIndex % 10);
+			TMScene::LoadMsgText3(
+				m_pQuestList[3],
+				(char*)"UI\\QuestSubjects4.txt",
+				pMobData->CurrentScore.Level + 1,
+				pMobData->Equip[0].sIndex % 10);
+		}
+
+		GetSoundAndPlay(51, 0, 0);		
+
+		return 0;
+	}
+	if (idwControlID == 1054260)
+	{
+		TMScene::LoadMsgText2(
+			m_pQuestContentList[0],
+			(char*)"UI\\QuestContents.txt",
+			20 * idwEvent,
+			20 * (idwEvent + 1) - 1);
+
+		return 0;
+	}
+	if (idwControlID == 1054263)
+	{
+		TMScene::LoadMsgText2(
+			m_pQuestContentList[1],
+			(char*)"UI\\QuestContents2.txt",
+			20 * idwEvent,
+			20 * (idwEvent + 1) - 1);
+
+		return 0;
+	}
+	if (idwControlID == 1054266)
+	{
+		TMScene::LoadMsgText2(
+			m_pQuestContentList[2],
+			(char*)"UI\\QuestContents3.txt",
+			20 * idwEvent,
+			20 * (idwEvent + 1) - 1);
+		return 0;
+	}
+	if (idwControlID == 1054269)
+	{
+		TMScene::LoadMsgText2(
+			m_pQuestContentList[3],
+			(char*)"UI\\QuestContents4.txt",
+			20 * idwEvent,
+			20 * (idwEvent + 1) - 1);
+		return 0;
+	}
+	if (idwControlID == 5696)
+	{
+		if (m_nChatListSize == 3)
+			m_nChatListSize = 3;
+		else
+			m_nChatListSize = 2;
+				
+		OnKeyPlus(43, 0);
+		return 0;
+	}
+	if (idwControlID == 65677)
+	{
+		m_pChatGeneral->m_bSelected = m_pChatGeneral->m_bSelected == 0;
+		m_pChatGeneral_C->m_bSelected = m_pChatGeneral->m_bSelected == 0;
+		m_pChatGeneral->Update();
+		m_pChatGeneral_C->Update();
+
+		char szText[128]{};
+		if (m_pChatGeneral->m_bSelected)
+			sprintf(szText, "%s%s", g_pMessageStringTable[452], g_pMessageStringTable[446]);
+		else
+			sprintf(szText, "%s%s", g_pMessageStringTable[452], g_pMessageStringTable[447]);
+
+		auto ipNewItem = new SListBoxItem(szText, 0xFFCCAAFF, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+
+		auto pChatList = (SListBox*)m_pControlContainer->FindControl(65667);;
+		if (ipNewItem && pChatList)
+			pChatList->AddItem(ipNewItem);
+
+		return 0;
+	}
+	if (idwControlID == 65785)
+	{
+		SetPK();
+		return 0;
+	}
+	if (idwControlID == 5742)
+	{
+		if (m_pPartyPanel && m_pPartyBtn)
+		{
+			m_pPartyPanel->SetVisible(m_pPartyPanel->m_bVisible == 0);
+			m_pPartyBtn->m_bSelected = m_pPartyBtn->m_bSelected == 0;
+		}
+		return 0;
+	}
+	if (idwControlID == 6068)
+	{
+		if (m_nCurrInterfacePanelIndex > 0)
+		{
+			auto pHelpPanel = m_pHelpInterfacePanel[m_nCurrInterfacePanelIndex--];
+			pHelpPanel->SetVisible(0);
+			m_pHelpInterfacePanel[m_nCurrInterfacePanelIndex]->SetVisible(1);
+		}
+		return 0;
+	}
+	if (idwControlID == 6069)
+	{
+		if (m_nCurrInterfacePanelIndex < 2)
+		{
+			auto pHelpPanel = m_pHelpInterfacePanel[m_nCurrInterfacePanelIndex++];
+			pHelpPanel->SetVisible(0);
+			m_pHelpInterfacePanel[m_nCurrInterfacePanelIndex]->SetVisible(1);
+		}
+		return 0;
+	}
+	if (idwControlID >= 897 && idwControlID <= 900)
+	{
+		m_pQuizBG->SetVisible(0);
+		MSG_STANDARDPARM stParm{};
+		stParm.Header.ID = g_pObjectManager->m_dwCharID;
+		stParm.Header.Tick = 0x2C7;
+		stParm.Parm = idwControlID - 897;
+		SendOneMessage((char*)&stParm, sizeof(stParm));
+		return 1;
+	}
+	if (idwControlID >= 8706 && idwControlID <= 8806)
+	{
+		UpdateFireWorkButton(idwControlID - 8706);
+		return 1;
+	}
+	if (idwControlID == 8810)
+	{
+		ClearFireWork();
+		return 1;
+	}
+	if (idwControlID == 8807)
+	{
+		if (m_pFireWorkPanel)
+		{
+			m_pFireWorkPanel->SetVisible(0);
+			m_nFireWorkCellX = -1;
+			m_nFireWorkCellY = -1;
+		}
+		return 1;
+	}
+	if (idwControlID == 8809)
+	{
+		if (m_pFireWorkPanel)
+		{
+			m_pFireWorkPanel->SetVisible(0);
+			UseFireWork();
+		}
+		return 1;
+	}
+	if (idwControlID >= 8811 && idwControlID <= 8815)
+	{
+		DrawCustomFireWork(idwControlID - 8811);
+		return 1;
+	}
+	if (idwControlID == 8964)
+	{
+		TotoSelect();
+		return 1;
+	}
+	if (idwControlID == 8966)
+	{
+		TotoClose();
+		return 1;
+	}
+	if (idwControlID == 8978)
+	{
+		TotoBuy();
+		return 1;
+	}
+	if (idwControlID == 12291)
+	{
+		m_dwLastSelServer = g_pTimerManager->GetServerTime();
+		MSG_STANDARDPARM stParm{};
+		stParm.Header.ID = m_pMyHuman->m_dwID;
+		stParm.Header.Type = 0x3AE;
+		stParm.Parm = 0;
+		SendOneMessage((char*)&stParm, sizeof(stParm));
+		return 1;
+	}
+	if (idwControlID == 12289)
+	{
+		SListBoxServerItem* pItem = (SListBoxServerItem*)m_pServerList->GetItem(idwEvent);
+		if (pItem->m_nCurrent < 500)
+		{
+			m_nServerMove = idwEvent + 1;
+			m_dwLastTeleport = dwServerTime;
+			m_cLastTeleport = 1;
+		}
+		else
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[25], 4000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+		return 1;
+	}
+	if (idwControlID == 12545)
+	{
+		if (m_bAirmove_ShowUI == 1)
+			return 1;
+		if (m_stPotalItem.Header.ID)
+			m_stPotalItem.ItemID = idwEvent + 1;
+		else
+			SetVisiblePotal(0, 0);
+		return 1;
+	}
+	if (idwControlID == 12546)
+	{
+		if (m_bAirmove_ShowUI == 1)
+		{
+			auto pItem = m_pPotalList->GetSelectedIndex();
+			
+			if (pItem + 1 != -1 && !m_bAirMove)
+				AirMove_Start(pItem);
+
+			AirMove_ShowUI(0);
+			return 1;
+		}
+
+		if (!m_stPotalItem.ItemID)
+		{
+			m_stPotalItem.ItemID = m_pPotalList->GetSelectedIndex() + 1;
+		}
+		if (m_stPotalItem.Header.ID)
+		{
+			int nSourPage = m_stPotalItem.SourPos / 15;
+			int nSourRes = m_stPotalItem.SourPos % 15 % 5;
+			int nSourDiv = m_stPotalItem.SourPos % 15 / 5;
+			auto pGridInvList = m_pGridInvList[nSourPage];
+			auto pItem = pGridInvList->GetItem(nSourRes, nSourDiv);
+
+			if (pItem)
+			{
+				int amount = BASE_GetItemAmount(pItem->m_pItem);
+				if (amount > 1)
+				{
+					BASE_SetItemAmount(pItem->m_pItem, amount - 1);
+					sprintf(pItem->m_GCText.strString, "%2d", amount - 1);
+					pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+				}
+				else
+				{
+					auto pPickItem = pGridInvList->PickupItem(nSourRes, nSourDiv);
+
+					if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickItem)
+						g_pCursor->m_pAttachedItem = nullptr;
+					
+					SAFE_DELETE(pPickItem);
+				}
+
+				if (amount <= 1)
+				{
+					if (!m_stPotalItem.SourType)
+					{
+						memset(&g_pObjectManager->m_stMobData.Equip[m_stPotalItem.SourPos], 0, sizeof(STRUCT_ITEM));
+					}
+					else if (m_stPotalItem.SourType == 1)
+					{
+						memset(&g_pObjectManager->m_stMobData.Carry[m_stPotalItem.SourPos], 0, sizeof(STRUCT_ITEM));
+					}
+					else if (m_stPotalItem.SourType == 2)
+					{
+						memset(&g_pObjectManager->m_stItemCargo[m_stPotalItem.SourPos], 0, sizeof(STRUCT_ITEM));
+					}
+				}
+
+				m_dwGetItemTime = g_pTimerManager->GetServerTime();
+				m_dwLastTeleport = m_dwGetItemTime;
+				m_cLastTeleport = 1;
+				
+				auto vec = m_pMyHuman->m_vecPosition;
+
+				memset(&m_stUseItem, 0, sizeof(m_stUseItem));
+				m_stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+				m_stUseItem.Header.Type = m_stPotalItem.Header.Type;
+				m_stUseItem.SourType = m_stPotalItem.SourType;
+				m_stUseItem.SourPos = m_stPotalItem.SourPos;
+				m_stUseItem.ItemID = m_stPotalItem.ItemID;
+				m_stUseItem.GridX = (int)vec.x;
+				m_stUseItem.GridY = (int)vec.y;
+
+				memset((char*)&m_stPotalItem, 0, 0x24u);
+
+				MSG_STANDARDPARM stParm{};
+				stParm.Header.ID = m_pMyHuman->m_dwID;
+				stParm.Header.Type = MSG_SysQuit_Opcode;
+				stParm.Parm = 1;
+				SendOneMessage((char*)&stParm, sizeof(stParm));
+			}
+		}
+
+		SetVisiblePotal(0, 0);
+		return 1;
+	}
+	if (idwControlID == 12547)
+	{
+		if (m_bAirmove_ShowUI == 1)
+			AirMove_ShowUI(0);
+
+		memset(&m_stPotalItem, 0, sizeof(m_stPotalItem));
+		SetVisiblePotal(0, 0);
+		return 1;
+	}
+	if (idwControlID == 65881)
+	{
+		MSG_STANDARDPARM stParm{};
+		stParm.Header.ID = m_pMyHuman->m_dwID;
+		stParm.Header.Type = MSG_SysQuit_Opcode;
+		stParm.Parm = 0;
+		SendOneMessage((char*)&stParm, sizeof(stParm));
+		return 1;
+	}
+	if (idwControlID == 65883)
+	{
+		m_pSystemPanel->SetVisible(0);
+		return 1;
+	}
+	if (idwControlID == 641)
+	{
+		auto pHuman = (TMHuman*)g_pObjectManager->GetHumanByID(m_dwOpID);
+		if (!pHuman)
+		{
+			m_pPGTOver = 0;
+			return 1;
+		}
+		else if (pHuman->m_bParty)
+		{
+			m_pPGTOver = 0;
+			return 1;
+		}
+		else if (m_pMyHuman->m_cDie == 1)
+		{
+			m_pPGTOver = 0;
+			return 1;
+		}
+
+		if (!m_pPartyList->m_pItemList[0] || static_cast<SListBoxPartyItem*>(m_pPartyList->m_pItemList[0])->m_nState != 1)
+		{
+			MSG_REQParty stReqParty{};
+			stReqParty.Header.Type = MSG_REQParty_Opcode;
+			stReqParty.Header.ID = m_pMyHuman->m_dwID;
+			stReqParty.Leader.Class = m_pMyHuman->m_nSkinMeshType - 1;
+			stReqParty.Leader.PartyIndex = 0;
+			stReqParty.Leader.Level = m_pMyHuman->m_stScore.Level;
+			stReqParty.Leader.Hp = m_pMyHuman->m_stScore.Hp;
+			stReqParty.Leader.MaxHp = m_pMyHuman->m_stScore.MaxHp;
+			stReqParty.Leader.ID = m_pMyHuman->m_dwID;
+			sprintf(stReqParty.Leader.Name, "%s", m_pMyHuman->m_szName);
+			stReqParty.TargetID = m_dwOpID;
+			SendOneMessage((char*)&stReqParty, sizeof(stReqParty));
+			m_dwOpID = 0;
+			m_pPGTPanel->SetVisible(0);
+			m_pPGTOver = 0;
+			return 0;
+		}
+
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[156], 2000);
+		m_pPGTOver = 0;
+		return 1;
+	}
+	if (idwControlID == 643)
+	{
+		if (!m_pPGTOver	|| 
+			(float)BASE_GetDistance(
+				(int)m_pMyHuman->m_vecPosition.x,
+				(int)m_pMyHuman->m_vecPosition.y,
+				(int)m_pPGTOver->m_vecPosition.x,
+				(int)m_pPGTOver->m_vecPosition.y) > ((float)(g_pObjectManager->m_pCamera->m_fMaxCamLen - 11.0) + 6.0))
+		{
+			return 1;
+		}
+
+		m_pPGTOver = 0;
+		if (m_pMyHuman->m_cDie == 1)
+			return 1;
+
+		RECT rc; 
+		
+		rc.left = 2601;
+		rc.top = 1702;
+		rc.right = 2652;
+		rc.bottom = 1750;
+
+		POINT pt;
+		pt.x = (int)m_pMyHuman->m_vecPosition.x;
+		pt.y = (int)m_pMyHuman->m_vecPosition.y;
+		if (PtInRect(&rc, pt) == 1)
+			return 1;
+
+		auto pTradePanel = m_pTradePanel;
+		if (!g_pObjectManager->m_stTrade.OpponentID || !pTradePanel || pTradePanel->IsVisible() != 1)
+		{
+			g_pObjectManager->m_stTrade.Header.Type = 0x383;
+			g_pObjectManager->m_stTrade.Header.ID = m_pMyHuman->m_dwID;
+			g_pObjectManager->m_stTrade.OpponentID = m_dwOpID;
+			SendOneMessage((char*)&g_pObjectManager->m_stTrade, 156);
+
+			m_dwOpID = 0;
+			m_pPGTPanel->SetVisible(0);
+			return 0;
+		}
+
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[35], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+		return 1;
+	}
+	if (idwControlID == 642)
+	{
+		m_pBtnPGTGuild->SetVisible(0);
+		m_pBtnPGTParty->SetVisible(0);
+		m_pBtnPGTTrade->SetVisible(0);
+		m_pBtnPGTChallenge->SetVisible(0);
+		m_pBtnPGT1_V_1->SetVisible(0);
+		m_pBtnPGT5_V_5->SetVisible(0);
+		m_pBtnPGT10_V_10->SetVisible(0);
+		m_pBtnPGTAll_V_All->SetVisible(0);
+		m_pBtnPGTGuildDrop->SetVisible(1);
+		m_pBtnPGTGuildWar->SetVisible(1);
+		m_pBtnPGTGuildWar->SetVisible(0);
+		m_pBtnPGTGuildAlly->SetVisible(1);
+
+		if (m_pMyHuman && (m_pMyHuman->m_sGuildLevel >= 3 && m_pMyHuman->m_sGuildLevel <= 8 || m_pMyHuman->m_sGuildLevel == 9) && 
+			(!m_pPGTOver->m_usGuild	|| m_pPGTOver->m_usGuild == m_pMyHuman->m_usGuild && (!m_pPGTOver->m_sGuildLevel || m_pPGTOver->m_sGuildLevel == 1)) && 
+			m_pPGTOver->m_sGuildLevel != 9)
+		{
+			m_pBtnPGTGuildInvite->SetVisible(1);
+		}
+		m_pBtnPGTGICommon->SetVisible(0);
+		m_pBtnPGTGIChief1->SetVisible(0);
+		m_pBtnPGTGIChief2->SetVisible(0);
+		m_pBtnPGTGIChief3->SetVisible(0);
+		return 0;
+	}
+	if (idwControlID == 863)
+	{
+		m_pBtnPGTGuildDrop->SetVisible(0);
+		m_pBtnPGTGuildWar->SetVisible(0);
+		m_pBtnPGTGuildAlly->SetVisible(0);
+		m_pBtnPGTGuildInvite->SetVisible(0);
+		if (!m_pMyHuman)
+			return 0;
+		if (!m_pPGTOver)
+			return 0;
+		if (!m_pPGTOver->m_usGuild)
+			m_pBtnPGTGICommon->SetVisible(0);
+
+		m_pBtnPGTGICommon->SetVisible(1);
+		if (m_pMyHuman->m_sGuildLevel == 9 && (m_pPGTOver->m_sGuildLevel < 3 || m_pPGTOver->m_sGuildLevel > 8) && 
+			m_pMyHuman->m_usGuild == m_pPGTOver->m_usGuild)
+		{
+			m_pBtnPGTGIChief1->SetVisible(1);
+			m_pBtnPGTGIChief2->SetVisible(1);
+			m_pBtnPGTGIChief3->SetVisible(1);
+		}
+		return 0;
+	}
+	if (idwControlID == 912)
+	{
+		if (!m_pPGTOver)
+			return 0;
+
+		if (!g_pCurrentScene)
+			return 0;
+		if (m_pPGTOver->m_usGuild)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[364], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 0;
+		}
+
+		if (g_pObjectManager->m_stMobData.Coin >= 1000000)
+		{
+			MSG_STANDARDPARM2 stParm2{};
+			stParm2.Header.Type = MSG_InviteGuild_Opcode;
+			stParm2.Header.ID = m_pMyHuman->m_dwID;
+			stParm2.Parm1 = m_pPGTOver->m_dwID;
+			
+			SendOneMessage((char*)&stParm2, sizeof(stParm2));
+			m_pPGTPanel->SetVisible(0);
+			m_pPGTOver = 0;
+			return 0;
+		}
+
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[155], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+		return 0;
+	}
+	if (idwControlID >= 913 && idwControlID <= 915)
+	{
+		if (!g_pCurrentScene)
+			return 0;
+
+		if (m_pPGTOver != nullptr)
+		{
+			if (!m_pPGTOver->m_usGuild)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[367], 2000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 0;
+			}
+			if (m_pPGTOver->m_usGuild != m_pMyHuman->m_usGuild)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[365], 2000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 0;
+			}
+			if (m_pPGTOver->m_sGuildLevel >= 3 && m_pPGTOver->m_sGuildLevel <= 8)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[366], 2000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 0;
+			}
+			if (g_pObjectManager->m_stMobData.Coin < 50000000)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[155], 2000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 0;
+			}
+		}
+
+		VisibleInputGuildName();
+		m_pPGTPanel->SetVisible(0);
+		return 0;
+	}
+	if (idwControlID == 816)
+	{
+		m_pPGTOver = 0;
+		if (m_pMessageBox->IsVisible())
+		{
+			m_pPGTPanel->SetVisible(0);
+			return 0;
+		}
+		m_pMessageBox->SetMessage(g_pMessageStringTable[36], 816u, 0);
+		m_pMessageBox->m_dwArg = m_dwOpID;
+		m_pMessageBox->SetVisible(1);
+		return 1;
+	}
+	if (idwControlID == 817)
+	{
+		if (m_pMessageBox->IsVisible())
+		{
+			m_pPGTPanel->SetVisible(0);
+			return 0;
+		}
+		if (m_pPGTOver)
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[158], 817u, 0);
+			m_pMessageBox->m_dwArg = m_pPGTOver->m_usGuild;
+			m_pMessageBox->SetVisible(1);
+			m_pPGTOver = 0;
+		}
+		return 1;
+	}
+	if (idwControlID == 818)
+	{
+		m_pPGTOver = 0;
+
+		if (m_pMessageBox->IsVisible())
+		{
+			m_pPGTPanel->SetVisible(0);
+			return 0;
+		}
+
+		m_pMessageBox->SetMessage(g_pMessageStringTable[159], 818u, 0);
+		m_pMessageBox->m_dwArg = m_dwOpID;
+		m_pMessageBox->SetVisible(1);
+
+		return 1;
+	}
+	if (idwControlID == 862)
+	{
+		if (m_pMessageBox->IsVisible())
+		{
+			m_pPGTPanel->SetVisible(0);
+			return 0;
+		}
+		if (m_pPGTOver)
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[221], 862, 0);
+			m_pMessageBox->m_dwArg = m_pPGTOver->m_usGuild;
+			m_pMessageBox->SetVisible(1);
+			m_pPGTOver = 0;
+		}
+		return 1;
+	}
+	if (idwControlID == 644)
+	{
+		m_pPGTOver = 0;
+		m_pPGTPanel->SetVisible(0);
+		return 0;
+	}
+	if (idwControlID == 668)
+	{
+		SetVisibleAutoTrade(0, 0);
+		return 1;
+	}
+	if (idwControlID == 620)
+	{
+		if (m_pPGTPanel)
+		{
+			m_pBtnPGTParty->SetVisible(0);
+			m_pBtnPGTGuild->SetVisible(0);
+			m_pBtnPGTTrade->SetVisible((0);
+			m_pBtnPGTChallenge->SetVisible(0);
+			m_pBtnPGT1_V_1->SetVisible(1);
+			m_pBtnPGT5_V_5->SetVisible(1);
+			m_pBtnPGT10_V_10->SetVisible(1);
+			m_pBtnPGTAll_V_All->SetVisible(1);
+			m_pPGTPanel->SetVisible(1);
+			m_pBtnPGTGICommon->SetVisible(0);
+			m_pBtnPGTGIChief1->SetVisible(0);
+			m_pBtnPGTGIChief2->SetVisible(0);
+			m_pBtnPGTGIChief3->SetVisible(0);
+		}
+		return 0;
+	}
+	if (idwControlID == 639 || idwControlID == 621 || idwControlID == 622 || idwControlID == 623)
+	{
+		if (m_pPGTOver)
+		{
+			MSG_STANDARDPARM2 stParm2{};
+			stParm2.Header.Type = 0x39F;
+			stParm2.Header.ID = m_pMyHuman->m_dwID;;
+			stParm2.Parm1 = m_dwID;
+
+			switch (idwControlID)
+			{
+			case 0x27Fu:
+				stParm2.Parm2 = 0;
+				break;
+			case 0x26Du:
+				stParm2.Parm2 = 1;
+				break;
+			case 0x26Eu:
+				stParm2.Parm2 = 2;
+				break;
+			case 0x26Fu:
+				stParm2.Parm2 = 3;
+				break;
+			}
+
+			SendOneMessage((char*)&stParm2, sizeof(stParm2));
+
+			m_pPGTOver = 0;
+			if (m_pPGTPanel)
+				m_pPGTPanel->SetVisible(0);
+		}
+		return 0;
+	}
+	if (idwControlID == 1617)
+	{
+		MSG_MessageWhisper stMsgWhisper{};
+		stMsgWhisper.Header.ID = g_pObjectManager->m_dwCharID;
+		stMsgWhisper.Header.Type = MSG_MessageWhisper_Opcode;
+
+		sprintf(stMsgWhisper.MobName, "_RPS_");
+		sprintf(stMsgWhisper.String, "rock");
+		SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+		m_pRPSGamePanel->SetVisible(0);
+		return 0;
+	}
+	if (idwControlID == 1618)
+	{
+		MSG_MessageWhisper stMsgWhisper{};
+		stMsgWhisper.Header.ID = g_pObjectManager->m_dwCharID;
+		stMsgWhisper.Header.Type = MSG_MessageWhisper_Opcode;
+
+		sprintf(stMsgWhisper.MobName, "_RPS_");
+		sprintf(stMsgWhisper.String, "paper");
+		SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+		m_pRPSGamePanel->SetVisible(0);
+		return 0;
+	}
+	if (idwControlID == 1619)
+	{
+		MSG_MessageWhisper stMsgWhisper{};
+		stMsgWhisper.Header.ID = g_pObjectManager->m_dwCharID;
+		stMsgWhisper.Header.Type = MSG_MessageWhisper_Opcode;
+
+		sprintf(stMsgWhisper.MobName, "_RPS_");
+		sprintf(stMsgWhisper.String, "scissor");
+		SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+		m_pRPSGamePanel->SetVisible(0);
+		return 0;
+	}
+	if (idwControlID == 4617)
+	{
+		if (!idwEvent)
+			return TMFieldScene::OnMsgBoxEvent(4617, 0, dwServerTime);
+
+		if (g_nKeyType == 1)
+			m_pControlContainer->SetFocusedControl(m_pEditChat);
+
+		return 0;
+	}
+	if (idwControlID == 65716)
+	{
+		if (m_pMyHuman->m_cDie == 1)
+			return 1;
+		if (pMobData->ScoreBonus <= 0)
+			return 0;
+
+		MSG_STANDARDPARM2 stParm2{};
+		stParm2.Header.ID = m_pMyHuman->m_dwID;
+		stParm2.Header.Type = 0x277;
+		stParm2.Parm1 = 0;
+		stParm2.Parm2 = 0;
+		SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		return 1;
+	}
+	if (idwControlID == 65719)
+	{
+		if (m_pMyHuman->m_cDie == 1)
+			return 1;
+		if (pMobData->ScoreBonus <= 0)
+			return 0;
+
+		MSG_STANDARDPARM2 stParm2{};
+		stParm2.Header.ID = m_pMyHuman->m_dwID;
+		stParm2.Header.Type = 0x277;
+		stParm2.Parm1 = 0;
+		stParm2.Parm2 = 1;
+		SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		return 1;
+	}
+	if (idwControlID == 65722)
+	{
+		if (m_pMyHuman->m_cDie == 1)
+			return 1;
+		if (pMobData->ScoreBonus <= 0)
+			return 0;
+
+		MSG_STANDARDPARM2 stParm2{};
+		stParm2.Header.ID = m_pMyHuman->m_dwID;
+		stParm2.Header.Type = 0x277;
+		stParm2.Parm1 = 0;
+		stParm2.Parm2 = 2;
+		SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		return 1;
+	}
+	if (idwControlID == 65725)
+	{
+		if (m_pMyHuman->m_cDie == 1)
+			return 1;
+		if (pMobData->ScoreBonus <= 0)
+			return 0;
+
+		MSG_STANDARDPARM2 stParm2{};
+		stParm2.Header.ID = m_pMyHuman->m_dwID;
+		stParm2.Header.Type = 0x277;
+		stParm2.Parm1 = 0;
+		stParm2.Parm2 = 3;
+		SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		return 1;
+	}
+	if (idwControlID == 65754)
+	{
+		if (m_pMyHuman->m_cDie == 1)
+			return 1;
+		if (pMobData->SpecialBonus <= 0)
+			return 0;
+
+		int totalSpecial = 0;
+		if (m_pMyHuman->Is2stClass() != 2)
+		{
+			totalSpecial = 3 * (pMobData->CurrentScore.Level + 1) / 2;
+		}
+		else if (!pMobData->Class && IsValidSkill(205) == 1)
+		{
+			totalSpecial = 280;
+		}
+		else if (pMobData->Class != 2 || IsValidSkill(233) != 1)
+		{
+			totalSpecial = 200;
+		}
+		else
+		{
+			totalSpecial = 230;
+		}
+
+		if (pMobData->CurrentScore.Special[0] < totalSpecial)
+		{
+			MSG_STANDARDPARM2 stParm2{};
+			stParm2.Header.ID = m_pMyHuman->m_dwID;
+			stParm2.Header.Type = 0x277;
+			stParm2.Parm1 = 1;
+			stParm2.Parm2 = 0;
+			SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		}
+		else
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[39], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+		return 1;
+	}
+	if (idwControlID == 65757)
+	{
+		if (m_pMyHuman->m_cDie == 1)
+			return 1;
+		if (pMobData->SpecialBonus <= 0)
+			return 0;
+
+		int totalSpecial = 0;
+		if (m_pMyHuman->Is2stClass() == 2)
+			totalSpecial = 200;
+		else
+			totalSpecial = 3 * (pMobData->CurrentScore.Level + 1) / 2;
+		if (pMobData->Class == 3 && IsValidSkill(238) == 1)
+		{
+			totalSpecial = 400;
+		}
+		else if (IsValidSkill(200) == 1)
+		{
+			totalSpecial = 320;
+		}
+		else if (IsValidSkill(31) == 1)
+		{
+			totalSpecial = 255;
+		}
+		else if (totalSpecial > 200)
+		{
+			totalSpecial = 200;
+		}
+
+		if (pMobData->CurrentScore.Special[1] < totalSpecial)
+		{
+			MSG_STANDARDPARM2 stParm2{};
+			stParm2.Header.ID = m_pMyHuman->m_dwID;
+			stParm2.Header.Type = 0x277;
+			stParm2.Parm1 = 1;
+			stParm2.Parm2 = 1;
+			SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		}
+		else
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[39], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+		return 1;
+	}
+	if (idwControlID == 65760)
+	{
+		if (m_pMyHuman->m_cDie == 1)
+			return 1;
+		if (pMobData->SpecialBonus <= 0)
+			return 0;
+
+		int totalSpecial = 0;
+		if (m_pMyHuman->Is2stClass() == 2)
+			totalSpecial = 200;
+		else
+			totalSpecial = 3 * (pMobData->CurrentScore.Level + 1) / 2;
+		if (IsValidSkill(204) == 1)
+		{
+			totalSpecial = 320;
+		}
+		else if (IsValidSkill(39) == 1)
+		{
+			totalSpecial = 255;
+		}
+		else if (totalSpecial > 200)
+		{
+			totalSpecial = 200;
+		}
+
+		if (pMobData->CurrentScore.Special[2] < totalSpecial)
+		{
+			MSG_STANDARDPARM2 stParm2{};
+			stParm2.Header.ID = m_pMyHuman->m_dwID;
+			stParm2.Header.Type = 0x277;
+			stParm2.Parm1 = 1;
+			stParm2.Parm2 = 2;
+			SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		}
+		else
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[39], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+		return 1;
+	}
+	if (idwControlID == 65763)
+	{
+		if (m_pMyHuman->m_cDie == 1)
+			return 1;
+		if (pMobData->SpecialBonus <= 0)
+			return 0;
+
+		int totalSpecial = 3 * (pMobData->CurrentScore.Level + 1) / 2;
+		if (m_pMyHuman->Is2stClass() == 2)
+			totalSpecial = 200;
+		if (IsValidSkill(208) == 1)
+		{
+			totalSpecial = 320;
+		}
+		else if (IsValidSkill(47) == 1)
+		{
+			totalSpecial = 255;
+		}
+		else if (totalSpecial > 200)
+		{
+			totalSpecial = 200;
+		}
+
+		if (pMobData->CurrentScore.Special[3] < totalSpecial)
+		{
+			MSG_STANDARDPARM2 stParm2{};
+			stParm2.Header.ID = m_pMyHuman->m_dwID;
+			stParm2.Header.Type = 0x277;
+			stParm2.Parm1 = 1;
+			stParm2.Parm2 = 3;
+			SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		}
+		else
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[39], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+		return 1;
+	}
+	if (idwControlID == 475138)
+	{
+		auto pPartyList = m_pPartyList;
+		auto pPartyItem = (SListBoxPartyItem*)pPartyList->GetItem(idwEvent);
+
+		if (pPartyItem && pPartyItem->m_nState == 1 && !pPartyList->m_bRButton)
+		{
+			MSG_CNFParty2 stCNFParty2{};
+			stCNFParty2.Header.ID = m_pMyHuman->m_dwID;
+			stCNFParty2.Header.Type = MSG_CNFParty2_Opcode;
+			stCNFParty2.LeaderID = pPartyItem->m_dwCharID;
+			
+			sprintf(stCNFParty2.LeaderName, pPartyItem->GetText());
+
+			auto pHuman = (TMHuman*)g_pObjectManager->GetHumanByID(pPartyItem->m_dwCharID);
+			if (pHuman)
+				pHuman->m_bParty = 1;
+
+			SendOneMessage((char*)&stCNFParty2, sizeof(stCNFParty2));
+		}
+		else if (pPartyItem	&& g_pEventTranslator->m_bCtrl == 1	&& pPartyItem->m_bSelectEnable == 1	&& !pPartyList->m_bRButton)
+		{
+			int charId = pPartyItem->m_dwCharID;
+
+			if (charId >= 0 && charId < 1000)
+			{
+				char szText[128]{};
+				sprintf(szText, pPartyItem->GetText());
+				m_pMessageBox->SetMessage(szText, 50001u, 0);
+				m_pMessageBox->m_dwArg = pPartyItem->m_dwCharID;
+				m_pMessageBox->SetVisible(1);
+			}
+		}
+		else if (pPartyItem && pPartyList->m_bRButton == 1)
+		{
+			int skillId = g_pObjectManager->m_cShortSkill[g_pObjectManager->m_cSelectShortSkill];
+			int delay = g_pSpell[skillId].Delay;
+			if (m_nMySanc >= 9 && delay >= 2)
+				--delay;
+			if (m_pMyHuman->m_DilpunchJewel == 1)
+				--delay;
+			if (delay < 1)
+				delay = 1;
+			if (dwServerTime < m_dwSkillLastTime[skillId] + 1000 * delay)
+				return 1;
+
+			int Special = m_pMyHuman->m_stScore.Level;
+			int classId = skillId - 24 * g_pObjectManager->m_stMobData.Class;
+			if (skillId < 96)
+				Special = g_pObjectManager->m_stMobData.CurrentScore.Special[classId / 8 + 1];
+
+			if (BASE_GetManaSpent(skillId, g_pObjectManager->m_stMobData.SaveMana, Special) > g_pObjectManager->m_stMobData.CurrentScore.Mp)
+			{
+				auto ipNewItem = new SListBoxItem(g_pMessageStringTable[30],
+					0xFFFFAAAA,
+					0.0,
+					0.0,
+					300.0f,
+					16.0f,
+					0,
+					0x77777777,
+					1,
+					0);
+
+				auto pChatList = m_pChatList;
+
+				if (pChatList && ipNewItem)
+					pChatList->AddItem(ipNewItem);
+
+				GetSoundAndPlay(33, 0, 0);
+
+				return 1;
+			}
+
+			if (dwServerTime > m_dwOldAttackTime + 1000	&& skillId == 42 && pPartyItem->m_dwCharID == m_pMyHuman->m_dwID)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[40], 1000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+
+			if (dwServerTime > m_dwOldAttackTime + 1000
+				&& (skillId == 25
+					|| skillId == 27
+					|| skillId == 42
+					|| skillId == 43
+					|| skillId == 44
+					|| skillId == 45
+					|| skillId == 13))
+			{
+				if (skillId != 42)
+				{
+					auto pHuman = (TMHuman*)g_pObjectManager->GetHumanByID(pPartyItem->m_dwCharID);
+
+					if (!pHuman)
+						return 1;
+					if (!pHuman->m_bParty)
+						return 1;
+
+					int x1 = (int)m_pMyHuman->m_vecPosition.x;
+					int y1 = (int)m_pMyHuman->m_vecPosition.y;
+					if (m_stMoveStop.NextX)
+					{
+						x1 = m_stMoveStop.NextX;
+						y1 = m_stMoveStop.NextY;
+					}
+
+					int x2 = (int)pHuman->m_vecPosition.x;
+					int y2 = (int)pHuman->m_vecPosition.y;
+
+					int distance = BASE_GetDistance(x1, y1, x2, y2);
+					int range = cktrans + g_pSpell[skillId].Range;
+
+					int ty = y2;
+					int tx = x2;
+
+					BASE_GetHitPosition(x1, y1, &tx, &ty, (char*)m_HeightMapData, 8);
+					if (distance > range || tx != x2 || ty != y2)
+						return 1;
+
+					int my_att = g_pAttribute[y1 / 4][x1 / 4];
+					int other_att = g_pAttribute[y2 / 4][x2 / 4];
+					if (!(my_att & 0x40))
+					{
+						if (other_att & 0x40)
+							return 1;
+					}
+				}
+
+				MSG_Attack stAttack{};
+				stAttack.Header.Type = MSG_Attack_Multi_Opcode;
+				stAttack.Header.ID = m_pMyHuman->m_dwID;
+				stAttack.AttackerID = m_pMyHuman->m_dwID;
+				stAttack.PosX = (int)m_pMyHuman->m_vecPosition.x;
+				stAttack.PosY = (int)m_pMyHuman->m_vecPosition.y;
+				stAttack.CurrentMp = -1;
+				stAttack.SkillIndex = skillId;
+				stAttack.SkillParm = 0;
+				stAttack.Motion = -1;
+				stAttack.Dam[0].TargetID = pPartyItem->m_dwCharID;
+				stAttack.Dam[0].Damage = -1;
+				stAttack.TargetX = (int)m_pMyHuman->m_vecPosition.x;
+				stAttack.TargetY = (int)m_pMyHuman->m_vecPosition.y;
+				if (m_stMoveStop.NextX)
+				{
+					stAttack.PosX = m_stMoveStop.NextX;
+					stAttack.TargetX = stAttack.PosX;
+					stAttack.PosY = m_stMoveStop.NextY;
+					stAttack.TargetY = stAttack.PosY;
+				}
+				SendOneMessage((char*)&stAttack, sizeof(stAttack));
+
+				MSG_Attack localAttack{};
+				memcpy(&localAttack, (char*)&stAttack, sizeof(localAttack));
+
+				localAttack.Header.ID = m_dwID;
+				localAttack.FlagLocal = 1;
+				if (cktrans)
+					localAttack.DoubleCritical |= 8u;
+
+				OnPacketEvent(MSG_Attack_Multi_Opcode, (char*)&localAttack);
+				m_dwOldAttackTime = dwServerTime;
+				m_dwSkillLastTime[skillId] = dwServerTime;
+			}
+		}
+		return 1;
+	}
+	if (idwControlID == 475139)
+	{
+		if (!m_pChatListPanel->IsVisible())
+		{
+			MSG_STANDARDPARM stParm{};
+			stParm.Header.Type = 0x37E;
+			stParm.Header.ID = m_pMyHuman->m_dwID;
+			stParm.Parm = 0;
+
+			SendOneMessage((char*)&stParm, sizeof(stParm));
+
+			m_pPartyPanel->SetVisible(0);
+		}
+		return 1;
+	}
+	if (idwControlID == 617)
+	{
+		if (m_dwLastCheckTime + 2000 <= g_pApp->m_pTimerManager->GetServerTime())
+		{
+			auto pButton = (SButton*)m_pControlContainer->FindControl(617u);
+			pButton->m_bSelected = pButton->m_bSelected == 0;
+			g_pObjectManager->m_stTrade.MyCheck = pButton->m_bSelected;
+
+			MSG_Trade stTrade{};
+
+			memcpy(&stTrade, &g_pObjectManager->m_stTrade, sizeof(stTrade));
+			stTrade.Header.Type = 0x383;
+			SendOneMessage((char*)&stTrade, sizeof(stTrade));
+
+			m_dwLastCheckTime = g_pApp->m_pTimerManager->GetServerTime();
+			return 0;
+		}
+
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[41], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+		m_dwLastCheckTime = g_pApp->m_pTimerManager->GetServerTime();
+		return 1;
+	}
+	if (idwControlID == 667)
+	{
+		int validItem = 1;
+		for (int i = 0; i < 10; ++i)
+		{
+			if (m_stAutoTrade.Item[i].sIndex > 0)
+				validItem = 0;
+		}
+		if (validItem == 1)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[145], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+
+		auto pButtonRun = (SButton*)m_pControlContainer->FindControl(667u);
+		m_stAutoTrade.Header.Type = 919;
+		m_stAutoTrade.TargetID = m_pMyHuman->m_dwID;
+		SendOneMessage((char*)&m_stAutoTrade, sizeof(m_stAutoTrade));
+
+		auto pButtonCancel = (SButton*)m_pControlContainer->FindControl(668u);
+		if (pButtonRun)
+			pButtonRun->SetVisible(0);
+		if (pButtonCancel)
+			pButtonCancel->SetVisible(1);
+
+		auto pAutoTrade =  m_pAutoTrade;
+		if (pAutoTrade && pAutoTrade->IsVisible() == 1)
+		{
+			m_pCargoPanel->SetVisible(0);
+			m_pCargoPanel1->SetVisible(0);
+
+			pAutoTrade->SetRealPos((float)g_pDevice->m_dwScreenWidth - pAutoTrade->m_nWidth, 0.0f);
+		}
+
+		return 1;
+	}
 
 	return 0;
 }
@@ -8662,4 +10864,58 @@ int TMFieldScene::MouseClick_QuestNPC(unsigned int dwServerTime, TMHuman* pOver)
 
 void TMFieldScene::NewCCMode()
 {
+}
+
+void TMFieldScene::InsertInChatList(SListBox* pChatList, STRUCT_MOB *pMobData, SEditableText* pEditChat, unsigned int dwColor, int colorId, unsigned int startId)
+{
+	MSG_MessageWhisper stMsgWhisper{};
+	stMsgWhisper.Header.ID = g_pObjectManager->m_dwCharID;
+	stMsgWhisper.Header.Type = MSG_MessageWhisper_Opcode;
+	stMsgWhisper.Color = colorId;
+
+	sprintf(stMsgWhisper.MobName, "");
+	sprintf(stMsgWhisper.String, "%s", pEditChat->GetText());
+	BASE_TransCurse(stMsgWhisper.String);
+
+	pEditChat->SetText((char*)"");
+
+	SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
+
+	int len = strlen(stMsgWhisper.String) + strlen(pMobData->MobName);
+	int maxLen = 40;
+	if (len <= maxLen)
+	{
+		char istrText[128]{};
+		sprintf(istrText, "[%s]> %s", pMobData->MobName, stMsgWhisper.String[startId]);
+
+		auto ipNewItem = new SListBoxItem(istrText, dwColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0);
+		if (ipNewItem && pChatList)
+			pChatList->AddItem(ipNewItem);
+	}
+	else
+	{
+		char dest[128]{};
+		char dest2[128]{};
+		if (IsClearString(stMsgWhisper.String, maxLen - 1))
+		{
+			strncpy(dest, stMsgWhisper.String, maxLen);
+			sprintf(dest2, "%s", &stMsgWhisper.String[maxLen]);
+		}
+		else
+		{
+			strncpy(dest, stMsgWhisper.String, maxLen - 1);
+			sprintf(dest2, "%s", &stMsgWhisper.String[maxLen - 1]);
+		}
+
+		char istrText[128]{};
+		sprintf(istrText, "[%s]> %s", &g_pObjectManager->m_stMobData, &dest[maxLen]);
+
+		auto ipNewItem = new SListBoxItem(istrText, dwColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0);
+		if (ipNewItem && pChatList)
+			pChatList->AddItem(ipNewItem);
+
+		auto ipNewItem2 = new SListBoxItem(dest2, dwColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0);
+		if (strlen(stMsgWhisper.String) > maxLen && ipNewItem && pChatList)
+			pChatList->AddItem(ipNewItem);
+	}
 }

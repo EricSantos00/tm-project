@@ -2350,6 +2350,20 @@ int BASE_GetMobAbility(STRUCT_MOB* mob, char Type)
     return 0;
 }
 
+char BASE_CheckChatValid(char* Chat)
+{
+    return 0;
+}
+
+char CheckGuildName(char* GuildName, bool bSubguild)
+{
+    return 0;
+}
+
+void BASE_GetHitPosition(int sx, int sy, int* tx, int* ty, char* pHeight, int MH)
+{
+}
+
 int IsPassiveSkill(int nSkillIndex)
 {
     if (nSkillIndex >= 5400)

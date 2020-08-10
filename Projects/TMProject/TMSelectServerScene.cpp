@@ -580,8 +580,8 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 	break;
 	case B_SERVER_SEL_OK:
 	{
-		int nServerGroupIndex = g_nServerCountList[nIndexN - m_pNServerGroupList->GetSelectIndex() - 1] - 1;
-		int nServerIndex = m_pNServerList->GetSelectIndex() + 1;
+		int nServerGroupIndex = g_nServerCountList[nIndexN - m_pNServerGroupList->GetSelectedIndex() - 1] - 1;
+		int nServerIndex = m_pNServerList->GetSelectedIndex() + 1;
 
 		SListBoxServerItem* pItem = static_cast<SListBoxServerItem*>(m_pNServerList->GetItem(nServerIndex - 1));
 		if (!pItem || nServerGroupIndex < 0 || nServerIndex < 1)
