@@ -7,6 +7,7 @@
 #include "TMCamera.h"
 #include "TMMesh.h"
 #include "TMEffectBillBoard.h"
+#include "TMEffectSpark2.h"
 
 TMEffectSWSwing::TMEffectSWSwing()
 {
@@ -35,10 +36,10 @@ TMEffectSWSwing::TMEffectSWSwing()
     for (int i = 0; i < 32; i += 2)
     {
         float t = (float)(i / 2) / 30.0f;
-        m_vertex[i].tu = 1.0 - t;
+        m_vertex[i].tu = 1.0f - t;
         m_vertex[i].tv = 1.0f;
-        m_vertex[i + 1].tu = 1.0 - t;
-        m_vertex[i + 1].tv = 0.0;
+        m_vertex[i + 1].tu = 1.0f - t;
+        m_vertex[i + 1].tv = 0.0f;
         float dif = t * 255.0f;
         m_vertex[i].diffuse = (unsigned int)dif & 0xFF | (((unsigned int)dif & 0xFF) << 8) | ((unsigned char)(unsigned int)dif << 16);
         m_vertex[i + 1].diffuse = (unsigned int)dif & 0xFF | (((unsigned int)dif & 0xFF) << 8) | ((unsigned char)(unsigned int)dif << 16);
@@ -732,7 +733,7 @@ int TMEffectSWSwing::FrameMove(unsigned int dwServerTime)
                     if (t > 1.0f)
                         t = 1.0f;
 
-                    m_vertex[i + 1].tu = 1.0 - t;
+                    m_vertex[i + 1].tu = 1.0f - t;
                     m_vertex[i].tu = 1.0f - t;
                     m_vertex[i].tv = 1.0f;
                     m_vertex[i + 1].tv = 0.20f;
@@ -754,7 +755,66 @@ int TMEffectSWSwing::FrameMove(unsigned int dwServerTime)
                     dwColMix[2] = 0x00B600B6;
                     dwColMix[3] = 0x00FF1010;
 
-                   //TODO
+                    // TODO:
+                    // Check if the size of m_cMixEffect can really be 144.
+                    // If so, there is an overflow that needs to be analyzed.
+                    DWORD dwCol = dwColMix[(static_cast<unsigned char>(m_cMixEffect) >> 4) - 5];
+
+                    DWORD dwR = (dwCol & 0xFF0000) >> 16;
+                    DWORD dwG = (dwCol & 0xFF00) >> 8;
+                    DWORD dwB = static_cast<unsigned char>(dwCol);
+
+                    int nRate = static_cast<unsigned char>(m_cMixEffect) % 16;
+
+                    dwR = nRate * dwR / 0x11;
+                    dwG = nRate * dwG / 0x11;
+                    dwB = nRate * static_cast<unsigned char>(dwCol) / 0x11;
+
+                    dwCol = dwB | (dwG << 8) | (dwR << 16);
+
+                    if (dwR > 0xFF)
+                        dwR = 0xFF;
+
+                    if (dwG > 0xFF)
+                        dwG = 0xFF;
+
+                    if (dwB > 0xFF)
+                        dwB = 0xFF;
+
+                    TMEffectSpark2* pMixEffect{};
+
+                    if (m_pParentSkin->m_pOwner)
+                    {
+                        if (m_cSForce != 2 && m_cSForce != 4)
+                        {
+                            pMixEffect = new TMEffectSpark2(
+                                m_pParentSkin->m_pOwner,
+                                m_dwSwingID,
+                                0.0f,
+                                m_fEffectLength,
+                                dwCol,
+                                dwCol,
+                                0.30000001f);
+                        }
+                        else
+                        {
+                            pMixEffect = new TMEffectSpark2(
+                                m_pParentSkin->m_pOwner,
+                                m_dwSwingID,
+                                m_fEffectLength,
+                                m_fEffectLength,
+                                dwCol,
+                                dwCol,
+                                0.30000001f);
+                        }
+
+                        if (pMixEffect)
+                        {
+                            pMixEffect->m_fRange = 0.13f;
+                            g_pCurrentScene->m_pEffectContainer->AddChild(static_cast<TreeNode*>(pMixEffect));
+                        }
+                    }
+                    m_dwOldMixTime = dwServerTime;
                 }
             }
         }
