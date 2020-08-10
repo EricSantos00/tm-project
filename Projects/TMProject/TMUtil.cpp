@@ -42,3 +42,47 @@ void SendOneMessage(char* Msg, int Size)
         g_usLastPacketType = pMsgStandard->Type;
     }
 }
+
+void GetSoundAndPlay(int soundId, int priority, int flag)
+{
+    auto pSoundManager = g_pSoundManager;
+    if (pSoundManager)
+    {
+        auto pSoundData = pSoundManager->GetSoundData(soundId);
+        if (pSoundData)
+            pSoundData->Play(priority, flag);
+    }
+}
+
+void GetSoundAndPause(int soundId, int priority, int flag)
+{
+    auto pSoundManager = g_pSoundManager;
+    if (pSoundManager)
+    {
+        auto pSoundData = pSoundManager->GetSoundData(soundId);
+        if (pSoundData)
+            pSoundData->Stop();
+    }
+}
+
+void GetSoundAndPlayIfNot(int soundId, int priority, int flag)
+{
+    auto pSoundManager = g_pSoundManager;
+    if (pSoundManager)
+    {
+        auto pSoundData = pSoundManager->GetSoundData(soundId);
+        if (pSoundData && !pSoundData->IsSoundPlaying())
+            pSoundData->Play(priority, flag);
+    }
+}
+
+void GetSoundAndPauseIfNot(int soundId, int priority, int flag)
+{
+    auto pSoundManager = g_pSoundManager;
+    if (pSoundManager)
+    {
+        auto pSoundData = pSoundManager->GetSoundData(soundId);
+        if (pSoundData && pSoundData->IsSoundPlaying())
+            pSoundData->Stop();
+    }
+}

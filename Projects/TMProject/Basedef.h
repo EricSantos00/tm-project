@@ -34,6 +34,7 @@ struct MSG_STANDARDPARM
 };
 
 constexpr auto MSG_DeleteItem_Opcode = 0x2E4;
+constexpr auto MSG_DoJackpotBet_Opcode = 0x2BE;
 struct MSG_STANDARDPARM2
 {
 	MSG_STANDARD Header;
