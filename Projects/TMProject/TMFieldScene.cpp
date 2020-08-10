@@ -8978,6 +8978,21 @@ void TMFieldScene::MobStop(D3DXVECTOR3 vec)
 
 void TMFieldScene::VisibleInputTradeName()
 {
+	auto pInputGoldPanel = (SControl*)m_pInputGoldPanel;
+	auto pText = (SText*)m_pControlContainer->FindControl(65888u);
+	auto pEdit = (SEditableText*)m_pControlContainer->FindControl(65889u);
+	if (pText && pEdit)
+	{
+		m_nCoinMsgType = 3;
+		pText->SetText(g_pMessageStringTable[141], 0);
+		m_pControlContainer->SetFocusedControl(pEdit);
+		pInputGoldPanel->SetVisible(1);
+		auto pInputBG2 = (SPanel*)m_pControlContainer->FindControl(574u);
+		if (pInputBG2)
+			pInputBG2->SetVisible(1);
+		pEdit->m_nMaxStringLen = 20;
+		m_pChatSelectPanel->SetVisible(0);
+	}
 }
 
 void TMFieldScene::VisibleInputPass()
