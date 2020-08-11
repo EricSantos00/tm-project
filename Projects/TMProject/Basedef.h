@@ -1028,6 +1028,15 @@ struct MSG_SetShortSkill
 	char Skill[20];
 };
 
+constexpr auto MSG_ShopList_Opcode = 0x17C;
+struct MSG_ShopList
+{
+	MSG_STANDARD Header;
+	int ShopType;
+	STRUCT_ITEM List[27];
+	int Tax;
+};
+
 constexpr auto MSG_SwapItem_Opcode = 0x376;
 struct MSG_SwapItem
 {

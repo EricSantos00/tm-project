@@ -6102,6 +6102,8 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketCreateMob(pStd);
 	case MSG_SwapItem_Opcode:
 		return OnPacketSwapItem(pStd);
+	case MSG_ShopList_Opcode:
+		return OnPacketShopList(pStd);
 	}
 
 	return 0;
@@ -11915,7 +11917,136 @@ int TMFieldScene::OnPacketSwapItem(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketShopList(MSG_STANDARD* pStd)
 {
-	return 0;
+	auto pShopList = reinterpret_cast<MSG_ShopList*>(pStd);
+
+	if (pShopList->ShopType == 1)
+	{
+		if (m_bEventCouponClick == 1)
+		{
+			m_bEventCouponClick = 0;
+			m_bEventCouponOpen = 1;
+		}
+
+		m_pGridShop->Empty();
+
+		for (int i = 0; i < 27; ++i)
+		{
+			auto pItemList = new STRUCT_ITEM();
+
+			if (pItemList)
+			{
+				memcpy(pItemList, &pShopList->List[i], sizeof(STRUCT_ITEM));
+
+				if (pShopList->List[i].sIndex > 0)
+				{
+					auto pItem = new SGridControlItem(0, pItemList, 0.0f, 0.0f);
+
+					if (pItem)
+					{
+						m_pGridShop->AddItem(pItem, i % 5, i / 5);
+
+						int nAmount = BASE_GetItemAmount(pItemList);
+
+						if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
+							nAmount = 0;
+
+						if (nAmount > 0)
+						{
+							sprintf_s(pItem->m_GCText.strString, "%2d", nAmount);
+
+							pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+						}
+					}
+				}
+			}
+		}
+
+		auto pREQItem = new STRUCT_ITEM();
+
+		if (pREQItem)
+		{
+			pREQItem->sIndex = 4998;
+			
+			auto pItem = new SGridControlItem(0, pREQItem, 0.0f, 0.0f);
+
+			pItem->m_GCObj.nTextureIndex = 8;
+
+			if (pItem)
+				m_pGridShop->AddItem(pItem, 4, 7);
+		}
+		g_pObjectManager->m_nTax = pShopList->Tax;
+		SetVisibleShop(1);
+	}
+	else if (pShopList->ShopType == 3)
+	{
+		m_pGridSkillMaster->Empty();
+
+		switch ((pShopList->List[0].sIndex - 5000) / 24)
+		{
+		case 0:
+			m_pSkillMSec1->SetText(g_pMessageStringTable[107], 0);
+			m_pSkillMSec2->SetText(g_pMessageStringTable[108], 0);
+			m_pSkillMSec3->SetText(g_pMessageStringTable[109], 0);
+			break;
+		case 1:
+			m_pSkillMSec1->SetText(g_pMessageStringTable[110], 0);
+			m_pSkillMSec2->SetText(g_pMessageStringTable[111], 0);
+			m_pSkillMSec3->SetText(g_pMessageStringTable[112], 0);
+			break;
+		case 2:
+			m_pSkillMSec1->SetText(g_pMessageStringTable[113], 0);
+			m_pSkillMSec2->SetText(g_pMessageStringTable[114], 0);
+			m_pSkillMSec3->SetText(g_pMessageStringTable[115], 0);
+			break;
+		case 3:
+			m_pSkillMSec1->SetText(g_pMessageStringTable[133], 0);
+			m_pSkillMSec2->SetText(g_pMessageStringTable[134], 0);
+			m_pSkillMSec3->SetText(g_pMessageStringTable[135], 0);
+			break;
+		}
+
+		for (int j = 0; j < 27; ++j)
+		{
+			if (pShopList->List[j].sIndex == 5027)
+			{
+				STRUCT_ITEM temp = pShopList->List[j];
+
+				pShopList->List[j] = pShopList->List[j + 1];
+
+				pShopList->List[j + 1] = temp;
+
+				STRUCT_ITEM temp2 = pShopList->List[j + 1];
+
+				pShopList->List[j + 1] = pShopList->List[j + 2];
+
+				pShopList->List[j + 2] = temp2;
+				break;
+			}
+		}
+
+		for (int k = 0; k < 27; ++k)
+		{
+			auto dst = new STRUCT_ITEM();
+
+			if (dst)
+			{
+				memcpy(dst, &pShopList->List[k], sizeof(STRUCT_ITEM));
+
+				if (pShopList->List[k].sIndex > 0)
+				{
+					auto pItem = new SGridControlItem(0, dst, 0.0f, 0.0f);
+
+					if (pItem)
+						m_pGridSkillMaster->AddItem(pItem, k % 9 % 4, k / 9 + (k - k / 9) / 4);
+				}
+			}
+		}
+
+		if (!m_pSkillMPanel->IsVisible())
+			SetVisibleSkillMaster();
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketRMBShopList(MSG_STANDARD* pStd)
