@@ -9520,6 +9520,160 @@ void TMFieldScene::SetAutoTarget()
 
 void TMFieldScene::SetVisibleAutoTrade(int bShow, int bCargo)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	if (m_pInputGoldPanel->IsVisible() == 1)
+		SetInVisibleInputCoin();
+
+	if (m_pAutoTrade)
+	{
+		auto pBtnCloseAutoTrade = static_cast<SButton*>(m_pControlContainer->FindControl(TMB_ATRADE_CLOSE));
+		auto pBtnAutoTrade = static_cast<SButton*>(m_pControlContainer->FindControl(B_AUTOTRADEBTN));
+		auto pBtnChar = static_cast<SButton*>(m_pControlContainer->FindControl(B_CHAR));
+		auto pBtnInv = static_cast<SButton*>(m_pControlContainer->FindControl(B_EQUIP));
+		auto pMyCargoCoin = static_cast<SText*>(m_pControlContainer->FindControl(TMT_ATRADE_COIN));
+		auto pMyCargoCoinB = static_cast<SButton*>(m_pControlContainer->FindControl(TMB_ATRADE_COIN));
+		
+		if (pBtnCloseAutoTrade)
+			pBtnCloseAutoTrade->SetVisible(0);
+
+		bool bSendQuit = false;
+
+		if (pBtnAutoTrade)
+			pBtnAutoTrade->SetSelected(bShow);
+
+		if (m_pAutoTrade)
+		{
+			if (m_pAutoTrade->IsVisible() == 1 && !bShow && !m_pInvenPanel->IsVisible())
+				bSendQuit = true;
+
+			m_pAutoTrade->SetVisible(bShow);
+
+			m_pAutoTrade->SetPos(RenderDevice::m_fWidthRatio * 254.0f, RenderDevice::m_fHeightRatio * 35.0f);
+		}
+		if (bShow == 1)
+		{
+			g_pCursor->DetachItem();
+			m_pSystemPanel->SetVisible(0);
+			m_pCPanel->SetVisible(0);
+			m_pSkillPanel->SetVisible(0);
+			m_pSkillMPanel->SetVisible(0);
+			pBtnInv->SetSelected(0);
+			pBtnChar->SetSelected(0);
+			SetVisibleTrade(0);
+
+			auto pRunAutoTrade = static_cast<SButton*>(m_pControlContainer->FindControl(TMB_ATRADE_RUN));
+
+			if (bCargo == 1)
+			{
+				m_pCargoPanel->SetPos(RenderDevice::m_fWidthRatio * 514.0f, RenderDevice::m_fHeightRatio * 35.0f);
+				m_pCargoPanel1->SetPos(RenderDevice::m_fWidthRatio * 514.0f, RenderDevice::m_fHeightRatio * 35.0f);
+				m_pCargoPanel->SetVisible(1);
+				m_pCargoPanel1->SetVisible(1);
+				m_pInvenPanel->SetVisible(0);
+
+				if (pRunAutoTrade)
+					pRunAutoTrade->SetVisible(1);
+
+				if (pMyCargoCoin)
+					pMyCargoCoin->SetVisible(1);
+
+				if (pMyCargoCoinB)
+					pMyCargoCoinB->SetVisible(1);
+
+				for (int i = 0; i < 10; ++i)
+				{
+					if (m_pGridAutoTrade[i])
+						m_pGridAutoTrade[i]->m_eGridType = TMEGRIDTYPE::GRID_TRADEOP;
+				}
+			}
+			else
+			{
+				m_pCargoPanel->SetVisible(0);
+				m_pCargoPanel1->SetVisible(0);
+
+				if (pMyCargoCoin)
+					pMyCargoCoin->SetVisible(0);
+
+				if (pMyCargoCoinB)
+					pMyCargoCoinB->SetVisible(0);
+
+				m_pInvenPanel->SetVisible(1);
+
+				if (pRunAutoTrade)
+					pRunAutoTrade->SetVisible(0);
+
+				for (int j = 0; j < 11; ++j)
+				{
+					if (m_pGridAutoTrade[j])
+						m_pGridAutoTrade[j]->m_eGridType = TMEGRIDTYPE::GRID_TRADEMY2;
+				}
+				m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV2;
+				m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV2;
+				m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV2;
+				m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV2;
+				SetEquipGridState(0);
+			}
+			m_pCargoGridList[0]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV2;
+			m_pCargoGridList[1]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV2;
+			m_pCargoGridList[2]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV2;
+		}
+		else
+		{
+			sprintf(m_pMyHuman->m_TradeDesc, "");
+			m_pMyHuman->m_pAutoTradeDesc->SetText(m_pMyHuman->m_TradeDesc, 0);
+
+			if (m_pInvenPanel->IsVisible() == 1)
+			{
+				m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+				m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+				m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+				m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+				SetEquipGridState(1);
+			}
+
+			for (int k = 0; k < 10; ++k)
+			{
+				m_stAutoTrade.Header.ID = m_pMyHuman->m_dwID;
+				m_stAutoTrade.TargetID = 0;
+
+				SGridControlItem* pItem = m_pGridAutoTrade[k]->PickupAtItem(0, 0);
+
+				int page = m_stAutoTrade.CarryPos[k] / 40;
+
+				SGridControlItem* pSrcItem = m_pCargoGridList[page]->GetAtItem(
+					m_stAutoTrade.CarryPos[k] % 40 % 5,
+					m_stAutoTrade.CarryPos[k] % 40 / 5);
+
+				if (pSrcItem)
+					pSrcItem->m_GCObj.dwColor = 0xFFFFFFFF;
+
+				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pItem)
+					g_pCursor->m_pAttachedItem = nullptr;
+
+				if (pItem)
+					delete pItem;
+			}
+			m_pInvenPanel->SetVisible(0);
+			m_pCargoPanel->SetVisible(0);
+			m_pCargoPanel1->SetVisible(0);
+			g_pDevice->m_nWidthShift = 0;
+			m_pCargoGridList[0]->m_eGridType = TMEGRIDTYPE::GRID_CARGO;
+			m_pCargoGridList[1]->m_eGridType = TMEGRIDTYPE::GRID_CARGO;
+			m_pCargoGridList[2]->m_eGridType = TMEGRIDTYPE::GRID_CARGO;
+
+			memset(&m_stAutoTrade, 0, sizeof(m_stAutoTrade));
+
+			if (bSendQuit)
+			{
+				MSG_STANDARD stStandard{};
+				
+				stStandard.Type = 0x384;
+				stStandard.ID = m_pMyHuman->m_dwID;
+				SendOneMessage((char*)&stStandard, sizeof(stStandard));
+			}
+		}
+	}
 }
 
 void TMFieldScene::SetWhisper(char cOn)
