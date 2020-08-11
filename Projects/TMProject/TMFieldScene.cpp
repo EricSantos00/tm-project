@@ -6104,6 +6104,10 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketSwapItem(pStd);
 	case MSG_ShopList_Opcode:
 		return OnPacketShopList(pStd);
+	case MSG_Deposit_Opcode:
+		return OnPacketDeposit(pStd);
+	case MSG_Withdraw_Opcode:
+		return OnPacketWithdraw(pStd);
 	}
 
 	return 0;
@@ -8179,6 +8183,32 @@ void TMFieldScene::SetVisibleShop(int bShow)
 
 void TMFieldScene::SetVisibleCargo(int bShow)
 {
+	if (m_pGambleStore->IsVisible() == 1)
+		bShow = 0;
+
+	SGridControl::m_sLastMouseOverIndex = -1;
+	
+	m_pCargoPanel->SetVisible(bShow);
+	m_pCargoPanel1->SetVisible(bShow);
+
+	if (bShow)
+	{
+		m_pInvenPanel->SetPos(RenderDevice::m_fWidthRatio * 514.0f, RenderDevice::m_fHeightRatio * 35.0f);
+		m_pCargoPanel->SetPos(RenderDevice::m_fWidthRatio * 287.0f, RenderDevice::m_fHeightRatio * 35.0f);
+		m_pCargoPanel1->SetPos(RenderDevice::m_fWidthRatio * 287.0f, RenderDevice::m_fHeightRatio * 35.0f);
+	}
+
+	m_pInvenPanel->SetVisible(bShow);
+	m_pSkillPanel->SetVisible(bShow == 0);
+	m_pShopPanel->SetVisible(bShow == 0);
+
+	if (g_pSoundManager)
+	{
+		auto pSoundData = g_pSoundManager->GetSoundData(51);
+
+		if (pSoundData)
+			pSoundData->Play(0, 0);
+	}
 }
 
 void TMFieldScene::SetVisibleCargo1(int bShow)
@@ -12172,12 +12202,22 @@ int TMFieldScene::OnPacketSetHpMode(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketDeposit(MSG_STANDARD* pStd)
 {
-	return 0;
+	auto pDeposit = reinterpret_cast<MSG_STANDARDPARM*>(pStd);
+
+	g_pObjectManager->m_nCargoCoin += pDeposit->Parm;
+	g_pObjectManager->m_stMobData.Coin -= pDeposit->Parm;
+	UpdateScoreUI(0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketWithdraw(MSG_STANDARD* pStd)
 {
-	return 0;
+	auto pWithdraw = reinterpret_cast<MSG_STANDARDPARM*>(pStd);
+
+	g_pObjectManager->m_nCargoCoin -= pWithdraw->Parm;
+	g_pObjectManager->m_stMobData.Coin += pWithdraw->Parm;
+	UpdateScoreUI(0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketReqChallange(MSG_STANDARD* pStd)
