@@ -638,7 +638,6 @@ int TMFieldScene::InitializeScene()
 	m_pccmode = (SPanel*)m_pControlContainer->FindControl(66817);
 
 	m_pccmode->SetVisible(0);
-	m_pccmode->SetVisible(1);
 
 	m_pGridCharFace = (SPanel*)m_pControlContainer->FindControl(69636);
 	m_pKingDomGuild_C->m_bSelected = 1;
@@ -3312,14 +3311,37 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 
 		return 0;
 	}
-	if (idwControlID == P_CARGO_PANEL)
+	if (idwControlID == B_CHATLIST_SIZEUP)
 	{
 		OnKeyPlus(43, 0);
 		return 0;
 	}
-	if (idwControlID == T_CARGO_CAPTION)
+	if (idwControlID == B_CHATLIST_LIGHT)
 	{
-		// TODO
+		static short Color = 0;
+		switch (Color)
+		{
+		case 0:
+			m_pChatBack->m_GCPanel.dwColor = 0x66000000;
+			Color = 1;
+			break;
+		case 1:
+			m_pChatBack->m_GCPanel.dwColor = 0x88000000;
+			Color = 2;
+			break;
+		case 2:
+			m_pChatBack->m_GCPanel.dwColor = 0xAA000000;
+			Color = 3;
+			break;
+		case 3:
+			m_pChatBack->m_GCPanel.dwColor = 0xFF000000;
+			Color = 4;
+			break;
+		case 4:
+			m_pChatBack->m_GCPanel.dwColor = 0;
+			Color = 5;
+			break;
+		}
 		return 0;
 	}
 	if (idwControlID == B_CHAT_SELECT)
@@ -8261,6 +8283,22 @@ void TMFieldScene::SetVisibleRefuseServerWar()
 
 void TMFieldScene::SetInVisibleInputCoin()
 {
+	auto pEdit = (SEditableText*)m_pControlContainer->FindControl(65889u);
+	auto pInputGoldPanel = (SControl*)m_pInputGoldPanel;
+
+	m_pControlContainer->SetFocusedControl(nullptr);
+
+	pInputGoldPanel->SetVisible(0);
+	pEdit->SetText((char*)"");
+
+	if (m_nLastAutoTradePos >= 0)
+	{
+		m_pCargoGridList[m_nLastAutoTradePos / 40]->GetAtItem(m_nLastAutoTradePos % 40 % 5,	m_nLastAutoTradePos % 40 / 5)->m_GCObj.dwColor = 0xFFFFFFFF;
+
+		m_nLastAutoTradePos = -1;
+	}
+	if (g_nKeyType == 1)
+		m_pControlContainer->SetFocusedControl(m_pEditChat);
 }
 
 void TMFieldScene::SetGridState()
@@ -9987,7 +10025,47 @@ int TMFieldScene::OnKeyDash(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyPlus(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != '=' && iCharCode != '+')
+		return 0;
+
+	++m_nChatListSize;
+	m_nChatListSize %= 4;
+	if (!m_pChatList)
+		return 0;
+
+	auto pChatList = m_pChatList;
+
+	pChatList->SetSize(pChatList->m_nWidth, (float)(140 * m_nChatListSize + 60) * RenderDevice::m_fHeightRatio);
+	pChatList->m_pScrollBar->SetSize(pChatList->m_pScrollBar->m_nWidth, (float)(140 * m_nChatListSize + 60) * RenderDevice::m_fHeightRatio);
+	pChatList->m_pScrollBar->m_pBackground1->SetSize(pChatList->m_pScrollBar->m_nWidth, (float)(140 * m_nChatListSize + 60) * RenderDevice::m_fHeightRatio);
+
+	m_pChatBack->SetSize(BASE_ScreenResize(10.0) + pChatList->m_nWidth, pChatList->m_nHeight);
+
+	pChatList->m_pScrollBar->SetMaxValue(1000);
+	auto pChatPanel = (SPanel*)m_pControlContainer->FindControl(65672u);
+
+	if (pChatPanel)
+	{
+		m_pChatList->SetPos(m_pChatList->m_nPosX, (float)(pChatPanel->m_nPosY - pChatList->m_nHeight) - 4.0f);
+		m_pChatBack->SetPos(m_pChatList->m_nPosX, (float)(pChatPanel->m_nPosY - pChatList->m_nHeight) - 4.0f);
+	}
+
+	if (m_nChatListSize == 3)
+		m_pChatBack->SetVisible(0);
+	else
+		m_pChatBack->SetVisible(1);
+
+	pChatList->m_nVisibleCount = 10 * m_nChatListSize + 5;
+	pChatList->m_pScrollBar->Down();
+
+	if (m_nChatListSize == 3)
+		pChatList->SetVisible(0);
+	else if (!pChatList->m_bVisible)
+		pChatList->SetVisible(1);
+
+	GetSoundAndPlay(51, 0, 0);
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyPK(char iCharCode, int lParam)
