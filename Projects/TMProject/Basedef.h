@@ -1054,6 +1054,8 @@ struct MSG_REQShopList
 	unsigned short TargetID;
 };
 
+constexpr auto MSG_Quest_Opcode = 0x28B;
+
 constexpr auto MSG_Buy_Opcode = 0x379;
 struct MSG_Buy
 {

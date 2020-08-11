@@ -7665,7 +7665,197 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 
 int TMFieldScene::MouseClick_NPC(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServerTime)
 {
-	return 0;
+	auto pOver = m_pMouseOverHuman;
+
+	if (m_pAutoTrade->m_bVisible)
+		return 1;
+
+	m_bTeleportMsg = 0;
+
+	if (!pOver || pOver->m_bMouseOver != 1)
+	{
+		if (dwServerTime - m_dwLastMouseDownTime > 1000 &&
+			m_dwLastMouseDownTime && !m_pMyHuman->m_cLastMoveStop && m_pMyHuman->m_stScore.Hp > 0)
+		{
+			MobStop(vec);
+		}
+		return 1;
+	}
+
+	if ((int)m_pMyHuman->m_vecPosition.x >> 7 > 1 &&
+		(int)m_pMyHuman->m_vecPosition.x >> 7 < 11 &&
+		(int)m_pMyHuman->m_vecPosition.y >> 7 < 5)
+		return 1;
+
+	if (dwServerTime - m_dwNPCClickTime < 1000)
+		return 1;
+
+	if (pOver->m_TradeDesc[0])
+	{
+		MSG_STANDARDPARM stQuest{};
+
+		stQuest.Header.Type = 0x39A;
+		stQuest.Header.ID = m_pMyHuman->m_dwID;
+		stQuest.Parm = pOver->m_dwID;
+		SendOneMessage((char*)&stQuest, sizeof(stQuest));
+		m_dwNPCClickTime = dwServerTime;
+		return 1;
+	}
+
+	if (pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 51 &&
+		((int)m_pMyHuman->m_vecPosition.x >> 7 == 13 || (int)m_pMyHuman->m_vecPosition.x >> 7 == 14) &&
+		(int)m_pMyHuman->m_vecPosition.y >> 7 == 28)
+		return 1;
+
+	if (pOver->m_dwID >= 1000 && (pOver->m_stScore.Reserved & 0xF) == 1)
+	{
+		if (!m_pShopPanel->IsVisible())
+		{
+			if (pOver->m_sHeadIndex == 58 && pOver->m_sHelmIndex == 1110)
+				m_nIsMP = 1;
+			else if (pOver->m_sHeadIndex == 59 && pOver->m_sHelmIndex == 1257)
+				m_nIsMP = 2;
+
+			if (pOver->m_sHeadIndex != 59 || pOver->m_sHelmIndex != 1260)
+				m_nIsMP = 0;
+			else
+				m_bEventCouponClick = 1;
+
+			MSG_REQShopList stReqShopList{};
+
+			stReqShopList.Header.Type = MSG_REQShopList_Opcode;
+			stReqShopList.Header.ID = m_pMyHuman->m_dwID;
+			stReqShopList.TargetID = pOver->m_dwID;
+
+			m_pGridShop->m_dwMerchantID = pOver->m_dwID;
+
+			SendOneMessage((char*)&stReqShopList, sizeof(stReqShopList));
+
+			m_dwNPCClickTime = dwServerTime;
+			m_sShopTarget = pOver->m_dwID;
+			m_bIsUndoShoplist = 0;
+		}
+		return 1;
+	}
+
+	if (pOver->m_dwID >= 1000 && (pOver->m_stScore.Reserved & 0xF) == 3)
+	{
+		if (!m_pShopPanel->IsVisible())
+		{
+			if (pOver->m_sHeadIndex == 58 && pOver->m_sHelmIndex == 1110)
+				m_nIsMP = 1;
+			else if (pOver->m_sHeadIndex == 59 && pOver->m_sHelmIndex == 1257)
+				m_nIsMP = 2;
+
+			if (pOver->m_sHeadIndex != 59 || pOver->m_sHelmIndex != 1260)
+				m_nIsMP = 0;
+			else
+				m_bEventCouponClick = 1;
+
+			MSG_REQShopList stReqShopList{};
+
+			stReqShopList.Header.Type = MSG_REQShopList_Opcode;
+			stReqShopList.Header.ID = m_pMyHuman->m_dwID;
+			stReqShopList.TargetID = pOver->m_dwID;
+
+			m_pGridShop->m_dwMerchantID = pOver->m_dwID;
+
+			SendOneMessage((char*)&stReqShopList, sizeof(stReqShopList));
+
+			m_dwNPCClickTime = dwServerTime;
+			m_sShopTarget = pOver->m_dwID;
+			m_bIsUndoShoplist = 0;
+		}
+		return 1;
+	}
+	
+	if (pOver->m_dwID >= 1000 && (pOver->m_stScore.Reserved & 0xF) == 2 && pOver->m_sHeadIndex != 51)
+	{
+		if (!m_pCargoPanel->IsVisible())
+		{
+			SetVisibleCargo(1);
+			TMFieldScene::m_dwCargoID = pOver->m_dwID;
+			m_dwNPCClickTime = dwServerTime;
+		}
+		return 1;
+	}
+	
+	if (pOver->m_dwID >= 1000 && (pOver->m_stScore.Reserved & 0xF) == 3)
+	{
+		MouseClick_SkillMasterNPC(dwServerTime, pOver);
+		return 1;
+	}
+	
+	if (pOver->m_dwID < 1000 ||
+		pOver->m_vecTargetPos.x < 2148 ||
+		pOver->m_vecTargetPos.x > 2156 ||
+		pOver->m_vecTargetPos.y < 2067 ||
+		pOver->m_vecTargetPos.y > 2076 ||
+		pOver->m_sHeadIndex != 51 ||
+		m_pGround->m_vecOffsetIndex.x != 16 ||
+		m_pGround->m_vecOffsetIndex.y != 16)
+	{
+		
+		if (pOver->m_dwID >= 1000 &&
+			pOver->m_sHeadIndex == 67 &&
+			m_pGround->m_vecOffsetIndex.x == 16 &&
+			m_pGround->m_vecOffsetIndex.y == 16)
+		{
+			m_MissionClass.ResultItemListSet();
+			SetVisibleMissionPanel(m_MissionClass.m_pMissionPanel->m_bVisible == 0);
+			return 1;
+		}
+
+		if (MouseClick_MixNPC(pOver))
+			return 1;
+
+		if (pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 57)
+		{
+			MouseClick_PremiumNPC(pOver);
+			return 1;
+		}
+
+		if (pOver->m_dwID >= 1000 && 
+			pOver->m_sHeadIndex == 63 &&
+			(pOver->m_stScore.Reserved & 0xF) == 7 && 
+			m_pGround->m_vecOffsetIndex.x == 16 &&
+			m_pGround->m_vecOffsetIndex.y == 16)
+		{
+			AirMove_ShowUI(1);
+			return 1;
+		}
+		
+		if (pOver->m_dwID >= 1000 && (pOver->m_stScore.Reserved & 0xF) == 4 || (pOver->m_stScore.Reserved & 0xF) >= 8 && (pOver->m_stScore.Reserved & 0xF) <= 15)
+		{
+			MouseClick_QuestNPC(dwServerTime, pOver);
+			return 1;
+		}
+		
+		if (pOver->m_dwID >= 1000 && (pOver->m_stScore.Reserved & 0xF) >= 6 && (pOver->m_stScore.Reserved & 0xF) <= 8)
+		{
+			MSG_STANDARDPARM stPacket{};
+
+			stPacket.Header.Type = 0x28E;
+			stPacket.Header.ID = m_pMyHuman->m_dwID;
+			m_dwTID = pOver->m_dwID;
+			stPacket.Parm = m_dwTID;
+
+			SendOneMessage((char*)&stPacket, sizeof(stPacket));
+
+			m_dwNPCClickTime = dwServerTime;
+			return 1;
+		}
+		return 1;
+	}
+
+	if (!m_pMessageBox->IsVisible())
+	{
+		m_pMessageBox->SetMessage(g_pMessageStringTable[437], pOver->m_sHeadIndex, 0);
+		m_pMessageBox->m_dwArg = pOver->m_dwID;
+		m_pMessageBox->SetVisible(1);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::CheckMerchant(TMHuman* pOver)
@@ -12103,7 +12293,38 @@ void TMFieldScene::MouseClick_PremiumNPC(TMHuman* pOver)
 
 int TMFieldScene::MouseClick_SkillMasterNPC(unsigned int dwServerTime, TMHuman* pOver)
 {
-	return 0;
+	if (g_pObjectManager->m_stMobData.Equip[10].sIndex == 1742 && !m_pMessageBox->IsVisible())
+	{
+		m_pMessageBox->SetMessage(g_pMessageStringTable[152], 1742, 0);
+		m_pMessageBox->m_dwArg = pOver->m_dwID;
+		m_pMessageBox->SetVisible(1);
+
+		MSG_STANDARDPARM2 stQuest{};
+
+		stQuest.Header.Type = MSG_Quest_Opcode;
+		stQuest.Header.ID = m_pMyHuman->m_dwID;
+		stQuest.Parm1 = pOver->m_dwID;
+		stQuest.Parm2 = 0;
+		SendOneMessage((char*)&stQuest, sizeof(stQuest));
+
+		m_dwNPCClickTime = dwServerTime;
+		return 1;
+	}
+
+	if (!m_pShopPanel->IsVisible())
+	{
+		MSG_REQShopList stReqShopList{};
+
+		stReqShopList.Header.Type = MSG_REQShopList_Opcode;
+		stReqShopList.Header.ID = m_pMyHuman->m_dwID;
+		stReqShopList.TargetID = pOver->m_dwID;
+
+		m_pGridSkillMaster->m_dwMerchantID = pOver->m_dwID;
+
+		SendOneMessage((char*)&stReqShopList, sizeof(stReqShopList));
+		m_dwNPCClickTime = dwServerTime;
+	}
+	return 1;
 }
 
 int TMFieldScene::MouseClick_QuestNPC(unsigned int dwServerTime, TMHuman* pOver)
