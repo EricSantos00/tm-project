@@ -10319,6 +10319,87 @@ void TMFieldScene::VisibleInputCharName(SGridControlItem* pItem, int nCellX, int
 
 void TMFieldScene::UseItem(SGridControlItem* pItem, int nType, int nItemSIndex, int nCellX, int nCellY)
 {
+	if (pItem == nullptr || m_pGridInv == nullptr)
+		return;
+
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (!m_dwUseItemTime || (dwServerTime - m_dwUseItemTime) >= 200)
+	{
+		short SourPos = m_pGridInv->CheckPos(pItem->m_pGridControl->m_eItemType);
+
+		if (SourPos == -1)
+			SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+		int SourPage = 15 * (pItem->m_pGridControl->m_dwControlID - 67072);
+
+		MSG_UseItem stUseItem{};
+
+		stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+		stUseItem.Header.Type = MSG_UseItem_Opcode;
+		stUseItem.SourType = 1;
+		stUseItem.SourPos = SourPage + SourPos;
+
+		if (nType == 15)
+		{
+			stUseItem.DestType = 0;
+			stUseItem.DestPos = 14;
+		}
+
+		stUseItem.ItemID = 0;
+		stUseItem.GridX = static_cast<int>(m_pMyHuman->m_vecPosition.x);
+		stUseItem.GridY = static_cast<int>(m_pMyHuman->m_vecPosition.y);
+
+		SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+
+		m_dwUseItemTime = dwServerTime;
+		g_pEventTranslator->m_bRBtn = 1;
+
+		int delAmountCnt = 1;
+
+		if (pItem->m_pItem->sIndex == 4049)
+			delAmountCnt = 10;
+
+		int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+
+		if (nItemSIndex >= 2330 && nItemSIndex < 2390)
+			nAmount = 0;
+
+		if (nAmount > delAmountCnt)
+		{
+			BASE_SetItemAmount(pItem->m_pItem, nAmount - delAmountCnt);
+			sprintf_s(pItem->m_GCText.strString, "%2d", nAmount - delAmountCnt);
+			pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+		}
+		else
+		{
+			SGridControlItem* pPickedItem = m_pGridInvList[pItem->m_pGridControl->m_dwControlID - 67072]->PickupItem(nCellX, nCellY);
+
+			if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+				g_pCursor->m_pAttachedItem = nullptr;
+
+			if (pPickedItem)
+				delete pPickedItem;
+		}
+
+		int nSoundIndex = 41;
+
+		if (nType >= 11 && nType <= 13)
+			nSoundIndex = 54;
+
+		if (nType != 19 && g_pSoundManager)
+		{
+			auto pSoundData = g_pSoundManager->GetSoundData(nSoundIndex);
+
+			if (pSoundData)
+				pSoundData->Play(0, 0);
+		}
+
+		UpdateScoreUI(0);
+
+		if (nAmount <= delAmountCnt)
+			memset(&g_pObjectManager->m_stMobData.Carry[SourPos], 0, sizeof(STRUCT_ITEM));
+	}
 }
 
 void TMFieldScene::SendCapsuleItem()
