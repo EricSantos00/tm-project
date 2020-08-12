@@ -6100,10 +6100,14 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case MSG_CreateMob_Opcode:
 	case MSG_CreateMobTrade_Opcode:
 		return OnPacketCreateMob(pStd);
+	case MSG_AutoTrade_Opcode:
+		return OnPacketAutoTrade(pStd);
 	case MSG_SwapItem_Opcode:
 		return OnPacketSwapItem(pStd);
 	case MSG_ShopList_Opcode:
 		return OnPacketShopList(pStd);
+	case MSG_Sell_Opcode:
+		return OnPacketSell(pStd);
 	case MSG_Deposit_Opcode:
 		return OnPacketDeposit(pStd);
 	case MSG_Withdraw_Opcode:
@@ -11793,7 +11797,71 @@ int TMFieldScene::OnPacketRemoveItem(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketAutoTrade(MSG_STANDARD* pStd)
 {
-	return 0;
+	auto pAutoTrade = reinterpret_cast<MSG_AutoTrade*>(pStd);
+
+	auto pTitle = static_cast<SText*>(m_pControlContainer->FindControl(TMT_ATRADE_TITLE));
+	auto pName = static_cast<SText*>(m_pControlContainer->FindControl(TMT_ATRADE_ID));
+
+	pAutoTrade->Desc[23] = 0;
+	pAutoTrade->Desc[22] = 0;
+
+	if (pTitle)
+		pTitle->SetText(pAutoTrade->Desc, 0);
+
+	auto pHuman = static_cast<TMHuman*>(g_pObjectManager->GetHumanByID(pAutoTrade->TargetID));
+
+	memcpy(&m_stAutoTrade, pAutoTrade, sizeof(m_stAutoTrade));
+
+	if (pHuman)
+		pName->SetText(pHuman->m_szName, 1);
+
+	for (int i = 0; i < 10; ++i)
+	{
+		SGridControl* pGrid = m_pGridAutoTrade[i];
+
+		pGrid->m_nTradeMoney = pAutoTrade->TradeMoney[i];
+
+		SGridControlItem* pItem = pGrid->PickupAtItem(0, 0);
+
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pItem)
+			g_pCursor->m_pAttachedItem = nullptr;
+
+		if (pItem)
+			delete pItem;
+
+		if (pAutoTrade->Item[i].sIndex > 0)
+		{
+			auto pstItem = new STRUCT_ITEM();
+
+			if (pstItem)
+			{
+				memcpy(pstItem, &pAutoTrade->Item[i], sizeof(STRUCT_ITEM));
+
+				auto ipNewItem = new SGridControlItem(pGrid, pstItem, 0.0f, 0.0f);
+
+				if (ipNewItem)
+					pGrid->AddItem(ipNewItem, 0, 0);
+			}
+		}
+	}
+
+	auto pButton = static_cast<SButton*>(m_pControlContainer->FindControl(TMB_ATRADE_RUN));
+
+	if (pButton)
+		pButton->SetVisible(0);
+
+	if (pAutoTrade->TargetID == m_pMyHuman->m_dwID)
+	{
+		sprintf(m_pMyHuman->m_TradeDesc, pAutoTrade->Desc);
+
+		m_pMyHuman->m_pAutoTradeDesc->SetText(m_pMyHuman->m_TradeDesc, 0);
+	}
+	else
+	{
+		SetVisibleAutoTrade(1, 0);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketSwapItem(MSG_STANDARD* pStd)
@@ -12172,7 +12240,103 @@ int TMFieldScene::OnPacketBuy(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketSell(MSG_STANDARD* pStd)
 {
-	return 0;
+	auto pSell = reinterpret_cast<MSG_Sell*>(pStd);
+
+	if (m_pGridHellStore->m_dwMerchantID == pSell->TargetID || 
+		m_pGridShop->m_dwMerchantID == pSell->TargetID || !pSell->TargetID &&
+		g_pObjectManager->m_stMobData.Class == 3 &&
+		g_pObjectManager->m_stMobData.LearnedSkill[0] & 0x1000)
+	{
+		SGridControlItem* pDestItem{};
+
+		if (pSell->MyType == 0)
+		{
+			SGridControl* pGridDest[16]{};
+
+			pGridDest[0] = m_pGridInv;
+			pGridDest[1] = m_pGridHelm;
+			pGridDest[2] = m_pGridCoat;
+			pGridDest[3] = m_pGridPants;
+			pGridDest[4] = m_pGridGloves;
+			pGridDest[5] = m_pGridBoots;
+			pGridDest[6] = m_pGridLeft;
+			pGridDest[7] = m_pGridRight;
+			pGridDest[8] = m_pGridRing;
+			pGridDest[9] = m_pGridNecklace;
+			pGridDest[10] = m_pGridOrb;
+			pGridDest[11] = m_pGridCabuncle;
+			pGridDest[12] = m_pGridGuild;
+			pGridDest[13] = m_pGridEvent;
+			pGridDest[14] = m_pGridDRing;
+			pGridDest[15] = m_pGridMantua;
+			pDestItem = pGridDest[pSell->MyPos]->PickupItem(0, 0);
+
+			int nPrice = 0;
+
+			if (pDestItem->m_pItem->sIndex > 0 && pDestItem->m_pItem->sIndex < MAX_ITEMLIST)
+				nPrice = g_pItemList[pDestItem->m_pItem->sIndex].nPrice;
+
+			nPrice = static_cast<int>((float)nPrice * 0.25f);
+
+			if (nPrice >= 5001 && nPrice <= 10000)
+			{
+				nPrice = 2 * nPrice / 3;
+			}
+			else if (nPrice > 10000)
+			{
+				nPrice /= 2;
+			}
+
+			memset(&g_pObjectManager->m_stMobData.Equip[pSell->MyPos], 0, sizeof(STRUCT_ITEM));
+			g_pObjectManager->m_stMobData.Coin += nPrice;
+		}
+		else if (pSell->MyType == 1)
+		{
+			pDestItem = m_pGridInvList[pSell->MyPos / 15]->PickupAtItem(
+				pSell->MyPos % 15 % 5,
+				pSell->MyPos % 15 / 5);
+
+			int nPrice = 0;
+
+			if (pDestItem->m_pItem->sIndex > 0 && pDestItem->m_pItem->sIndex < MAX_ITEMLIST)
+				nPrice = g_pItemList[pDestItem->m_pItem->sIndex].nPrice;
+
+			nPrice = static_cast<int>((float)nPrice * 0.25f);
+
+			if (nPrice >= 5001 && nPrice <= 10000)
+			{
+				nPrice = 2 * nPrice / 3;
+			}
+			else if (nPrice > 10000)
+			{
+				nPrice /= 2;
+			}
+
+			memset(&g_pObjectManager->m_stMobData.Carry[pSell->MyPos], 0, sizeof(STRUCT_ITEM));
+			g_pObjectManager->m_stMobData.Coin += nPrice;
+		}
+
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pDestItem)
+			g_pCursor->m_pAttachedItem = nullptr;
+
+		if (pDestItem)
+			delete pDestItem;
+		
+		UpdateScoreUI(0);
+
+		if (g_pSoundManager)
+		{
+			auto pSoundData = g_pSoundManager->GetSoundData(31);
+
+			if (pSoundData)
+				pSoundData->Play(0, 0);
+		}
+
+		g_pCursor->DetachItem();
+	}
+
+	UpdateMyHuman();
+	return 1;
 }
 
 int TMFieldScene::OnPacketCNFMobKill(MSG_STANDARD* pStd)

@@ -792,6 +792,7 @@ struct MSG_CAPSULEUSEITEM
 	char NewMobname[16];
 };
 
+constexpr auto MSG_AutoTrade_Opcode = 0x397;
 struct MSG_AutoTrade
 {
 	MSG_STANDARD Header;
