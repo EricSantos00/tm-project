@@ -735,6 +735,8 @@ struct MSG_Trade
 	unsigned short OpponentID;
 };
 
+constexpr auto MSG_CloseTrade_Opcode = 0x384;
+
 constexpr auto MSG_Withdraw_Opcode = 0x387;
 constexpr auto MSG_Deposit_Opcode = 0x388;
 
@@ -1037,6 +1039,8 @@ struct MSG_ShopList
 	STRUCT_ITEM List[27];
 	int Tax;
 };
+
+constexpr auto MSG_CloseShop_Opcode = 0x196;
 
 constexpr auto MSG_SwapItem_Opcode = 0x376;
 struct MSG_SwapItem

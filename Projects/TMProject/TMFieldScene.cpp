@@ -6112,6 +6112,8 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketDeposit(pStd);
 	case MSG_Withdraw_Opcode:
 		return OnPacketWithdraw(pStd);
+	case MSG_CloseShop_Opcode:
+		return OnPacketCloseShop(pStd);
 	}
 
 	return 0;
@@ -8221,6 +8223,166 @@ void TMFieldScene::SetVisibleCargo1(int bShow)
 
 void TMFieldScene::SetVisibleTrade(int bShow)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	auto pBtnChar = static_cast<SButton*>(m_pControlContainer->FindControl(B_CHAR));
+	auto pBtnInv = static_cast<SButton*>(m_pControlContainer->FindControl(B_EQUIP));
+	auto pMyGold = static_cast<SText*>(m_pControlContainer->FindControl(TMT_TRADE_MYGOLD));
+	auto pOPGold = static_cast<SText*>(m_pControlContainer->FindControl(TMT_TRADE_OPGOLD));
+
+	pOPGold->m_cComma = 1;
+	pMyGold->m_cComma = 1;
+
+	bool bSendQuit = false;
+
+	if (m_pTradePanel->IsVisible() == 1 && !bShow)
+		bSendQuit = true;
+
+	if (bShow == 1)
+	{
+		g_pCursor->DetachItem();
+		m_pGambleStore->SetVisible(0);
+		
+		if (m_pTradePanel->IsVisible() == 1 && m_pAutoTrade)
+			SetVisibleAutoTrade(0, 0);
+
+		m_pSystemPanel->SetVisible(0);
+		m_pCPanel->SetVisible(0);
+		m_pCargoPanel->SetVisible(0);
+		m_pTradePanel->SetVisible(bShow);
+		m_pInvenPanel->SetVisible(bShow);
+		m_pSkillPanel->SetVisible(0);
+		m_pSkillMPanel->SetVisible(0);
+		m_pShopPanel->SetVisible(0);
+		m_pHellgateStore->SetVisible(0);
+		pBtnInv->SetSelected(0);
+		pBtnChar->SetSelected(0);
+		if (m_pSkillPanel->IsVisible() == 1)
+			m_pSkillPanel->SetVisible(0);
+	}
+	else
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			SGridControl* pGridInv = m_pGridInvList[i];
+
+			for (int nY = 0; nY < 3; ++nY)
+			{
+				for (int nX = 0; nX < 5; ++nX)
+				{
+					SGridControlItem* pItem = pGridInv->GetItem(nX, nY);
+
+					if (pItem && pItem->m_GCObj.dwColor == 0xFFFF0000)
+						pItem->m_GCObj.dwColor = 0xFFFFFFFF;
+				}
+			}
+		}
+		pMyGold->SetText((char*)"         0", 0);
+		pOPGold->SetText((char*)"         0", 0);
+		m_pTradePanel->SetVisible(bShow);
+		m_pInvenPanel->SetVisible(0);
+		m_pInputGoldPanel->SetVisible(0);
+	}
+
+	if (g_pSoundManager)
+	{
+		auto pSoundData = g_pSoundManager->GetSoundData(51);
+
+		if (pSoundData)
+			pSoundData->Play(0, 0);
+	}
+
+	if (!bShow && g_pObjectManager->m_stTrade.OpponentID > 0)
+	{
+		g_pObjectManager->m_stTrade.OpponentID = 0;
+		g_pObjectManager->m_stTrade.MyCheck = 0;
+		m_dwLastCheckTime = g_pApp->m_pTimerManager->GetServerTime();
+
+		if (bSendQuit)
+		{
+			MSG_STANDARD stStandard{};
+
+			stStandard.Type = MSG_CloseTrade_Opcode;
+			stStandard.ID = m_pMyHuman->m_dwID;
+			SendOneMessage((char*)&stStandard, sizeof(stStandard));
+		}
+	}
+
+	if (bShow == 0)
+	{
+		memset(&g_pObjectManager->m_stTrade, 0, sizeof(g_pObjectManager->m_stTrade));
+
+		for (int j = 0; j < 15; ++j)
+			g_pObjectManager->m_stTrade.CarryPos[j] = -1;
+	}
+
+	if (bShow == 1)
+	{
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV;
+		SetEquipGridState(0);
+		g_pObjectManager->m_stTrade.Header.Type = MSG_Trade_Opcode;
+		g_pObjectManager->m_stTrade.Header.ID = m_pMyHuman->m_dwID;
+	}
+	else
+	{
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		SetEquipGridState(1);
+		memset(&g_pObjectManager->m_stTrade, 0, sizeof(g_pObjectManager->m_stTrade));
+
+		for (int k = 0; k < 15; ++k)
+			g_pObjectManager->m_stTrade.CarryPos[k] = -1;
+
+		SGridControl* pGridOp[15]{};
+		SGridControl* pGridMy[15]{};
+
+		for (int l = 0; l < 15; ++l)
+		{
+			SGridControlItem* pPickedItem{};
+
+			pGridOp[l] = static_cast<SGridControl*>(m_pControlContainer->FindControl(l + TMG_TRADE_OP1));
+
+			if (pGridOp[l])
+				pPickedItem = pGridOp[l]->PickupItem(0, 0);
+
+			if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+				g_pCursor->m_pAttachedItem = nullptr;
+
+			if (pPickedItem)
+			{
+				delete pPickedItem;
+
+				pPickedItem = nullptr;
+			}
+
+			pGridMy[l] = static_cast<SGridControl*>(m_pControlContainer->FindControl(l + TMG_TRADE_MY1));
+
+			if (pGridMy[l])
+				pPickedItem = pGridMy[l]->PickupItem(0, 0);
+
+			if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+				g_pCursor->m_pAttachedItem = nullptr;
+
+			if (pPickedItem)
+				delete pPickedItem;
+		}
+
+		auto pOpCheckButton = static_cast<SButton*>(m_pControlContainer->FindControl(TMB_TRADE_OPCHECK));
+		auto pMyCheckButton = static_cast<SButton*>(m_pControlContainer->FindControl(TMB_TRADE_MYCHECK));
+		
+		pOpCheckButton->m_bSelected = 0;
+		pMyCheckButton->m_bSelected = 0;
+
+		m_dwLastCheckTime = g_pApp->m_pTimerManager->GetServerTime();
+
+		if (m_pInvenPanel->IsVisible() == 1)
+			SetVisibleInventory();
+	}
 }
 
 void TMFieldScene::ClearCombine()
@@ -10318,6 +10480,94 @@ void TMFieldScene::TotoClose()
 
 void TMFieldScene::MobStop(D3DXVECTOR3 vec)
 {
+	int nTX = static_cast<int>(vec.x);
+	int nTY = static_cast<int>(vec.z);
+	int nX = static_cast<int>(m_pMyHuman->m_vecPosition.x);
+	int nY = static_cast<int>(m_pMyHuman->m_vecPosition.y);
+
+	if (nTX >= nX + 1)
+		++nX;
+
+	else if (nTX <= nX - 1)
+		--nX;
+
+	if (nTY >= nY + 1)
+		++nY;
+
+	else if (nTY <= nY - 1)
+		--nY;
+
+	int nSX = m_pMyHuman->m_LastSendTargetPos.x;
+	int nSY = m_pMyHuman->m_LastSendTargetPos.y;
+
+	char* pHeightMapData = (char*)g_pCurrentScene->m_HeightMapData;
+
+	char cRouteBuffer[48]{};
+
+	int nRet = BASE_GetRoute(nSX, nSY, &nX, &nY, cRouteBuffer, 12, pHeightMapData, 8);
+	if (!nRet)
+	{
+		nX = nSX;
+		nY = nSY;
+	}
+
+	int nStart = GroundGetMask(TMVector2{ (float)nSX, (float)nSY });
+	int nEnd = GroundGetMask(TMVector2{ (float)nX, (float)nY });
+
+	int nHeight{};
+
+	if ((nEnd - nStart) <= 0)
+		nHeight = nStart - nEnd;
+	else
+		nHeight = nEnd - nStart;
+	
+	if (nHeight > 30)
+	{
+		nRet = BASE_GetRoute(nSX, nSY, &nX, &nY, cRouteBuffer, 6, pHeightMapData, 8);
+
+		if (!nRet)
+		{
+			nX = nSX;
+			nY = nSY;
+		}
+	}
+	if (nRet && g_bLastStop != MSG_Action_Stop_Opcode && !m_pMyHuman->m_cLastMoveStop)
+	{
+		m_vecMyNext.x = nX;
+		m_vecMyNext.y = nY;
+		m_pMyHuman->m_vecTargetPos.x = nX;
+		m_pMyHuman->m_vecTargetPos.y = nY;
+		
+		m_pMyHuman->m_LastSendTargetPos = m_vecMyNext;
+
+		MSG_Action stAction{};
+
+		stAction.Header.ID = m_pMyHuman->m_dwID;
+		stAction.PosX = nSX;
+		stAction.PosY = nSY;
+		stAction.Effect = 0;
+		stAction.Header.Type = MSG_Action_Stop_Opcode;
+		stAction.Speed = g_nMyHumanSpeed;
+		stAction.TargetX = m_pMyHuman->m_LastSendTargetPos.x;
+		stAction.TargetY = m_pMyHuman->m_LastSendTargetPos.y;
+
+		for (int j = 0; j < 23; ++j)
+			stAction.Route[j] = 0;
+
+		m_stMoveStop.LastX = stAction.PosX;
+		m_stMoveStop.LastY = stAction.PosY;
+		m_stMoveStop.NextX = stAction.TargetX;
+		m_stMoveStop.NextY = stAction.TargetY;
+
+		SendOneMessage((char*)&stAction, sizeof(stAction));
+
+		m_pMyHuman->OnPacketEvent(MSG_Action_Stop_Opcode, (char*)&stAction);
+
+		g_bLastStop = stAction.Header.Type;
+	}
+
+	m_pMyHuman->m_cLastMoveStop = 0;
+	m_pMyHuman->m_dwOldMovePacketTime = g_pTimerManager->GetServerTime();
 }
 
 void TMFieldScene::VisibleInputTradeName()
@@ -12391,7 +12641,8 @@ int TMFieldScene::OnPacketReqChallange(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketCloseShop(MSG_STANDARD* pStd)
 {
-	return 0;
+	SetVisibleShop(0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketSetShortSkill(MSG_STANDARD* pStd)
