@@ -930,7 +930,8 @@ SGridControlItem* SGridControl::PickupItem(int inCellIndexX, int inCellIndexY)
 		for (int j = nIndex + 1; j < m_nNumItem; ++j)
 			m_pItemList[j - 1] = m_pItemList[j];
 
-		m_pItemList[m_nNumItem--] = nullptr;
+		m_pItemList[m_nNumItem - 1] = nullptr;
+		m_nNumItem--;
 	}
 
 	return pItem;
@@ -966,7 +967,8 @@ SGridControlItem* SGridControl::PickupAtItem(int inCellIndexX, int inCellIndexY)
 		for (int j = nIndex + 1; j < m_nNumItem; ++j)
 			m_pItemList[j - 1] = m_pItemList[j];
 
-		m_pItemList[m_nNumItem--] = nullptr;
+		m_pItemList[m_nNumItem - 1] = nullptr;
+		m_nNumItem--;
 	}
 
 	return pItem;

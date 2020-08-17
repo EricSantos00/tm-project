@@ -8086,6 +8086,272 @@ void TMFieldScene::DropItem(unsigned int dwServerTime)
 
 int TMFieldScene::TimeDelay(unsigned int dwServerTime)
 {
+	if (g_dwStartQuitGameTime)
+	{
+		if (dwServerTime > g_dwStartQuitGameTime + 5000)
+		{
+			PostMessageA(g_pApp->m_hWnd, 16, 0, 0);
+			return 1;
+		}
+
+		unsigned int dwRemain = (g_dwStartQuitGameTime + 5000 - dwServerTime) / 1000;
+		if (m_dwLastRemain != dwRemain)
+		{
+			m_bAutoRun = 0;
+			m_dwLastRemain = dwRemain;
+
+			char szMsg[128]{};
+			sprintf(szMsg, g_pMessageStringTable[224], m_dwLastRemain + 1);
+
+			m_pMessagePanel->SetMessage(szMsg, 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			if (g_bActiveWB == 1)
+				g_pApp->SwitchWebBrowserState(0);
+		}
+	}
+	if (m_dwLastLogout)
+	{
+		if (dwServerTime > m_dwLastLogout + 5000)
+		{
+			MSG_STANDARD stStandard{};
+			stStandard.ID = g_pObjectManager->m_dwCharID;
+			stStandard.Type = 0x215;
+			SendOneMessage((char*)&stStandard, sizeof(stStandard));
+			m_dwLastLogout = 0;
+			return 1;
+		}
+
+		unsigned int dwRemain = (m_dwLastLogout + 5000 - dwServerTime) / 1000;
+		if (m_dwLastRemain != dwRemain)
+		{
+			m_bAutoRun = 0;
+			m_dwLastRemain = dwRemain;
+
+			char szMsg[128]{};
+			sprintf(szMsg, g_pMessageStringTable[225], m_dwLastRemain + 1);
+
+			m_pMessagePanel->SetMessage(szMsg, 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			if (g_bActiveWB == 1)
+				g_pApp->SwitchWebBrowserState(0);
+		}
+	}
+	if (m_dwLastSelServer)
+	{
+		if (dwServerTime > m_dwLastSelServer + 5000)
+		{
+			m_dwLastSelServer = 0;
+			g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTSERVER_STATE);
+			return 1;
+		}
+
+		unsigned int dwRemain = (m_dwLastSelServer + 5000 - dwServerTime) / 1000;
+		if (m_dwLastRemain != dwRemain)
+		{
+			m_bAutoRun = 0;
+			m_dwLastRemain = dwRemain;
+
+			char szMsg[128]{};
+			sprintf(szMsg, g_pMessageStringTable[224], m_dwLastRemain + 1);
+
+			m_pMessagePanel->SetMessage(szMsg, 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			if (g_bActiveWB == 1)
+				g_pApp->SwitchWebBrowserState(0);
+		}
+	}
+	if (m_dwLastTown)
+	{
+		if (dwServerTime > m_dwLastTown + 6000 && !m_cLastTown)
+			m_dwLastTown = 0;
+		else if (dwServerTime > m_dwLastTown + 5000 && m_cLastTown == 1)
+		{
+			MSG_STANDARD stRecall{};
+			stRecall.ID = m_pMyHuman->m_dwID;
+			stRecall.Type = MSG_Recall_Opcode;
+			SendOneMessage((char*)&stRecall, sizeof(stRecall));
+
+			m_cResurrect = 0;
+			m_pMyHuman->m_cDie = 0;
+			m_pMyHuman->SetAnimation(ECHAR_MOTION::ECMOTION_LEVELUP, 0);
+
+			if (!m_pMyHuman->m_cHide)
+			{
+				auto pLevelUp = new TMEffectLevelUp(TMVector3(m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_fHeight, m_pMyHuman->m_vecPosition.y), 0);
+				if (pLevelUp)
+					m_pEffectContainer->AddChild(pLevelUp);
+			}
+
+			m_cLastTown = 0;
+		}
+		else
+		{
+			unsigned int dwRemain = (m_dwLastSelServer + 5000 - dwServerTime) / 1000;
+			if (m_dwLastRemain != dwRemain)
+			{
+				m_bAutoRun = 0;
+				m_dwLastRemain = dwRemain;
+
+				auto pPortal = new TMSkillTownPortal(TMVector3(m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_fHeight + 0.05f, m_pMyHuman->m_vecPosition.y), 1);
+				if (pPortal)
+					m_pEffectContainer->AddChild(pPortal);
+			}
+		}
+	}
+	if (m_dwLastResurrect)
+	{
+		MSG_AttackOne stAttack{};
+		stAttack.Header.Type = MSG_Attack_One_Opcode;
+		stAttack.Header.ID = m_pMyHuman->m_dwID;
+		stAttack.AttackerID = m_pMyHuman->m_dwID;
+		stAttack.Dam[0].TargetID = m_pMyHuman->m_dwID;
+		stAttack.Dam[0].Damage = -1;
+		stAttack.PosX = (int)m_pMyHuman->m_vecPosition.x;
+		stAttack.PosY = (int)m_pMyHuman->m_vecPosition.y;
+		stAttack.TargetX = (int)m_pMyHuman->m_vecPosition.x;
+		stAttack.TargetY = (int)m_pMyHuman->m_vecPosition.y;
+		if (m_stMoveStop.NextX)
+		{
+			stAttack.PosX = m_stMoveStop.NextX;
+			stAttack.TargetX = stAttack.PosX;
+			stAttack.PosY = m_stMoveStop.NextY;
+			stAttack.TargetY = stAttack.PosY;
+		}
+		stAttack.CurrentMp = -1;
+		stAttack.SkillIndex = 99;
+		stAttack.SkillParm = 0;
+		stAttack.Motion = -1;
+
+		if (dwServerTime > m_dwLastResurrect + 6000 && !m_cResurrect)
+			m_dwLastResurrect = 0;
+		else if (dwServerTime > m_dwLastResurrect + 5000 && m_cResurrect == 1)
+		{
+			m_cResurrect = 0;
+			stAttack.FlagLocal = 0;
+			SendOneMessage((char*)&stAttack, sizeof(stAttack));
+		}
+		else
+		{
+			unsigned int dwRemain = (m_dwLastResurrect + 5000 - dwServerTime) / 2000;
+			if (m_dwLastRemain != dwRemain)
+			{
+				m_bAutoRun = 0;
+				m_dwLastRemain = dwRemain;
+				stAttack.FlagLocal = 1;
+
+				OnPacketEvent(stAttack.Header.Type, (char*)&stAttack);
+			}
+		}
+	}
+	if (m_dwLastTeleport)
+	{
+		if (dwServerTime > m_dwLastTeleport + 6000 && !m_cLastTeleport)
+			m_dwLastTeleport = 0;
+		else if (dwServerTime > m_dwLastTeleport + 5000 && m_cLastTeleport == 1)
+		{
+			if (m_nServerMove)
+			{
+				m_dwDelayDisconnectTime = dwServerTime;
+
+				MSG_MessageWhisper stWhisper{};
+				stWhisper.Header.ID = g_pObjectManager->m_dwCharID;
+				stWhisper.Header.Type = MSG_MessageWhisper_Opcode;
+				sprintf(stWhisper.MobName, "srv");
+				sprintf(stWhisper.String, "%d", m_nServerMove);
+				SendOneMessage((char*)&stWhisper, sizeof(stWhisper));
+				m_nServerMove = 0;
+			}
+			else
+			{
+				SendOneMessage((char*)&m_stUseItem, sizeof(m_stUseItem));
+				memset(&m_stUseItem, 0, sizeof(m_stUseItem));
+				m_dwUseItemTime = dwServerTime;
+			}
+			m_cLastTeleport = 0;
+		}
+		else
+		{
+			unsigned int dwRemain = (m_dwLastTeleport + 5000 - dwServerTime) / 1000;
+			if (m_dwLastRemain != dwRemain)
+			{
+				m_bAutoRun = 0;
+				m_dwLastRemain = dwRemain;
+
+				auto pPortal = new TMSkillTownPortal(TMVector3(m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_fHeight + 0.05f, m_pMyHuman->m_vecPosition.y), 1);
+				if (pPortal)
+					m_pEffectContainer->AddChild(pPortal);
+			}
+		}
+	}
+	if (m_dwLastRelo)
+	{
+		if (dwServerTime > m_dwLastRelo + 6000 && !m_cLastRelo)
+			m_dwLastRelo = 0;
+		else if (dwServerTime > m_dwLastRelo + 5000 && m_cLastRelo == 1)
+		{
+			MSG_MessageWhisper stMsgImp{};
+			stMsgImp.Header.ID = g_pObjectManager->m_dwCharID;
+			stMsgImp.Header.Type = MSG_MessageWhisper_Opcode;
+			sprintf(stMsgImp.MobName, "relo");
+			sprintf(stMsgImp.String, "%s", m_szSummoner);
+			SendOneMessage((char*)&stMsgImp, sizeof(stMsgImp));
+			m_cLastRelo = 0;
+		}
+		else if (dwServerTime > m_dwLastRelo + 5000 && m_cLastRelo == 2)
+		{
+			MSG_MessageWhisper stMsgImp{};
+			stMsgImp.Header.ID = g_pObjectManager->m_dwCharID;
+			stMsgImp.Header.Type = MSG_MessageWhisper_Opcode;
+			sprintf(stMsgImp.MobName, "relo");
+			sprintf(stMsgImp.String, "%s", m_szSummoner2);
+			SendOneMessage((char*)&stMsgImp, sizeof(stMsgImp));
+			m_cLastRelo = 0;
+		}
+		else
+		{
+			unsigned int dwRemain = (m_dwLastRelo + 5000 - dwServerTime) / 1000;
+			if (m_dwLastRemain != dwRemain)
+			{
+				m_bAutoRun = 0;
+				m_dwLastRemain = dwRemain;
+
+				auto pPortal = new TMSkillTownPortal(TMVector3(m_pMyHuman->m_vecPosition.x,	m_pMyHuman->m_fHeight + 0.05f, m_pMyHuman->m_vecPosition.y), 1);
+				if (pPortal)
+					m_pEffectContainer->AddChild(pPortal);
+			}
+		}
+	}
+
+	if (m_dwLastWhisper)
+	{
+		if (dwServerTime > m_dwLastWhisper + 6000 && !m_cLastWhisper)
+		{
+			m_dwLastWhisper = 0;
+			return 0;
+		}
+		if (dwServerTime > m_dwLastWhisper + 5000 && m_cLastWhisper == 1)
+		{
+			SendOneMessage((char*)&m_stLastWhisper, sizeof(m_stLastWhisper));
+			memset((char*)&m_stLastWhisper, 0, sizeof(m_stLastWhisper));
+			m_dwLastWhisper = 0;
+			return 1;
+		}
+
+		unsigned int dwRemain = (m_dwLastWhisper + 5000 - dwServerTime) / 1000;
+
+		if (m_dwLastRemain != dwRemain)
+		{
+			m_bAutoRun = 0;
+			m_dwLastRemain = dwRemain;
+
+			char szMsg[128]{};
+			sprintf(szMsg, g_pMessageStringTable[223], m_dwLastRemain + 1);
+
+			m_pMessagePanel->SetMessage(szMsg, 2000);
+			m_pMessagePanel->SetVisible(1, 1);		
+		}
+	}
+
 	return 0;
 }
 
@@ -10116,8 +10382,7 @@ void TMFieldScene::SetVisibleAutoTrade(int bShow, int bCargo)
 				if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pItem)
 					g_pCursor->m_pAttachedItem = nullptr;
 
-				if (pItem)
-					delete pItem;
+				SAFE_DELETE(pItem);
 			}
 			m_pInvenPanel->SetVisible(0);
 			m_pCargoPanel->SetVisible(0);

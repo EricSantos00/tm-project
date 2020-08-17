@@ -7,13 +7,11 @@ constexpr int MAX_STRING_LENGTH = 128;
 constexpr int MAX_SERVER = 10; // Max number of game servers that can connect to DB server
 constexpr int MAX_SERVERGROUP = 10;	// Max number of servers that can exist
 constexpr int MAX_SERVERNUMBER = (MAX_SERVER + 1); // DB + TMSrvs + BISrv
-
 constexpr int MAX_ITEMLIST = 6500;
-
-constexpr int MSG_Ping_Opcode = 0x3A0;
-
 constexpr int MAX_GUILDZONE = 5;
 
+constexpr auto MSG_Recall_Opcode = 0x289;
+constexpr auto MSG_Ping_Opcode = 0x3A0;
 struct MSG_STANDARD
 {
 	unsigned short Size;
