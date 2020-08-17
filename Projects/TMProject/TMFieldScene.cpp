@@ -5903,7 +5903,7 @@ int TMFieldScene::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 		{
 			if (m_pMouseOverHuman)
 			{
-				if (m_pMouseOverHuman->m_dwID < 1000)
+				if (m_pMouseOverHuman->m_dwID > 0 && m_pMouseOverHuman->m_dwID < 1000)
 				{
 					char szStrTemp[128]{};
 					sprintf_s(szStrTemp, "/%s ", m_pMouseOverHuman->m_szName);
@@ -7872,6 +7872,83 @@ int TMFieldScene::MouseClick_NPC(int nX, int nY, D3DXVECTOR3 vec, unsigned int d
 
 int TMFieldScene::CheckMerchant(TMHuman* pOver)
 {
+	if (m_pAutoTrade->m_bVisible)
+		return 1;
+
+	if (!pOver || pOver->m_bMouseOver != 1)
+		return 0;
+
+	if ((int)m_pMyHuman->m_vecPosition.x >> 7 > 1 && (int)m_pMyHuman->m_vecPosition.x >> 7 < 11 && (int)m_pMyHuman->m_vecPosition.y >> 7 < 5)
+		return 1;
+
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && 
+		pOver->m_sHeadIndex == 51 && 
+		((int)m_pMyHuman->m_vecPosition.x >> 7 == 13 || (int)m_pMyHuman->m_vecPosition.x >> 7 == 14) && (int)m_pMyHuman->m_vecPosition.y >> 7 == 28)
+	{
+		return 1;
+	}
+
+	if (pOver->m_TradeDesc[0])
+		return 1;
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && (pOver->m_stScore.Reserved & 0xF) == 1)
+		return 1;
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && (pOver->m_stScore.Reserved & 0xF) == 2)
+		return 1;
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && (pOver->m_stScore.Reserved & 0xF) == 3)
+		return 1;
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && pOver->m_sHeadIndex == 67 && m_pGround->m_vecOffsetIndex.x == 13 && m_pGround->m_vecOffsetIndex.y == 13)
+		return 1;
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && pOver->m_sHeadIndex == 67 && m_pGround->m_vecOffsetIndex.x == 28 && m_pGround->m_vecOffsetIndex.y == 24)
+		return 1;
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && pOver->m_sHeadIndex == 54)
+		return 1;
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && pOver->m_sHeadIndex == 55)
+		return 1;
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && pOver->m_sHeadIndex == 56)
+		return 1;
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && pOver->m_sHeadIndex == 68)
+		return 1;
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && pOver->m_sHeadIndex == 57)
+		return 1;
+
+
+	if (((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && (pOver->m_stScore.Reserved & 0xF) == 4) ||
+		(pOver->m_stScore.Reserved & 0xF) >= 8 && (pOver->m_stScore.Reserved & 0xF) <= 15)
+	{
+		if ((pOver->m_stScore.Reserved & 0xF) == 15)
+		{
+			if (!m_pMyHuman->IsInTown())
+			{
+				if (pOver->m_cMantua > 0 && m_pMyHuman->m_cMantua > 0 && pOver->m_cMantua != m_pMyHuman->m_cMantua && 
+					m_pMyHuman->m_cMantua != 4 && m_pMyHuman->m_cMantua != 3)
+				{
+					return 1;
+				}
+
+				if (m_pMyHuman->m_pMantua && 
+					(int)m_pMyHuman->m_pMantua->m_Look.Skin0 < 2 || 
+					((int)m_pMyHuman->m_pMantua->m_Look.Skin0 >= 8 && (int)m_pMyHuman->m_pMantua->m_Look.Skin0 <= 14))
+				{
+					if (g_pObjectManager->m_stMobData.Equip[10].sIndex == 1742
+						&& (g_pObjectManager->m_stMobData.Equip[11].sIndex < 1760 || g_pObjectManager->m_stMobData.Equip[11].sIndex > 1763))
+					{
+						return 1;
+					}
+				}
+			}
+		}
+
+		if ((pOver->m_stScore.Reserved & 0xF) == 13)
+			return 1;
+		if ((pOver->m_stScore.Reserved & 0xF) == 14)
+			return 1;
+
+		return 1;
+	}
+
+	if ((pOver->m_dwID < 0 || pOver->m_dwID >= 1000) && (pOver->m_stScore.Reserved & 0xF) >= 6 && (pOver->m_stScore.Reserved & 0xF) <= 8)
+		return 1;
+
 	return 0;
 }
 
