@@ -45,7 +45,7 @@ public:
 	virtual void FrameMove(unsigned int dwServerTime);
 	virtual void EffectFrameMove(TreeNode* pNode, unsigned int dwServerTime);
 	virtual TMScene* GetNodeByID(unsigned int dwID);
-	virtual TreeNode* GetHumanByID(unsigned int dwID);
+	virtual TMHuman* GetHumanByID(unsigned int dwID);
 	virtual TreeNode* GetItemByID(unsigned int dwID);
 	virtual void RestoreDeviceObjects();
 	virtual void InvalidateDeviceObjects();

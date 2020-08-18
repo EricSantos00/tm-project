@@ -445,7 +445,7 @@ TMScene* ObjectManager::GetNodeByID(unsigned int dwID)
 	return nullptr;
 }
 
-TreeNode* ObjectManager::GetHumanByID(unsigned int dwID)
+TMHuman* ObjectManager::GetHumanByID(unsigned int dwID)
 {
 	if (dwID == 0)
 		return 0;
@@ -461,7 +461,7 @@ TreeNode* ObjectManager::GetHumanByID(unsigned int dwID)
 		if (!pCurrentNode->m_cDeleted)
 		{
 			if (pCurrentNode->m_dwID == dwID)
-				return pCurrentNode;
+				return static_cast<TMHuman*>(pCurrentNode);
 
 			if (pCurrentNode->m_pDown != nullptr)
 			{
