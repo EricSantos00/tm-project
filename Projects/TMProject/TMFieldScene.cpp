@@ -13799,6 +13799,163 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 			}
 			else if (pAttack->SkillIndex == 110) // Skill Kefra
 			{
+				TMVector3 vecTarget{};
+				TMVector3 vecStart{};
+				bool bMyAttack = false;
+				for (int i = 0; i < 13; i++)
+				{
+					if (pAttack->Header.Type == MSG_Attack_One_Opcode && i >= 1)
+						break;
+
+					if (pAttack->Header.Tick == MSG_Attack_Two_Opcode && i >= 2)
+						break;
+
+					int rndx = rand() % 18;
+					int rndy = rand() % 18;
+
+					auto pMultiTarget = g_pObjectManager->GetHumanByID(pAttack->Dam[i].TargetID);
+
+					if (pMultiTarget)
+					{
+						if (pMultiTarget == m_pMyHuman)
+							bMyAttack = true;
+
+						vecTarget = TMVector3(pMultiTarget->m_vecPosition.x,
+							pMultiTarget->m_fHeight - 5.0f,
+							pMultiTarget->m_vecPosition.y);
+
+						vecStart = vecTarget;
+						vecStart.y = 1.0f;
+
+						auto pMeteor = new TMSkillMeteorStorm(vecStart, vecTarget, 3, nullptr);
+						pMeteor->m_dwStartTime += rand() % 1000;
+						
+						m_pEffectContainer->AddChild(pMeteor);
+					}
+					else if (vecTarget.x != 0.0f && vecTarget.y != 0.0f && vecTarget.z != 0.0f)
+					{
+						auto pMeteor = new TMSkillMeteorStorm(
+							TMVector3(((float)rndx + vecStart.x) - 9.0f, vecStart.y, ((float)rndy + vecStart.z) - 9.0f), 
+							TMVector3(((float)rndx + vecTarget.x) - 9.0f, vecTarget.y, ((float)rndy + vecTarget.z) - 9.0f), 
+							3, nullptr);
+
+						pMeteor->m_dwStartTime += rand() % 1000;
+
+						m_pEffectContainer->AddChild(pMeteor);
+					}
+				}
+
+				if (pAttacker->m_dwEarthQuakeTime + 1700 < g_pTimerManager->GetServerTime())
+				{
+					pAttacker->m_dwEarthQuakeTime = g_pTimerManager->GetServerTime() - 1000;
+
+					for (int i = -3; i < 3; i++)
+					{
+						for (int j = -3; i < 3; i++)
+						{
+							auto pBill = new TMEffectBillBoard(193, 4000, 2.0f, 2.0f, 2.0f, 0.001f, 1, 80);
+
+							pBill->m_bStickGround = i % 2;
+							pBill->m_vecPosition = TMVector3(((float)i * 2.0f) + pAttacker->m_vecPosition.x, pAttacker->m_fHeight, ((float)j * 2.0f) + pAttacker->m_vecPosition.y);
+							pBill->SetColor(0xFF777799);
+
+							m_pEffectContainer->AddChild(pBill);
+						}
+					}
+
+					auto pGround = m_pGround;
+					if (pGround)
+					{
+						pGround->m_dwEffStart = g_pTimerManager->GetServerTime();
+						pGround->m_vecEffset = pAttacker->m_vecPosition;
+					}
+				}
+
+				int nDistance = BASE_GetDistance((int)pAttacker->m_vecPosition.x, (int)pAttacker->m_vecPosition.y, 
+					(int)m_pMyHuman->m_vecPosition.x, (int)m_pMyHuman->m_vecPosition.y);
+
+				int Now = g_pTimerManager->GetServerTime();
+
+				unsigned int dwKhepraDelay = 2000;
+				if (!bMyAttack)
+					dwKhepraDelay = 1000;
+				if (nDistance < 18)
+				{
+					if (dwKhepraDelay + m_pMyHuman->m_dwOldMovePacketTime < Now && !m_pMyHuman->m_cDie &&
+						m_pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_DEAD && 
+						m_pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_DIE)
+					{
+						int nRan = 4;
+						int nLength = 5;
+
+						if (!bMyAttack)
+						{
+							nRan = 8;
+							nLength = 9;
+						}
+
+						if (rand() % 10 < nRan)
+						{
+							m_pTargetHuman = nullptr;
+							if (!g_bRunning)
+								SetRunMode();
+
+							int x = (int)m_pMyHuman->m_vecPosition.x;
+							int y = (int)m_pMyHuman->m_vecPosition.y;
+
+							int nMoveX = 0;
+							int nMoveY = 0;
+							if (x <= 2362)
+								nMoveX = -nLength;
+							else if (x >= 2370)
+								nMoveX = nLength;
+							if (y <= 3927)
+								nMoveY = -nLength;
+							else if (y >= 3935)
+								nMoveY = nLength;
+
+							int targetx = (int)((float)nMoveX + m_pMyHuman->m_vecPosition.x);
+							int targety = (int)((float)nMoveY + m_pMyHuman->m_vecPosition.y);
+							if (targetx < 2341)
+								targetx = 2341;
+							else if (targetx > 2391)
+								targetx = 2391;
+							if (targety < 3907)
+								targetx = 3907;
+							else if (targety > 3952)
+								targety = 3952;
+
+							char Route[48]{};
+							BASE_GetRoute(x, y, &targetx, &targety, Route, 12, (char*)m_HeightMapData, 8);
+							if (!strlen(Route))
+								return 1;
+
+							MSG_Action Msg{};
+							Msg.Header.ID = m_pMyHuman->m_dwID;
+							Msg.Header.Type = MSG_Action_Opcode;
+							Msg.PosX = targetx;
+							Msg.PosY = targety;
+							Msg.Effect = 2;
+							Msg.TargetX = targetx;
+							Msg.TargetY = targety;
+
+							g_bLastStop = MSG_Action_Opcode;
+
+							m_stMoveStop.LastX = targetx;
+							m_stMoveStop.LastY = targety;
+							m_stMoveStop.NextX = targetx;
+							m_stMoveStop.NextY = targety;
+
+							SendOneMessage((char*)&Msg, sizeof(Msg));
+
+							m_pMyHuman->m_dwOldMovePacketTime = g_pTimerManager->GetServerTime();
+							m_pMyHuman->OnPacketEvent(MSG_Action_Opcode, (char*)&Msg);
+						}
+					}
+				}
+			}
+			else if (pAttack->SkillIndex == 111)
+			{
 				
 			}
 		}
