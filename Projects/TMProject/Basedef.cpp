@@ -2364,6 +2364,38 @@ void BASE_GetHitPosition(int sx, int sy, int* tx, int* ty, char* pHeight, int MH
 {
 }
 
+int BASE_Get3DTo2DPos(float fX, float fY, float fZ, int* pX, int* pY)
+{
+    D3DXVECTOR3 vTemp;
+    D3DXVECTOR3 vPosTransformed;
+    D3DXVECTOR3 vecPos;
+
+    vecPos.x = fX;
+    vecPos.y = fZ;
+    vecPos.z = fY;
+
+    D3DXVec3TransformCoord(&vTemp, &vecPos, &g_pDevice->m_matView);
+    D3DXVec3TransformCoord(&vPosTransformed, &vTemp, &g_pDevice->m_matProj);
+
+    if (vPosTransformed.z < 0.0)
+        return 0;
+    if (vPosTransformed.z >= 1.0)
+        return 0;
+
+    int vPosInX = (int)(((vPosTransformed.x + 1.0f) * (float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)) / 2.0f);
+    int vPosInY = (int)(((-vPosTransformed.y + 1.0f) * (float)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift)) / 2.0f);
+
+    if (vPosInX <= 0 || vPosInX >= (int)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift) || 
+        vPosInY <= 0 || vPosInY >= (int)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift))
+    {
+        return 0;
+    }
+
+    *pX = vPosInX;
+    *pY = vPosInY;
+    return 1;
+}
+
 int IsPassiveSkill(int nSkillIndex)
 {
     if (nSkillIndex >= 5400)

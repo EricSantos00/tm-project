@@ -2279,6 +2279,7 @@ int BASE_GetMobAbility(STRUCT_MOB* mob, char Type);
 char BASE_CheckChatValid(char* Chat);
 char CheckGuildName(char* GuildName, bool bSubguild);
 void BASE_GetHitPosition(int sx, int sy, int* tx, int* ty, char* pHeight, int MH);
+int BASE_Get3DTo2DPos(float fX, float fY, float fZ, int* pX, int* pY);
 
 int IsPassiveSkill(int nSkillIndex);
 
