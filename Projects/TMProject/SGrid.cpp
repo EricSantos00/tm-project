@@ -383,7 +383,8 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 			if (pItem->m_GCObj.dwColor != 0xFFFF0000)
 			{
 				int NewItemPos = BASE_GetItemAbility(pItem->m_pItem, 17);
-				for (int NewItemPosConv = 0; ; ++NewItemPosConv)
+				int NewItemPosConv;
+				for (NewItemPosConv = 0; ; ++NewItemPosConv)
 				{
 					NewItemPos /= 2;
 					if (!NewItemPos)
@@ -410,7 +411,6 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 						g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][0].sIndex, cktrans))
 						return 0;
 
-					int NewItemPosConv = 0;
 					if (NewItemPos >= 64 && NewItemPos <= 192)
 					{
 						STRUCT_ITEM itemL{};

@@ -3356,7 +3356,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 			break;
 		case 4:
 			m_pChatBack->m_GCPanel.dwColor = 0;
-			Color = 5;
+			Color = 0;
 			break;
 		}
 		return 0;
@@ -15782,7 +15782,7 @@ void TMFieldScene::InsertInChatList(SListBox* pChatList, STRUCT_MOB *pMobData, S
 	if (len <= maxLen)
 	{
 		char istrText[128]{};
-		sprintf(istrText, "[%s]> %s", pMobData->MobName, stMsgWhisper.String[startId]);
+		sprintf(istrText, "[%s]> %s", pMobData->MobName, &stMsgWhisper.String[startId]);
 
 		auto ipNewItem = new SListBoxItem(istrText, dwColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0);
 		if (ipNewItem && pChatList)
