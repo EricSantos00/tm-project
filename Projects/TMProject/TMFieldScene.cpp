@@ -6117,6 +6117,111 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case MSG_CreateMob_Opcode:
 	case MSG_CreateMobTrade_Opcode:
 		return OnPacketCreateMob(pStd);
+	case MSG_Action_Opcode:
+	case MSG_Action_Stop_Opcode:
+		return OnPacketAction(pStd);
+	case 0x1C1:
+		return OnPacketREQArray(pStd);
+	case 0x333:
+		return OnPacketMessageChat(pStd);
+	case 0x105:
+		return OnPacketMessageChat_Index(pStd);
+	case 0x106:
+		return OnPacketMessageChat_Param(pStd);
+	case 0x334:
+		return OnPacketMessageWhisper(pStd);
+	case 0x7B1:
+		return OnPacketLongMessagePanel(pStd);
+	case 0x3B2:
+		return OnPacketReqSummon(pStd);
+	case 0x3B3:
+		return OnPacketCancelSummon(pStd);
+	case 0x3A3:
+		return OnPacketSoundEffect(pStd);
+	case 0x116:
+		return OnPacketCNFCharacterLogout(pStd);
+	case 0x52A:
+		return OnPacketCNFRemoveServer(pStd);
+	case 0x10A:
+		return OnPacketCNFAccountLogin(pStd);
+	case 0x114:
+		return OnPacketCNFCharacterLogin(pStd);
+	case 0x3E8:
+		return OnPacketUndoSellItem(pStd);
+	case 0x39B:
+		return OnPacketItemSold(pStd);
+	case 0x339:
+		return OnPacketUpdateCargoCoin(pStd);
+	case 0x18B:
+		return OnPacketWeather(pStd);
+	case 0x26E:
+		return OnPacketCreateItem(pStd);
+	case 0x175:
+		return OnPacketCNFDropItem(pStd);
+	case 0x171:
+		return OnPacketCNFGetItem(pStd);
+	case 0x374:
+		return OnPacketUpdateItem(pStd);
+	case 0x16F:
+		return OnPacketRemoveItem(pStd);
+	case 0x1D0:
+		g_pObjectManager->m_RMBShopOpen = 1;
+		return OnPacketShopList(pStd);
+		break;
+	case 0x379:
+		return OnPacketBuy(pStd);
+		break;
+	case 0x338:
+		return OnPacketCNFMobKill(pStd);
+		break;
+	case 0x37F:
+		return OnPacketREQParty(pStd);
+		break;
+	case 0x37D:
+		return OnPacketAddParty(pStd);
+		break;
+	case 0x37E:
+		return OnPacketRemoveParty(pStd);
+		break;
+	case 0x292:
+		return OnPacketSetHpMode(pStd);
+		break;
+	case 0x18D:
+		return OnPacketReqChallange(pStd);
+		break;
+	case 0x378:
+		return OnPacketSetShortSkill(pStd);
+		break;
+	case 0x19C:
+		return OnPacketClearMenu(pStd);
+		break;
+	case 0x3A7:
+		return OnPacketCombineComplete(pStd);
+		break;
+	case 0x3AC:
+		return OnPacketCastleState(pStd);
+		break;
+	case 0x3A1:
+		return OnPacketStartTime(pStd);
+		break;
+	case 0x3B0:
+		return OnPacketRemainCount(pStd);
+		break;
+	case 0x3A8:
+		return OnPacketWarInfo(pStd);
+		break;
+	case 0x3A4:
+		return OnPacketGuildDisable(pStd);
+		break;
+	case 0x3A2:
+		return OnPacketEnvEffect(pStd);
+		break;
+	case 0x3BB:
+		return OnPacketRemainNPCCount(pStd);
+		break;
+	case 0x1BF:
+		return OnPacketRESULTGAMBLE(pStd);
+		break;
 	case MSG_AutoTrade_Opcode:
 		return OnPacketAutoTrade(pStd);
 	case MSG_SwapItem_Opcode:
@@ -6131,6 +6236,34 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketWithdraw(pStd);
 	case MSG_CloseShop_Opcode:
 		return OnPacketCloseShop(pStd);
+	case MSG_Attack_Multi_Opcode:
+	case MSG_Attack_One_Opcode:
+	case MSG_Attack_Two_Opcode:
+		return OnPacketAttack(pStd);
+	case 0x1C5:
+		return OnPacketNuke(pStd);
+		break;
+	case 0x1C6:
+		return OnPacketRandomQuiz(pStd);
+		break;
+	case 0x2C8:
+		return OnPacketAutoKick(pStd);
+		break;
+	case 0x1C2:
+		return OnPacketItemPrice(pStd);
+		break;
+	case 0xDC3:
+		return OnPacketCapsuleInfo(pStd);
+		break;
+	case 0x3CF:
+		return OnPacketRunQuest12Start(pStd);
+		break;
+	case 0x3D0:
+		return OnPacketRunQuest12Count(pStd);
+		break;
+	case 0x3AE:
+		return OnPacketDelayQuit((MSG_STANDARDPARM*)pStd);
+		break;
 	}
 
 	return 0;
