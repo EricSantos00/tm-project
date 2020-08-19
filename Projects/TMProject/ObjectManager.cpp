@@ -13,6 +13,7 @@
 #include "TMEffectBillBoard2.h"
 #include "TMDemoScene.h"
 #include "TMMesh.h"
+#include "TMItem.h"
 
 ObjectManager::ObjectManager()
 {
@@ -485,7 +486,7 @@ TMHuman* ObjectManager::GetHumanByID(unsigned int dwID)
 	return nullptr;
 }
 
-TreeNode* ObjectManager::GetItemByID(unsigned int dwID)
+TMItem* ObjectManager::GetItemByID(unsigned int dwID)
 {
 	if (dwID == 0)
 		return 0;
@@ -501,7 +502,7 @@ TreeNode* ObjectManager::GetItemByID(unsigned int dwID)
 		if (!pCurrentNode->m_cDeleted)
 		{
 			if (pCurrentNode->m_dwID == dwID)
-				return pCurrentNode;
+				return static_cast<TMItem*>(pCurrentNode);
 
 			if (pCurrentNode->m_pDown != nullptr)
 			{

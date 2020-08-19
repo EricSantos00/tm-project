@@ -9,6 +9,7 @@ class TMScene;
 class TMObject;
 class TMCamera;
 class TMHuman;
+class TMItem;
 
 constexpr int MAX_RESOURCE_LIST = 2560;
 
@@ -46,7 +47,7 @@ public:
 	virtual void EffectFrameMove(TreeNode* pNode, unsigned int dwServerTime);
 	virtual TMScene* GetNodeByID(unsigned int dwID);
 	virtual TMHuman* GetHumanByID(unsigned int dwID);
-	virtual TreeNode* GetItemByID(unsigned int dwID);
+	virtual TMItem* GetItemByID(unsigned int dwID);
 	virtual void RestoreDeviceObjects();
 	virtual void InvalidateDeviceObjects();
 	virtual void RenderControl();
