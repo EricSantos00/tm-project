@@ -5640,10 +5640,116 @@ void TMHuman::MoveGet(TMItem* pTarget)
 
 void TMHuman::Attack(ECHAR_MOTION eMotion, TMVector2 vecTarget, char cSkillIndex)
 {
+    if (m_dwDelayDel)
+        return;
+
+    m_vecAttTargetPos = TMVector2(0.0f, 0.0f);
+    m_fTargetHeight = 0.5f;
+
+    auto dPosition = vecTarget - m_vecPosition;
+
+    if (m_nClass != 44)
+        m_fWantAngle = atan2f(dPosition.x, dPosition.y) + D3DXToRadian(90);
+
+    if (cSkillIndex >= 0 && cSkillIndex < 248)
+    {
+        m_bSkill = 1;
+        m_nMotionIndex = 0;
+        for (int i = 0; i < 4; ++i)
+        {
+            if (m_nSkinMeshType == 1)
+                m_eMotionBuffer[i] = (ECHAR_MOTION)(g_pSpell[cSkillIndex].Act2[i + m_cMount ? 3 : 0] - 1);
+            else
+                m_eMotionBuffer[i] = (ECHAR_MOTION)(g_pSpell[cSkillIndex].Act1[i + m_cMount ? 3 : 0] - 1);
+        }
+
+        m_eMotionBuffer[3] = ECHAR_MOTION::ECMOTION_NONE;
+        SetAnimation(m_eMotionBuffer[m_nMotionIndex], 0);
+        return;
+    }
+
+    if (eMotion != m_eMotion)
+        SetAnimation(eMotion, 0);
+
+    m_vecAttTargetPos = TMVector2((float)(m_vecPosition.x * 0.2f) + (float)(vecTarget.x * 0.80000001f),
+        (float)(m_vecPosition.y * 0.2f) + (float)(vecTarget.y * 0.80000001f));
 }
 
 void TMHuman::Attack(ECHAR_MOTION eMotion, TMHuman* pTarget, short cSkillIndex)
 {
+    if (m_dwDelayDel)
+        return;
+
+    if (!pTarget)
+        return;
+
+    auto dPosition = pTarget->m_vecPosition - m_vecPosition;
+    m_fTargetHeight = 0.5f;
+
+    float fW = TMHuman::m_vecPickSize[pTarget->m_nSkinMeshType].x;
+    float fH = TMHuman::m_vecPickSize[pTarget->m_nSkinMeshType].y;
+
+    m_fTargetHeight = (float)(sqrtf((float)(fW * fW) + (float)(fH * fH)) * pTarget->m_fScale) * 0.30000001f;
+
+    if (m_fTargetHeight > 2.0f)
+        m_fTargetHeight = 2.0f;
+    if (pTarget != this && m_nClass != 44)
+        m_fWantAngle = atan2f(dPosition.x, dPosition.y) + D3DXToRadian(90);
+
+    m_nSkillIndex = cSkillIndex;
+
+    if (cSkillIndex >= 0 && cSkillIndex <= 103 || cSkillIndex >= 200 && cSkillIndex < 248)
+    {
+        m_bSkill = 1;
+        m_nMotionIndex = 0;
+        m_nMotionCount = 0;
+
+        for (int i = 0; i < 4; ++i)
+        {
+            if (m_nSkinMeshType == 1)
+            {
+                m_eMotionBuffer[i] = (ECHAR_MOTION)(g_pSpell[cSkillIndex].Act2[i + m_cMount ? 3 : 0] - 1);
+                if ((int)m_eMotionBuffer[i] > 0)
+                    ++m_nMotionCount;
+            }
+            else
+            {
+                m_eMotionBuffer[i] = (ECHAR_MOTION)(g_pSpell[cSkillIndex].Act1[i + m_cMount ? 3 : 0] - 1);
+                if ((int)m_eMotionBuffer[i] > 0)
+                    ++m_nMotionCount;
+            }
+        }
+
+        m_eMotionBuffer[3] = ECHAR_MOTION::ECMOTION_NONE;
+        SetAnimation(ECHAR_MOTION::ECMOTION_STAND02, 1);
+        SetAnimation(m_eMotionBuffer[m_nMotionIndex], 0);
+        m_nSkillIndex = -1;
+        return;
+    }
+
+    if (eMotion != m_eMotion)
+    {
+        if (g_pCurrentScene->m_pMyHuman == this)
+            TMHuman::SetAnimation(eMotion, 0);
+        else if (m_nClass == 66 && 
+            m_eMotion != ECHAR_MOTION::ECMOTION_ATTACK04 && m_eMotion != ECHAR_MOTION::ECMOTION_ATTACK05 && m_eMotion != ECHAR_MOTION::ECMOTION_ATTACK06 ||
+            m_nClass != 66)
+        {
+            TMHuman::SetAnimation(eMotion, 0);
+        }
+        m_nSkillIndex = -1;
+    }
+
+    if (pTarget->m_nClass == 56 && !pTarget->m_stLookInfo.FaceMesh)
+    {
+        m_vecAttTargetPos = TMVector2((float)(m_vecPosition.x * 0.60000002f) + (float)(pTarget->m_vecPosition.x * 0.40000001f),
+            (float)(m_vecPosition.y * 0.60000002f) + (float)(pTarget->m_vecPosition.y * 0.40000001f));
+    }
+    else
+    {
+        m_vecAttTargetPos = TMVector2((float)(m_vecPosition.x * 0.2f) + (float)(pTarget->m_vecPosition.x * 0.80000001f),
+            (float)(m_vecPosition.y * 0.2f) + (float)(pTarget->m_vecPosition.y * 0.80000001f));
+    }
 }
 
 void TMHuman::Punched(int nDamage, TMVector2 vecFrom)
