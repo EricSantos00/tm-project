@@ -2377,9 +2377,9 @@ int BASE_Get3DTo2DPos(float fX, float fY, float fZ, int* pX, int* pY)
     D3DXVec3TransformCoord(&vTemp, &vecPos, &g_pDevice->m_matView);
     D3DXVec3TransformCoord(&vPosTransformed, &vTemp, &g_pDevice->m_matProj);
 
-    if (vPosTransformed.z < 0.0)
+    if (vPosTransformed.z < 0.0f)
         return 0;
-    if (vPosTransformed.z >= 1.0)
+    if (vPosTransformed.z >= 1.0f)
         return 0;
 
     int vPosInX = (int)(((vPosTransformed.x + 1.0f) * (float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)) / 2.0f);
