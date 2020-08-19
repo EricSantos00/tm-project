@@ -2371,8 +2371,8 @@ int BASE_Get3DTo2DPos(float fX, float fY, float fZ, int* pX, int* pY)
     D3DXVECTOR3 vecPos;
 
     vecPos.x = fX;
-    vecPos.y = fZ;
-    vecPos.z = fY;
+    vecPos.y = fY;
+    vecPos.z = fZ;
 
     D3DXVec3TransformCoord(&vTemp, &vecPos, &g_pDevice->m_matView);
     D3DXVec3TransformCoord(&vPosTransformed, &vTemp, &g_pDevice->m_matProj);

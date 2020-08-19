@@ -118,7 +118,7 @@ TMFont3::TMFont3(char* szText, int nStartX, int nStartY, unsigned int dwColor, f
 				m_stNum[i].nY = 0;
 				auto cValue = szText[i + 2];
 
-				if (*szText == 'C')
+				if (szText[0] == 'C')
 					cValue = szText[i + 1];
 
 				if (cValue >= '0' && cValue <= '9')
@@ -154,14 +154,11 @@ TMFont3::TMFont3(char* szText, int nStartX, int nStartY, unsigned int dwColor, f
 		else
 		{
 			int nSX = 0;
-			for (int i = 1; i < m_nStrLen; i++)
+			for (int i = 0; i < m_nStrLen; i++)
 			{
 				m_stNum[i].nX = nSX;
 				m_stNum[i].nY = 0;
-				auto cValue = szText[i + 2];
-
-				if (*szText == 'C')
-					cValue = szText[i + 1];
+				auto cValue = szText[i];
 
 				if (cValue >= '0' && cValue <= '9')
 				{
