@@ -10,6 +10,9 @@ constexpr int MAX_SERVERNUMBER = (MAX_SERVER + 1); // DB + TMSrvs + BISrv
 constexpr int MAX_ITEMLIST = 6500;
 constexpr int MAX_GUILDZONE = 5;
 
+constexpr auto MAX_EFFECT_STRING_TABLE = 50;
+constexpr auto MAX_SUB_EFFECT_STRING_TABLE = 10;
+
 constexpr auto MSG_Recall_Opcode = 0x289;
 constexpr auto MSG_Ping_Opcode = 0x3A0;
 struct MSG_STANDARD
@@ -2158,7 +2161,7 @@ static long long g_pNextLevel[403] =
   4290000000
 }; 
 
-static char g_pAffectTable[50][24] =
+static char g_pAffectTable[MAX_EFFECT_STRING_TABLE][24] =
 {
 	"",
 	"",
@@ -2212,6 +2215,7 @@ static char g_pAffectTable[50][24] =
 	"Coin Armor"
 };
 
+static char g_pAffectSubTable[MAX_SUB_EFFECT_STRING_TABLE][24];
 static int g_pHitRate[1024]{};
 
 extern HWND hWndMain;
@@ -2233,6 +2237,9 @@ void BASE_InitializeHitRate();
 int BASE_InitializeAttribute();
 void BASE_ApplyAttribute(char* pHeight, int size);
 int BASE_ReadItemList();
+int BASE_ReadSkillBin();
+int BASE_ReadInitItem();
+int BASE_InitializeRePrice();
 int	BASE_ReadMessageBin();
 void BASE_InitEffectString();
 int BASE_InitializeBaseDef();

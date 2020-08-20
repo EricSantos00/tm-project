@@ -188,6 +188,21 @@ int BASE_ReadItemList()
     return 1;
 }
 
+int BASE_ReadSkillBin()
+{
+    return 0;
+}
+
+int BASE_ReadInitItem()
+{
+    return 0;
+}
+
+int BASE_InitializeRePrice()
+{
+    return 0;
+}
+
 int BASE_GetSum(char* p, int size)
 {
 	int sum = 0;
@@ -267,13 +282,39 @@ int BASE_ReadMessageBin()
 
 void BASE_InitEffectString()
 {
+    FILE* fpEffectString = nullptr;
+    fopen_s(&fpEffectString, EffectString_Path, "rt");
+
+    if (fpEffectString)
+    {
+        for (int i = 1; i < MAX_EFFECT_STRING_TABLE; ++i)
+            fscanf(fpEffectString, "%s", g_pAffectTable[i]);
+
+        fclose(fpEffectString);
+    }
+
+    FILE* fpEffectSubString = nullptr;
+    fopen_s(&fpEffectSubString, EffectSubString_Path, "rt");
+
+    if (fpEffectSubString)
+    {
+        for (int j = 0; j < MAX_SUB_EFFECT_STRING_TABLE; ++j)
+            fscanf(fpEffectSubString, "%s", g_pAffectSubTable[j]);
+
+        fclose(fpEffectSubString);
+    }
+
+    /* There's a loading of the GuildString.txt file, but is not used */
 }
 
 int BASE_InitializeBaseDef()
 {
     int ret = 0;
 	ret = BASE_InitializeServerList() & 1;
+    ret = BASE_ReadSkillBin() & ret;
     ret = BASE_ReadItemList() & ret;
+    ret = BASE_ReadInitItem() & ret;
+    ret = BASE_InitializeRePrice() & ret;
     ret = BASE_InitializeAttribute() & ret;
 
 	return ret;
@@ -281,6 +322,23 @@ int BASE_InitializeBaseDef()
 
 void BASE_ReadItemPrice()
 {
+    int itemprice[100][2]{};
+
+    FILE* fp = nullptr;
+    fopen_s(&fp, ItemPrice_Path, "rb");
+
+    if (fp)
+    {
+        fread(itemprice, sizeof(itemprice), 1, fp);
+        fclose(fp);
+    }
+
+    for (int k = 0; k < 100 && itemprice[k][0]; ++k)
+    {
+        int idx = itemprice[k][0];
+        int bufprice = g_pItemList[idx].nPrice;
+        g_pItemList[idx].nPrice = itemprice[k][1];   
+    }
 }
 
 void BASE_UnderBarToSpace(char* szStr)

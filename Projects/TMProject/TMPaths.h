@@ -17,6 +17,8 @@ constexpr const char* MusicConfig_Path = "Music.txt";
 constexpr const char* MixHelp_Path = "Mixhelp.dat";
 constexpr const char* FontConfig_Path = "font.txt";
 
+constexpr const char* ItemPrice_Path = "ItemPrice.bin";
+
 //Shader Related
 constexpr const char* ShaderSkinMesh_Path = "Shader\\skinmesh%d.bin";
 constexpr const char* ShaderVertexShader_Path = "Shader\\vseffect%d.bin";
@@ -33,6 +35,9 @@ constexpr const char* SelServerScene_Path = "UI\\SelServerScene2.txt";
 constexpr const char* UIString_Path = "UI\\UIString.txt";
 constexpr const char* MiniMap_Path = "UI\\minimap.wyt";
 constexpr const char* Strdef_Path = "UI\\strdef.bin";
+constexpr const char* EffectString_Path = "UI\\EffectString.txt";
+constexpr const char* EffectSubString_Path = "UI\\EffectSubString.txt";
+constexpr const char* GuildString_Path = "UI\\GuildString.txt";
 
 //Effect Related
 constexpr const char* EffectTextureList_Path = "Effect\\EffectTextureList.bin";
