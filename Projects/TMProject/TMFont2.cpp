@@ -170,7 +170,7 @@ int TMFont2::SetText(const char* szString, unsigned int dwColor, int bCheckZero)
 			GetTextExtentPoint32(g_pDevice->m_hDC, m_szStringArray[nLine],
 				strlen(m_szStringArray[nLine]), &size);
 
-			m_szStringSize[nLine] = size.cx;
+			m_szStringSize[nLine] = static_cast<short>(size.cx);
 		}
 	}
 

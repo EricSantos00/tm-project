@@ -2323,7 +2323,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
             m_bSliding = 0;
         }
     }
-    else if ((m_eMotion != ECHAR_MOTION::ECMOTION_WALK || m_eMotion != ECHAR_MOTION::ECMOTION_RUN || ((int)m_eMotion < 4 && (int)m_eMotion > 9))
+    else if ((m_eMotion != ECHAR_MOTION::ECMOTION_WALK && m_eMotion != ECHAR_MOTION::ECMOTION_RUN || ((int)m_eMotion < 4 && (int)m_eMotion > 9))
         && !m_bSliding)
     {
         int nWalk = 2;
@@ -7235,8 +7235,8 @@ void TMHuman::SetPacketMOBItem(STRUCT_MOB* pMobData)
     {
         m_sHeadIndex = pMobData->Equip[0].sIndex;
         m_sHelmIndex = pMobData->Equip[1].sIndex;
-        m_citizen = (unsigned char)pMobData->Equip[0].stEffect[2].cValue;
-        m_cLegend = g_pItemList[pMobData->Equip[0].sIndex].nGrade;
+        m_citizen = static_cast<unsigned char>(pMobData->Equip[0].stEffect[2].cValue);
+        m_cLegend = static_cast<char>(g_pItemList[pMobData->Equip[0].sIndex].nGrade);
         m_stLookInfo.FaceMesh = g_pItemList[pMobData->Equip[0].sIndex].nIndexMesh;
         m_stLookInfo.FaceSkin = g_pItemList[pMobData->Equip[0].sIndex].nIndexTexture;
 
@@ -7269,7 +7269,7 @@ void TMHuman::SetPacketMOBItem(STRUCT_MOB* pMobData)
             m_sMantuaIndex = pMobData->Equip[15].sIndex;
             m_wMantuaSkin = g_pItemList[pMobData->Equip[15].sIndex].nIndexTexture;
             SetMantua(m_wMantuaSkin);
-            m_ucMantuaLegend = g_pItemList[m_sMantuaIndex].nGrade;
+            m_ucMantuaLegend = static_cast<char>(g_pItemList[m_sMantuaIndex].nGrade);
             m_ucMantuaSanc = m_nTotalKill / 1000;
             if ((unsigned char)m_ucMantuaSanc > 9)
                 m_ucMantuaSanc = 9;
@@ -7561,14 +7561,14 @@ void TMHuman::SetPacketMOBItem(STRUCT_MOB* pMobData)
         }
 
         pMobData->Equip[14].sIndex = tempIndex;
-        m_stSancInfo.Legend0 = g_pItemList[pMobData->Equip[0].sIndex].nGrade;
-        m_stSancInfo.Legend1 = g_pItemList[pMobData->Equip[1].sIndex].nGrade;
-        m_stSancInfo.Legend2 = g_pItemList[pMobData->Equip[2].sIndex].nGrade;
-        m_stSancInfo.Legend3 = g_pItemList[pMobData->Equip[3].sIndex].nGrade;
-        m_stSancInfo.Legend4 = g_pItemList[pMobData->Equip[4].sIndex].nGrade;
-        m_stSancInfo.Legend5 = g_pItemList[pMobData->Equip[5].sIndex].nGrade;
-        m_stSancInfo.Legend7 = g_pItemList[pMobData->Equip[6].sIndex].nGrade;
-        m_stSancInfo.Legend6 = g_pItemList[pMobData->Equip[7].sIndex].nGrade;
+        m_stSancInfo.Legend0 = static_cast<unsigned char>(g_pItemList[pMobData->Equip[0].sIndex].nGrade);
+        m_stSancInfo.Legend1 = static_cast<unsigned char>(g_pItemList[pMobData->Equip[1].sIndex].nGrade);
+        m_stSancInfo.Legend2 = static_cast<unsigned char>(g_pItemList[pMobData->Equip[2].sIndex].nGrade);
+        m_stSancInfo.Legend3 = static_cast<unsigned char>(g_pItemList[pMobData->Equip[3].sIndex].nGrade);
+        m_stSancInfo.Legend4 = static_cast<unsigned char>(g_pItemList[pMobData->Equip[4].sIndex].nGrade);
+        m_stSancInfo.Legend5 = static_cast<unsigned char>(g_pItemList[pMobData->Equip[5].sIndex].nGrade);
+        m_stSancInfo.Legend7 = static_cast<unsigned char>(g_pItemList[pMobData->Equip[6].sIndex].nGrade);
+        m_stSancInfo.Legend6 = static_cast<unsigned char>(g_pItemList[pMobData->Equip[7].sIndex].nGrade);
 
         if ((unsigned char)m_stSancInfo.Legend0 <= 4
             && (unsigned char)m_stSancInfo.Sanc0 > 9)
@@ -7669,7 +7669,7 @@ void TMHuman::SetPacketEquipItem(unsigned short* sEquip)
     {
         m_sHeadIndex = sEquip[0] & 0xFFF;
         m_sHelmIndex = sEquip[1] & 0xFFF;
-        m_cLegend = g_pItemList[sEquip[0] & 0xFFF].nGrade;
+        m_cLegend = static_cast<char>(g_pItemList[sEquip[0] & 0xFFF].nGrade);
         m_stLookInfo.FaceMesh = g_pItemList[sEquip[0] & 0xFFF].nIndexMesh;
         m_stLookInfo.FaceSkin = g_pItemList[sEquip[0] & 0xFFF].nIndexTexture;
         if ((sEquip[1] & 0xFFF) < 3500 || (sEquip[1] & 0xFFF) > 3502 && (sEquip[1] & 0xFFF) != 3507)
@@ -7694,7 +7694,7 @@ void TMHuman::SetPacketEquipItem(unsigned short* sEquip)
             m_sMantuaIndex = sEquip[15] & 0xFFF;
             m_wMantuaSkin = g_pItemList[sEquip[15] & 0xFFF].nIndexTexture;
             SetMantua(m_wMantuaSkin);
-            m_ucMantuaLegend = g_pItemList[sEquip[15] & 0xFFF].nGrade;
+            m_ucMantuaLegend = static_cast<char>(g_pItemList[sEquip[15] & 0xFFF].nGrade);
             m_ucMantuaSanc = m_nTotalKill / 1000;
             if ((unsigned char)m_ucMantuaSanc > 12)
                 m_ucMantuaSanc = 12;
@@ -7899,14 +7899,14 @@ void TMHuman::SetPacketEquipItem(unsigned short* sEquip)
         else
             m_cMount = 0;
 
-        m_stSancInfo.Legend0 = g_pItemList[sEquip[0] & 0xFFF].nGrade;
-        m_stSancInfo.Legend1 = g_pItemList[sEquip[1] & 0xFFF].nGrade;
-        m_stSancInfo.Legend2 = g_pItemList[sEquip[2] & 0xFFF].nGrade;
-        m_stSancInfo.Legend3 = g_pItemList[sEquip[3] & 0xFFF].nGrade;
-        m_stSancInfo.Legend4 = g_pItemList[sEquip[4] & 0xFFF].nGrade;
-        m_stSancInfo.Legend5 = g_pItemList[sEquip[5] & 0xFFF].nGrade;
-        m_stSancInfo.Legend7 = g_pItemList[sEquip[6] & 0xFFF].nGrade;
-        m_stSancInfo.Legend6 = g_pItemList[sEquip[7] & 0xFFF].nGrade;
+        m_stSancInfo.Legend0 = static_cast<unsigned char>(g_pItemList[sEquip[0] & 0xFFF].nGrade);
+        m_stSancInfo.Legend1 = static_cast<unsigned char>(g_pItemList[sEquip[1] & 0xFFF].nGrade);
+        m_stSancInfo.Legend2 = static_cast<unsigned char>(g_pItemList[sEquip[2] & 0xFFF].nGrade);
+        m_stSancInfo.Legend3 = static_cast<unsigned char>(g_pItemList[sEquip[3] & 0xFFF].nGrade);
+        m_stSancInfo.Legend4 = static_cast<unsigned char>(g_pItemList[sEquip[4] & 0xFFF].nGrade);
+        m_stSancInfo.Legend5 = static_cast<unsigned char>(g_pItemList[sEquip[5] & 0xFFF].nGrade);
+        m_stSancInfo.Legend7 = static_cast<unsigned char>(g_pItemList[sEquip[6] & 0xFFF].nGrade);
+        m_stSancInfo.Legend6 = static_cast<unsigned char>(g_pItemList[sEquip[7] & 0xFFF].nGrade);
 
         m_stOldSancInfo = m_stSancInfo;
         m_stOldColorInfo = m_stColorInfo;

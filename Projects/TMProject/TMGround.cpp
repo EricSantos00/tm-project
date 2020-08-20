@@ -2959,7 +2959,7 @@ int TMGround::Render()
                             auto vecCalc = (float)((float)(m_vecEffset.x - m_vertexVoodoo[j].position.x) * (float)(m_vecEffset.y - m_vertexVoodoo[j].position.z)) / 10.0f;
 
                             float fCos = cosf(((m_vecEffset.x - m_vertexVoodoo[j].position.x) * (m_vecEffset.y - m_vertexVoodoo[j].position.z))
-                                / 10.0f + ((float)m_dwServertime / 300.0));
+                                / 10.0f + ((float)m_dwServertime / 300.0f));
                             m_vertexVoodoo[j].position.y = (float)(fCos * Height) + m_vertexVoodoo[j].position.y;
                         }
                     }

@@ -856,8 +856,8 @@ int SGridControl::CanChangeItem(SGridControlItem* ipNewItem, int inCellIndexX, i
 						stSwapItem.Header.Type = MSG_SwapItem_Opcode;
 						stSwapItem.SourType = 0;
 						stSwapItem.SourPos = 6;
-						stSwapItem.DestType = sDestType;
-						stSwapItem.DestPos = sDestPos;
+						stSwapItem.DestType = static_cast<char>(sDestType);
+						stSwapItem.DestPos = static_cast<char>(sDestPos);
 						stSwapItem.TargetID = TMFieldScene::m_dwCargoID;
 						SendOneMessage((char*)&stSwapItem, 20);
 					}
@@ -1950,7 +1950,7 @@ int SGridControl::SellItem(int nCellX, int nCellY, unsigned int dwFlags, unsigne
 		SAFE_DELETE(pItem);
 
 		auto pMobData = &g_pObjectManager->m_stMobData;
-		g_pObjectManager->m_cShortSkill[nSeg + nCellX] = g_pItemList[pNewItem->sIndex].nIndexTexture;
+		g_pObjectManager->m_cShortSkill[nSeg + nCellX] = static_cast<char>(g_pItemList[pNewItem->sIndex].nIndexTexture);
 
 		MSG_SetShortSkill stSetShortSkill{};
 		stSetShortSkill.Header.ID = g_pCurrentScene->m_pMyHuman->m_dwID;
@@ -2145,7 +2145,7 @@ int SGridControl::SellItem(int nCellX, int nCellY, unsigned int dwFlags, unsigne
 			SGridControl::m_pLastAttachedItem = g_pCursor->m_pAttachedItem;
 
 			auto pos = g_pCursor->GetPos();
-			g_pCurrentScene->OnMouseEvent(dwFlags, wParam, (int)pos.x, pos.y);
+			g_pCurrentScene->OnMouseEvent(dwFlags, wParam, (int)pos.x, (int)pos.y);
 		}
 	}
 	// TODO
@@ -2220,7 +2220,7 @@ int SGridControl::SellItem2()
 		SAFE_DELETE(pReturnItem);
 
 		auto pMobData = &g_pObjectManager->m_stMobData;
-		g_pObjectManager->m_cShortSkill[nSeg + nCellX] = g_pItemList[pNewItem->sIndex].nIndexTexture;
+		g_pObjectManager->m_cShortSkill[nSeg + nCellX] = static_cast<char>(g_pItemList[pNewItem->sIndex].nIndexTexture);
 
 		MSG_SetShortSkill stSetShortSkill{};
 		stSetShortSkill.Header.ID = g_pCurrentScene->m_pMyHuman->m_dwID;
@@ -2410,9 +2410,9 @@ void SGridControl::SwapItem(int nCellX, int nCellY, int nCellVWidth, int nCellVH
 			MSG_SwapItem stSwapItem{};
 			stSwapItem.Header.ID = g_pObjectManager->m_dwCharID;
 			stSwapItem.Header.Type = MSG_SwapItem_Opcode;
-			stSwapItem.SourType = CheckType(m_eItemType, m_eGridType);
+			stSwapItem.SourType = static_cast<char>(CheckType(m_eItemType, m_eGridType));
 			stSwapItem.SourPos = Sourpage + nCellX + 5 * nCellY;
-			stSwapItem.DestType = sDestType;
+			stSwapItem.DestType = static_cast<char>(sDestType);
 			stSwapItem.DestPos = Destpage + sDestPos;
 			stSwapItem.TargetID = TMFieldScene::m_dwCargoID;
 
@@ -2467,15 +2467,15 @@ void SGridControl::SwapItem(int nCellX, int nCellY, int nCellVWidth, int nCellVH
 				MSG_SwapItem stSwapItem{};
 				stSwapItem.Header.ID = g_pObjectManager->m_dwCharID;
 				stSwapItem.Header.Type = MSG_SwapItem_Opcode;
-				stSwapItem.SourType = sSrcType;
+				stSwapItem.SourType = static_cast<char>(sSrcType);
 				stSwapItem.SourPos = Sourpage + sSrcPos;
-				stSwapItem.DestType = sDestType;
+				stSwapItem.DestType = static_cast<char>(sDestType);
 				stSwapItem.TargetID = TMFieldScene::m_dwCargoID;
 
 				if (sDestType)
 					stSwapItem.DestPos = Destpage + nAX + 5 * nAY;
 				else
-					stSwapItem.DestPos = sDestPos;
+					stSwapItem.DestPos = static_cast<char>(sDestPos);
 
 				if (stSwapItem.DestPos != stSwapItem.SourPos ||
 					stSwapItem.SourType != stSwapItem.DestType)
@@ -2909,7 +2909,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 			pItem->m_pItem->sIndex >= 428 && pItem->m_pItem->sIndex <= 435 ||
 			pItem->m_pItem->sIndex >= 680 && pItem->m_pItem->sIndex <= 691)
 		{
-			sprintf(szText, "%s", &g_pItemList[pItem->m_pItem->sIndex]);
+			sprintf(szText, "%s", g_pItemList[pItem->m_pItem->sIndex].Name);
 			pDescNameText->SetText(szText, 0);
 			pDescNameText->SetTextColor(0xFFAAAAFF);
 		}
@@ -2917,13 +2917,13 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 			pItem->m_pItem->sIndex == 419 || pItem->m_pItem->sIndex == 420 ||
 			nSanc > 0 && nItemPos == 0)
 		{
-			sprintf(szText, "%s", &g_pItemList[pItem->m_pItem->sIndex]);
+			sprintf(szText, "%s", g_pItemList[pItem->m_pItem->sIndex].Name);
 			pDescNameText->SetText(szText, 0);
 			pDescNameText->SetTextColor(0xFFFFFFAA);
 		}
 		else if (!BASE_HasSancAdd(pItem->m_pItem) && nItemPos && nItemPos != (int)TMEITEMTYPE::ITEMTYPE_MOUNT)
 		{
-			sprintf(szText, g_pMessageStringTable[48], &g_pItemList[pItem->m_pItem->sIndex]);
+			sprintf(szText, g_pMessageStringTable[48], g_pItemList[pItem->m_pItem->sIndex].Name);
 
 			int nRefLevel = BASE_GetItemAbility(pItem->m_pItem, 87) + 64;
 			if (nRefLevel >= 65)
@@ -3119,7 +3119,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 		}
 
 		int faceId = g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][0].sIndex;
-		int nSkillDamage = BASE_GetSkillDamage(SkillNumber, mob, weather, pFScene->GetWeaponDamage(), nPosY);
+		int nSkillDamage = BASE_GetSkillDamage(SkillNumber, mob, weather, pFScene->GetWeaponDamage(), faceId);
 
 		char szText[128]{};
 		sprintf(szText, g_pMessageStringTable[51], g_pSpell[SkillNumber].InstanceValue);
@@ -4104,7 +4104,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 
 	char szText[128]{};
 
-	float taxPrice = (float)nItemPrice * ((float)g_pObjectManager->m_nTax / 100.0);
+	float taxPrice = (float)nItemPrice * ((float)g_pObjectManager->m_nTax / 100.0f);
 
 	if (pFScene->m_nIsMP == 2)
 	{
@@ -4558,8 +4558,8 @@ void SGridControl::RButton(int nCellX, int nCellY, int bPtInRect)
 			pFScene->m_stPotalItem.SourType = 1;
 			pFScene->m_stPotalItem.SourPos = SourPos;
 			pFScene->m_stPotalItem.ItemID = 0;
-			pFScene->m_stPotalItem.GridX = vec.x;
-			pFScene->m_stPotalItem.GridY = vec.y;
+			pFScene->m_stPotalItem.GridX = static_cast<unsigned short>(vec.x);
+			pFScene->m_stPotalItem.GridY = static_cast<unsigned short>(vec.y);
 			return;
 		}
 		if (nType == 187 && g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
@@ -4936,8 +4936,8 @@ char SGridControl::automove(int nCellX, int nCellY)
 		stSwapItem.Header.Type = MSG_SwapItem_Opcode;
 		stSwapItem.SourType = Type;
 		stSwapItem.SourPos = page + vecGrid.x + 5 * vecGrid.y;
-		stSwapItem.DestType = sDestType;
-		stSwapItem.DestPos = sDestPos;
+		stSwapItem.DestType = static_cast<char>(sDestType);
+		stSwapItem.DestPos = static_cast<char>(sDestPos);
 		stSwapItem.TargetID = TMFieldScene::m_dwCargoID;
 		if ((unsigned char)sDestPos != (unsigned char)stSwapItem.SourPos 
 			|| stSwapItem.SourType != stSwapItem.DestType)

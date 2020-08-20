@@ -766,7 +766,8 @@ int TMFieldScene::InitializeScene()
 	m_pFlagDescText[1] = (SText*)m_pControlContainer->FindControl(65773);
 	m_pFlagDescText[2] = (SText*)m_pControlContainer->FindControl(65774);
 
-	m_pKingDomFlag->m_pDescPanel = m_pFlagDesc;
+	if (m_pKingDomFlag)
+		m_pKingDomFlag->m_pDescPanel = m_pFlagDesc;
 
 	m_pRankTimeText = new SText(-2,
 		"00 : 00",
@@ -2581,15 +2582,15 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 			if (!strcmp(str1, "r") || !(strcmp(str1, "re")))
 			{
 				sprintf(str1, g_pMessageStringTable[61]);
-				sprintf(istrText, "[%s] [%s]> %s", &g_pObjectManager->m_stMobData, str1, stMsgWhisper.String);
+				sprintf(istrText, "[%s] [%s]> %s", g_pObjectManager->m_stMobData.MobName, str1, stMsgWhisper.String);
 			}
 			else
 			{
-				sprintf(istrText, "[%s] : %s> %s", &g_pObjectManager->m_stMobData, str1, stMsgWhisper.String);
+				sprintf(istrText, "[%s] : %s> %s", g_pObjectManager->m_stMobData.MobName, str1, stMsgWhisper.String);
 			}
 
 			int len = strlen(istrText) + strlen(pMobData->MobName);
-			int maxLen = 55;
+			const size_t maxLen = 55;
 			if (len <= maxLen)
 			{
 				auto ipNewItem = new SListBoxItem(istrText, idwFontColor, 0.0, 0.0, 300.0f, 16.0f, 0, 0x77777777, 1, 0);
@@ -2636,8 +2637,8 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 
 			SendOneMessage((char*)&stMsgChat, sizeof(stMsgChat));
 
-			int len = strlen(stMsgChat.String) + strlen(pMobData->MobName);
-			int maxLen = 40;
+			size_t len = strlen(stMsgChat.String) + strlen(pMobData->MobName);
+			const size_t maxLen = 40;
 			if (len <= maxLen)
 			{
 				sprintf(istrText, "[%s]> %s", pMobData->MobName, stMsgChat.String);
@@ -2664,7 +2665,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 					sprintf(dest2, "%s", &stMsgChat.String[maxLen - 1]);
 				}
 
-				sprintf(istrText, "[%s]> %s", &g_pObjectManager->m_stMobData, dest);
+				sprintf(istrText, "[%s]> %s", g_pObjectManager->m_stMobData.MobName, dest);
 
 				auto ipNewItem = new SListBoxItem(istrText, idwFontColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0);
 				if (ipNewItem && pChatList)
@@ -2679,7 +2680,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 			if (stMsgChat.String[0] == '*')
 			{
 				m_pMyHuman->m_dwChatDelayTime = 10000;
-				sprintf(istrText, "%s", stMsgChat.String[1]);
+				sprintf(istrText, "%s", &stMsgChat.String[1]);
 			}
 			else
 			{
@@ -6488,8 +6489,8 @@ int TMFieldScene::FrameMove(unsigned int dwServerTime)
 					fY = pFocused->m_vecPosition.y - (float)g_MinimapPos[l].nY;
 
 					// TODO: confirm this "-" latter.
-					fX2 = ((-((0.70710701f * fX) + (-0.70710701f * fY))	* 2.0) + 78.0)
-						+ (TMGround::m_fMiniMapScale * 128.0);
+					fX2 = ((-((0.70710701f * fX) + (-0.70710701f * fY))	* 2.0f) + 78.0f)
+						+ (TMGround::m_fMiniMapScale * 128.0f);
 					fY2 = ((((0.70710701f * fX) + (0.70710701f * fY)) * 2.0f) + 78.0f)
 						+ (TMGround::m_fMiniMapScale * 128.0f);
 
@@ -7739,9 +7740,9 @@ int TMFieldScene::FrameMove(unsigned int dwServerTime)
 		if (i == 53)
 			nViewgridx = 20;
 
-		if (fabsf(g_pInitItem[i].PosX - (int)m_pMyHuman->m_vecPosition.x) < nViewgridx - 1)
+		if (fabsf(static_cast<float>(g_pInitItem[i].PosX) - m_pMyHuman->m_vecPosition.x) < nViewgridx - 1)
 		{
-			if (fabsf(g_pInitItem[i].PosY - (int)m_pMyHuman->m_vecPosition.y) < nViewgridx - 1)
+			if (fabsf(static_cast<float>(g_pInitItem[i].PosY) - m_pMyHuman->m_vecPosition.y) < nViewgridx - 1)
 			{
 				CreateGate(i, m_bInitGate);
 			}
@@ -9299,7 +9300,7 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 			m_pCIEXP->SetText(szStr, 0);
 		}
 
-		int nLevelCount = 0;
+		long long nLevelCount = 0;
 		int ckind = m_pMyHuman->Is2stClass();
 		int CurLevel = pMobData->CurrentScore.Level;
 		if (ckind == 2)
@@ -9391,7 +9392,7 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 		}
 
 		char szNameTemp[128]{};
-		sprintf(szNameTemp, "[%s]:%d", pMobData, strlen(pMobData->MobName));
+		sprintf(szNameTemp, "[%s]:%d", pMobData->MobName, strlen(pMobData->MobName));
 		if (m_pCIName)
 			m_pCIName->SetText(szNameTemp, 1);
 
@@ -9496,7 +9497,7 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 			nCur = pMobData->Exp - g_pNextLevel[CurLevel];
 		}
 
-		int nLamp = nMax / 4;
+		int nLamp = static_cast<int>(nMax / 4);
 		int nGrid = 4;
 
 		if (nCur >= nMax / 4)
@@ -9532,14 +9533,14 @@ void TMFieldScene::UpdateScoreUI(unsigned int unFlag)
 				nCur -= nMax;
 				if (m_pExpProgress[n])
 				{
-					m_pExpProgress[n]->SetMaxProgress(nMax);
-					m_pExpProgress[n]->SetCurrentProgress(nMax);
+					m_pExpProgress[n]->SetMaxProgress(static_cast<int>(nMax));
+					m_pExpProgress[n]->SetCurrentProgress(static_cast<int>(nMax));
 				}
 			}
 			else if (m_pExpProgress[n])
 			{
-				m_pExpProgress[n]->SetMaxProgress(nMax);
-				m_pExpProgress[n]->SetCurrentProgress(nCur);
+				m_pExpProgress[n]->SetMaxProgress(static_cast<int>(nMax));
+				m_pExpProgress[n]->SetCurrentProgress(static_cast<int>(nCur));
 				nCur = 0;
 			}
 		}
@@ -10306,8 +10307,8 @@ void TMFieldScene::SetCameraView()
 		}
 
 		pCamera->m_nQuaterView = 0;
-		pCamera->m_fSightLength = pCamera->m_fMaxCamLen - 0.0;
-		pCamera->m_fWantLength = pCamera->m_fMaxCamLen - 0.0;
+		pCamera->m_fSightLength = pCamera->m_fMaxCamLen;
+		pCamera->m_fWantLength = pCamera->m_fMaxCamLen;
 		pCamera->m_fCamHeight = 0.33f;
 		g_pDevice->m_bFog = 1;
 		m_pSky->m_bVisible = 0;
@@ -13265,7 +13266,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 			pAttacker->m_usTargetID[i] = pAttack->Dam[i].TargetID;
 		}
 
-		SetSkillColor(pAttacker, pAttack->SkillIndex);
+		SetSkillColor(pAttacker, static_cast<char>(pAttack->SkillIndex));
 
 		vecAttackerPos = pAttacker->m_vecPosition;
 		if (pAttacker->m_nSkinMeshType == 20 && pAttacker->m_stLookInfo.HelmMesh == 0)
@@ -13304,7 +13305,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 			float fAngle = pAttacker->m_fWantAngle;
 
 			if (!pTarget)
-				pAttacker->Attack((ECHAR_MOTION)pAttack->Motion, TMVector2((float)pAttack->TargetX, (float)pAttack->TargetY), pAttack->SkillIndex);
+				pAttacker->Attack((ECHAR_MOTION)pAttack->Motion, TMVector2((float)pAttack->TargetX, (float)pAttack->TargetY), static_cast<char>(pAttack->SkillIndex));
 			else if ((unsigned char)pAttack->Motion != 254)
 			{
 				if (pAttacker->m_sHeadIndex <= 50)
@@ -13417,11 +13418,11 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 			}
 			else if (pAttack->SkillIndex == 45) // Arma Mágica
 			{
-				float fY = (float)pAttack->TargetY + 0.5;
+				float fY = (float)pAttack->TargetY + 0.5f;
 				TMVector3 vecTarget{ (float)pAttack->TargetX + 0.5f, (float)GroundGetMask(TMVector2((float)pAttack->TargetX + 0.5f, fY)) * 0.1f, fY };
 
 				if (pTarget)
-					vecTarget = TMVector3(pTarget->m_vecPosition.x, pTarget->m_fHeight + 1.0, pTarget->m_vecPosition.y);
+					vecTarget = TMVector3(pTarget->m_vecPosition.x, pTarget->m_fHeight + 1.0f, pTarget->m_vecPosition.y);
 
 				auto pParticle = new TMEffectParticle(vecTarget, 0, 20, 0.1f, 0, 1, 56, 1.0f, 1, TMVector3(0.0f, 0.0f, 0.0f), 1000);
 				if (pParticle && m_pEffectContainer)
@@ -13476,8 +13477,8 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 					vecPos = TMVector3(pTarget->m_vecPosition.x, pTarget->m_fHeight, pTarget->m_vecPosition.y);
 				else
 				{
-					float fY = (float)GroundGetMask(TMVector2((float)pAttack->TargetX + 0.5, (float)pAttack->TargetY + 0.5)) * 0.1f;
-					vecPos = TMVector3((float)pAttack->TargetX + 0.5, fY, (float)pAttack->TargetY + 0.5);
+					float fY = (float)GroundGetMask(TMVector2((float)pAttack->TargetX + 0.5f, (float)pAttack->TargetY + 0.5f)) * 0.1f;
+					vecPos = TMVector3((float)pAttack->TargetX + 0.5f, fY, (float)pAttack->TargetY + 0.5f);
 				}
 
 				for (int i = 0; i < 6; i++)
@@ -13748,7 +13749,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 					if (nCount <= 0)
 						vecDNormal = TMVector2((float)pAttack->TargetX + 0.5f, (float)pAttack->TargetY + 0.5f);
 					else
-						vecDNormal = vecSum / nCount;
+						vecDNormal = vecSum / static_cast<const float>(nCount);
 
 					float fAng = atan2f(vecDNormal.x - pAttacker->m_vecPosition.x, -vecDNormal.y + pAttacker->m_vecPosition.y);
 					fAng -= D3DXToRadian(90);
@@ -14013,7 +14014,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 				int nDistance = BASE_GetDistance((int)pAttacker->m_vecPosition.x, (int)pAttacker->m_vecPosition.y, 
 					(int)m_pMyHuman->m_vecPosition.x, (int)m_pMyHuman->m_vecPosition.y);
 
-				int Now = g_pTimerManager->GetServerTime();
+				unsigned int Now = g_pTimerManager->GetServerTime();
 
 				unsigned int dwKhepraDelay = 2000;
 				if (!bMyAttack)
@@ -14852,21 +14853,21 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 										if (pTargetHuman->m_cMount == 1)
 										{
 											pEffectMesh->m_vecPosition = TMVector3(pTargetHuman->m_vecSkinPos.x,
-												(float)((float)((float)(TMHuman::m_vecPickSize[pTargetHuman->m_nSkinMeshType].y
+												(((TMHuman::m_vecPickSize[pTargetHuman->m_nSkinMeshType].y
 													* pTargetHuman->m_fScale)
-													/ 2.0)
+													/ 2.0f)
 													+ pTargetHuman->m_vecSkinPos.y)
-												- 0.30000001,
+												- 0.30000001f,
 												pTargetHuman->m_vecSkinPos.z);
 										}
 										else
 										{
 											pEffectMesh->m_vecPosition = TMVector3(pTargetHuman->m_vecPosition.x,
-												(float)((float)((float)(TMHuman::m_vecPickSize[pTargetHuman->m_nSkinMeshType].y
+												(((TMHuman::m_vecPickSize[pTargetHuman->m_nSkinMeshType].y
 													* pTargetHuman->m_fScale)
-													/ 2.0)
+													/ 2.0f)
 													+ pTargetHuman->m_fHeight)
-												+ 0.30000001,
+												+ 0.30000001f,
 												pTargetHuman->m_vecPosition.y);
 										}
 
@@ -15210,11 +15211,11 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 										if (pTargetHuman->m_cMount == 1)
 										{
 											pEffectMesh->m_vecPosition = TMVector3(pTargetHuman->m_vecSkinPos.x,
-												(float)((float)((float)(TMHuman::m_vecPickSize[pTargetHuman->m_nSkinMeshType].y
+												(((TMHuman::m_vecPickSize[pTargetHuman->m_nSkinMeshType].y
 													* pTargetHuman->m_fScale)
-													/ 2.0)
+													/ 2.0f)
 													+ pTargetHuman->m_vecSkinPos.y)
-												- 0.30000001,
+												- 0.30000001f,
 												pTargetHuman->m_vecSkinPos.z);
 										}
 										else
@@ -15222,9 +15223,9 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 											pEffectMesh->m_vecPosition = TMVector3(pTargetHuman->m_vecPosition.x,
 												(float)((float)((float)(TMHuman::m_vecPickSize[pTargetHuman->m_nSkinMeshType].y
 													* pTargetHuman->m_fScale)
-													/ 2.0)
+													/ 2.0f)
 													+ pTargetHuman->m_fHeight)
-												+ 0.30000001,
+												+ 0.30000001f,
 												pTargetHuman->m_vecPosition.y);
 										}
 
@@ -15442,26 +15443,26 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 		if (pAttacker == m_pMyHuman)
 		{
 			m_nReqMP = pAttack->ReqMp;
-			if (m_nReqHP < m_pMyHuman->m_stScore.Hp)
-				m_nReqHP = m_pMyHuman->m_stScore.Hp;
-			if (m_nReqMP < m_pMyHuman->m_stScore.Mp)
-				m_nReqMP = m_pMyHuman->m_stScore.Mp;
-			if (m_nReqHP > m_pMyHuman->m_stScore.MaxHp)
-				m_nReqHP = m_pMyHuman->m_stScore.MaxHp;
-			if (m_nReqMP > m_pMyHuman->m_stScore.MaxMp)
-				m_nReqMP = m_pMyHuman->m_stScore.MaxMp;
+			if (m_nReqHP < static_cast<unsigned short>(m_pMyHuman->m_stScore.Hp))
+				m_nReqHP = static_cast<unsigned short>(m_pMyHuman->m_stScore.Hp);
+			if (m_nReqMP < static_cast<unsigned int>(m_pMyHuman->m_stScore.Mp))
+				m_nReqMP = static_cast<unsigned int>(m_pMyHuman->m_stScore.Mp);
+			if (m_nReqHP > static_cast<unsigned short>(m_pMyHuman->m_stScore.MaxHp))
+				m_nReqHP = static_cast<unsigned short>(m_pMyHuman->m_stScore.MaxHp);
+			if (m_nReqMP > static_cast<unsigned int>(m_pMyHuman->m_stScore.MaxMp))
+				m_nReqMP = static_cast<unsigned int>(m_pMyHuman->m_stScore.MaxMp);
 			UpdateScoreUI(0);
 		}
 		else if (pTarget == m_pMyHuman)
 		{
-			if (m_nReqHP < m_pMyHuman->m_stScore.Hp)
-				m_nReqHP = m_pMyHuman->m_stScore.Hp;
-			if (m_nReqMP < m_pMyHuman->m_stScore.Mp)
-				m_nReqMP = m_pMyHuman->m_stScore.Mp;
-			if (m_nReqHP > m_pMyHuman->m_stScore.MaxHp)
-				m_nReqHP = m_pMyHuman->m_stScore.MaxHp;
-			if (m_nReqMP > m_pMyHuman->m_stScore.MaxMp)
-				m_nReqMP = m_pMyHuman->m_stScore.MaxMp;
+			if (m_nReqHP < static_cast<unsigned short>(m_pMyHuman->m_stScore.Hp))
+				m_nReqHP = static_cast<unsigned short>(m_pMyHuman->m_stScore.Hp);
+			if (m_nReqMP < static_cast<unsigned int>(m_pMyHuman->m_stScore.Mp))
+				m_nReqMP = static_cast<unsigned int>(m_pMyHuman->m_stScore.Mp);
+			if (m_nReqHP > static_cast<unsigned short>(m_pMyHuman->m_stScore.MaxHp))
+				m_nReqHP = static_cast<unsigned short>(m_pMyHuman->m_stScore.MaxHp);
+			if (m_nReqMP > static_cast<unsigned int>(m_pMyHuman->m_stScore.MaxMp))
+				m_nReqMP = static_cast<unsigned int>(m_pMyHuman->m_stScore.MaxMp);
 			UpdateScoreUI(16);
 		}
 	}
@@ -15778,7 +15779,7 @@ void TMFieldScene::InsertInChatList(SListBox* pChatList, STRUCT_MOB *pMobData, S
 	SendOneMessage((char*)&stMsgWhisper, sizeof(stMsgWhisper));
 
 	int len = strlen(stMsgWhisper.String) + strlen(pMobData->MobName);
-	int maxLen = 40;
+	const size_t maxLen = 40;
 	if (len <= maxLen)
 	{
 		char istrText[128]{};
@@ -15804,7 +15805,7 @@ void TMFieldScene::InsertInChatList(SListBox* pChatList, STRUCT_MOB *pMobData, S
 		}
 
 		char istrText[128]{};
-		sprintf(istrText, "[%s]> %s", &g_pObjectManager->m_stMobData, &dest[maxLen]);
+		sprintf(istrText, "[%s]> %s", g_pObjectManager->m_stMobData.MobName, &dest[maxLen]);
 
 		auto ipNewItem = new SListBoxItem(istrText, dwColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0);
 		if (ipNewItem && pChatList)

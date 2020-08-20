@@ -163,7 +163,7 @@ int TMHouse::Render()
             if (!pMesh)
                 return 0;
 
-            pMesh->Render(m_vecPosition.x, m_fHeight + 5.2199998f, m_vecPosition.y, m_fAngle - 1.5707964f, m_fWindMillAngle, 1.5707964, 0, 0);
+            pMesh->Render(m_vecPosition.x, m_fHeight + 5.2199998f, m_vecPosition.y, m_fAngle - 1.5707964f, m_fWindMillAngle, 1.5707964f, 0, 0);
         }
         else if (m_cHouseType == 2 || m_cHouseType == 3)
         {
