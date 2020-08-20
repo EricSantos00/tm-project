@@ -32,10 +32,56 @@ float BASE_ScreenResize(float size)
 
 void BASE_InitModuleDir()
 {
+    char String[256]{};
+    GetModuleFileName(nullptr, String, sizeof(String));
+
+    for (int i = strlen(String) - 1; i > 0; --i)
+    {
+        if (String[i] == '\\')
+        {
+            String[i] = 0;
+            break;
+        }
+    }
+
+    SetCurrentDirectory(String);
 }
 
 void BASE_InitializeHitRate()
 {
+    memset(g_pHitRate, 0, sizeof(g_pHitRate));
+
+    int Jump = 512;
+    int Start = 0;
+    int Quad = 0;
+
+    do
+    {
+        for (int i = 0; i < 1024; i += Jump)
+        {
+            if (!g_pHitRate[i])
+            {
+                if (!Quad)
+                    g_pHitRate[i] = Start;
+                else if (Quad == 1)
+                    g_pHitRate[i] = 512 - Start;
+                else if (Quad == 2)
+                    g_pHitRate[i] = Start + 512;
+                else
+                    g_pHitRate[i] = 1024 - Start;
+
+                if (g_pHitRate[i] > 999)
+                    g_pHitRate[i] = 999;
+                if (++Quad >= 4)
+                    Quad = 0;
+                if (!Quad)
+                    ++Start;
+            }
+        }
+        Jump /= 2;
+    } while (Jump);
+
+    g_pHitRate[0] = 512;
 }
 
 int BASE_InitializeAttribute()
@@ -260,7 +306,6 @@ int BASE_GetWeekNumber()
 
 	unsigned int week = 86400;
 	return (int)(now / week - 3);
-
 }
 
 int BASE_GetItemSanc(STRUCT_ITEM* item)
@@ -1050,37 +1095,22 @@ int IsValidSkill(int nSkillIndex)
                 return 0;
         }
         else if (!((1 << nSkillIndex % 24) & g_pObjectManager->m_stMobData.LearnedSkill[0]))
-        {
             return 0;
-        }
+
         return 1;
     }
     else if (nSkillIndex == 205 && g_pObjectManager->m_stMobData.LearnedSkill[1] & 0x20)
-    {
         return 1;
-    }
     else if (nSkillIndex == 233 && g_pObjectManager->m_stMobData.LearnedSkill[1] & 0x200)
-    {
         return 1;
-    }
     else if (nSkillIndex == 238 && g_pObjectManager->m_stMobData.LearnedSkill[1] & 4)
-    {
         return 1;
-    }
     else if (nSkillIndex < 200 || nSkillIndex >= 247)
-    {
         return 0;
-    }
     else if (nSkillIndex == 205 || nSkillIndex == 233 || nSkillIndex == 238)
-    {
         return 0;
-    }
     else
-    {
         return ((1 << 4 * ((nSkillIndex - 200) / 4)) & g_pObjectManager->m_stMobData.LearnedSkill[1]) != 0;
-    }
-
-    return 0;
 }
 
 int IsValidClassSkill(int nSkillIndex)
@@ -1188,7 +1218,6 @@ int BASE_GetSubGuild(int item)
         ret = item % 3 + 1;
 
     return ret;
-	
 }
 
 unsigned int BASE_GetItemTenColor(STRUCT_ITEM* pItem)
@@ -2116,90 +2145,56 @@ unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue)
     if (nPos >= 64)
     {
         if (nPos != 64 && nPos != 128 && nPos != 192)
-        {
             return 0xFF99EE99;
-        }
         else if (dwParam == 2 || dwParam == 73 || dwParam == 67)
         {
             if (nValue < 45)
-            {
                 return 0xFF99EE99;
-            }
             else if (nValue < 45 || nValue > 54)
-            {
                 return 0xFFFFAA00;
-            }
             else
-            {
                 return 0xFFFFFFAA;
-            }
         }
         else if (dwParam == 60 || dwParam == 68)
         {
             if (nValue < 20)
-            {
                 return 0xFF99EE99;
-            }
             else if (nValue < 20 || nValue > 24)
-            {
                 return 0xFFFFAA00;
-            }
             else
-            {
                 return 0xFFFFFFAA;
-            }
         }
         else if (dwParam == 26)
         {
             if (nValue < 21)
-            {
                 return 0xFF99EE99;
-            }
             else if (nValue < 21 || nValue > 24)
-            {
                 return 0xFFFFAA00;
-            }
             else
-            {
                 return 0xFFFFFFAA;
-            }
         }
         else if (dwParam == 74)
         {
             if (nValue < 21)
-            {
                 return 0xFF99EE99;
-            }
             else if (nValue < 21 || nValue > 24)
-            {
                 return 0xFFFFAA00;
-            }
             else
-            {
                 return 0xFFFFFFAA;
-            }
         }
         else
-        {
             return 0xFF99EE99;
-        }
     }
     else if (dwParam == 60 || dwParam == 68)
     {
         if (nPos == 2)
         {
             if (nValue < 12)
-            {
                 return 0xFF99EE99;
-            }
             else if (nValue < 12 || nValue > 14)
-            {
                 return 0xFFFFAA00;
-            }
             else
-            {
                 return 0xFFFFFFAA;
-            }
         }
         else if (nValue >= 6)
         {
@@ -2209,136 +2204,82 @@ unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue)
                 return 0xFFFFAA00;
         }
         else
-        {
             return 0xFF99EE99;
-        }
     }
     else if (dwParam == 42 || dwParam == 71)
     {
         if (nValue < 50)
-        {
             return 0xFF99EE99;
-        }
         else if (nValue < 50 || nValue >= 60)
-        {
             return 0xFFFFAA00;
-        }
         else
-        {
             return 0xFFFFFFAA;
-        }
     }
     else if (dwParam == 26)
     {
         if (nValue < 12)
-        {
             return 0xFF99EE99;
-        }
         else if (nValue == 12)
-        {
             return 0xFFFFFFAA;
-        }
         else
-        {
             return 0xFFFFAA00;
-        }
     }
     else if (dwParam == 74)
     {
         if (nValue < 12)
-        {
             return 0xFF99EE99;
-        }
         else if (nValue == 12)
-        {
             return 0xFFFFFFAA;
-        }
         else
-        {
             return 0xFFFFAA00;
-        }
     }
     else if (dwParam == 3 || dwParam == 53 || dwParam == 72)
     {
         if (nPos == 16)
         {
             if (nValue < 30)
-            {
                 return 0xFF99EE99;
-            }
             else if (nValue == 30)
-            {
                 return 0xFFFFFFAA;
-            }
             else
-            {
                 return 0xFFFFAA00;
-            }
         }
         else if (nValue < 15)
-        {
             return 0xFF99EE99;
-        }
         else if (nValue == 15)
-        {
             return 0xFFFFFFAA;
-        }
         else
-        {
             return 0xFFFFAA00;
-        }
     }
     else if (dwParam == 2 || dwParam == 73 || dwParam == 67)
     {
         if (nPos == 32)
         {
             if (nValue < 24)
-            {
                 return 0xFF99EE99;
-            }
             else if (nValue < 24 || nValue > 30)
-            {
                 return 0xFFFFAA00;
-            }
             else
-            {
                 return 0xFFFFFFAA;
-            }
         }
         else if (nValue < 18)
-        {
             return 0xFF99EE99;
-        }
         else if (nValue == 18)
-        {
             return 0xFFFFFFAA;
-        }
         else
-        {
             return 0xFFFFAA00;
-        }
     }
     else if (dwParam == 4 || dwParam == 45 || dwParam == 69)
     {
         if (nValue < 40)
-        {
             return 0xFF99EE99;
-        }
         else if (nValue == 40)
-        {
             return 0xFFFFFFAA;
-        }
         else
-        {
             return 0xFFFFAA00;
-        }
-    }
-    else
-    {
-        return 0xFF99EE99;
     }
 
-    return 0;
+    return 0xFF99EE99;
 }
 
 void BASE_SetItemAmount(STRUCT_ITEM* item, int amount)
@@ -2399,13 +2340,9 @@ int BASE_Get3DTo2DPos(float fX, float fY, float fZ, int* pX, int* pY)
 int IsPassiveSkill(int nSkillIndex)
 {
     if (nSkillIndex >= 5400)
-    {
         nSkillIndex -= 5200;
-    }
     else if (nSkillIndex >= 5000)
-    {
         nSkillIndex -= 5000;
-    }
 
     return g_pSpell[nSkillIndex].Passive == 1;
 }

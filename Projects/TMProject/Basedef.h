@@ -2212,6 +2212,8 @@ static char g_pAffectTable[50][24] =
 	"Coin Armor"
 };
 
+static int g_pHitRate[1024]{};
+
 extern HWND hWndMain;
 extern char EncodeByte[4];
 extern int g_nChannelWidth;
