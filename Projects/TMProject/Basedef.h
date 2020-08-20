@@ -2348,6 +2348,7 @@ int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char type);
 unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue);
 void BASE_SetItemAmount(STRUCT_ITEM* item, int amount);
 int BASE_GetMobAbility(STRUCT_MOB* mob, char Type);
+int BASE_GetMaxAbility(STRUCT_MOB* mob, char Type);
 char BASE_CheckChatValid(char* Chat);
 char CheckGuildName(char* GuildName, bool bSubguild);
 void BASE_GetHitPosition(int sx, int sy, int* tx, int* ty, char* pHeight, int MH);
@@ -2361,6 +2362,8 @@ bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect);
 int BASE_GetItemSancSuccess(STRUCT_ITEM* item);
 
 int BASE_GetEffectValue(STRUCT_ITEM* item, int effect);
+void BASE_ChangeOrAddEffectValue(STRUCT_ITEM* item, int effect, int value);
+void BASE_RemoveEffect(STRUCT_ITEM* item, int effect);
 
 /* Read Functions */
 int ReadItemicon();

@@ -2391,9 +2391,7 @@ int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type)
 
 int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char type)
 {
-    // _8
     int itemId = item->sIndex;
-    // _4
     int value = 0;
 
     if (itemId < 0 || itemId >= MAX_ITEMLIST)
@@ -2690,11 +2688,112 @@ unsigned int BASE_GetOptionColor(int nPos, unsigned int dwParam, int nValue)
 
 void BASE_SetItemAmount(STRUCT_ITEM* item, int amount)
 {
+    if (item->sIndex == 419 || item->sIndex == 420 || item->sIndex == 412 || item->sIndex == 413 || 
+        item->sIndex >= 2390 && item->sIndex <= 2418)
+    {
+        BASE_RemoveEffect(item, EF_UNIQUE);
+    }
+
+    BASE_ChangeOrAddEffectValue(item, EF_AMOUNT, amount);
 }
 
 int BASE_GetMobAbility(STRUCT_MOB* mob, char Type)
 {
-    return 0;
+    int value = 0;
+    if (Type == 27)
+    {
+        value = BASE_GetMaxAbility(mob, Type);
+        if (value < 2 && mob->Class == 3)
+        {
+            if (mob->LearnedSkill[0] & 0x80000)
+                value = 2;
+        }
+
+        return value;
+    }
+
+    int nUnique[16]{};
+    for (int i = 0; i < 16; ++i)
+    {
+        if (!mob->Equip[i].sIndex && i == 7)
+            continue;
+
+        if (i >= 1 && i <= 5)
+            nUnique[i] = g_pItemList[mob->Equip[i].sIndex].nUnique;
+
+        if ((Type == 2 && i == 6) || (Type == 60 || i == 7))
+            continue;
+
+        if (i == 7 && Type == 2)
+        {            
+            int ldam = BASE_GetItemAbility(&mob->Equip[6], 73) + BASE_GetItemAbility(&mob->Equip[6], Type);
+            int rdam = BASE_GetItemAbility(&mob->Equip[7], 73) + BASE_GetItemAbility(&mob->Equip[7], Type);
+
+            int lidx = mob->Equip[6].sIndex;
+            int ridx = mob->Equip[7].sIndex;
+
+            int ltype = 0;
+            if (lidx > 0 && lidx < 6500)
+                ltype = g_pItemList[lidx].nUnique;
+
+            int rtype = 0;
+            if (ridx > 0 && ridx < 6500)
+                rtype = g_pItemList[ridx].nUnique;
+
+            if (!ltype || !rtype)
+            {
+                if (ldam <= rdam)
+                    value += rdam;
+                else
+                    value += ldam;
+            }
+            else if (ltype == 47 && rtype == 45)
+            {
+                value += ldam;
+            }
+            else
+            {
+                int multi = 0;
+                if (ltype == rtype)
+                    multi = 50;
+                else
+                    multi = 30;
+                if (!mob->Class && mob->LearnedSkill[0] & 0x200)
+                    multi += 15;
+                if (mob->Class == 3 && mob->LearnedSkill[0] & 0x400)
+                    multi += 10;
+                if (ldam <= rdam)
+                    value += multi * ldam / 100 + rdam;
+                else
+                    value += multi * rdam / 100 + ldam;
+            }
+        }
+        else
+        {
+            value += BASE_GetItemAbility(&mob->Equip[i], Type);
+        }
+    }
+
+    if (value < 0)
+        value = 0;
+
+    return value;
+}
+
+int BASE_GetMaxAbility(STRUCT_MOB* mob, char Type)
+{
+    int value = 0;
+    for (int i = 0; i < 16; ++i)
+    {
+        if (mob->Equip[i].sIndex)
+        {
+            int tvalue = BASE_GetItemAbility(&mob->Equip[i], Type);
+            if (value < tvalue)
+                value = tvalue;
+        }
+    }
+
+    return value;
 }
 
 char BASE_CheckChatValid(char* Chat)
@@ -2786,4 +2885,39 @@ int BASE_GetEffectValue(STRUCT_ITEM* item, int effect)
     }
 
     return 0;
+}
+
+void BASE_ChangeOrAddEffectValue(STRUCT_ITEM* item, int effect, int value)
+{
+    for (auto& i : item->stEffect)
+    {
+        if (i.cEffect == effect)
+        {
+            i.cValue = static_cast<unsigned char>(value);
+            return;
+        }
+    }
+    
+    // If the item doens't have the add, we search for a empty spot to insert it.
+    for (auto& i : item->stEffect)
+    {
+        if (i.cEffect == 0)
+        {
+            i.cEffect = static_cast<unsigned char>(effect);
+            i.cValue = static_cast<unsigned char>(value);
+            return;
+        }
+    }
+}
+
+void BASE_RemoveEffect(STRUCT_ITEM* item, int effect)
+{
+    for (auto& i : item->stEffect)
+    {
+        if (i.cEffect == effect)
+        {
+            i.cEffect = 0;
+            i.cValue = 0;            
+        }
+    }
 }
