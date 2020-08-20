@@ -2982,8 +2982,31 @@ bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect)
     return false;
 }
 
+int BASE_GetSancEffValue(STRUCT_ITEM* item)
+{
+    for (auto i : item->stEffect)
+    {
+        if (i.cEffect == EF_SANC || (i.cEffect >= EF_STARTCOL && i.cEffect <= EF_MAXCOL))
+            return i.cValue;
+    }
+
+    return 0;
+}
+
 int BASE_GetItemSancSuccess(STRUCT_ITEM* item)
 {
+    if (item->sIndex >= 2330 && item->sIndex < 2390)
+        return 0;
+    if (item->sIndex >= 3200 && item->sIndex < 3300)
+        return 0;
+    if (item->sIndex >= 3980 && item->sIndex < 4000)
+        return 0;
+
+    auto sanc = BASE_GetSancEffValue(item);
+
+    if (sanc <= 210)
+        return sanc / 10;
+    
     return 0;
 }
 

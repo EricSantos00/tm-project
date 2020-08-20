@@ -2358,6 +2358,7 @@ int IsPassiveSkill(int nSkillIndex);
 
 bool BASE_HasSancAdd(STRUCT_ITEM* item);
 bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect);
+int BASE_GetSancEffValue(STRUCT_ITEM* item);
 
 int BASE_GetItemSancSuccess(STRUCT_ITEM* item);
 
