@@ -1665,11 +1665,44 @@ int BASE_CanTrade(STRUCT_ITEM* Dest, STRUCT_ITEM* Carry, char* MyTrade, STRUCT_I
 
 void BASE_ClearItem(STRUCT_ITEM* item)
 {
-
+    memset(item, 0, sizeof(item));
 }
 
 void BASE_SortTradeItem(STRUCT_ITEM* Item, int Type)
 {
+    int Buffer[15]{};
+    for (int i = 0; i < MAX_TRADE; ++i)
+    {
+        if (Item[i].sIndex)
+            Buffer[i] = BASE_GetItemAbility(&Item[i], Type);
+        else
+            Buffer[i] = -1;
+    }
+
+    STRUCT_ITEM ItemTemp[MAX_TRADE]{};
+
+    for (int i = 0; i < MAX_TRADE; ++i)
+    {
+        int MaxBufferIndex = 0;
+        int MaxBuffer = -1;
+        for (int j = 0; j < MAX_TRADE; ++j)
+        {
+            if (Buffer[j] > MaxBuffer)
+            {
+                MaxBufferIndex = j;
+                MaxBuffer = Buffer[j];
+            }
+        }
+
+        if (MaxBuffer == -1)
+            break;
+
+        Buffer[MaxBufferIndex] = -1;
+
+        ItemTemp[i] = Item[MaxBufferIndex];
+    }
+
+    memcpy(Item, ItemTemp, sizeof(ItemTemp));
 }
 
 int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY)
