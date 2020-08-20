@@ -2808,6 +2808,117 @@ char CheckGuildName(char* GuildName, bool bSubguild)
 
 void BASE_GetHitPosition(int sx, int sy, int* tx, int* ty, char* pHeight, int MH)
 {
+    if ((sx == *tx && sy == *ty) || !sx || !sy || !*tx || !*ty)
+        return;
+
+    int dx = sx <= *tx ? *tx - sx : sx - *tx;
+    int dy = sy <= *ty ? *ty - sy : sy - *ty;
+    int dis = BASE_GetDistance(sx, sy, *tx, *ty);
+
+    if (dis <= 0)
+        return;
+
+    if (dis > 30)
+    {
+        *tx = 0;
+        *ty = 0;
+        return;
+    }
+
+    if (dx > dy)
+    {
+        if (*tx == sx)
+            return;
+        int a = 1000 * (*ty - sy) / (*tx - sx);
+        int b = 1000 * sy - sx * a;
+        int dir = sx >= *tx ? -1 : 1;
+
+        int sxa = dir + sx;
+        int This = pHeight[sxa + g_HeightWidth * ((b + sxa * a) / 1000 - g_HeightPosY) - g_HeightPosX];
+        if (This == 127)
+        {
+            *tx = 0;
+            *ty = 0;
+            return;
+        }
+
+        int leng = dx;
+        for (int x = sxa; x != *tx; x += dir)
+        {
+            if (x != sxa)
+            {
+                int Last = This;
+                This = pHeight[x + g_HeightWidth * ((b + x * a) / 1000 - g_HeightPosY) - g_HeightPosX];
+                if (This == 127)
+                {
+                    *tx = 0;
+                    *ty = 0;
+                    return;
+                }
+                if (This > MH + Last || This < Last - MH)
+                {
+                    *tx = x;
+                    *ty = (b + x * a) / 1000;
+                    return;
+                }
+                if (--leng < 1)
+                    return;
+            }
+            else if (--leng < 1)
+            {
+                return;
+            }
+        }
+
+        return;
+    }
+    if (*ty != sy)
+    {
+        int a = 1000 * (*tx - sx) / (*ty - sy);
+        int b = 1000 * sx - sy * a;
+        int dir = sy >= *ty ? -1 : 1;
+
+        int sya = dir + sy;
+
+        int This = pHeight[(b + sya * a) / 1000 + g_HeightWidth * (sya - g_HeightPosY) - g_HeightPosX];
+        if (This == 127)
+        {
+            *tx = 0;
+            *ty = 0;
+            return;
+        }
+
+        int leng = dy;
+        for (int y = sya; y != *ty; y += dir)
+        {
+            if (y != sya)
+            {
+                int xp = (b + y * a) / 1000;
+                int Last = This;
+                This = pHeight[xp + g_HeightWidth * (y - g_HeightPosY) - g_HeightPosX];
+                if (This == 127)
+                {
+                    *tx = 0;
+                    *ty = 0;
+                    return;
+                }
+                if (This > MH + Last || This < Last - MH)
+                {
+                    *tx = xp;
+                    *ty = y;
+                    return;
+                }
+                if (--leng < 1)
+                    return;
+            }
+            else if (--leng < 1)
+            {
+                return;
+            }
+        }
+
+        return;
+    }
 }
 
 int BASE_Get3DTo2DPos(float fX, float fY, float fZ, int* pX, int* pY)
