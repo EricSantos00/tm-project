@@ -12,7 +12,7 @@ int g_nServerGroupNum;
 char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
 int g_nSelServerWeather;
 char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
-STRUCT_ITEMLIST g_pItemList[6500];
+STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
 STRUCT_SPELL g_pSpell[248];
 STRUCT_INITITEM g_pInitItem[100];
 int g_itemicon[6500];
@@ -1707,7 +1707,46 @@ void BASE_SortTradeItem(STRUCT_ITEM* Item, int Type)
 
 int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY)
 {
-    return 0;
+    int grid = BASE_GetItemAbility(item, EF_GRID);
+
+    char SourGrid[4][2]{};
+    char CargoGrid[14][9]{};
+
+    for (int i = 0; i < MAX_CARGO; ++i)
+    {
+        if (cargo[i].sIndex)
+        {
+            char TempGrid[4][2]{};
+            memcpy((char*)TempGrid, (char*)g_pItemGrid[BASE_GetItemAbility(&cargo[i], EF_GRID)], 8u);
+
+            int tx = i % 9;
+            int ty = i / 9;
+            for (int yy = 0; yy < 4; ++yy)
+            {
+                for (int xx = 0; xx < 2; ++xx)
+                {
+                    if (TempGrid[yy][xx] == 1 && ty + yy >= 0 && tx + xx >= 0 && ty + yy < 14 && tx + xx < 9)
+                        CargoGrid[ty][9 * yy + tx + xx] = 1;
+                }
+            }
+        }
+    }
+    for (int j = 0; j < 4; ++j)
+    {
+        for (int k = 0; k < 2; ++k)
+        {
+            if (SourGrid[j][k] == 1)
+            {
+                if (DestY + j < 0 || DestX + k < 0 || DestY + j >= 14 || DestX + k >= 9)
+                    return 0;
+
+                if (CargoGrid[DestY][9 * j + DestX + k] == 1)
+                    return 0;
+            }
+        }
+    }
+
+    return 1;
 }
 
 int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans)
@@ -1923,12 +1962,28 @@ int BASE_GetColorCount(unsigned int dwColor)
 
 int BASE_GetManaSpent(int SkillNumber, int SaveMana, int Special)
 {
-    return 0;
+    return g_pSpell[SkillNumber].ManaSpent * (Special / 2 + 100) / 100 * (100 - SaveMana) / 100;
 }
 
 int BASE_GetSkillDamage(int dam, int ac, int combat)
 {
-    return 0;
+    int tdam{};
+
+    if (combat > 15)
+        combat = 15;
+
+    tdam = (rand() % (21 - combat) + combat + 90) * (dam - ac / 2) / 100;
+    if (tdam < -50)
+        tdam = 0;
+    else if (tdam >= -50 && tdam < 0)
+        tdam = (tdam + 50) / 10;
+    else if (tdam >= 0 && tdam <= 45)
+        tdam = 5 * tdam / 4 + 5;
+
+    if (tdam <= 0)
+        tdam = 1;
+
+    return tdam;
 }
 
 int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weapondamage, int OriginalFace)

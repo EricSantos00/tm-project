@@ -1199,7 +1199,7 @@ struct MSG_CNFParty2
 	char LeaderName[16];
 };
 
-static int g_pDistanceTable[7][7] =
+const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },
   { 1, 1, 2, 3, 4, 5, 6 },
@@ -1210,7 +1210,7 @@ static int g_pDistanceTable[7][7] =
   { 6, 6, 6, 6, 6, 6, 6 }
 };
 
-static int g_pMountBonus[30][6] =
+const static int g_pMountBonus[30][6] =
 {
   { 10, 1, 0, 0, 4, 75 },
   { 10, 1, 0, 0, 4, 75 },
@@ -1244,7 +1244,7 @@ static int g_pMountBonus[30][6] =
   { 150, 25, 0, 20, 5, 75 }
 };
 
-static int g_pMountBonus2[20][6] =
+const static int g_pMountBonus2[20][6] =
 {
   { 35, 7, 0, 0, 6, 75 },
   { 350, 55, 10, 28, 6, 74 },
@@ -1268,7 +1268,7 @@ static int g_pMountBonus2[20][6] =
   { 0, 0, 0, 0, 0, 0 }
 };
 
-static int g_nMountHPTable[28] =
+const static int g_nMountHPTable[28] =
 {
   7000,
   8000,
@@ -1300,9 +1300,9 @@ static int g_nMountHPTable[28] =
   0
 };
 
-static int g_pSuccessRate[10] = { 5, 5, 5, 5, 4, 4, 3, 3, 2, 1 };
+const static int g_pSuccessRate[10] = { 5, 5, 5, 5, 4, 4, 3, 3, 2, 1 };
 
-static unsigned int dwEFParam[49] =
+const static unsigned int dwEFParam[49] =
 {
   18u,
   1u,
@@ -1355,7 +1355,7 @@ static unsigned int dwEFParam[49] =
   83u
 };
 
-static long long g_pNextLevel_G2[401] =
+const static long long g_pNextLevel_G2[401] =
 {
   0,
   20000000,
@@ -1760,7 +1760,7 @@ static long long g_pNextLevel_G2[401] =
   8200000000
 };
 
-static long long g_pNextLevel[403] =
+const static long long g_pNextLevel[403] =
 {
   0,
   500,
@@ -2167,6 +2167,59 @@ static long long g_pNextLevel[403] =
   4290000000
 }; 
 
+const static char g_pItemGrid[8][4][2] =
+{
+	{
+		{01, 00},
+		{00, 00},
+		{00, 00},
+		{00, 00}
+	},
+	{
+		{01, 00},
+		{01, 00},
+		{00, 00},
+		{00, 00}
+
+	},
+	{
+		{01, 00},
+		{01, 00},
+		{01, 00},
+		{00, 00}
+	},
+	{
+		{01, 00},
+		{01, 00},
+		{01, 00},
+		{01, 00}
+	},
+	{
+		{01, 01},
+		{00, 00},
+		{00, 00},
+		{00, 00}
+	},
+	{
+		{01, 01},
+		{01, 01},
+		{00, 00},
+		{00, 00}
+	},
+	{
+		{01, 01},
+		{01, 01},
+		{01, 01},
+		{00, 00}
+	},
+	{
+		{01, 01},
+		{01, 01},
+		{01, 01},
+		{01, 01}
+	}
+};
+
 static char g_pAffectTable[MAX_EFFECT_STRING_TABLE][24] =
 {
 	"",
@@ -2223,6 +2276,8 @@ static char g_pAffectTable[MAX_EFFECT_STRING_TABLE][24] =
 
 static char g_pAffectSubTable[MAX_SUB_EFFECT_STRING_TABLE][24];
 static int g_pHitRate[1024]{};
+
+
 
 extern HWND hWndMain;
 extern char EncodeByte[4];
