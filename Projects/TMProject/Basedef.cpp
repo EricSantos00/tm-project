@@ -13,7 +13,7 @@ char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
 int g_nSelServerWeather;
 char g_pMessageStringTable[MAX_STRING][MAX_STRING_LENGTH];
 STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
-STRUCT_SPELL g_pSpell[248];
+STRUCT_SPELL g_pSpell[MAX_SPELL_LIST];
 STRUCT_INITITEM g_pInitItem[100];
 int g_itemicon[6500];
 
@@ -191,17 +191,52 @@ int BASE_ReadItemList()
 
 int BASE_ReadSkillBin()
 {
-    return 0;
+    int size = sizeof(STRUCT_SPELL) * MAX_SPELL_LIST;
+    char* temp = (char*)g_pSpell;
+    int tsum = 0;
+
+    FILE* fp = fopen(SkillData_Path, "rb");
+
+    if (fp != NULL)
+    {
+        fread(g_pSpell, size, 1, fp);
+        fread(&tsum, sizeof(tsum), 1, fp);
+
+        fclose(fp);
+    }
+    else
+    {
+        MessageBox(NULL, "Can't read SkillData.bin", "ERROR", NULL);
+        return FALSE;
+    }
+
+    int sum = BASE_GetSum2((char*)g_pSpell, size);
+
+#ifndef _DEBUG
+    //if(SKILL_CHECKSUM != sum) 
+    //	return FALSE;
+#endif
+
+    for (int i = 0; i < size; i++)
+    {
+        temp[i] = temp[i] ^ 0x5A;
+    }
+
+    return TRUE;
 }
 
 int BASE_ReadInitItem()
 {
-    return 0;
+    // Check if is really necessarily
+    return 1;
 }
 
-int BASE_InitializeRePrice()
+int BASE_InitialItemRePrice()
 {
-    return 0;
+    g_pItemList[412].nPrice = 4000000;
+    g_pItemList[413].nPrice = 8000000;
+    g_pItemList[419].nPrice = 400000;
+    g_pItemList[420].nPrice = 800000;
 }
 
 int BASE_GetSum(char* p, int size)

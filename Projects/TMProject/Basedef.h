@@ -10,6 +10,7 @@ constexpr int MAX_SERVER = 10; // Max number of game servers that can connect to
 constexpr int MAX_SERVERGROUP = 10;	// Max number of servers that can exist
 constexpr int MAX_SERVERNUMBER = (MAX_SERVER + 1); // DB + TMSrvs + BISrv
 constexpr int MAX_ITEMLIST = 6500;
+constexpr int MAX_SPELL_LIST = 248;
 constexpr int MAX_GUILDZONE = 5;
 
 constexpr auto MAX_TRADE = 15;
@@ -2288,7 +2289,7 @@ extern char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
 extern int g_nSelServerWeather;
 extern STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
 extern STRUCT_GUILDZONE g_pGuildZone[MAX_GUILDZONE];
-extern STRUCT_SPELL g_pSpell[248];
+extern STRUCT_SPELL g_pSpell[MAX_SPELL_LIST];
 extern STRUCT_INITITEM g_pInitItem[100];
 extern int g_itemicon[6500];
 
