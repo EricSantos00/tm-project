@@ -1085,7 +1085,7 @@ int BASE_GetSpeed(STRUCT_SCORE* score)
 int ReadItemicon()
 {
     FILE* fpBin = nullptr;
-    fopen_s(&fpBin, "./itemicon.bin", "rb");
+    fopen_s(&fpBin, ItemIcon_Path, "rb");
     if (fpBin)
     {
         fread(g_itemicon, sizeof(g_itemicon), 1u, fpBin);
@@ -1097,6 +1097,36 @@ int ReadItemicon()
 
 void ReadItemName()
 {
+    FILE* fpBin = nullptr;
+    fopen_s(&fpBin, ItemName_Path, "rb");
+
+    if (!fpBin)
+        return;
+
+    for (int i = 0; i < MAX_ITEMLIST; ++i)
+    {
+        int Index = -1;
+        char Name[256]{};
+
+        if (!fread(&Index, 4, 1, fpBin) || !fread(Name, 64, 1, fpBin))
+            break;
+
+        for (int nTemp = 0; nTemp < 62; ++nTemp)
+            Name[nTemp] -= nTemp;
+
+        if (Index != -1 && Index < 6500)
+        {
+            if (strlen(Name) >= 63)
+            {
+                Name[63] = 0;
+                Name[62] = 0;
+            }
+
+            strcpy(g_pItemList[Index].Name, Name);
+        }
+    }
+
+    fclose(fpBin);
 }
 
 void ReadUIString()
@@ -1581,18 +1611,65 @@ int BASE_IsInLowZone(int nX, int nY)
 }
 
 int BASE_GetItemAmount(STRUCT_ITEM* item)
-{
-    return 0;
+{    
+    return BASE_GetEffectValue(item, EF_AMOUNT);
 }
 
 int BASE_CanCarry(STRUCT_ITEM* Carry, int pos)
 {
+    if (pos < 30)
+        return 1;
+    if (pos / 15 == 2 && Carry[60].sIndex != 3467)
+        return 0;
+    if (pos / 15 != 3 || Carry[61].sIndex == 3467)
+        return 1;
+
     return 0;
 }
 
 int BASE_CanTrade(STRUCT_ITEM* Dest, STRUCT_ITEM* Carry, char* MyTrade, STRUCT_ITEM* OpponentTrade)
 {
-    return 0;
+    STRUCT_ITEM OpponentTemp[MAX_TRADE]{};
+
+    memcpy(Dest, Carry, sizeof(STRUCT_ITEM) * MAX_CARRY);
+
+    for (int i = 0; i < MAX_TRADE; ++i)
+    {
+        int pos = (unsigned char)MyTrade[i];
+        if (pos != -1)
+            BASE_ClearItem(&Dest[pos]);
+    }
+
+    BASE_SortTradeItem(OpponentTemp, EF_GRID);
+
+    for (int i = 0; i < MAX_TRADE; i++)
+    {
+        if (!OpponentTemp[i].sIndex)
+            continue;
+
+        int j = 0;
+        for (j = 0; j < MAX_VISIBLE_CARRY; j++)
+        {
+            if (!Dest[j].sIndex && BASE_CanCarry(Dest, j))
+            {
+                Dest[j] = OpponentTemp[i];
+                break;
+            }
+        }
+        if (j == MAX_VISIBLE_CARRY)
+            return 0;
+    }
+
+    return 1;
+}
+
+void BASE_ClearItem(STRUCT_ITEM* item)
+{
+
+}
+
+void BASE_SortTradeItem(STRUCT_ITEM* Item, int Type)
+{
 }
 
 int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY)
@@ -2449,5 +2526,16 @@ bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect)
 
 int BASE_GetItemSancSuccess(STRUCT_ITEM* item)
 {
+    return 0;
+}
+
+int BASE_GetEffectValue(STRUCT_ITEM* item, int effect)
+{
+    for (auto i : item->stEffect)
+    {
+        if (i.cEffect == effect)
+            return i.cValue;
+    }
+
     return 0;
 }

@@ -16,9 +16,9 @@ constexpr const char* ItemHelp_Path = "itemhelp.dat";
 constexpr const char* MusicConfig_Path = "Music.txt";
 constexpr const char* MixHelp_Path = "Mixhelp.dat";
 constexpr const char* FontConfig_Path = "font.txt";
-
 constexpr const char* ItemPrice_Path = "ItemPrice.bin";
-
+constexpr const char* ItemIcon_Path = "./itemicon.bin";
+constexpr const char* ItemName_Path = "Itemname.bin";
 //Shader Related
 constexpr const char* ShaderSkinMesh_Path = "Shader\\skinmesh%d.bin";
 constexpr const char* ShaderVertexShader_Path = "Shader\\vseffect%d.bin";

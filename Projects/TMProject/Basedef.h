@@ -1,6 +1,8 @@
 #pragma once
 
 constexpr int MAX_CARGO = 128;
+constexpr auto MAX_CARRY = 64;
+constexpr auto MAX_VISIBLE_CARRY = MAX_CARRY - 4;
 constexpr int MAX_STRING = 2000;
 constexpr int MAX_STRING_LENGTH = 128;
 
@@ -9,6 +11,8 @@ constexpr int MAX_SERVERGROUP = 10;	// Max number of servers that can exist
 constexpr int MAX_SERVERNUMBER = (MAX_SERVER + 1); // DB + TMSrvs + BISrv
 constexpr int MAX_ITEMLIST = 6500;
 constexpr int MAX_GUILDZONE = 5;
+
+constexpr auto MAX_TRADE = 15;
 
 constexpr auto MAX_EFFECT_STRING_TABLE = 50;
 constexpr auto MAX_SUB_EFFECT_STRING_TABLE = 10;
@@ -2273,6 +2277,8 @@ int BASE_IsInLowZone(int nX, int nY);
 int BASE_GetItemAmount(STRUCT_ITEM* item);
 int BASE_CanCarry(STRUCT_ITEM* Carry, int pos);
 int BASE_CanTrade(STRUCT_ITEM* Dest, STRUCT_ITEM* Carry, char* MyTrade, STRUCT_ITEM* OpponentTrade);
+void BASE_ClearItem(STRUCT_ITEM* item);
+void BASE_SortTradeItem(STRUCT_ITEM* Item, int Type);
 int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY);
 int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans);
 unsigned int BASE_GetItemColor(STRUCT_ITEM* item);
@@ -2298,6 +2304,8 @@ bool BASE_HasSancAdd(STRUCT_ITEM* item);
 bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect);
 
 int BASE_GetItemSancSuccess(STRUCT_ITEM* item);
+
+int BASE_GetEffectValue(STRUCT_ITEM* item, int effect);
 
 /* Read Functions */
 int ReadItemicon();
