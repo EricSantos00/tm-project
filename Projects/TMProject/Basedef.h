@@ -2301,7 +2301,7 @@ void BASE_ApplyAttribute(char* pHeight, int size);
 int BASE_ReadItemList();
 int BASE_ReadSkillBin();
 int BASE_ReadInitItem();
-int BASE_InitializeRePrice();
+void BASE_InitialItemRePrice();
 int	BASE_ReadMessageBin();
 void BASE_InitEffectString();
 int BASE_InitializeBaseDef();

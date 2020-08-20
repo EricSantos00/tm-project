@@ -231,7 +231,7 @@ int BASE_ReadInitItem()
     return 1;
 }
 
-int BASE_InitialItemRePrice()
+void BASE_InitialItemRePrice()
 {
     g_pItemList[412].nPrice = 4000000;
     g_pItemList[413].nPrice = 8000000;
@@ -350,8 +350,9 @@ int BASE_InitializeBaseDef()
     ret = BASE_ReadSkillBin() & ret;
     ret = BASE_ReadItemList() & ret;
     ret = BASE_ReadInitItem() & ret;
-    ret = BASE_InitializeRePrice() & ret;
     ret = BASE_InitializeAttribute() & ret;
+
+    BASE_InitialItemRePrice();
 
 	return ret;
 }

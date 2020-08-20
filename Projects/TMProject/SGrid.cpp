@@ -2982,9 +2982,10 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 			int nRefLevel = BASE_GetItemAbility(pItem->m_pItem, 87) + 64;
 			if (nRefLevel >= 65)
 				sprintf(szText, "%s [%c]", g_pItemList[pItem->m_pItem->sIndex].Name, nRefLevel);
+			else if (pItem->m_pItem->sIndex >= 2360 && pItem->m_pItem->sIndex <= 2389 && (pItem->m_pItem->stEffect[2].cValue >= 10))
+				sprintf(szText, g_pMessageStringTable[483], g_pItemList[pItem->m_pItem->sIndex].Name, g_pItemList[pItem->m_pItem->stEffect[2].cValue + 4179].Name);
 			else
-				sprintf(szText, g_pMessageStringTable[483], g_pItemList[pItem->m_pItem->sIndex].Name,
-					g_pItemList[pItem->m_pItem->stEffect[2].cValue + 4179].Name);
+				sprintf(szText, "%s", g_pItemList[pItem->m_pItem->sIndex].Name);
 
 			pDescNameText->SetText(szText, 0);
 			pDescNameText->SetTextColor(BASE_GetItemColor(pItem->m_pItem));
@@ -4118,7 +4119,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 	}
 	else
 	{
-		if (!pFScene->m_bIsUndoShoplist)
+		if (pFScene->m_bIsUndoShoplist)
 		{
 			for (int nn = 0; nn < 10; ++nn)
 			{
