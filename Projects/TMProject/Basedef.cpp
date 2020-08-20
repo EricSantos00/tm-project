@@ -1988,7 +1988,167 @@ int BASE_GetSkillDamage(int dam, int ac, int combat)
 
 int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weapondamage, int OriginalFace)
 {
-    return 0;
+    int instanceindex = g_pSpell[skillnum].InstanceType;
+
+    int level = mob->CurrentScore.Level;
+    if (level < 0)
+        level = 0;
+    if (level >= 400)
+        level = 400;
+
+    int special = mob->CurrentScore.Special[skillnum % 24 / 8 + 1];
+    int base = g_pSpell[skillnum].InstanceValue;
+    int affectbase = g_pSpell[skillnum].AffectValue;
+    int skillclass = skillnum / 8 % 3;
+    int dam = 0;
+
+    if (instanceindex == 0)
+    {
+        switch (skillnum)
+        {
+        case 11:
+            dam = affectbase + special / 10;
+            break;
+        case 13:
+            dam = affectbase + 3 * special;
+            break;
+        case 41:
+            dam = special / 25 + 2;
+            break;
+        case 43:
+            dam = affectbase + special / 3 + 15;
+            break;
+        case 44:
+            dam = 5 * (special / 3 + 15);
+            break;
+        case 45:
+            dam = affectbase + special / 10;
+            break;
+        }
+    }
+    else if (instanceindex >= 1 && instanceindex <= 5)
+    {
+        int skind = skillnum / 8;
+        int trans = 0;
+        if (OriginalFace % 10 > 5)
+            trans = 1;
+
+        if (trans == 0)
+        {
+            if (skillnum == 97)
+                dam = base + 15 * level;
+            else if (!mob->Class && skind == 1)
+                dam = 3 * weapondamage + 3 * mob->CurrentScore.Str + level / 2 + special + base;
+            else if (!mob->Class && skind != 1)
+                dam = weapondamage + mob->CurrentScore.Int / 4 + level / 2 + special + base + mob->CurrentScore.Int / 40;
+            else
+            {
+                switch (mob->Class)
+                {
+                case 1:
+                    dam = mob->CurrentScore.Int / 30 + mob->CurrentScore.Int / 3 + level / 2 + special + base;
+                    break;
+                case 2:
+                    dam = mob->CurrentScore.Int / 30 + mob->CurrentScore.Int / 3 + level / 2 + special + base;
+                    break;
+                case 3:
+                    if (skillnum == 79)
+                        dam = mob->CurrentScore.Damage;
+                    else
+                        dam = 3 * weapondamage + 3 * mob->CurrentScore.Str + level / 2 + special + base;
+                    break;
+                }
+            }
+        }
+        else if (skillnum == 97)
+            dam = base + 15 * level;
+        else if (!mob->Class && skind == 1)
+            dam = 3 * weapondamage + 3 * mob->CurrentScore.Str + level + special + base;
+        else if (!mob->Class && skind != 1)
+            dam = weapondamage + mob->CurrentScore.Int / 4 + level + special + base + mob->CurrentScore.Int / 40;
+        else
+        {
+            switch (mob->Class)
+            {
+            case 1:
+                dam = mob->CurrentScore.Int / 30 + mob->CurrentScore.Int / 3 + level + base + 2 * special;
+                break;
+            case 2:
+                dam = mob->CurrentScore.Int / 30 + mob->CurrentScore.Int / 3 + level + base + 2 * special;
+                break;
+            case 3:
+                if (skillnum == 79)
+                    dam = mob->CurrentScore.Damage;
+                else
+                    dam = 3 * weapondamage + 3 * mob->CurrentScore.Str + level / 2 + special + base;
+                break;
+            }
+        }
+        if (weather == 1)
+        {
+            if (instanceindex == 2)
+                dam = 90 * dam / 100;
+            if (instanceindex == 5)
+                dam = 130 * dam / 100;
+        }
+        else if (weather == 2 && instanceindex == 3)
+            dam = 120 * dam / 100;
+        if (skillnum != 97)
+        {
+            if (skillnum == 79)
+                return dam;
+            if (!mob->Class && skind == 1 || mob->Class == 3)
+                dam = 5 * dam / 4;
+            else
+                dam = 5 * (dam * (4 * (unsigned __int8)mob->Magic + 100) / 100) / 4;
+        }
+        if ((1 << (8 * skillclass + 7)) & mob->LearnedSkill[0])
+        {
+            switch (mob->Class)
+            {
+            case 0:
+                if (!skillclass)
+                    dam = 115 * dam / 100;
+                else if (skillclass == 1)
+                    dam = 120 * dam / 100;
+                else if (skillclass == 2)
+                    dam = 115 * dam / 100;
+                break;
+            case 1:
+                if (!skillclass)
+                    dam = 110 * dam / 100;
+                else if (skillclass == 1)
+                    dam = 115 * dam / 100;
+                else if (skillclass == 2)
+                    dam = 115 * dam / 100;
+                break;
+            case 2:
+                if (!skillclass)
+                    dam = 110 * dam / 100;
+                break;
+            case 3:
+                if (!skillclass)
+                    dam = 110 * dam / 100;
+                else if (skillclass == 1)
+                    dam = 110 * dam / 100;
+                else if (skillclass == 2)
+                    dam = 120 * dam / 100;
+                break;
+            }
+        }
+    }
+    else if (instanceindex == 6)
+    {
+        dam = base + 3 * special / 2;
+        if (skillnum == 29 && mob->LearnedSkill[0] & 0x80)
+            dam = 120 * dam / 100;
+    }
+    else if (instanceindex == 11)
+        dam = g_pSpell[skillnum].InstanceValue;
+    else
+        dam = 2 * (unsigned char)mob->Magic;
+
+    return dam;
 }
 
 int BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace)
