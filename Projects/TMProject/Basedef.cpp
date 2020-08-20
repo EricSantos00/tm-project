@@ -3,6 +3,7 @@
 #include "TMGlobal.h"
 #include "TMLog.h"
 #include "ItemEffect.h"
+#include <WinInet.h>
 
 HWND hWndMain;
 char EncodeByte[4];
@@ -322,7 +323,7 @@ int BASE_InitializeBaseDef()
 
 void BASE_ReadItemPrice()
 {
-    int itemprice[100][2]{};
+    int itemprice[MAX_ITEM_PRICE_REPLACE][2]{};
 
     FILE* fp = nullptr;
     fopen_s(&fp, ItemPrice_Path, "rb");
@@ -333,7 +334,7 @@ void BASE_ReadItemPrice()
         fclose(fp);
     }
 
-    for (int k = 0; k < 100 && itemprice[k][0]; ++k)
+    for (int k = 0; k < MAX_ITEM_PRICE_REPLACE && itemprice[k][0]; ++k)
     {
         int idx = itemprice[k][0];
         int bufprice = g_pItemList[idx].nPrice;
@@ -353,8 +354,30 @@ void BASE_UnderBarToSpace(char* szStr)
 }
 
 int BASE_GetHttpRequest(char* httpname, char* Request, int MaxBuffer)
-{
-	return 0;
+{   
+    auto hSession = InternetOpen("MS", 0, 0, 0, 0);
+    if (!hSession)
+        return 0;
+
+    auto hHttpFile = InternetOpenUrl(hSession, httpname, 0, 0, 0x4000000u, 0);
+
+    if (!hHttpFile)
+    {
+        GetLastError();
+        InternetCloseHandle(hSession);
+        return 0;
+    }
+
+    DWORD dwBytesRead = 0;
+    InternetReadFile(hHttpFile, Request, MaxBuffer, &dwBytesRead);
+    InternetCloseHandle(hHttpFile);
+    if (dwBytesRead >= 1024)
+        dwBytesRead = 1023;
+
+    Request[dwBytesRead] = 0;
+    InternetCloseHandle(hSession);
+
+    return 1;
 }
 
 int BASE_GetWeekNumber()

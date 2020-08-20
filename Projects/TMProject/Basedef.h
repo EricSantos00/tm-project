@@ -13,6 +13,8 @@ constexpr int MAX_GUILDZONE = 5;
 constexpr auto MAX_EFFECT_STRING_TABLE = 50;
 constexpr auto MAX_SUB_EFFECT_STRING_TABLE = 10;
 
+constexpr auto MAX_ITEM_PRICE_REPLACE = 100;
+
 constexpr auto MSG_Recall_Opcode = 0x289;
 constexpr auto MSG_Ping_Opcode = 0x3A0;
 struct MSG_STANDARD
