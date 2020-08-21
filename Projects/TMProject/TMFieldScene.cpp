@@ -10242,6 +10242,135 @@ void TMFieldScene::SetShortSkill(int nIndex, SGridControlItem* pGridItem)
 
 void TMFieldScene::SetSkillColor(TMHuman* pAttacker, char cSkillIndex)
 {
+	if (!pAttacker)
+		return;
+
+	unsigned int dwIndex = 221;
+	if (pAttacker->m_dwID > 0 && pAttacker->m_dwID < 1000)
+	{
+		const static unsigned int dwTextureIndex[MAX_SPELL_LIST] = 
+		{ 
+			1, 5, 3, 5, 1, 5, 5, 5, 4, 0, 5, 0, 0, 5, 
+			5, 5, 2, 2, 4, 1, 3, 2, 4, 5, 1, 5, 3, 1, 
+			5, 5, 5, 5, 3, 1, 1, 3, 1, 0, 0, 5, 2, 0, 
+			5, 1, 1, 5, 1, 5, 0, 0, 1, 1, 0, 1, 5, 5, 
+			1, 0, 3, 0, 0, 0, 5, 5, 2, 5, 2, 5, 0, 5, 
+			5, 5, 0, 2, 1, 0, 2, 1, 5, 5, 5, 2, 3, 2, 
+			3, 5, 5, 5, 0, 5, 1, 2, 5, 5, 5, 5, 1, 5, 
+			5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+		};
+
+		if (cSkillIndex >= 0 && cSkillIndex < 248)
+			dwIndex = dwTextureIndex[cSkillIndex] + 216;
+		if (pAttacker->m_pSkinMesh->m_pSwingEffect[0])
+		{
+			pAttacker->m_pSkinMesh->m_pSwingEffect[0]->m_dwSWTextureIndex = dwIndex;
+			pAttacker->m_pSkinMesh->m_pSwingEffect[0]->m_bHide = cSkillIndex == 75;
+			if (pAttacker->m_pSkinMesh->m_pSwingEffect[1])
+			{
+				pAttacker->m_pSkinMesh->m_pSwingEffect[1]->m_dwSWTextureIndex = dwIndex;
+				pAttacker->m_pSkinMesh->m_pSwingEffect[1]->m_bHide = cSkillIndex == 75;
+			}
+		}
+		return;
+	}
+
+	switch (DS_SOUND_MANAGER::m_nMusicIndex)
+	{
+	case 2:
+		if (pAttacker->m_pSkinMesh->m_pSwingEffect[0])
+		{
+			pAttacker->m_pSkinMesh->m_pSwingEffect[0]->m_dwSWTextureIndex = 222;
+			if (pAttacker->m_pSkinMesh->m_pSwingEffect[1])
+				pAttacker->m_pSkinMesh->m_pSwingEffect[1]->m_dwSWTextureIndex = 222;
+		}
+		break;
+	case 3:
+	case 6:
+	case 8:
+		if (pAttacker->m_pSkinMesh->m_pSwingEffect[0])
+		{
+			pAttacker->m_pSkinMesh->m_pSwingEffect[0]->m_dwSWTextureIndex = 221;
+			if (pAttacker->m_pSkinMesh->m_pSwingEffect[1])
+				pAttacker->m_pSkinMesh->m_pSwingEffect[1]->m_dwSWTextureIndex = 221;
+		}
+		break;
+	case 4:
+		if (pAttacker->m_pSkinMesh->m_pSwingEffect[0])
+		{
+			pAttacker->m_pSkinMesh->m_pSwingEffect[0]->m_dwSWTextureIndex = 223;
+			if (pAttacker->m_pSkinMesh->m_pSwingEffect[1])
+				pAttacker->m_pSkinMesh->m_pSwingEffect[1]->m_dwSWTextureIndex = 223;
+		}
+		break;
+	case 5:
+	case 7:
+		if (pAttacker->m_pSkinMesh->m_pSwingEffect[0])
+		{
+			pAttacker->m_pSkinMesh->m_pSwingEffect[0]->m_dwSWTextureIndex = 224;
+			if (pAttacker->m_pSkinMesh->m_pSwingEffect[1])
+			{
+				pAttacker->m_pSkinMesh->m_pSwingEffect[1]->m_dwSWTextureIndex = 224;
+				if (pAttacker->m_sHeadIndex == 287)
+				{
+					if (!pAttacker->m_pSkinMesh->m_pSwingEffect[0])
+						return;
+					pAttacker->m_pSkinMesh->m_pSwingEffect[0]->m_dwSWTextureIndex = 226;
+					if (!pAttacker->m_pSkinMesh->m_pSwingEffect[1])
+						return;
+					pAttacker->m_pSkinMesh->m_pSwingEffect[1]->m_dwSWTextureIndex = 226;
+				}
+				if (pAttacker->m_sHeadIndex == 283)
+				{
+					if (!pAttacker->m_pSkinMesh->m_pSwingEffect[0])
+						return;
+					pAttacker->m_pSkinMesh->m_pSwingEffect[0]->m_dwSWTextureIndex = 227;
+					if (!pAttacker->m_pSkinMesh->m_pSwingEffect[1])
+						return;
+					pAttacker->m_pSkinMesh->m_pSwingEffect[1]->m_dwSWTextureIndex = 227;
+				}
+				if (pAttacker->m_sHeadIndex == 175)
+				{
+					if (pAttacker->m_pSkinMesh->m_pSwingEffect[0])
+					{
+						pAttacker->m_pSkinMesh->m_pSwingEffect[0]->m_dwSWTextureIndex = 228;
+						if (pAttacker->m_pSkinMesh->m_pSwingEffect[1])
+							pAttacker->m_pSkinMesh->m_pSwingEffect[1]->m_dwSWTextureIndex = 228;
+					}
+				}
+			}
+		}
+		break;
+	case 9:
+		if (pAttacker->m_pSkinMesh->m_pSwingEffect[0])
+		{
+			pAttacker->m_pSkinMesh->m_pSwingEffect[0]->m_dwSWTextureIndex = 225;
+			if (pAttacker->m_pSkinMesh->m_pSwingEffect[1])
+			{
+				pAttacker->m_pSkinMesh->m_pSwingEffect[1]->m_dwSWTextureIndex = 225;
+				if (pAttacker->m_sHeadIndex == 175)
+				{
+					if (pAttacker->m_pSkinMesh->m_pSwingEffect[0])
+					{
+						pAttacker->m_pSkinMesh->m_pSwingEffect[0]->m_dwSWTextureIndex = 228;
+						if (pAttacker->m_pSkinMesh->m_pSwingEffect[1])
+							pAttacker->m_pSkinMesh->m_pSwingEffect[1]->m_dwSWTextureIndex = 228;
+					}
+				}
+			}
+		}
+		break;
+	}
 }
 
 void TMFieldScene::OnESC()
