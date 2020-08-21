@@ -10127,7 +10127,7 @@ void TMFieldScene::SetMyHumanExp(long long unExp, int nFakeExp)
 	auto pMobData = &g_pObjectManager->m_stMobData;
 
 	long long nExp = unExp - pMobData->Exp;
-	int nFExp = g_pObjectManager->m_nFakeExp - nFakeExp);
+	int nFExp = g_pObjectManager->m_nFakeExp - nFakeExp;
 
 	if (nExp == 0 && nFExp == 0)
 		return;
@@ -10173,6 +10173,67 @@ void TMFieldScene::SetMyHumanExp(long long unExp, int nFakeExp)
 
 void TMFieldScene::IncSkillSel()
 {
+	int nMax = 10;
+	if (m_pGridSkillBelt3->m_bVisible)
+		nMax = 20;
+
+	int nBase = nMax - m_nAutoSkillNum;
+
+	if (m_cAutoAttack == 1)
+	{
+		int nBack = g_pObjectManager->m_cSelectShortSkill;
+		if (g_pObjectManager->m_cSelectShortSkill < nBase)
+			g_pObjectManager->m_cSelectShortSkill = nBase;
+		else if (++g_pObjectManager->m_cSelectShortSkill >= nMax)
+			g_pObjectManager->m_cSelectShortSkill = nBase;
+
+		auto pBeltGrid = m_pGridSkillBelt2;
+
+		if (nMax == 20)
+			pBeltGrid = m_pGridSkillBelt3;
+
+		auto pItem = pBeltGrid->GetItem(g_pObjectManager->m_cSelectShortSkill - 10 * m_pGridSkillBelt3->m_bVisible, 0);
+
+		if (!pItem)
+		{
+			int nStart = g_pObjectManager->m_cSelectShortSkill + 1;
+			if (nStart >= nMax)
+				nStart = nBase;
+			for (int i = nStart; i < nMax; ++i)
+			{
+				pItem = pBeltGrid->GetItem(i - 10 * m_pGridSkillBelt3->m_bVisible, 0);
+				if (pItem)
+				{
+					g_pObjectManager->m_cSelectShortSkill = i;
+					break;
+				}
+			}
+		}
+		if (!pItem)
+		{
+			g_pObjectManager->m_cSelectShortSkill = nBack;
+			if (!pBeltGrid->GetItem(g_pObjectManager->m_cSelectShortSkill - 10 * m_pGridSkillBelt3->m_bVisible, 0))
+				return;
+		}
+
+		for (int j = 0; j < 10; ++j)
+		{
+			auto ipCtrlItem = m_pGridSkillBelt2->GetItem(j, 0);
+			if (j == g_pObjectManager->m_cSelectShortSkill && ipCtrlItem)
+				ipCtrlItem->m_GCObj.nTextureSetIndex = 200;
+			else if (ipCtrlItem)
+				ipCtrlItem->m_GCObj.nTextureSetIndex = 199;
+		}
+
+		for (int j = 0; j < 10; ++j)
+		{
+			auto ipCtrlItem = m_pGridSkillBelt3->GetItem(j, 0);
+			if (j + 10 == g_pObjectManager->m_cSelectShortSkill && ipCtrlItem)
+				ipCtrlItem->m_GCObj.nTextureSetIndex = 200;
+			else if (ipCtrlItem)
+				ipCtrlItem->m_GCObj.nTextureSetIndex = 199;
+		}
+	}
 }
 
 void TMFieldScene::SetShortSkill(int nIndex, SGridControlItem* pGridItem)
