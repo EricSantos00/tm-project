@@ -8105,7 +8105,7 @@ int TMFieldScene::CheckMerchant(TMHuman* pOver)
 
 int TMFieldScene::MouseLButtonDown(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServerTime)
 {
-	return 0;
+	return 1;
 }
 
 int TMFieldScene::MobAttack(unsigned int wParam, D3DXVECTOR3 vec, unsigned int dwServerTime)
@@ -10124,6 +10124,51 @@ void TMFieldScene::UpdateMyHuman()
 
 void TMFieldScene::SetMyHumanExp(long long unExp, int nFakeExp)
 {
+	auto pMobData = &g_pObjectManager->m_stMobData;
+
+	long long nExp = unExp - pMobData->Exp;
+	int nFExp = g_pObjectManager->m_nFakeExp - nFakeExp);
+
+	if (nExp == 0 && nFExp == 0)
+		return;
+
+	pMobData->Exp = unExp;
+	g_pObjectManager->m_nFakeExp = nFakeExp;
+
+	memcpy(&m_pMyHuman->m_stScore, &pMobData->CurrentScore, sizeof(pMobData->CurrentScore));
+
+	UpdateScoreUI(0);
+
+	int nTX = 0;
+	int nTY = 0;
+	if (nExp >= 0 && BASE_Get3DTo2DPos(m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_fHeight + 1.0f, m_pMyHuman->m_vecPosition.y, &nTX, &nTY))
+	{
+		char szStr[128]{};
+		sprintf(szStr, "Exp +%d", nExp);
+
+		m_pExtraContainer->AddChild(new TMFont3(szStr, nTX, nTY + (int)(RenderDevice::m_fHeightRatio * 80.0f), 0xFFFF8866, 0.5f, 0, 1, 1200, 0, 1));
+
+		sprintf(szStr, g_pMessageStringTable[148], nExp);
+		if (!m_bShowExp)
+		{
+			if (m_pChatListnotice)
+				m_pChatListnotice->AddItem(new SListBoxItem(szStr, 0xFFCCAAFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+		}
+	}
+	if (nFExp > 0 && BASE_Get3DTo2DPos(m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_fHeight + 1.0f, m_pMyHuman->m_vecPosition.y, &nTX, &nTY))
+	{
+		char szStr[128]{};
+		sprintf(szStr, "Cp -%d", nFExp);
+
+		m_pExtraContainer->AddChild(new TMFont3(szStr, nTX, nTY + (int)(RenderDevice::m_fHeightRatio * 80.0f), 0xFFFF8866, 1.0f, 0, 1, 1500, 0, 1));
+
+		sprintf(szStr, g_pMessageStringTable[305], nFExp);
+		if (!m_bShowExp)
+		{
+			if (m_pChatListnotice)
+				m_pChatListnotice->AddItem(new SListBoxItem(szStr, 0xFFCCAAFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+		}
+	}
 }
 
 void TMFieldScene::IncSkillSel()
