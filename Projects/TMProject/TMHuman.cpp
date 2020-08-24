@@ -6041,11 +6041,56 @@ void TMHuman::Die()
 
 void TMHuman::Stand()
 {
+    if (m_dwDelayDel)
+        return;
+
+    char szBuffer[48]{};
+    int nStartRouteIndex = m_nLastRouteIndex + 1;
+    if (m_fProgressRate > 0.5f)
+        nStartRouteIndex = m_nLastRouteIndex + 2;
+
+    int nX = (int)m_vecRouteBuffer[nStartRouteIndex].x;
+    int nY = (int)m_vecRouteBuffer[nStartRouteIndex].y;
+    for (int i = nStartRouteIndex; i < 48; ++i)
+    {
+        m_vecRouteBuffer[i].x = (float)nX;
+        m_vecRouteBuffer[i].y = (float)nY;
+    }
 }
 
 void TMHuman::OnlyMove(int nX, int nY, int nLocal)
 {
+    if (m_dwDelayDel)
+        return;
 
+    if (m_vecTargetPos.x == nX && m_vecTargetPos.y == nY)
+        return;
+
+    MSG_Action stAction{};
+    stAction.Header.ID = m_dwID;
+    stAction.PosX = nX;
+    stAction.PosY = nY;
+    stAction.Effect = 0;
+    stAction.Header.Type = MSG_Action_Opcode;
+    if (g_pCurrentScene->m_pMyHuman == this)
+        stAction.Speed = g_nMyHumanSpeed;
+    else
+        stAction.Speed = (int)m_fMaxSpeed;
+
+    stAction.TargetX = nX;
+    stAction.TargetY = nY;
+
+    if (!nLocal || nLocal == 2)
+    {
+        auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+        pFScene->m_stMoveStop.LastX = stAction.PosX;
+        pFScene->m_stMoveStop.LastY = stAction.PosY;
+        pFScene->m_stMoveStop.NextX = stAction.TargetX;
+        pFScene->m_stMoveStop.NextY = stAction.TargetY;
+        SendOneMessage((char*)&stAction, sizeof(stAction));
+    }
+    if (!nLocal || nLocal == 1)
+        OnPacketEvent(876, (char*)&stAction);
 }
 
 int TMHuman::IsGoMore()
