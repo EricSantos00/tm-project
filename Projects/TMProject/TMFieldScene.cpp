@@ -561,7 +561,38 @@ TMFieldScene::~TMFieldScene()
 
 void SetMinimapPos()
 {
-	// TODO
+	FILE* fpMinimap = nullptr;
+	fopen_s(&fpMinimap, "minimap.dat", "rt");
+
+	memset(g_MinimapPos, 0, sizeof(g_MinimapPos));
+
+	if (fpMinimap)
+	{
+		int Color = 0; 
+		for (int index = 0; index < 256; ++index)
+		{
+			if (fscanf(fpMinimap, "%d %d %d %d %d %s", &g_MinimapPos[index].nX, &g_MinimapPos[index].nY, &Color, &g_MinimapPos[index].nCX, &g_MinimapPos[index].nCY, g_MinimapPos[index].szTarget) != -1)
+				break;
+
+			switch (Color - 1)
+			{
+			case 1:
+				g_MinimapPos[index].dwColor = 0xFFFFFFFF;
+				break;
+			case 2:
+				g_MinimapPos[index].dwColor = 0xFF44AA44;
+				break;
+			case 3:
+				g_MinimapPos[index].dwColor = 0xFF5555FF;
+				break;
+			case 4:
+				g_MinimapPos[index].dwColor = 0xFFAA00FF;
+				break;
+			}
+		}
+
+		fclose(fpMinimap);
+	}
 }
 
 int TMFieldScene::InitializeScene()
@@ -1803,7 +1834,7 @@ int TMFieldScene::InitializeScene()
 
 	for (int ig = 0; ig < 256; ++ig)
 	{
-		m_pInMiniMapPosPanel[ig] = new SPanel(-2, 0.0, 0.0, 4.0, 4.0, g_MinimapPos[ig].dwColor, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+		m_pInMiniMapPosPanel[ig] = new SPanel(-2, 0.0f, 0.0f, 4.0f, 4.0f, g_MinimapPos[ig].dwColor, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
 
 		if (m_pInMiniMapPosPanel[ig])
 		{
@@ -12218,7 +12249,6 @@ char TMFieldScene::FeedMount()
 		m_dwUseItemTime = dwServerTime;
 
 		int nAmount = BASE_GetItemAmount(pItem->m_pItem);
-
 		if (nAmount <= 1)
 		{
 			auto pPickedItem = m_pGridInvList[SourPosa / 15]->PickupItem(SourPosa % 15 % 5, SourPosa % 15 / 5);
