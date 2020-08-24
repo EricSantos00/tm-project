@@ -8623,7 +8623,7 @@ int TMFieldScene::MobAttack(unsigned int wParam, D3DXVECTOR3 vec, unsigned int d
 				SendOneMessage((char*)&stAttack, nSize);
 
 				MSG_Attack stAttackLocal{};
-				memcpy((char*)&stAttackLocal, (char*)&stAttack, sizeof(stAttack));
+				memcpy((char*)&stAttackLocal, (char*)&stAttack, nSize);
 				stAttackLocal.Header.ID = m_dwID;
 				stAttackLocal.FlagLocal = 1;
 				if (nSpecForce)
