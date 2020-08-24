@@ -5928,10 +5928,282 @@ void TMHuman::Attack(ECHAR_MOTION eMotion, TMHuman* pTarget, short cSkillIndex)
 
 void TMHuman::Punched(int nDamage, TMVector2 vecFrom)
 {
+    if (m_dwDelayDel)
+        return;
+
+    if (m_eMotion != ECHAR_MOTION::ECMOTION_STRIKE)
+    {
+        int nBlood = GetBloodColor();
+        if (m_eMotion != ECHAR_MOTION::ECMOTION_DIE)
+        {
+            float Tvalue = 0.2f;
+            int Trand = 10;
+            if (m_nClass == 66)
+            {
+                Tvalue = 0.8f;
+                Trand = 30;
+            }
+
+            float fDam = 0.0f;
+            if (m_stScore.Hp <= 0)
+                fDam = (float)nDamage;
+            else
+                fDam = (float)nDamage / (float)m_stScore.Hp;
+
+            if ((fDam > Tvalue || !(rand() % Trand) && (int)fDam > 0) && m_stScore.Hp > 0)
+            {
+                if (g_pCurrentScene->m_pMyHuman == this)
+                {
+                    unsigned int dwTime = g_pTimerManager->GetServerTime();
+                    if (((int)m_eMotion < 4 || (int)m_eMotion > 9 || !(rand() % 5)) && dwTime - m_dwStartAnimationTime > 0x258)
+                    {
+                        TMHuman::SetAnimation(ECHAR_MOTION::ECMOTION_STRIKE, 0);
+                    }
+                }
+                else
+                {
+                    TMHuman::SetAnimation(ECHAR_MOTION::ECMOTION_STRIKE, 0);
+                }
+            }
+            if (fDam > 0.1f)
+            {
+                float fSize = (float)(TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + 1.01f;
+
+                auto pDamageEffect = new TMEffectBillBoard(119,
+                    500,
+                    1.5f * fSize,
+                    1.5f * fSize,
+                    1.5f * fSize,
+                    0.002f,
+                    1,
+                    80);
+
+                pDamageEffect->m_vecPosition = TMVector3(m_vecPosition.x, m_fHeight + 1.0f, m_vecPosition.y);
+
+                if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+                    pDamageEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                if (nBlood == 56)
+                    pDamageEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+                g_pCurrentScene->AddChild(pDamageEffect);
+            }
+        }
+    }
+
+    if (m_stScore.Hp < 0)
+        m_stScore.Hp = 0;
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+        if (pFScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        {
+            if (pFScene->m_pMainCharName)
+                pFScene->m_pMainCharName->SetText(m_szName, 0);
+            if (pFScene->m_pCurrentHPText)
+            {
+                char szHP[32]{};
+                sprintf(szHP, "%d", m_stScore.Hp);
+                pFScene->m_pCurrentHPText->SetText(szHP, 0);
+            }
+            if (pFScene->m_pMaxHPText)
+            {
+                char szHP[32]{};
+                sprintf(szHP, "/ %d", m_stScore.MaxHp);
+                pFScene->m_pMaxHPText->SetText(szHP, 0);
+            }
+            if (pFScene->m_pCurrentMPText)
+            {
+                char szMP[32]{};
+                sprintf(szMP, "%d", m_stScore.Mp);
+                pFScene->m_pCurrentMPText->SetText(szMP, 0);
+            }
+            if (pFScene->m_pMaxMPText)
+            {
+                char szMP[32]{};
+                sprintf(szMP, "/ %d", m_stScore.MaxMp);
+                pFScene->m_pMaxMPText->SetText(szMP, 0);
+            }
+            if (pFScene->m_pCurrentMHPText && m_pMountHPBar)
+            {
+                int nHP = m_pMountHPBar->GetCurrentProgress();
+                if (!m_cMount)
+                    nHP = 0;
+
+                char szMHP[32]{};
+                sprintf(szMHP, "%d", nHP);
+                pFScene->m_pCurrentMHPText->SetText(szMHP, 0);
+            }
+            if (pFScene->m_pMaxMHPText && m_pMountHPBar)
+            {
+                int nMaxHP = m_pMountHPBar->GetMaxProgress();
+                if (!m_cMount)
+                    nMaxHP = 0;
+
+                char szMHP[32]{};
+                sprintf(szMHP, "%d", nMaxHP);
+                pFScene->m_pMaxMHPText->SetText(szMHP, 0);
+            }
+            if (pFScene->m_pHPBar)
+                pFScene->m_pHPBar->SetMaxProgress(m_stScore.MaxHp);
+            if (pFScene->m_pMPBar)
+            {
+                pFScene->m_pMPBar->SetMaxProgress(m_stScore.MaxMp);
+                pFScene->m_pMPBar->SetCurrentProgress(m_stScore.Mp);
+            }
+            if (m_pMountHPBar && pFScene->m_pMHPBar && pFScene->m_pMHPBarT)
+            {
+                pFScene->m_pMHPBar->SetMaxProgress(m_pMountHPBar->GetMaxProgress());
+                pFScene->m_pMHPBar->SetCurrentProgress(m_pMountHPBar->GetCurrentProgress());
+            }
+        }
+        return;
+    }
+
+    if (m_MaxBigHp)
+        m_pProgressBar->SetCurrentProgress(m_BigHp);
+    else
+        m_pProgressBar->SetCurrentProgress(m_stScore.Hp);
+
+    SetGuildBattleHPBar(m_stScore.Hp);
+    SetGuildBattleLifeCount();
+
+    auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+    if (pFScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+    {
+        if (pFScene->m_pInfoText)
+            pFScene->m_pInfoText->SetText(m_szName, 1);
+    }
 }
 
 void TMHuman::Punched(int nDamage, TMHuman* pFrom)
 {
+    if (m_dwDelayDel || !pFrom)
+        return;
+
+    float fDam = 0.0f;
+    if (m_stScore.Hp <= 0)
+        fDam = (float)nDamage;
+    else
+        fDam = (float)nDamage / (float)m_stScore.Hp;
+
+    int nBlood = GetBloodColor();
+    if ((fDam > 0.2f || !(rand() % 10) && (int)fDam > 0) && m_stScore.Hp > 0)
+    {
+        if (g_pCurrentScene->m_pMyHuman == this)
+        {
+            unsigned int dwTime = g_pTimerManager->GetServerTime();
+            if (((int)m_eMotion < 4 || (int)m_eMotion > 9 || !(rand() % 5)) && dwTime - m_dwStartAnimationTime > 600)
+            {
+                SetAnimation(ECHAR_MOTION::ECMOTION_STRIKE, 0);
+            }
+        }
+        else
+        {
+            SetAnimation(ECHAR_MOTION::ECMOTION_STRIKE, 0);
+        }
+    }
+    if (fDam > 0.1f)
+    {
+        float fSize = (float)(TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + 0.0099999998f;
+
+        auto pDamageEffect = new TMEffectBillBoard(nBlood,
+            600,
+            0.1f * fSize,
+            0.1f * fSize,
+            0.1f * fSize,
+            0.0049999999f,
+            1,
+            80);
+
+        pDamageEffect->m_vecPosition = TMVector3(m_vecPosition.x, m_fHeight + 1.0f, m_vecPosition.y);
+
+        if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+            pDamageEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        if (nBlood == 56)
+            pDamageEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+        g_pCurrentScene->AddChild(pDamageEffect);
+    }
+
+    if (m_stScore.Hp < 0)
+        m_stScore.Hp = 0;
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+        if (pFScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        {
+            if (pFScene->m_pMainCharName)
+                pFScene->m_pMainCharName->SetText(m_szName, 0);
+            if (pFScene->m_pCurrentHPText)
+            {
+                char szHP[32]{};
+                sprintf(szHP, "%d", m_stScore.Hp);
+                pFScene->m_pCurrentHPText->SetText(szHP, 0);
+            }
+            if (pFScene->m_pMaxHPText)
+            {
+                char szHP[32]{};
+                sprintf(szHP, "/ %d", m_stScore.MaxHp);
+                pFScene->m_pMaxHPText->SetText(szHP, 0);
+            }
+            if (pFScene->m_pCurrentMPText)
+            {
+                char szMP[32]{};
+                sprintf(szMP, "%d", m_stScore.Mp);
+                pFScene->m_pCurrentMPText->SetText(szMP, 0);
+            }
+            if (pFScene->m_pMaxMPText)
+            {
+                char szMP[32]{};
+                sprintf(szMP, "/ %d", m_stScore.MaxMp);
+                pFScene->m_pMaxMPText->SetText(szMP, 0);
+            }
+            if (pFScene->m_pCurrentMHPText && m_pMountHPBar)
+            {
+                int nHP = m_pMountHPBar->GetCurrentProgress();
+                if (!m_cMount)
+                    nHP = 0;
+
+                char szMHP[32]{};
+                sprintf(szMHP, "%d", nHP);
+                pFScene->m_pCurrentMHPText->SetText(szMHP, 0);
+            }
+            if (pFScene->m_pMaxMHPText && m_pMountHPBar)
+            {
+                int nMaxHP = m_pMountHPBar->GetMaxProgress();
+                if (!m_cMount)
+                    nMaxHP = 0;
+
+                char szMHP[32]{};
+                sprintf(szMHP, "%d", nMaxHP);
+                pFScene->m_pMaxMHPText->SetText(szMHP, 0);
+            }
+            if (pFScene->m_pHPBar)
+                pFScene->m_pHPBar->SetMaxProgress(m_stScore.MaxHp);
+            if (pFScene->m_pMPBar)
+            {
+                pFScene->m_pMPBar->SetMaxProgress(m_stScore.MaxMp);
+                pFScene->m_pMPBar->SetCurrentProgress(m_stScore.Mp);
+            }
+            if (m_pMountHPBar && pFScene->m_pMHPBar && pFScene->m_pMHPBarT)
+            {
+                pFScene->m_pMHPBar->SetMaxProgress(m_pMountHPBar->GetMaxProgress());
+                pFScene->m_pMHPBar->SetCurrentProgress(m_pMountHPBar->GetCurrentProgress());
+            }
+        }
+        return;
+    }
+   
+    auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+    if (pFScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+    {
+        m_pProgressBar->SetCurrentProgress(m_stScore.Hp);
+        SetGuildBattleHPBar(m_stScore.Hp);
+        SetGuildBattleLifeCount();
+
+        if (pFScene->m_pInfoText)
+            pFScene->m_pInfoText->SetText(m_szName, 1);
+    }
 }
 
 void TMHuman::Fire(TMObject* pTarget, int nSkill)
@@ -6109,6 +6381,13 @@ int TMHuman::IsGoMore()
 
 void TMHuman::SetWantAngle(float fAngle)
 {
+    if (m_dwDelayDel)
+        return;
+    if (m_nClass == 44)
+        fAngle = D3DXToRadian(180);
+
+    m_fWantAngle = fAngle;
+    m_fMoveToAngle = m_fAngle;
 }
 
 void TMHuman::SetWeaponType(int nWeaponType)
