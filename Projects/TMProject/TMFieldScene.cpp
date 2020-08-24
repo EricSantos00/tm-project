@@ -6174,7 +6174,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketBuy(pStd);
 		break;
 	case 0x338:
-		return OnPacketCNFMobKill(pStd);
+		return OnPacketCNFMobKill(reinterpret_cast<MSG_CNFMobKill*>(pStd));
 		break;
 	case 0x37F:
 		return OnPacketREQParty(pStd);

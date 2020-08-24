@@ -2605,7 +2605,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
             if (dwMod > 2)
                 dwMod -= 2;
 
-            if ((m_dwID >= 0 && m_dwID < 1000) && m_bDoubleAttack == 1 && m_eMotion == ECHAR_MOTION::ECMOTION_RUN)
+            if ((m_dwID > 0 && m_dwID < 1000) && m_bDoubleAttack == 1 && m_eMotion == ECHAR_MOTION::ECMOTION_RUN)
                 m_bDoubleAttack = 0;
 
             if (dwServerTime > m_dwStartAnimationTime + 4 * dwMod * dwFPS)
@@ -2614,7 +2614,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
                 {
                     if (m_eMotion == ECHAR_MOTION::ECMOTION_DIE)
                     {
-                        SetAnimation(ECHAR_MOTION::ECMOTION_DIE, 1);
+                        SetAnimation(ECHAR_MOTION::ECMOTION_DEAD, 1);
                         if (m_nClass == 64 && m_sHeadIndex == 397)
                         {
                             m_cHide = 1;
@@ -5967,7 +5967,6 @@ void TMHuman::Die()
 
     if (m_cDie == 1)
         return;
-
 
     int nStartRouteIndex = m_nLastRouteIndex;
     if (m_fProgressRate > 0.5f)
