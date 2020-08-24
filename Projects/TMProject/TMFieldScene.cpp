@@ -11084,6 +11084,16 @@ void TMFieldScene::SetKingDomChat(char cOn)
 
 void TMFieldScene::SendReqBuy(unsigned int dwControlID)
 {
+	MSG_ReqBuy stReqBuy{};
+	stReqBuy.Header.ID = m_pMyHuman->m_dwID;
+	stReqBuy.Header.Type = 920;
+	stReqBuy.TargetID = m_stAutoTrade.TargetID;
+	stReqBuy.Pos = dwControlID - 653;
+	stReqBuy.Price = m_stAutoTrade.TradeMoney[dwControlID - 653];
+	stReqBuy.Tax = m_stAutoTrade.Tax;
+	stReqBuy.item = m_stAutoTrade.Item[dwControlID - 653];
+
+	SendOneMessage((char*)&stReqBuy, sizeof(stReqBuy));
 }
 
 void TMFieldScene::SetSanc()

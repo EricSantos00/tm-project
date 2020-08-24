@@ -1201,6 +1201,18 @@ struct MSG_CNFParty2
 	char LeaderName[16];
 };
 
+constexpr auto MSG_ReqBuy_Opcode = 0x398;
+struct MSG_ReqBuy
+{
+	MSG_STANDARD Header;
+	int Pos;
+	unsigned short TargetID;
+	int Price;
+	int Tax;
+	STRUCT_ITEM item;
+};
+
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },
