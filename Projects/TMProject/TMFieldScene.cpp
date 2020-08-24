@@ -7783,6 +7783,118 @@ int TMFieldScene::FrameMove(unsigned int dwServerTime)
 
 int TMFieldScene::OnAccel(int nMsg)
 {
+	if (g_nKeyType != 1)
+		return 1;
+
+	switch (nMsg)
+	{
+	case 40075:
+		return OnKeySkill(33, 0);
+	case 40076:
+		return OnKeySkill(64, 0);
+	case 40077:
+		return OnKeySkill(35, 0);
+	case 40078:
+		return OnKeySkill(36, 0);
+	case 40079:
+		return OnKeySkill(37, 0);
+	case 40080:
+		return OnKeySkill(94, 0);
+	case 40081:
+		return OnKeySkill(38, 0);
+	case 40082:
+		return OnKeySkill(42, 0);
+	case 40083:
+		return OnKeySkill(40, 0);
+	case 40074:
+		return OnKeySkill(41, 0);
+	case 40048:
+		return OnKeyDash(45, 0);
+	case 40047:
+		return OnKeyPlus(43, 0);
+	case 40092:
+		SetPK();
+		return 1;
+	case 40094:
+		return OnKeyName(110, 0);
+	case 40099:
+		return OnKeyAutoTarget(116, 0);
+	case 40090:
+		return OnKeyHelp(104, 0);
+	case 40097:
+		return OnKeyRun(114, 0);
+	case 40100:
+		return OnKeyFeedMount(118, 0);
+	case 40098:
+		return OnKeyVisibleSkill(115, 0);
+	case 40091:
+		return OnKeyVisibleInven(105, 0);
+	case 40085:
+		return OnKeyVisibleInven(105, 0);
+	case 40086:
+		return OnKeyVisibleCharInfo(99, 0);
+	case 40093:
+		return OnKeyVisibleMinimap(109, 0);
+	case 40095:
+		return OnKeyVisibleParty(112, 0);
+	}
+	if (g_pObjectManager->m_stMobData.CurrentScore.Hp > 0)
+	{
+		switch (nMsg)
+		{
+		case 40103:
+			return OnKeySkillPage(122, 0);
+		case 40102:
+			return OnKeyQuestLog(120, 0);
+		case 40027:
+			return OnKeyReverse(91, 0);
+		case 40028:
+			return OnKeyAutoRun(93, 0);
+		case 40029:
+			return OnKeyGuildOnOff(39, 0);
+		case 40065:
+			return OnKeyShortSkill(49, 0);
+		case 40066:
+			return OnKeyShortSkill(50, 0);
+		case 40067:
+			return OnKeyShortSkill(51, 0);
+		case 40068:
+			return OnKeyShortSkill(52, 0);
+		case 40069:
+			return OnKeyShortSkill(53, 0);
+		case 40070:
+			return OnKeyShortSkill(54, 0);
+		case 40071:
+			return OnKeyShortSkill(55, 0);
+		case 40072:
+			return OnKeyShortSkill(56, 0);
+		case 40073:
+			return OnKeyShortSkill(57, 0);
+		case 40064:
+			return OnKeyShortSkill(48, 0);
+		case 40104:
+			return OnKeyNumPad(96);
+		case 40105:
+			return OnKeyNumPad(97);
+		case 40106:
+			return OnKeyNumPad(98);
+		case 40107:
+			return OnKeyNumPad(99);
+		case 40108:
+			return OnKeyNumPad(100);
+		case 40109:
+			return OnKeyNumPad(101);
+		case 40110:
+			return OnKeyNumPad(102);
+		case 40111:
+			return OnKeyNumPad(103);
+		case 40112:
+			return OnKeyNumPad(104);
+		case 40113:
+			return OnKeyNumPad(105);
+		}
+	}
+
 	return 0;
 }
 
