@@ -1221,6 +1221,12 @@ struct MSG_CNFMobKill
 	long long Exp;
 };
 
+struct MSG_RemoveMob
+{
+	MSG_STANDARD Header;
+	int RemoveType;
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },

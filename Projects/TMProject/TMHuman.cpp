@@ -28,6 +28,10 @@
 #include "TMObjectContainer.h"
 #include "TMLight.h"
 #include "TMFieldScene.h"
+#include "TMSkillExplosion2.h"
+#include "SGrid.h"
+#include "TMEffectStart.h"
+#include "TMSkillTownPortal.h"
 
 TMVector2 TMHuman::m_vecPickSize[100]{
   { 0.40000001f, 2.0f },
@@ -3513,7 +3517,177 @@ int TMHuman::OnPacketPremiumFireWork(MSG_STANDARD* pStd)
 
 int TMHuman::OnPacketRemoveMob(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pRemoveMob = (MSG_RemoveMob*)pStd;
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        if (m_stScore.Hp <= 0 && !m_sFamCount)
+            Die();
+
+        return 1;
+    }
+
+    auto pScene = g_pCurrentScene;
+    auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    if (pFScene && pFScene->m_pPGTPanel->IsVisible() == 1 && pFScene->m_pPGTOver && m_dwID == pFScene->m_pPGTOver->m_dwID)
+        pFScene->m_pPGTPanel->SetVisible(0);
+
+    if (pFScene && pFScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+    {
+        if (m_dwID == pFScene->m_pGridShop->m_dwMerchantID && pFScene->m_pShopPanel->m_bVisible == 1)
+            pFScene->SetVisibleShop(0);
+        if (m_dwID == pFScene->m_dwHellStoreID && pFScene->m_pHellgateStore->m_bVisible == 1)
+            pFScene->SetVisibleHellGateStore(0);
+
+        if (m_dwID == pFScene->m_stAutoTrade.TargetID)
+        {
+            auto pPanel = (SPanel*)pFScene->m_pControlContainer->FindControl(646);
+            if (pPanel)
+            {
+                if (pPanel->IsVisible() == 1)
+                    pFScene->SetVisibleAutoTrade(0, 0);
+            }
+        }
+
+        auto pPartyList = pFScene->m_pPartyList;
+        if (pPartyList && pPartyList->m_nNumItem < 2 && m_bParty == 1)
+        {
+            pPartyList->Empty();
+            m_bParty = 0;
+
+            SAFE_DELETE(m_pInMiniMap);
+            pFScene->m_pMyHuman->m_bParty = 0;
+        }
+        else if (pPartyList)
+        {
+            for (int i = 0; i < pPartyList->m_nNumItem; ++i)
+            {
+                auto pPartyItem = (SListBoxPartyItem*)pPartyList->m_pItemList[i];
+                if (pPartyItem->m_dwCharID == m_dwID)
+                {
+                    auto pNode = g_pObjectManager->GetHumanByID(pPartyItem->m_dwCharID);
+                    if (pNode)
+                    {
+                        pNode->m_bParty = 0;
+                        SAFE_DELETE(m_pInMiniMap);
+                    }
+                    if (pPartyItem->m_nState == 2)
+                    {
+                        pPartyItem->m_nState = 4;
+                        pPartyItem->m_GCText.dwColor = 0xFF777777;
+                        pPartyItem->m_GCText.pFont->SetText(pPartyItem->m_GCText.strString, pPartyItem->m_GCText.dwColor, 0);
+                    }
+                    else if (!pPartyItem->m_nState)
+                    {
+                        pPartyItem->m_nState = 3;
+                        pPartyItem->m_GCText.dwColor = 0xFF777777;
+                        pPartyItem->m_GCText.pFont->SetText(pPartyItem->m_GCText.strString, pPartyItem->m_GCText.dwColor, 0);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    if (m_nWillDie == -1)
+    {
+        if (!pRemoveMob->RemoveType)
+        {
+            if (g_pCurrentScene->m_pMyHuman != this)
+                m_nWillDie = pRemoveMob->RemoveType;
+
+            return 1;
+        }
+        if (pRemoveMob->RemoveType == 1 || m_nSkinMeshType == 37)
+        {
+            unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+            m_nWillDie = pRemoveMob->RemoveType;
+            if (!m_dwDeadTime)
+                m_dwDeadTime = dwServerTime;
+            m_stScore.Hp = 0;
+            Die();
+            return 1;
+        }
+        if (pRemoveMob->RemoveType == 2)
+        {
+            m_nWillDie = pRemoveMob->RemoveType;
+
+            TMVector3 vecStart{ m_vecPosition.x, (float)((float)pScene->GroundGetMask(m_vecPosition) * 0.1f) + 0.05f, m_vecPosition.y };
+            if (!m_cHide)
+            {
+                if (m_nClass == 1 || m_nClass == 2 || m_nClass == 4 || m_nClass == 8 || m_nClass == 26)
+                {
+                    auto pEffect = new TMEffectStart(vecStart, 0, 0);
+                    pScene->m_pEffectContainer->AddChild(pEffect);
+
+                    auto pEffect2 = new TMEffectBillBoard2(1, 2000, 0.5f, 0.5f, 0.5f, 0.002f, 0);
+                    pEffect2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                    pEffect2->m_vecPosition = vecStart;
+                    pScene->m_pEffectContainer->AddChild(pEffect2);
+                }
+                else if (m_nSkinMeshType == 21 || m_nSkinMeshType == 22 || m_nSkinMeshType == 23 || 
+                    m_nSkinMeshType == 24 || m_nSkinMeshType == 2 || m_nSkinMeshType == 3 || m_nSkinMeshType == 4)
+                {
+                    auto pEffect = new TMEffectStart(vecStart, 1, 0);
+                    pScene->m_pEffectContainer->AddChild(pEffect);
+                }
+                else if (m_nSkinMeshType == 20)
+                {
+                    auto pEffect = new TMEffectStart(vecStart, 1, 0);
+                    pScene->m_pEffectContainer->AddChild(pEffect);
+                }
+            }
+
+            if (!m_dwDeadTime)
+                m_dwDeadTime = g_pTimerManager->GetServerTime() + 1000;
+            
+            if (static_cast<TMHuman*>(g_pObjectManager->m_pCamera->m_pFocusedObject) == this)
+            {
+                GetSoundAndPlay(4, 0, 0);
+            }
+
+            return 1;
+        }
+
+        if (m_nWillDie == 3)
+        {
+            if (g_pCurrentScene->m_pMyHuman != this)
+                DelayDelete();
+
+            return 1;
+        }
+
+        int nType = 1;
+
+        if (m_dwID <= 0 || m_dwID >= 1000)
+            nType = 3;
+
+        if (!m_cHide)
+        {
+            auto pPortal = new TMSkillTownPortal(TMVector3(m_vecPosition.x, m_fHeight, m_vecPosition.y), nType);
+            pScene->m_pEffectContainer->AddChild(pPortal);
+        }
+
+        if (pScene->m_pMyHuman != this)
+            DelayDelete();
+        return 1;
+    }
+
+    if (m_nWillDie == 1)
+    {
+        if (m_nWillDie == 1 && !m_dwDeadTime)
+        {
+            m_cDie = 0;
+            Die();
+            if (!m_dwDeadTime)
+                m_dwDeadTime = g_pTimerManager->GetServerTime() + 1000;
+        }
+        return 1;
+    }
+
+    if (g_pCurrentScene->m_pMyHuman != this)
+        DelayDelete();
+
+	return 1;
 }
 
 int TMHuman::OnPacketSendItem(MSG_STANDARD* pStd)
@@ -5766,6 +5940,104 @@ void TMHuman::Fire(TMObject* pTarget, int nSkill)
 
 void TMHuman::Die()
 {
+    if (m_dwDelayDel)
+        return;
+
+    if (g_pCurrentScene->m_pMyHuman == this && g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+    {
+        auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+        pScene->m_pTargetHuman = 0;
+    }
+
+    if ((int)m_wAttackerID > 0)
+    {
+        auto pAttacker = g_pObjectManager->GetHumanByID(m_wAttackerID);
+        if (pAttacker)
+        {
+            if (pAttacker->m_cLifeDrain == 1)
+            {
+                // Dead code aparently
+                /*
+                 TMVector3 vecStart{ m_vecPosition.x, m_fHeight + 1.0f, m_vecPosition.y };
+                 TMEffectBillBoard* pFire = nullptr;
+                 */
+            }
+        }
+    }
+
+    if (m_cDie == 1)
+        return;
+
+
+    int nStartRouteIndex = m_nLastRouteIndex;
+    if (m_fProgressRate > 0.5f)
+        nStartRouteIndex = m_nLastRouteIndex + 1;
+
+    for (int i = nStartRouteIndex + 1; i < 48; ++i)
+        m_vecRouteBuffer[i] = m_vecRouteBuffer[nStartRouteIndex];
+
+    SetAnimation(ECHAR_MOTION::ECMOTION_DIE, 0);
+
+    if (m_nClass == 44)
+    {
+        TMVector3 vecPos{ m_vecPosition.x, m_fHeight + 2.0f, m_vecPosition.y };
+        auto pParticle = new TMEffectParticle(vecPos, 4, 12, 0.05f, 0xFFFFAA00, 0, 56, 1.0, 1, TMVector3(0.0f, 0.0f, 0.0f), 1000);
+
+        g_pCurrentScene->m_pEffectContainer->AddChild(pParticle);
+
+        unsigned int dwColor = 0x44444444;
+        auto pExplosion = new TMSkillExplosion2(vecPos, 0, 1.0f, 210, dwColor);
+
+        g_pCurrentScene->m_pEffectContainer->AddChild(pExplosion);
+
+        auto pBill = new TMEffectBillBoard(59, 2500, 0.2f, 0.2f, 0.2f, 0.003f, 1, 80);
+        pBill->m_vecStartPos = pBill->m_vecPosition = vecPos;
+        pBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+        if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+            pBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pBill->SetColor(0xFFFFFFFF);
+
+        g_pCurrentScene->m_pEffectContainer->AddChild(pBill);
+
+        GetSoundAndPlay(309, 0, 0);
+    }
+
+    m_cPoison = 0;
+    m_cHaste = 0;
+    m_cAssert = 0;
+    m_cFreeze = 0;
+    m_cSlowSlash = 0;
+    m_cSpeedUp = 0;
+    m_cSpeedDown = 0;
+    m_cShield = 0;
+    m_cCancel = 0;
+    m_cAurora = 0;
+    m_cWeapon = 0;
+    m_cSKillAmp = 0;
+    m_cLighten = 0;
+    m_cWaste = 0;
+
+    SetAvatar(0);
+    if (m_pInMiniMap)
+        m_pInMiniMap->SetVisible(0);
+
+    if (g_pCurrentScene->m_pMyHuman == this && g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+    {
+        auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+        pFScene->m_dwLastDeadTime = g_pTimerManager->GetServerTime();
+    }
+
+    m_cSummons = 0;
+    m_cDie = 1;
+    m_vecTempPos[0].x = m_vecPosition.x;
+    m_vecTempPos[0].y = m_fHeight + 1.5f;
+    m_vecTempPos[0].z = m_vecPosition.y;
+
+    g_pObjectManager->DeleteObject(m_pShade);
+    m_pShade = nullptr;
+
+    if (m_nClass == 56 && !m_stLookInfo.FaceMesh)
+        StartKhepraDieEffect();
 }
 
 void TMHuman::Stand()
