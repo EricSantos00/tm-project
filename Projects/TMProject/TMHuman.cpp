@@ -5939,7 +5939,7 @@ void TMHuman::MoveAttack(TMHuman* pTarget)
     if (IsInTown() == 1 || pTarget->IsInTown() == 1)
         return;
 
-    if ((int)m_vecPosition.x < 2362 || (int)m_vecPosition.x > 2370 || (int)m_vecPosition.y < 3927 || (int)m_vecPosition.y > 3935)
+    if ((int)m_vecPosition.x >= 2362 && (int)m_vecPosition.x <= 2370 && (int)m_vecPosition.y >= 3927 && (int)m_vecPosition.y <= 3935)
         return;
 
     if (g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_FIELD)
@@ -6199,21 +6199,21 @@ void TMHuman::MoveAttack(TMHuman* pTarget)
                     stAttack.Header.Type = MSG_Attack_One_Opcode;
                     nSize = sizeof(MSG_AttackOne);
                 }
-
-                SendOneMessage((char*)&stAttack, nSize);
-
-                MSG_Attack stAttackLocal{};
-                memcpy((char*)&stAttackLocal, (char*)&stAttack, nSize);
-                stAttackLocal.Header.ID = m_dwID;
-                stAttackLocal.FlagLocal = 1;
-                if (nSpecForce)
-                    stAttackLocal.DoubleCritical |= 4;
-
-                stAttackLocal.Progress = stAttack.Progress;
-                pScene->OnPacketEvent(stAttack.Header.Type, (char*)&stAttackLocal);
-                pScene->m_dwOldAttackTime = dwServerTime;
-                return;
             }
+
+            SendOneMessage((char*)&stAttack, nSize);
+
+            MSG_Attack stAttackLocal{};
+            memcpy((char*)&stAttackLocal, (char*)&stAttack, nSize);
+            stAttackLocal.Header.ID = m_dwID;
+            stAttackLocal.FlagLocal = 1;
+            if (nSpecForce)
+                stAttackLocal.DoubleCritical |= 4;
+
+            stAttackLocal.Progress = stAttack.Progress;
+            pScene->OnPacketEvent(stAttack.Header.Type, (char*)&stAttackLocal);
+            pScene->m_dwOldAttackTime = dwServerTime;
+            return;
         }
     }
     else if (pScene->m_cAutoAttack == 1 &&
