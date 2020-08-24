@@ -7900,6 +7900,50 @@ int TMFieldScene::OnAccel(int nMsg)
 
 void TMFieldScene::PGTVisible(unsigned int dwServerTime)
 {
+	auto pOver = m_pMouseOverHuman;
+	if (pOver && (pOver->m_dwID <= 0 || pOver->m_dwID > 1000))
+		return;
+
+	if (!pOver || pOver->m_bMouseOver != 1 || dwServerTime < m_dwPGTTime + 500)
+		return;
+
+	m_dwOpID = pOver->m_dwID;
+	auto pPGTText = m_pPGTText;
+
+	char szStr[128]{};
+	sprintf(szStr, g_pMessageStringTable[60], pOver->m_szName);
+	pPGTText->SetText((char*)"", 0);
+
+	RECT rt;
+	rt.left = 2564;
+	rt.top = 1689;
+	rt.right = 2579;
+	rt.bottom = 1711;
+
+	POINT pt;
+	pt.x = (int)m_pMyHuman->m_vecPosition.x;
+	pt.y = (int)m_pMyHuman->m_vecPosition.y;
+	PtInRect(&rt, pt);
+
+	m_pBtnPGTGuild->SetVisible(1);
+	m_pBtnPGTParty->SetVisible(1);
+	m_pBtnPGTTrade->SetVisible(1);
+	m_pBtnPGTGuildDrop->SetVisible(0);
+	m_pBtnPGTGuildWar->SetVisible(0);
+	m_pBtnPGTGuildAlly->SetVisible(0);
+	m_pBtnPGTGuildInvite->SetVisible(0);
+	m_pBtnPGT1_V_1->SetVisible(0);
+	m_pBtnPGT5_V_5->SetVisible(0);
+	m_pBtnPGT10_V_10->SetVisible(0);
+	m_pBtnPGTAll_V_All->SetVisible(0);
+	m_pBtnPGTChallenge->SetVisible(0);
+	m_pBtnPGTGICommon->SetVisible(0);
+	m_pBtnPGTGIChief1->SetVisible(0);
+	m_pBtnPGTGIChief2->SetVisible(0);
+	m_pBtnPGTGIChief3->SetVisible(0);
+	m_pPGTOver = pOver;
+	m_pPGTPanel->SetVisible(1);
+	m_dwPGTTime = g_pTimerManager->GetServerTime();
 }
 
 void TMFieldScene::MouseMove(int nX, int nY)
