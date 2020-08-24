@@ -11150,6 +11150,7 @@ int TMFieldScene::GetWeaponDamage()
 
 void TMFieldScene::SetMyHumanMagic()
 {
+	;
 }
 
 void TMFieldScene::SetWeather(int nWeather)
@@ -11433,11 +11434,43 @@ void TMFieldScene::InitBoard()
 
 int TMFieldScene::LoadMsgText(SListBox* pListBox, char* szFileName)
 {
-	return 0;
+	FILE* fp = nullptr;
+	fopen_s(&fp, szFileName, "rt");
+
+	if (!fp)
+		return 0;
+	if (!pListBox)
+		return 0;
+
+	char szCol[7]{};
+
+	char szTemp[256]{};
+	char szText[256]{};
+
+	unsigned int dwCol = 0;
+
+	for (int i = 0; i < 100 && fgets(szTemp, 256, fp); ++i)
+	{
+		strncpy(szCol, szTemp, 6);
+		sscanf(szCol, "%x", &dwCol);
+
+		auto szRet = strstr(szTemp, "\n");
+		if (szRet)
+			szRet[0] = 0;
+
+		if (szTemp[6] == ' ')
+			pListBox->AddItem(new SListBoxItem(szText, dwCol | 0xFF000000, 0.0f, 0.0f, 400.0f, 16.0f, 0, 0x77777777, 1u, 0));
+	}
+	if (pListBox->m_pScrollBar)
+		pListBox->m_pScrollBar->SetCurrentPos(0);
+
+	fclose(fp);
+	return 1;
 }
 
 void TMFieldScene::SetPosPKRun()
 {
+	;
 }
 
 char TMFieldScene::UseHPotion()
@@ -11466,6 +11499,13 @@ char TMFieldScene::FeedMount()
 
 void TMFieldScene::SetRunMode()
 {
+	if (m_pMyHuman->m_cMount == 1 && 
+		(m_pMyHuman->m_nMountSkinMeshType == 31 || m_pMyHuman->m_nMountSkinMeshType == 40 || m_pMyHuman->m_nMountSkinMeshType == 20 && 
+		 m_pMyHuman->m_stMountLook.Mesh0 != 7 || m_pMyHuman->m_nMountSkinMeshType == 39))
+	{
+		g_bRunning = g_bRunning == 0;
+		UpdateScoreUI(0);
+	}
 }
 
 void TMFieldScene::UseTicket(int nCellX, int nCellY)
