@@ -10849,6 +10849,20 @@ void TMFieldScene::InitCameraView()
 
 void TMFieldScene::SetPK()
 {
+	TMFieldScene::m_bPK = TMFieldScene::m_bPK == 0;
+
+	m_PkButton->SetSelected(TMFieldScene::m_bPK == 0);
+	m_PkButton->Update();
+
+	auto pBtnPK = (SButton*)m_pControlContainer->FindControl(306);
+	MSG_STANDARDPARM stParam{};
+	stParam.Header.ID = g_pObjectManager->m_dwCharID;
+	stParam.Header.Type = MSG_SetPKMode_Opcode;
+	stParam.Parm = TMFieldScene::m_bPK;
+	SendOneMessage((char*)&stParam, sizeof(stParam));
+
+	if (pBtnPK)
+		pBtnPK->SetSelected(TMFieldScene::m_bPK);
 }
 
 void TMFieldScene::SetVisibleNameLabel()

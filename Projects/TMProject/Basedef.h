@@ -36,6 +36,7 @@ constexpr auto MSG_RequestCapsuleInfo_Opcode = 0x2CD;
 constexpr auto MSG_DelayStart_Opcode = 0x3AE;
 constexpr auto MSG_UseDeclarationOfWar_Opcode = 0xED7;
 constexpr auto MSG_SysQuit_Opcode = 0x3AE;
+constexpr auto MSG_SetPKMode_Opcode = 0x399;
 struct MSG_STANDARDPARM
 {
 	MSG_STANDARD Header;
