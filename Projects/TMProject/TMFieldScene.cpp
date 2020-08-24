@@ -12655,22 +12655,35 @@ int TMFieldScene::OnKeyRun(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyFeedMount(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'v' && iCharCode != 'V')
+		return 0;
+
+	return FeedMount();
 }
 
 int TMFieldScene::OnKeyHPotion(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'q' && iCharCode != 'Q')
+		return 0;
+
+	return UseHPotion();
 }
 
 int TMFieldScene::OnKeyMPotion(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'w' && iCharCode != 'W')
+		return 0;
+
+	return UseMPotion();
 }
 
 int TMFieldScene::OnKeyPPotion(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'e' && iCharCode != 'E')
+		return 0;
+
+	TMFieldScene::UsePPotion();
+	return 1;
 }
 
 int TMFieldScene::OnKeySkillPage(char iCharCode, int lParam)
