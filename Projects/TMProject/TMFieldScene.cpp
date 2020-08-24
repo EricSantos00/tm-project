@@ -8261,6 +8261,7 @@ int TMFieldScene::CheckMerchant(TMHuman* pOver)
 
 int TMFieldScene::MouseLButtonDown(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServerTime)
 {
+	// This function is just that
 	return 1;
 }
 
@@ -8869,6 +8870,31 @@ void TMFieldScene::SetVisibleCargo(int bShow)
 
 void TMFieldScene::SetVisibleCargo1(int bShow)
 {
+	if (m_pGambleStore1->IsVisible() == 1)
+		bShow = 0;
+
+	SGridControl::m_sLastMouseOverIndex = -1;
+	auto pTradePanel = m_pTradePanel;
+	auto pATradePanel = m_pAutoTrade;
+	auto pShopPanel = m_pShopPanel;
+	auto pPanel = m_pInvenPanel;
+	auto pCPanel = m_pCPanel;
+	auto pHellgateStore = m_pHellgateStore;
+	m_pCargoPanel1->SetVisible(bShow);
+
+	if (bShow)
+	{
+		pPanel->SetPos(RenderDevice::m_fWidthRatio * 514.0f,
+			RenderDevice::m_fHeightRatio * 35.0f);
+		m_pCargoPanel1->SetPos(RenderDevice::m_fWidthRatio * 287.0f,
+			RenderDevice::m_fHeightRatio * 35.0f);
+	}
+
+	pPanel->SetVisible(bShow);
+	m_pSkillPanel->SetVisible(bShow == 0);
+	pShopPanel->SetVisible(bShow == 0);
+
+	GetSoundAndPlay(51, 0, 0);
 }
 
 void TMFieldScene::SetVisibleTrade(int bShow)
@@ -10394,6 +10420,65 @@ void TMFieldScene::IncSkillSel()
 
 void TMFieldScene::SetShortSkill(int nIndex, SGridControlItem* pGridItem)
 {
+	if (!pGridItem || IsPassiveSkill(pGridItem->m_pItem->sIndex))
+		return;
+
+	if (nIndex < 10)
+	{
+		auto pBelt2 = m_pGridSkillBelt2;
+		auto pReturnItem2 = pBelt2->PickupItem(nIndex, 0);
+
+		auto pNewItem2 = new STRUCT_ITEM;
+		memcpy(pNewItem2, pGridItem->m_pItem, sizeof(STRUCT_ITEM));
+
+		auto pNewGridItem = new SGridControlItem(nullptr, pNewItem2, 0.0f, 0.0f);
+		pBelt2->AddItem(pNewGridItem, nIndex, 0);
+
+		if (g_pObjectManager->m_cSelectShortSkill == nIndex)
+			pNewGridItem->m_GCObj.nTextureSetIndex = 200;
+
+		g_pCursor->DetachItem();
+		
+		SAFE_DELETE(pReturnItem2);
+	}
+	else
+	{
+		auto pBelt3 = m_pGridSkillBelt3;
+		auto pReturnItem3 = pBelt3->PickupItem(nIndex - 10, 0);
+		auto pNewItem3 = new STRUCT_ITEM;
+		memcpy(pNewItem3, pGridItem->m_pItem, sizeof(STRUCT_ITEM));
+
+		auto pNewGridItem = new SGridControlItem(nullptr, pNewItem3, 0.0f, 0.0f);
+		pBelt3->AddItem(pNewGridItem, nIndex - 10, 0);
+
+		if (g_pObjectManager->m_cSelectShortSkill == nIndex)
+			pNewGridItem->m_GCObj.nTextureSetIndex = 200;
+
+		g_pCursor->DetachItem();
+
+		SAFE_DELETE(pReturnItem3);
+	}
+
+	g_pObjectManager->m_cShortSkill[nIndex] = g_pItemList[pGridItem->m_pItem->sIndex].nIndexTexture;
+	MSG_SetShortSkill stSetShortSkill{};
+	stSetShortSkill.Header.ID = m_pMyHuman->m_dwID;
+	stSetShortSkill.Header.Type = MSG_SetShortSkill_Opcode;
+	memcpy(stSetShortSkill.Skill, g_pObjectManager->m_cShortSkill, sizeof(stSetShortSkill.Skill));
+	for (int i = 0; i < 20; ++i)
+	{
+		if (stSetShortSkill.Skill[i] >= 0 && stSetShortSkill.Skill[i] < 96)
+		{
+			stSetShortSkill.Skill[i] -= 24 * g_pObjectManager->m_stMobData.Class;
+		}
+		else if (stSetShortSkill.Skill[i] >= 105 && stSetShortSkill.Skill[i] < 153)
+		{
+			stSetShortSkill.Skill[i] -= 12 * g_pObjectManager->m_stMobData.Class;
+		}
+	}
+
+	SendOneMessage((char*)&stSetShortSkill, sizeof(stSetShortSkill));
+
+	GetSoundAndPlay(31, 0, 0);
 }
 
 void TMFieldScene::SetSkillColor(TMHuman* pAttacker, char cSkillIndex)
