@@ -1212,6 +1212,14 @@ struct MSG_ReqBuy
 	STRUCT_ITEM item;
 };
 
+struct MSG_CNFMobKill
+{
+	MSG_STANDARD Header;
+	int FakeExp;
+	unsigned short KilledMob;
+	unsigned short Killer;
+	long long Exp;
+};
 
 const static int g_pDistanceTable[7][7] =
 {

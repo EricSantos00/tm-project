@@ -49,6 +49,7 @@
 #include "TMSkillFlash.h"
 #include "TMItem.h"
 #include "TMCannon.h"
+#include "TMEffectCharge.h"
 
 RECT TMFieldScene::m_rectWarning[7] =
 {
@@ -14151,9 +14152,70 @@ int TMFieldScene::OnPacketSell(MSG_STANDARD* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketCNFMobKill(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCNFMobKill(MSG_CNFMobKill* pStd)
 {
-	return 0;
+	auto pAttacker = g_pObjectManager->GetHumanByID(pStd->Killer);
+	if (pAttacker)
+	{
+		if (pAttacker->m_bParty == 1 || m_pMyHuman == pAttacker)
+		{
+			SetMyHumanExp(pStd->Exp, pStd->FakeExp);
+			if (m_cAutoAttack == 1 && m_pMyHuman == pAttacker)
+				m_pTargetHuman = 0;
+		}
+
+		m_pEffectContainer->AddChild(new TMEffectCharge(pAttacker, 0, 0xFFFFFFFF));
+	}
+
+	auto pKilled = g_pObjectManager->GetHumanByID(pStd->KilledMob);
+	if (pKilled)
+	{
+		pKilled->m_stScore.Hp = 0;
+		pKilled->Die();
+	}
+
+	if (m_pMyHuman == pKilled)
+	{
+		bool bFind = false;
+		for (int i = 0; i < 4; ++i)
+		{
+			auto pGridInv = m_pGridInvList[i];
+			for (int nY = 0; nY < 3; ++nY)
+			{
+				for (int nX = 0; nX < 5; ++nX)
+				{
+					auto pItem = pGridInv->GetItem(nX, nY);
+					if (pItem && pItem->m_pItem->sIndex == 3463)
+					{
+						bFind = true;
+						break;
+					}
+				}
+				if (bFind == true)
+					break;
+			}
+
+			if (bFind == true)
+				break;
+		}
+
+		if (bFind)
+		{
+			SYSTEMTIME sysTime;
+			GetLocalTime(&sysTime);
+
+			char szTime[128]{};
+
+			sprintf(szTime,	"[%02d:%02d:%02d] Killer[%s] ",	sysTime.wHour, sysTime.wMinute,	sysTime.wSecond, pAttacker->m_szName);
+
+			m_pHelpList[3]->AddItem(new SListBoxItem(szTime, 0xFFFFFFFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+			if (m_pHelpMemo)
+				m_pHelpMemo->SetVisible(1);
+		}
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketREQParty(MSG_STANDARD* pStd)

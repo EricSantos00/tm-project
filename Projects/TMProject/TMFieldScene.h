@@ -191,7 +191,7 @@ public:
 	int OnPacketRMBShopList(MSG_STANDARD* pStd);
 	int OnPacketBuy(MSG_STANDARD* pStd);
 	int OnPacketSell(MSG_STANDARD* pStd);
-	int OnPacketCNFMobKill(MSG_STANDARD* pStd);
+	int OnPacketCNFMobKill(MSG_CNFMobKill* pStd);
 	int OnPacketREQParty(MSG_STANDARD* pStd);
 	int OnPacketAddParty(MSG_STANDARD* pStd);
 	int OnPacketRemoveParty(MSG_STANDARD* pStd);
