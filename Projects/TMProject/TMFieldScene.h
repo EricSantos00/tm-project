@@ -179,7 +179,7 @@ public:
 	int OnPacketCNFCharacterLogin(MSG_STANDARD* pStd);
 	int OnPacketItemSold(MSG_STANDARDPARM2* pStd);
 	int OnPacketUpdateCargoCoin(MSG_STANDARDPARM* pStd);
-	int OnPacketWeather(MSG_STANDARD* pStd);
+	int OnPacketWeather(MSG_STANDARDPARM* pStd);
 	int OnPacketCreateItem(MSG_STANDARD* pStd);
 	int OnPacketCNFDropItem(MSG_STANDARD* pStd);
 	int OnPacketCNFGetItem(MSG_STANDARD* pStd);

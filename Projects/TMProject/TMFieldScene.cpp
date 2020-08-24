@@ -6155,7 +6155,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case 0x339:
 		return OnPacketUpdateCargoCoin(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 	case 0x18B:
-		return OnPacketWeather(pStd);
+		return OnPacketWeather(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 	case 0x26E:
 		return OnPacketCreateItem(pStd);
 	case 0x175:
@@ -6213,7 +6213,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketWarInfo(pStd);
 		break;
 	case 0x3A4:
-		return OnPacketGuildDisable(pStd);
+		return OnPacketGuildDisable(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x3A2:
 		return OnPacketEnvEffect(pStd);
@@ -11914,26 +11914,332 @@ void TMFieldScene::SetPosPKRun()
 
 char TMFieldScene::UseHPotion()
 {
-	return 0;
+	SGridControl* pGridInv = nullptr;
+	SGridControlItem* pItem = nullptr;
+
+	bool bFind = false;
+	int Page = 0;
+	// TODO: do i need to say?
+	for (int i = 0; i < 4; ++i)
+	{
+		pGridInv = m_pGridInvList[i];
+		for (int j = 0; j < 3; ++j)
+		{
+			for (int k = 0; k < 5; ++k)
+			{
+				pItem = pGridInv->GetItem(k, j);
+				if (pItem && 
+					(pItem->m_pItem->sIndex == 4097
+						|| pItem->m_pItem->sIndex == 3431
+						|| pItem->m_pItem->sIndex == 3322
+						|| pItem->m_pItem->sIndex == 3477
+						|| pItem->m_pItem->sIndex >= 400 && pItem->m_pItem->sIndex <= 404
+						|| pItem->m_pItem->sIndex >= 428 && pItem->m_pItem->sIndex <= 431
+						|| pItem->m_pItem->sIndex >= 680 && pItem->m_pItem->sIndex <= 685))
+				{
+					bFind = true;
+					Page = 15 * i;
+					break;
+				}
+			}
+			if (bFind == 1)
+				break;
+		}
+		if (bFind == 1)
+			break;
+	}
+
+	if (bFind != 1 || !pItem)
+		return 0;
+
+	if (BASE_GetItemAbility(pItem->m_pItem, 38) == 1)
+	{
+		if (m_pMyHuman->m_cCancel == 1)
+			return 0;
+
+		unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+		if (m_dwUseItemTime && dwServerTime - m_dwUseItemTime < 200)
+			return 0;
+
+		pGridInv->CheckType(pItem->m_pGridControl->m_eItemType,
+			pItem->m_pGridControl->m_eGridType);
+
+		int SourPos = pGridInv->CheckPos(pItem->m_pGridControl->m_eItemType);
+		if (SourPos == -1)
+			SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+		int SourPosa = Page + SourPos;
+
+		auto vec = m_pMyHuman->m_vecPosition;
+		
+		MSG_UseItem stUseItem{};
+		stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+		stUseItem.Header.Type = MSG_UseItem_Opcode;
+		stUseItem.SourType = 1;
+		stUseItem.SourPos = SourPosa;
+		stUseItem.ItemID = 0;
+		stUseItem.GridX = (int)vec.x;
+		stUseItem.GridY = (int)vec.y;
+		SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+		m_dwUseItemTime = dwServerTime;
+
+		int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+
+		if (nAmount <= 1)
+		{
+			auto pPickedItem = m_pGridInvList[SourPosa / 15]->PickupItem(SourPosa % 15 % 5, SourPosa % 15 / 5);
+			if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+				g_pCursor->m_pAttachedItem = 0;
+
+			SAFE_DELETE(pPickedItem);
+			g_pCursor->DetachItem();
+		}
+		else
+		{
+			BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+			sprintf(pItem->m_GCText.strString, "%2d", nAmount - 1);
+			pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+		}
+		if (nAmount <= 1)
+			memset(&g_pObjectManager->m_stMobData.Carry[SourPosa], 0, sizeof(STRUCT_ITEM));
+
+		GetSoundAndPlay(41, 0, 0);
+	}
+
+	UpdateScoreUI(16);
+	return 1;
 }
 
 char TMFieldScene::UseMPotion()
 {
-	return 0;
+	SGridControl* pGridInv = nullptr;
+	SGridControlItem* pItem = nullptr;
+
+	bool bFind = false;
+	int Page = 0;
+	// TODO: do i need to say?
+	for (int i = 0; i < 4; ++i)
+	{
+		pGridInv = m_pGridInvList[i];
+		for (int j = 0; j < 3; ++j)
+		{
+			for (int k = 0; k < 5; ++k)
+			{
+				pItem = pGridInv->GetItem(k, j);
+				if (pItem && (pItem->m_pItem->sIndex == 3323
+					|| pItem->m_pItem->sIndex == 3472
+					|| pItem->m_pItem->sIndex >= 405 && pItem->m_pItem->sIndex <= 409
+					|| pItem->m_pItem->sIndex >= 432 && pItem->m_pItem->sIndex <= 435
+					|| pItem->m_pItem->sIndex >= 686 && pItem->m_pItem->sIndex <= 691))
+				{
+					bFind = true;
+					Page = 15 * i;
+					break;
+				}
+			}
+			if (bFind == 1)
+				break;
+		}
+		if (bFind == 1)
+			break;
+	}
+
+	if (bFind != 1 || !pItem)
+		return 0;
+
+	if (BASE_GetItemAbility(pItem->m_pItem, 38) == 1)
+	{
+		if (m_pMyHuman->m_cCancel == 1)
+			return 0;
+
+		unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+		if (m_dwUseItemTime && dwServerTime - m_dwUseItemTime < 200)
+			return 0;
+
+		pGridInv->CheckType(pItem->m_pGridControl->m_eItemType,
+			pItem->m_pGridControl->m_eGridType);
+
+		int SourPos = pGridInv->CheckPos(pItem->m_pGridControl->m_eItemType);
+		if (SourPos == -1)
+			SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+		int SourPosa = Page + SourPos;
+
+		auto vec = m_pMyHuman->m_vecPosition;
+
+		MSG_UseItem stUseItem{};
+		stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+		stUseItem.Header.Type = MSG_UseItem_Opcode;
+		stUseItem.SourType = 1;
+		stUseItem.SourPos = SourPosa;
+		stUseItem.ItemID = 0;
+		stUseItem.GridX = (int)vec.x;
+		stUseItem.GridY = (int)vec.y;
+		SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+		m_dwUseItemTime = dwServerTime;
+
+		int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+
+		if (nAmount <= 1)
+		{
+			auto pPickedItem = m_pGridInvList[SourPosa / 15]->PickupItem(SourPosa % 15 % 5, SourPosa % 15 / 5);
+			if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+				g_pCursor->m_pAttachedItem = 0;
+
+			SAFE_DELETE(pPickedItem);
+			g_pCursor->DetachItem();
+		}
+		else
+		{
+			BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+			sprintf(pItem->m_GCText.strString, "%2d", nAmount - 1);
+			pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+		}
+		if (nAmount <= 1)
+			memset(&g_pObjectManager->m_stMobData.Carry[SourPosa], 0, sizeof(STRUCT_ITEM));
+
+		GetSoundAndPlay(41, 0, 0);
+	}
+
+	UpdateScoreUI(16);
+	return 1;
 }
 
 void TMFieldScene::UsePPotion()
 {
+	;
 }
 
 int TMFieldScene::IsFeedPotion(short sMountIndex, short sItemIndex)
 {
+	if ((sMountIndex == 2330 || sMountIndex == 2360) && sItemIndex == 2420)
+		return 1;
+	if ((sMountIndex == 2331 || sMountIndex == 2361) && (sItemIndex == 2421 || sItemIndex == 3368))
+		return 1;
+	if ((sMountIndex == 2332 || sMountIndex == 2362) && (sItemIndex == 2422 || sItemIndex == 3369))
+		return 1;
+	if ((sMountIndex == 2333 || sMountIndex == 2363) && (sItemIndex == 2423 || sItemIndex == 3370))
+		return 1;
+	if ((sMountIndex == 2334 || sMountIndex == 2364) && (sItemIndex == 2424 || sItemIndex == 3371))
+		return 1;
+	if ((sMountIndex == 2335 || sMountIndex == 2365) && (sItemIndex == 2425 || sItemIndex == 3372))
+		return 1;
+	if ((sMountIndex >= 2336 && sMountIndex <= 2345 || sMountIndex >= 2366 && sMountIndex <= 2375 || sMountIndex >= 2960 && sMountIndex < 3000) && 
+		(sItemIndex == 2426 || sItemIndex == 3373))
+	{
+		return 1;
+	}
+	if ((sMountIndex == 2346 || sMountIndex == 2376) && (sItemIndex == 2436 || sItemIndex == 3383))
+		return 1;
+	if ((sMountIndex == 2347 || sMountIndex == 2377) && (sItemIndex == 2437 || sItemIndex == 3384))
+		return 1;
+	if ((sMountIndex == 2349 || sMountIndex == 2379) && (sItemIndex == 2427 || sItemIndex == 3374))
+		return 1;
+	if ((sMountIndex == 2350 || sMountIndex == 2380) && (sItemIndex == 2428 || sItemIndex == 3375))
+		return 1;
+	if ((sMountIndex >= 2351 && sMountIndex <= 2353 || sMountIndex >= 2381 && sMountIndex <= 2383) && (sItemIndex == 2429 || sItemIndex == 3376))
+		return 1;
+	if ((sMountIndex >= 2354 && sMountIndex <= 2356 || sMountIndex >= 2384 && sMountIndex <= 2386) && (sItemIndex == 2430 || sItemIndex == 3377))
+		return 1;
+	if ((sMountIndex == 2357 || sMountIndex == 2387) && (sItemIndex == 2426 || sItemIndex == 3373))
+		return 1;
+	if ((sMountIndex == 2358 || sMountIndex == 2388) && (sItemIndex == 2429 || sItemIndex == 3376))
+		return 1;
+	if ((sMountIndex == 2378 || sMountIndex == 2348) && (sItemIndex == 3465 || sItemIndex == 2438))
+		return 1;
+	if ((sMountIndex == 2389 || sMountIndex == 2359) && (sItemIndex == 3466 || sItemIndex == 2439))
+		return 1;
 	return 0;
 }
 
 char TMFieldScene::FeedMount()
 {
-	return 0;
+	SGridControl* pGridInv = nullptr;
+	SGridControlItem* pItem = nullptr;
+
+	bool bFind = false;
+	int Page = 0;
+	// TODO: do i need to say?
+	for (int i = 0; i < 4; ++i)
+	{
+		pGridInv = m_pGridInvList[i];
+		for (int j = 0; j < 3; ++j)
+		{
+			for (int k = 0; k < 5; ++k)
+			{
+				pItem = pGridInv->GetItem(k, j);
+				if (pItem && IsFeedPotion(g_pObjectManager->m_stMobData.Equip[14].sIndex,
+					pItem->m_pItem->sIndex))
+				{
+					bFind = true;
+					Page = 15 * i;
+					break;
+				}
+			}
+			if (bFind == 1)
+				break;
+		}
+		if (bFind == 1)
+			break;
+	}
+
+	if (bFind != 1 || !pItem)
+		return 0;
+
+	if (BASE_GetItemAbility(pItem->m_pItem, 38) == 1)
+	{
+		unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+		if (m_dwUseItemTime && dwServerTime - m_dwUseItemTime < 200)
+			return 0;
+
+		pGridInv->CheckType(pItem->m_pGridControl->m_eItemType,
+			pItem->m_pGridControl->m_eGridType);
+
+		int SourPos = pGridInv->CheckPos(pItem->m_pGridControl->m_eItemType);
+		if (SourPos == -1)
+			SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+		int SourPosa = Page + SourPos;
+
+		auto vec = m_pMyHuman->m_vecPosition;
+
+		MSG_UseItem stUseItem{};
+		stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+		stUseItem.Header.Type = MSG_UseItem_Opcode;
+		stUseItem.SourType = 1;
+		stUseItem.SourPos = SourPosa;
+		stUseItem.ItemID = 0;
+		stUseItem.GridX = (int)vec.x;
+		stUseItem.GridY = (int)vec.y;
+		SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+		m_dwUseItemTime = dwServerTime;
+
+		int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+
+		if (nAmount <= 1)
+		{
+			auto pPickedItem = m_pGridInvList[SourPosa / 15]->PickupItem(SourPosa % 15 % 5, SourPosa % 15 / 5);
+			if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+				g_pCursor->m_pAttachedItem = 0;
+
+			SAFE_DELETE(pPickedItem);
+			g_pCursor->DetachItem();
+		}
+		else
+		{
+			BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+			sprintf(pItem->m_GCText.strString, "%2d", nAmount - 1);
+			pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+		}
+		if (nAmount <= 1)
+			memset(&g_pObjectManager->m_stMobData.Carry[SourPosa], 0, sizeof(STRUCT_ITEM));
+	}
+
+	UpdateScoreUI(0);
+	return 1;
 }
 
 void TMFieldScene::SetRunMode()
@@ -13675,9 +13981,10 @@ int TMFieldScene::OnPacketUpdateCargoCoin(MSG_STANDARDPARM* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketWeather(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketWeather(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	SetWeather(pStd->Parm);
+	return 1;
 }
 
 int TMFieldScene::OnPacketCreateItem(MSG_STANDARD* pStd)
