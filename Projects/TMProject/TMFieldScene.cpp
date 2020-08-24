@@ -14443,9 +14443,12 @@ int TMFieldScene::OnPacketWarInfo(MSG_STANDARD* pStd)
 	return 0;
 }
 
-int TMFieldScene::OnPacketGuildDisable(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketGuildDisable(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	if (m_pBtnGuildOnOff)
+		m_pBtnGuildOnOff->SetSelected(pStd->Parm == 1 ? 1 : 0);
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketEnvEffect(MSG_STANDARD* pStd)
@@ -16959,7 +16962,22 @@ int TMFieldScene::Affect_Main(unsigned int dwServerTime)
 
 int TMFieldScene::StrByteCheck(char* szString)
 {
-	return 0;
+	int value = 0;
+	int byteCheck = 0;
+	for (int i = 0; i < strlen(szString); ++i)
+	{
+		if (szString[i] >= 'A' && szString[i] <= 'z')
+			++value;
+		else if (byteCheck == 1)
+		{
+			++value;
+			byteCheck = 0;
+		}
+		else
+			byteCheck = 1;
+	}
+
+	return value;
 }
 
 void TMFieldScene::SetVisibleMixPanel(int bShow)

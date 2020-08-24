@@ -207,7 +207,7 @@ public:
 	int OnPacketStartTime(MSG_STANDARD* pStd);
 	int OnPacketRemainCount(MSG_STANDARD* pStd);
 	int OnPacketWarInfo(MSG_STANDARD* pStd);
-	int OnPacketGuildDisable(MSG_STANDARD* pStd);
+	int OnPacketGuildDisable(MSG_STANDARDPARM* pStd);
 	int OnPacketEnvEffect(MSG_STANDARD* pStd);
 	int OnPacketRemainNPCCount(MSG_STANDARD* pStd);
 	int OnPacketRESULTGAMBLE(MSG_STANDARD* pStd);
