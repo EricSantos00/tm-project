@@ -11525,7 +11525,7 @@ void TMFieldScene::SendReqBuy(unsigned int dwControlID)
 {
 	MSG_ReqBuy stReqBuy{};
 	stReqBuy.Header.ID = m_pMyHuman->m_dwID;
-	stReqBuy.Header.Type = 920;
+	stReqBuy.Header.Type = MSG_ReqBuy_Opcode;
 	stReqBuy.TargetID = m_stAutoTrade.TargetID;
 	stReqBuy.Pos = dwControlID - 653;
 	stReqBuy.Price = m_stAutoTrade.TradeMoney[dwControlID - 653];

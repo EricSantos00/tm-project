@@ -32,8 +32,10 @@
 #include "SGrid.h"
 #include "TMEffectStart.h"
 #include "TMSkillTownPortal.h"
+#include "TMFireEffect.h"
+#include "TMEffectSpark.h"
 
-TMVector2 TMHuman::m_vecPickSize[100]{
+TMVector2 TMHuman::m_vecPickSize[100] = {
   { 0.40000001f, 2.0f },
   { 0.40000001f, 2.0f },
   { 0.5f, 2.0f },
@@ -2894,6 +2896,112 @@ void TMHuman::SetPosition(float fX, float fY, float fZ)
 
 void TMHuman::RestoreDeviceObjects()
 {
+    if (m_dwDelayDel)
+        return;
+
+    if (m_stLookInfo.FaceMesh == 40)
+    {
+        if (!m_stLookInfo.CoatMesh)
+            m_stLookInfo.CoatMesh = 40;
+        if (!m_stLookInfo.PantsMesh)
+            m_stLookInfo.PantsMesh = 40;
+        if (!m_stLookInfo.GlovesMesh)
+            m_stLookInfo.GlovesMesh = 40;
+        if (!m_stLookInfo.BootsMesh)
+            m_stLookInfo.BootsMesh = 40;
+
+        m_stLookInfo.HelmMesh = 40;
+    }
+    else if (m_stLookInfo.FaceMesh == 80 || m_stLookInfo.FaceMesh == 64)
+    {
+        if (!m_stLookInfo.CoatMesh)
+            m_stLookInfo.CoatMesh = 40;
+        if (!m_stLookInfo.PantsMesh)
+            m_stLookInfo.PantsMesh = 40;
+        if (!m_stLookInfo.GlovesMesh)
+            m_stLookInfo.GlovesMesh = 40;
+        if (!m_stLookInfo.BootsMesh)
+            m_stLookInfo.BootsMesh = 40;
+
+        m_stLookInfo.HelmMesh = m_stLookInfo.FaceMesh;
+    }
+    if (!m_pSkinMesh)
+    {
+        bool bExpand = false;
+        if (m_nClass == 4 || m_nClass == 8 || m_nClass == 36 || m_nClass == 39 || m_nClass == 40 || m_nClass == 60)
+            bExpand = true;
+
+        m_pSkinMesh = new TMSkinMesh((LOOK_INFO*)&m_stLookInfo,
+            &m_stSancInfo,
+            m_nSkinMeshType,
+            bExpand,
+            &m_stColorInfo,
+            1,
+            0,
+            0);
+
+        if (!m_pSkinMesh)
+            return;
+    }
+    if (m_pSkinMesh)
+    {
+        m_pSkinMesh->m_pOwner = this;
+        m_pSkinMesh->RestoreDeviceObjects();
+        m_pSkinMesh->m_dwFPS = 40;
+
+        if (m_nSkinMeshType == 31 && m_fScale < 1.0f)
+        {
+            float fGrade = 2.0f - m_fScale;
+            m_pSkinMesh->m_vScale.x = m_fScale;
+            m_pSkinMesh->m_vScale.y = m_fScale / fGrade;
+            m_pSkinMesh->m_vScale.z = m_fScale;
+        }
+        else
+        {
+            m_pSkinMesh->m_vScale.x = m_fScale;
+            m_pSkinMesh->m_vScale.y = m_fScale;
+            m_pSkinMesh->m_vScale.z = m_fScale;
+        }
+    }
+
+    if (m_nSkinMeshType == 31 && m_fScale < 1.0f)
+    {
+        float fGrade = 2.0f - m_fScale;
+        m_pSkinMesh->m_vScale.x = m_fScale;
+        m_pSkinMesh->m_vScale.y = m_fScale / fGrade;
+        m_pSkinMesh->m_vScale.z = m_fScale;
+    }
+    else
+    {
+        m_pSkinMesh->m_vScale.x = m_fScale;
+        m_pSkinMesh->m_vScale.y = m_fScale;
+        m_pSkinMesh->m_vScale.z = m_fScale;
+    }
+
+    if (m_cMantua > 0 && !m_nSkinMeshType || m_nSkinMeshType == 1 || m_nSkinMeshType == 8 || m_nSkinMeshType == 3 || m_nSkinMeshType == 2)
+    {
+        if (!m_pMantua)
+        {
+            LOOK_INFO stLook{};
+            stLook.Skin0 = m_wMantuaSkin;
+
+            SANC_INFO stSanc{};
+            stSanc.Sanc0 = m_ucMantuaSanc;
+            stSanc.Legend0 = m_ucMantuaLegend;
+
+            m_pMantua = new TMSkinMesh(&stLook, &stSanc, 85, 0, 0, 1, 0, 0);
+
+            m_pMantua->m_pOwner = 0;
+            m_pMantua->m_dwFPS = 40;
+            m_pMantua->m_vScale.x = m_fScale;
+            m_pMantua->m_vScale.y = m_fScale;
+            m_pMantua->m_vScale.z = m_fScale;
+            m_pMantua->SetVecMantua(1, m_nMountSkinMeshType);
+        }
+        m_pMantua->RestoreDeviceObjects();
+    }
+
+    UpdateMount();
 }
 
 void TMHuman::InvalidateDeviceObjects()
@@ -3263,7 +3371,10 @@ int TMHuman::IsMouseOver()
 
 int TMHuman::OnCharEvent(char iCharCode, int lParam)
 {
-	return 0;
+    if (m_dwDelayDel)
+        return 0;
+
+    return TreeNode::OnCharEvent(iCharCode, lParam);
 }
 
 int TMHuman::OnPacketEvent(unsigned int dwCode, char* buf)
@@ -6208,6 +6319,35 @@ void TMHuman::Punched(int nDamage, TMHuman* pFrom)
 
 void TMHuman::Fire(TMObject* pTarget, int nSkill)
 {
+    if (m_dwDelayDel)
+        return;
+
+    if (m_vecTempPos[0].x == 0.0f && m_vecTempPos[0].y == 0.0f && m_vecTempPos[0].z == 0.0f)
+    {
+        m_vecTempPos[0].x = m_vecPosition.x;
+        m_vecTempPos[0].y = m_fHeight + 1.5f;
+        m_vecTempPos[0].z = m_vecPosition.y;
+    }
+
+    if (nSkill == 0)
+    {
+        if (m_nSkinMeshType == 20 && (!m_stLookInfo.HelmMesh || m_stLookInfo.HelmMesh == 2) || m_nClass == 35)
+        {
+            auto pBreathFire = new TMFireEffect(m_vecTempPos[0], pTarget, 42);
+
+            m_dwBreathStartTime = pBreathFire->m_dwCreateTime;
+            m_dwBreathLifeTime = pBreathFire->m_dwLifeTime;
+
+            g_pCurrentScene->AddChild(pBreathFire);
+        }
+    }
+    else if (nSkill == 1)
+    {
+        auto pEffect = new TMEffectSpark(m_vecTempPos[0], pTarget, TMVector3(0.0f, 0.0f, 0.0f), 0xFFFF3300, 0xFF551100, 1000, 1.0f, 5, 0.0);
+        pEffect->m_fRange = 0.5f;
+
+        g_pCurrentScene->AddChild(pEffect);
+    }
 }
 
 void TMHuman::Die()
@@ -9930,4 +10070,3 @@ bool _locationCheck(float posx, float posy, int mapX, int mapY)
 {
     return (int)(posx * 0.0078125f) == mapX && (int)(posy * 0.0078125f) == mapY;
 }
-
