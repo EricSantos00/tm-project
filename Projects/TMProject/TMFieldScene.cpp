@@ -11098,6 +11098,7 @@ void TMFieldScene::SendReqBuy(unsigned int dwControlID)
 
 void TMFieldScene::SetSanc()
 {
+	m_nMySanc = BASE_GetItemSanc(&g_pObjectManager->m_stMobData.Equip[4]);
 }
 
 void TMFieldScene::CreateGate(int nZoneIndex, int bInit)
@@ -11111,7 +11112,40 @@ int TMFieldScene::GetItemFromGround(unsigned int dwServerTime)
 
 int TMFieldScene::GetWeaponDamage()
 {
-	return 0;
+	auto pMobData = &g_pObjectManager->m_stMobData;
+	int w1 = BASE_GetItemAbility(&g_pObjectManager->m_stMobData.Equip[6], 2);
+	int w2 = BASE_GetItemAbility(&pMobData->Equip[7], 2);
+	int t1 = g_pItemList[pMobData->Equip[6].sIndex].nUnique;
+	int t2 = g_pItemList[pMobData->Equip[7].sIndex].nUnique;
+
+	int nWeaponDamage = 0;
+	if (t1 == 47 && t2 == 45)
+		w2 = 0;
+	if (w1 <= w2)
+		nWeaponDamage = w2 + w1 / 3;
+	else
+		nWeaponDamage = w1 + w2 / 3;
+
+	int idx1 = pMobData->Equip[6].sIndex;
+	int nPos1 = g_pItemList[idx1].nPos;
+
+	if ((idx1 >= 0 || idx1 < 6500) && (nPos1 == 64 || nPos1 == 192) && t1 != 44 && t2 != 47 && BASE_GetItemSanc(&pMobData->Equip[6]) >= 9)
+	{
+		int nu = g_pItemList[idx1].nUnique;
+		if (nu != 47 && nu != 44)
+			nWeaponDamage += 40;
+	}
+
+	int idx2 = pMobData->Equip[7].sIndex;
+	int nPos2 = g_pItemList[idx2].nPos;
+	if ((idx2 >= 0 || idx2 < 6500) && (nPos2 == 64 || nPos2 == 192) && t1 != 44 && t2 != 47 && BASE_GetItemSanc(&pMobData->Equip[7]) >= 9)
+	{
+		int nu = g_pItemList[idx2].nUnique;
+		if (nu != 47 && nu != 44)
+			nWeaponDamage += 40;
+	}
+
+	return nWeaponDamage;
 }
 
 void TMFieldScene::SetMyHumanMagic()
