@@ -2989,6 +2989,55 @@ int BASE_Get3DTo2DPos(float fX, float fY, float fZ, int* pX, int* pY)
     return 1;
 }
 
+int BASE_GetDoubleCritical(STRUCT_MOB* mob, unsigned short* sProgress, unsigned short* cProgress, char* bDoubleCritical)
+{
+    *bDoubleCritical = 0;
+    if (!cProgress)
+        return 0;
+    if ((int)*cProgress >= 1024)
+        *cProgress %= 1024;
+    if (sProgress && (int)*sProgress >= 1024)
+        *sProgress %= 1024;
+
+    int hitvalue[2] = 
+    {
+        100 * (((int)(unsigned char)mob->CurrentScore.AttackRun >> 4) - 5),
+        4 * (unsigned char)mob->Critical
+    };
+   
+    if (sProgress && cProgress && *cProgress != *sProgress)
+    {
+        if (*sProgress > (int)*cProgress)
+            *cProgress = *sProgress;
+        if (*sProgress < (int)*cProgress)
+        {
+            if (*sProgress + 5 < *cProgress)
+            {
+                *cProgress = *sProgress;
+                return 0;
+            }
+            *sProgress = *cProgress;
+        }
+    }
+
+    int value = g_pHitRate[*cProgress];
+    for (int i = 0; i < 2; ++i)
+    {
+        int bit = 0;
+        if (!i && value < hitvalue[0])
+            bit = 1;
+        if (i == 1 && 1000 - value < hitvalue[1])
+            bit = 1;
+        *bDoubleCritical |= bit << i;
+    }
+
+    if (sProgress)
+        ++*sProgress;
+
+    ++*cProgress;
+    return 1;
+}
+
 int IsPassiveSkill(int nSkillIndex)
 {
     if (nSkillIndex >= 5400)
