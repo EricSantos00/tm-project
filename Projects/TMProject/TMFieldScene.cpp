@@ -11776,6 +11776,7 @@ int TMFieldScene::OnMsgBoxEvent(unsigned int idwControlID, unsigned int idwEvent
 
 int TMFieldScene::OnKeyDebug(char iCharCode, int lParam)
 {
+	// Just that
 	return 0;
 }
 
@@ -11848,7 +11849,11 @@ int TMFieldScene::OnKeyPlus(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyPK(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'k' && iCharCode != 'K')
+		return 0;
+
+	SetPK();
+	return 1;
 }
 
 int TMFieldScene::OnKeyName(char iCharCode, int lParam)
@@ -11874,17 +11879,33 @@ int TMFieldScene::OnKeyAutoTarget(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeyAuto(char iCharCode, int lParam)
 {
+	// Just that
 	return 0;
 }
 
 int TMFieldScene::OnKeyHelp(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'h' && iCharCode != 'H')
+		return 0;
+
+	if (m_pHelpPanel)
+	{
+		int bVisible = m_pHelpPanel->IsVisible();
+		m_pHelpPanel->SetVisible(bVisible == 0);
+		m_pHelpBtn->SetSelected(bVisible == 0);
+		GetSoundAndPlay(51, 0, 0);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyRun(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'r' && iCharCode != 'R')
+		return 0;
+
+	SetRunMode();
+	return 1;
 }
 
 int TMFieldScene::OnKeyFeedMount(char iCharCode, int lParam)
@@ -11909,22 +11930,55 @@ int TMFieldScene::OnKeyPPotion(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeySkillPage(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'z' && iCharCode != 'Z')
+		return 0;
+
+	if (m_pGridSkillBelt2->m_bVisible)
+		OnControlEvent(65647, 0);
+	else
+		OnControlEvent(65646u, 0);
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyQuestLog(char iCharCode, int lParam)
 {
-	return 0;
+	if (iCharCode != 'x' && iCharCode != 'X')
+		return 0;
+
+	OnControlEvent(65793, 0);
+	return 1;
 }
 
 int TMFieldScene::OnKeyReverse(char iCharCode, int lParam)
 {
+	// Just that
 	return 0;
 }
 
 int TMFieldScene::OnKeyAutoRun(char iCharCode, int lParam)
 {
-	return 0;
+	if (m_pMyHuman->m_cCantMove)
+		return 0;
+
+	if (iCharCode != ']' && iCharCode != '}')
+		return 0;
+
+	if (m_pGround->m_vecOffsetIndex.x == 13 && m_pGround->m_vecOffsetIndex.y == 31
+		|| m_pGround->m_vecOffsetIndex.x == 14 && m_pGround->m_vecOffsetIndex.y == 30
+		|| m_pGround->m_vecOffsetIndex.x == 15 && m_pGround->m_vecOffsetIndex.y == 31
+		|| m_pGround->m_vecOffsetIndex.x == 9 && m_pGround->m_vecOffsetIndex.y == 28
+		|| m_pGround->m_vecOffsetIndex.x == 8 && m_pGround->m_vecOffsetIndex.y == 27
+		|| m_pGround->m_vecOffsetIndex.x == 10 && m_pGround->m_vecOffsetIndex.y == 27)
+	{
+		return 1;
+	}
+
+	m_bAutoRun = m_bAutoRun == 0;
+	if (m_pAutoRunBtn)
+		m_pAutoRunBtn->SetSelected(m_bAutoRun);
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyGuildOnOff(char iCharCode, int lParam)
