@@ -6125,9 +6125,9 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case 0x1C1:
 		return OnPacketREQArray(pStd);
 	case 0x333:
-		return OnPacketMessageChat(pStd);
+		return OnPacketMessageChat(reinterpret_cast<MSG_MessageChat*>(pStd));
 	case 0x105:
-		return OnPacketMessageChat_Index(pStd);
+		return OnPacketMessageChat_Index(reinterpret_cast<MSG_MessageChat*>(pStd));
 	case 0x106:
 		return OnPacketMessageChat_Param(pStd);
 	case 0x334:
@@ -6151,9 +6151,9 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case 0x3E8:
 		return OnPacketUndoSellItem(pStd);
 	case 0x39B:
-		return OnPacketItemSold(pStd);
+		return OnPacketItemSold(reinterpret_cast<MSG_STANDARDPARM2*>(pStd));
 	case 0x339:
-		return OnPacketUpdateCargoCoin(pStd);
+		return OnPacketUpdateCargoCoin(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 	case 0x18B:
 		return OnPacketWeather(pStd);
 	case 0x26E:
@@ -6165,7 +6165,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case 0x374:
 		return OnPacketUpdateItem(pStd);
 	case 0x16F:
-		return OnPacketRemoveItem(pStd);
+		return OnPacketRemoveItem(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 	case 0x1D0:
 		g_pObjectManager->m_RMBShopOpen = 1;
 		return OnPacketShopList(pStd);
@@ -6186,13 +6186,13 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketRemoveParty(pStd);
 		break;
 	case 0x292:
-		return OnPacketSetHpMode(pStd);
+		return OnPacketSetHpMode(reinterpret_cast<MSG_SetHpMode*>(pStd));
 		break;
 	case 0x18D:
 		return OnPacketReqChallange(pStd);
 		break;
 	case 0x378:
-		return OnPacketSetShortSkill(pStd);
+		return OnPacketSetShortSkill(reinterpret_cast<MSG_SetShortSkill*>(pStd));
 		break;
 	case 0x19C:
 		return OnPacketClearMenu(pStd);
@@ -6252,7 +6252,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketAutoKick(pStd);
 		break;
 	case 0x1C2:
-		return OnPacketItemPrice(pStd);
+		return OnPacketItemPrice(reinterpret_cast<MSG_STANDARDPARM2*>(pStd));
 		break;
 	case 0xDC3:
 		return OnPacketCapsuleInfo(pStd);
@@ -8648,7 +8648,7 @@ int TMFieldScene::MobAttack(unsigned int wParam, D3DXVECTOR3 vec, unsigned int d
 
 				if (m_pGround)
 				{
-					if (vec.y < -5000.0 && pOver)
+					if (vec.y < -5000.0f && pOver)
 					{
 						vec.x = pOver->m_vecPosition.x;
 						vec.z = pOver->m_vecPosition.y;
@@ -8837,7 +8837,7 @@ int TMFieldScene::TimeDelay(unsigned int dwServerTime)
 	{
 		if (dwServerTime > g_dwStartQuitGameTime + 5000)
 		{
-			PostMessageA(g_pApp->m_hWnd, 16, 0, 0);
+			PostMessage(g_pApp->m_hWnd, 16, 0, 0);
 			return 1;
 		}
 
@@ -12808,13 +12808,84 @@ int TMFieldScene::OnKeyTotoEnter(char iCharCode, int lParam)
 	return 0;
 }
 
-int TMFieldScene::OnPacketMessageChat(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketMessageChat(MSG_MessageChat* pStd)
 {	
+	if (m_pPartyList->m_nNumItem <= 0)
+		return 0;
+
+	if (!g_pObjectManager->GetHumanByID(pStd->Header.ID))
+	{
+		auto pPartyList = m_pPartyList;
+		for (int i = 0; i < pPartyList->m_nNumItem; ++i)
+		{
+			auto pPartyItem = (SListBoxPartyItem*)pPartyList->m_pItemList[i];
+			if (pPartyItem->m_dwCharID == pStd->Header.ID)
+			{
+				pStd->String[127] = 0;
+				pStd->String[126] = 0;
+
+				auto pChatList = m_pChatList;
+
+				char szMsg[128]{};
+				sprintf(szMsg, "[%s]> %s", pPartyItem->GetText());
+
+				pChatList->AddItem(new SListBoxItem(szMsg, 0xFFAAFFAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+				m_dwChatTime = g_pTimerManager->GetServerTime();
+				return 0;
+			}
+		}
+	}
+
 	return 0;
 }
 
-int TMFieldScene::OnPacketMessageChat_Index(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketMessageChat_Index(MSG_MessageChat* pStd)
 {
+	if (pStd->String[0] != 1)
+		return 0;
+
+	char str[128]{};
+	char num[5]{};
+
+	g_pMessageStringTable[*(short*)&pStd->String[2] + 1000][127] = 0;
+	g_pMessageStringTable[*(short*)&pStd->String[2] + 1000][126] = 0;
+
+	strcpy(str, g_pMessageStringTable[*(short*)&pStd->String[2] + 1000]);
+
+	if (strlen(str) < 1)
+	{
+		_itoa(*(short*)&pStd->String[2], num, 10);
+		strcpy(str, num);
+	}
+
+	if (m_pPartyList->m_nNumItem <= 0)
+		return 0;
+
+	if (!g_pObjectManager->GetHumanByID(pStd->Header.ID))
+	{
+		auto pPartyList = m_pPartyList;
+		for (int i = 0; i < pPartyList->m_nNumItem; ++i)
+		{
+			auto pPartyItem = (SListBoxPartyItem*)pPartyList->m_pItemList[i];
+			if (pPartyItem->m_dwCharID == pStd->Header.ID)
+			{
+				pStd->String[127] = 0;
+				pStd->String[126] = 0;
+
+				auto pChatList = m_pChatList;
+
+				char szMsg[128]{};
+				sprintf(szMsg, "[%s]> %s", pPartyItem->GetText());
+
+				pChatList->AddItem(new SListBoxItem(szMsg, 0xFFAAFFAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+				m_dwChatTime = g_pTimerManager->GetServerTime();
+				return 0;
+			}
+		}
+	}
+
 	return 0;
 }
 
@@ -13551,7 +13622,20 @@ int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketCNFCharacterLogout(MSG_STANDARD* pStd)
 {
-	return 0;
+	if (pStd->ID == g_pObjectManager->m_dwCharID)
+	{
+		g_pDevice->m_nWidthShift = 0;
+
+		int nSlot = g_pObjectManager->m_cCharacterSlot;
+		auto pSelChar = &g_pObjectManager->m_stSelCharData;
+
+		memcpy(&g_pObjectManager->m_stSelCharData.Score[nSlot], &m_pMyHuman->m_stScore, sizeof(m_pMyHuman->m_stScore));
+		memcpy(pSelChar->Equip[nSlot], g_pObjectManager->m_stMobData.Equip, sizeof(g_pObjectManager->m_stMobData.Equip));
+
+		g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTCHAR_STATE);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketCNFRemoveServer(MSG_STANDARD* pStd)
@@ -13569,14 +13653,26 @@ int TMFieldScene::OnPacketCNFCharacterLogin(MSG_STANDARD* pStd)
 	return 0;
 }
 
-int TMFieldScene::OnPacketItemSold(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketItemSold(MSG_STANDARDPARM2* pStd)
 {
-	return 0;
+	auto pPanel = this->m_pAutoTrade;
+	if (pPanel && pPanel->IsVisible() == 1 && pStd->Parm1 == m_stAutoTrade.TargetID)
+	{
+		auto pItem = m_pGridAutoTrade[pStd->Parm2]->PickupAtItem(0, 0);
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pItem)
+			g_pCursor->m_pAttachedItem = nullptr;
+
+		SAFE_DELETE(pItem);
+	}
+
+	return 1;
 }
 
-int TMFieldScene::OnPacketUpdateCargoCoin(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketUpdateCargoCoin(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	g_pObjectManager->m_nCargoCoin = pStd->Parm;
+	UpdateScoreUI(0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketWeather(MSG_STANDARD* pStd)
@@ -13604,9 +13700,11 @@ int TMFieldScene::OnPacketUpdateItem(MSG_STANDARD* pStd)
 	return 0;
 }
 
-int TMFieldScene::OnPacketRemoveItem(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRemoveItem(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	m_pMouseOverItem = nullptr;
+	g_pObjectManager->DeleteObject(pStd->Parm);
+	return 1;
 }
 
 int TMFieldScene::OnPacketAutoTrade(MSG_STANDARD* pStd)
@@ -14049,7 +14147,7 @@ int TMFieldScene::OnPacketRMBShopList(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketBuy(MSG_STANDARD* pStd)
 {
-	return 0;
+	return 1;
 }
 
 int TMFieldScene::OnPacketSell(MSG_STANDARD* pStd)
@@ -14234,9 +14332,33 @@ int TMFieldScene::OnPacketRemoveParty(MSG_STANDARD* pStd)
 	return 0;
 }
 
-int TMFieldScene::OnPacketSetHpMode(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketSetHpMode(MSG_SetHpMode* pStd)
 {
-	return 0;
+	if (pStd->Mode / 10 == 1)
+	{
+		g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTCHAR_STATE);
+		return 1;
+	}
+	else if (pStd->Mode != 22)
+	{
+		if (!m_pMessagePanel->m_bVisible)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[13], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+
+		g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTSERVER_STATE);
+		return 1;
+	}
+	else if (pStd->Mode == 22)
+	{
+		if (m_pMyHuman->m_stScore.Level < 1000)
+			m_pMyHuman->Die();
+
+		return 1;
+	}
+	
+	return 1;
 }
 
 int TMFieldScene::OnPacketDeposit(MSG_STANDARD* pStd)
@@ -14270,14 +14392,30 @@ int TMFieldScene::OnPacketCloseShop(MSG_STANDARD* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketSetShortSkill(MSG_STANDARD* pStd)
-{
-	return 0;
+int TMFieldScene::OnPacketSetShortSkill(MSG_SetShortSkill* pStd)
+{	
+	memcpy(g_pObjectManager->m_cShortSkill, pStd->Skill, sizeof(pStd->Skill));
+	for (int i = 0; i < 20; ++i)
+	{
+		if ((unsigned char)g_pObjectManager->m_cShortSkill[i] < 105 || (unsigned char)g_pObjectManager->m_cShortSkill[i] >= 117)
+		{
+			if ((unsigned char)g_pObjectManager->m_cShortSkill[i] < 24)
+				g_pObjectManager->m_cShortSkill[i] += 24 * g_pObjectManager->m_stMobData.Class;
+		}
+		else
+		{
+			g_pObjectManager->m_cShortSkill[i] += 12 * g_pObjectManager->m_stMobData.Class;
+		}
+	}
+
+	UpdateSkillBelt();
+	return 1;
 }
 
 int TMFieldScene::OnPacketClearMenu(MSG_STANDARD* pStd)
 {
-	return 0;
+	SetVisibleCargo(0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketCombineComplete(MSG_STANDARD* pStd)
@@ -16617,9 +16755,11 @@ int TMFieldScene::OnPacketAutoKick(MSG_STANDARD* pStd)
 	return 0;
 }
 
-int TMFieldScene::OnPacketItemPrice(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketItemPrice(MSG_STANDARDPARM2* pStd)
 {
-	return 0;
+	g_pItemList[412].nPrice = pStd->Parm1;
+	g_pItemList[413].nPrice = pStd->Parm2;
+	return 1;
 }
 
 int TMFieldScene::OnPacketCapsuleInfo(MSG_STANDARD* pStd)
@@ -16639,6 +16779,7 @@ int TMFieldScene::OnPacketRunQuest12Count(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketDelayQuit(MSG_STANDARDPARM* pStd)
 {
+	PostMessage(g_pApp->m_hWnd, 16, 0, 0);
 	return 0;
 }
 

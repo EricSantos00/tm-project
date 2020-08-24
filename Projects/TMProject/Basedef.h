@@ -1227,6 +1227,13 @@ struct MSG_RemoveMob
 	int RemoveType;
 };
 
+struct MSG_SetHpMode
+{
+	MSG_STANDARD Header;
+	int Hp;
+	short Mode;
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },
