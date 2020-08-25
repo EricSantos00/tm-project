@@ -11477,3 +11477,8 @@ bool _locationCheck(float posx, float posy, int mapX, int mapY)
 {
     return (int)(posx * 0.0078125f) == mapX && (int)(posy * 0.0078125f) == mapY;
 }
+
+bool _locationCheck(TMVector2 vec2, int mapX, int mapY)
+{
+    return (int)(vec2.x * 0.0078125f) == mapX && (int)(vec2.y * 0.0078125f) == mapY;
+}

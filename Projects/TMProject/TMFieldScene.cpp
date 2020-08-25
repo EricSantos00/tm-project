@@ -16359,9 +16359,77 @@ int TMFieldScene::OnPacketAddParty(MSG_AddParty* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketRemoveParty(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRemoveParty(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	if (!m_pPartyList)
+		return 0;
+
+	auto pPartyList = m_pPartyList;
+
+	if (!pStd->Parm)
+	{
+		m_pMyHuman->m_bParty = 0;
+
+		for (int i = 0; i < pPartyList->m_nNumItem; ++i)
+		{			
+			auto pNode = (TMHuman*)g_pObjectManager->GetHumanByID(static_cast<SListBoxPartyItem*>(pPartyList->m_pItemList[i])->m_dwCharID);
+			if (pNode)
+			{
+				pNode->m_bParty = 0;
+				if (pNode)
+				{
+					if (_locationCheck(pNode->m_vecFromPos, 8, 15) || _locationCheck(pNode->m_vecFromPos, 8, 16) || 
+						_locationCheck(pNode->m_vecFromPos, 9, 15) || _locationCheck(pNode->m_vecFromPos, 9, 16))
+					{
+						if (pNode->m_cMantua == 1)
+							pNode->SetInMiniMap(0xAA0000FF);
+						if (pNode->m_cMantua == 2)
+							pNode->SetInMiniMap(0xAAFF0000);
+					}
+					else if (pNode->m_pInMiniMap)
+						SAFE_DELETE(pNode->m_pInMiniMap);
+				}
+			}
+		}
+
+		pPartyList->Empty();
+	}
+	else
+	{
+		for (int inItemIndex = 0; inItemIndex < pPartyList->m_nNumItem; ++inItemIndex)
+		{
+			auto pPartyItem = (SListBoxPartyItem*)pPartyList->m_pItemList[inItemIndex];
+			if (pPartyItem->m_dwCharID == pStd->Parm)
+			{
+				auto pNode = (TMHuman*)g_pObjectManager->GetHumanByID(pPartyItem->m_dwCharID);
+				if (pNode)
+				{
+					pNode->m_bParty = 0;
+					if (_locationCheck(pNode->m_vecFromPos, 8, 15) || _locationCheck(pNode->m_vecFromPos, 8, 16) ||
+						_locationCheck(pNode->m_vecFromPos, 9, 15) || _locationCheck(pNode->m_vecFromPos, 9, 16))
+					{
+						if (pNode->m_cMantua == 1)
+							pNode->SetInMiniMap(0xAA0000FF);
+						if (pNode->m_cMantua == 2)
+							pNode->SetInMiniMap(0xAAFF0000);
+					}
+					else if (pNode->m_pInMiniMap)
+						SAFE_DELETE(pNode->m_pInMiniMap);
+				}
+
+				pPartyList->DeleteItem(inItemIndex);
+				break;
+			}
+		}
+	}
+
+	if (pPartyList->m_nNumItem == 1)
+	{
+		pPartyList->Empty();
+		m_pMyHuman->m_bParty = 0;
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketSetHpMode(MSG_SetHpMode* pStd)
