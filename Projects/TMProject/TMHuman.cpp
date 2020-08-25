@@ -36,6 +36,7 @@
 #include "TMEffectSpark.h"
 #include "TMEffectLevelUp.h"
 #include "ItemEffect.h"
+#include "TMFont3.h"
 
 TMVector2 TMHuman::m_vecPickSize[100] = {
   { 0.40000001f, 2.0f },
@@ -4493,7 +4494,95 @@ int TMHuman::OnPacketSetHpMp(MSG_SetHpMp* pStd)
 
 int TMHuman::OnPacketSetHpDam(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pSetHpDam = (MSG_SetHpDam*)pStd;
+    if (g_pCurrentScene->GetSceneType() != ESCENE_TYPE::ESCENE_FIELD)
+        return 1;
+
+    m_stScore.Hp = pSetHpDam->Hp;
+    m_pProgressBar->SetCurrentProgress(pSetHpDam->Hp);
+    SetGuildBattleHPBar(m_stScore.Hp);
+    SetGuildBattleLifeCount();
+
+    TMFont3* pFont = nullptr;
+    unsigned int dwColor = 0xFFFFFF00;
+
+    int nTX = 0;
+    int nTY = 0;
+    if (BASE_Get3DTo2DPos(m_vecPosition.x, m_fHeight + 1.0, m_vecPosition.y, &nTX, &nTY))
+    {
+        char szVal[128]{};
+
+        if (pSetHpDam->Dam < 0)
+        {
+            if (g_pCurrentScene->m_pMyHuman == this)
+            {
+                dwColor = 0xFFFF0000;
+
+                pFont = new TMFont3(szVal,
+                    nTX,
+                    nTY + (int)(RenderDevice::m_fHeightRatio * 80.0f),
+                    dwColor,
+                    2.0,
+                    500,
+                    1,
+                    1500,
+                    0,
+                    4);
+            }
+            else
+            {
+                pFont = new TMFont3(szVal,
+                    nTX,
+                    nTY + (int)(RenderDevice::m_fHeightRatio * 80.0f),
+                    dwColor,
+                    2.0,
+                    500,
+                    1,
+                    1500,
+                    0,
+                    3);
+            }
+        }
+        else
+        {
+            dwColor = 0xFF5555FF;
+            if (pSetHpDam->Dam)
+            {
+                sprintf(szVal, "+ %d", pSetHpDam->Dam);
+                pFont = new TMFont3(szVal,
+                    nTX,
+                    nTY + (int)(RenderDevice::m_fHeightRatio * 80.0f),
+                    dwColor,
+                    2.0f,
+                    500,
+                    1,
+                    1500,
+                    0,
+                    2);
+            }
+        }
+    }
+
+    auto pScene = g_pCurrentScene;
+
+    BASE_Get3DTo2DPos(m_vecPosition.x, m_fHeight + 1.0f, m_vecPosition.y, &nTX, &nTY);
+    if (pFont)
+        pScene->m_pExtraContainer->AddChild(pFont);
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        memcpy(&g_pObjectManager->m_stMobData.CurrentScore, &m_stScore, sizeof(m_stScore));
+        auto pCurrentHPText = (SText*)pScene->m_pControlContainer->FindControl(65614);
+        auto pHPBar = (SProgressBar*)pScene->m_pControlContainer->FindControl(65621);
+        pHPBar->SetCurrentProgress(m_stScore.Hp);
+        if (pCurrentHPText)
+        {
+            char szHP[32]{};
+            sprintf(szHP, "%d", m_stScore.Hp);
+            pCurrentHPText->SetText(szHP, 0);
+        }
+    }
+
+    return 1;
 }
 
 int TMHuman::OnPacketMessageChat(MSG_STANDARD* pStd)
