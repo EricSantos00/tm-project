@@ -7701,61 +7701,61 @@ int TMFieldScene::FrameMove(unsigned int dwServerTime)
 							m_nLastPotal = nPosIndex;
 							return 1;
 						}
-
-						if ((int)m_pMyHuman->m_vecPosition.x > 1963 && (int)m_pMyHuman->m_vecPosition.x < 1970 && 
-							(int)m_pMyHuman->m_vecPosition.y > 1770 && (int)m_pMyHuman->m_vecPosition.y < 1777)
+					}
+					if ((int)m_pMyHuman->m_vecPosition.x > 1963 && (int)m_pMyHuman->m_vecPosition.x < 1970 &&
+						(int)m_pMyHuman->m_vecPosition.y > 1770 && (int)m_pMyHuman->m_vecPosition.y < 1777)
+					{
+						m_pMessagePanel->SetMessage(g_pMessageStringTable[160], 3000);
+						m_pMessagePanel->SetVisible(1, 1);
+					}
+					else
+					{
+						if ((int)m_pMyHuman->m_vecPosition.x >= 2370 && (int)m_pMyHuman->m_vecPosition.x <= 2411 &&
+							(int)m_pMyHuman->m_vecPosition.y >= 1728 && (int)m_pMyHuman->m_vecPosition.y <= 1759)
 						{
-							m_pMessagePanel->SetMessage(g_pMessageStringTable[160], 3000);
+							m_pMessagePanel->SetMessage(g_pMessageStringTable[258], 3000);
 							m_pMessagePanel->SetVisible(1, 1);
+							return 1;
 						}
-						else
+						if (!m_pMessageBox->IsVisible())
 						{
-							if ((int)m_pMyHuman->m_vecPosition.x >= 2370 && (int)m_pMyHuman->m_vecPosition.x <= 2411 &&
-								(int)m_pMyHuman->m_vecPosition.y >= 1728 && (int)m_pMyHuman->m_vecPosition.y <= 1759)
+							if (m_bAirMove == 1)
+								return 1;
+
+							if (m_pMyHuman->m_vecPosition.x > 1366.5f && m_pMyHuman->m_vecPosition.x < 3366.5f &&
+								m_pMyHuman->m_vecPosition.y > 2926.5f && m_pMyHuman->m_vecPosition.y < 4926.5f
+								&& m_dwKhepraID)
 							{
-								m_pMessagePanel->SetMessage(g_pMessageStringTable[258], 3000);
-								m_pMessagePanel->SetVisible(1, 1);
 								return 1;
 							}
-							if (!m_pMessageBox->IsVisible())
+
+							m_nLastPotal = nPosIndex;
+							if (nPosIndex >= 0)
 							{
-								if (m_bAirMove == 1)
-									return 1;
+								char szGoto[256]{};
+								sprintf(szGoto, g_pMessageStringTable[208], g_TeleportTable[nPosIndex].szTarget);
+								int nShowPrice = 0;
+								if (!m_cWarClan && m_pMyHuman->m_cMantua && m_pMyHuman->m_cMantua != 3)
+									nShowPrice = 1;
+								if (m_cWarClan == 7 && m_pMyHuman->m_cMantua != 1)
+									nShowPrice = 1;
+								if (m_cWarClan == 8 && m_pMyHuman->m_cMantua != 2)
+									nShowPrice = 1;
+								if (m_cWarClan == -1)
+									nShowPrice = 1;
 
-								if (m_pMyHuman->m_vecPosition.x > 1366.5f && m_pMyHuman->m_vecPosition.x < 3366.5f && 
-									m_pMyHuman->m_vecPosition.y > 2926.5f && m_pMyHuman->m_vecPosition.y < 4926.5f
-									&& m_dwKhepraID)
+								if (g_TeleportTable[nPosIndex].nPrice > 0 && nShowPrice == 1)
 								{
-									return 1;
+									char szPrice[256]{};
+									sprintf(szPrice, g_pMessageStringTable[207], g_TeleportTable[nPosIndex].nPrice);
+									m_pMessageBox->SetMessage(szGoto, 16, szPrice);
 								}
-
-								m_nLastPotal = nPosIndex;
-								if (nPosIndex >= 0)
+								else
 								{
-									char szGoto[256]{}; 
-									sprintf(szGoto, g_pMessageStringTable[208], g_TeleportTable[nPosIndex].szTarget);
-									int nShowPrice = 0;
-									if (!m_cWarClan	&& m_pMyHuman->m_cMantua && m_pMyHuman->m_cMantua != 3)
-										nShowPrice = 1;
-									if (m_cWarClan == 7 && m_pMyHuman->m_cMantua != 1)
-										nShowPrice = 1;
-									if (m_cWarClan == 8 && m_pMyHuman->m_cMantua != 2)
-										nShowPrice = 1;
-									if (m_cWarClan == -1)
-										nShowPrice = 1;
-
-									if (g_TeleportTable[nPosIndex].nPrice > 0 && nShowPrice == 1)
-									{
-										char szPrice[256]{};
-										sprintf(szPrice, g_pMessageStringTable[207], g_TeleportTable[nPosIndex].nPrice);
-										m_pMessageBox->SetMessage(szGoto, 16, szPrice);
-									}
-									else
-									{
-										m_pMessageBox->SetMessage(szGoto, 16, 0);
-									}
+									m_pMessageBox->SetMessage(szGoto, 16, 0);
 								}
 							}
+							m_pMessageBox->SetVisible(1);
 						}
 					}
 				}
