@@ -4965,7 +4965,7 @@ int TMHuman::OnPacketReqRanking(MSG_STANDARDPARM2* pStd)
     auto pHuman = (TMHuman*)g_pObjectManager->GetHumanByID(pStd->Parm1);
     if (pHuman)
     {
-        static const char szVS[4][16] = {
+        const static char szVS[4][16] = {
             "1 : 1",
             "5 : 5",
             "10 : 10",
@@ -4986,7 +4986,42 @@ int TMHuman::OnPacketReqRanking(MSG_STANDARDPARM2* pStd)
 
 int TMHuman::OnPacketVisualEffect(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pParam = reinterpret_cast<MSG_STANDARDPARM*>(pStd);
+    if (pParam->Parm == 1)
+    {
+        auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+        unsigned dwLightColor = 0xFFFFFFFF;
+        for (int i = -1; i < 2; ++i)
+        {
+            auto pEffect = new TMEffectMesh(506, dwLightColor, 0.0f, 0);
+            if (pEffect)
+            {
+                pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                pEffect->m_cShine = 1;
+                pEffect->m_dwCycleTime = 3000;
+                pEffect->m_dwLifeTime = 8000;
+                pEffect->m_fScaleH = 1.0f;
+                pEffect->m_fScaleV = 2.5f;
+                pEffect->m_vecPosition = TMVector3(((float)i * 0.2f) + m_vecPosition.x,
+                    m_fHeight,
+                    ((float)i * 0.2f) + m_vecPosition.y);
+
+                pScene->m_pEffectContainer->AddChild(pEffect);
+            }
+        }
+        auto pLightShade = new TMShade(3, 118, 1.0);
+        if (pLightShade)
+        {
+            pLightShade->m_dwLifeTime = 8000;
+            pLightShade->SetColor(dwLightColor);
+            pLightShade->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pLightShade->SetPosition(TMVector2(m_vecPosition.x, m_vecPosition.y));
+            pScene->m_pEffectContainer->AddChild(pLightShade);
+        }
+        GetSoundAndPlay(1, 0, 0);
+    }
+
+    return 1;
 }
 
 int TMHuman::IsMerchant()
