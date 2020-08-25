@@ -192,8 +192,8 @@ public:
 	int OnPacketBuy(MSG_STANDARD* pStd);
 	int OnPacketSell(MSG_STANDARD* pStd);
 	int OnPacketCNFMobKill(MSG_CNFMobKill* pStd);
-	int OnPacketREQParty(MSG_STANDARD* pStd);
-	int OnPacketAddParty(MSG_STANDARD* pStd);
+	int OnPacketREQParty(MSG_REQParty* pStd);
+	int OnPacketAddParty(MSG_AddParty* pStd);
 	int OnPacketRemoveParty(MSG_STANDARD* pStd);
 	int OnPacketSetHpMode(MSG_SetHpMode* pStd);
 	int OnPacketDeposit(MSG_STANDARD* pStd);

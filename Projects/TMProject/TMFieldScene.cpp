@@ -16309,9 +16309,54 @@ int TMFieldScene::OnPacketREQParty(MSG_REQParty* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketAddParty(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketAddParty(MSG_AddParty* pStd)
 {
-	return 0;
+	auto pPartyList = m_pPartyList;
+	pStd->Party.Name[15] = 0;
+	for (int i = 0; i < pPartyList->m_nNumItem; ++i)
+	{
+		auto pPartyItem = (SListBoxPartyItem*)pPartyList->m_pItemList[i];
+		if (pPartyItem->m_dwCharID == pStd->Party.ID)
+		{
+			m_pPartyList->DeleteItem(pPartyItem);
+			break;
+		}
+	}
+
+	unsigned int dwColor = 0xFFFFFFFF;
+	if (!pStd->Party.PartyIndex)
+		dwColor = 0xFFAAAAFF;
+
+	auto pPartyItem = new SListBoxPartyItem(pStd->Party.Name,
+		dwColor,
+		0.0f,
+		0.0f,
+		114.0f,
+		20.0f,
+		pStd->Party.ID,
+		pStd->Party.Class,
+		pStd->Party.Level,
+		pStd->Party.Hp,
+		pStd->Party.MaxHp);
+
+	if (!pStd->Party.PartyIndex)
+		pPartyItem->m_nState = 2;
+
+	pPartyList->AddItem(pPartyItem);
+
+	auto pNode = (TMHuman*)g_pObjectManager->GetHumanByID(pStd->Party.ID);
+	if (pNode)
+	{
+		pNode->m_bParty = 1;
+		pNode->SetInMiniMap(0xAAFFFF00);
+	}
+	if (!m_pPartyPanel->IsVisible())
+	{
+		if (pStd->Party.ID > 0 && pStd->Party.ID < 1000)
+			SetVisibleParty();
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketRemoveParty(MSG_STANDARD* pStd)
