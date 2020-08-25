@@ -14006,6 +14006,48 @@ void TMFieldScene::VisibleInputGuildName()
 
 void TMFieldScene::VisibleInputCharName(SGridControlItem* pItem, int nCellX, int nCellY)
 {
+	if (pItem == nullptr || m_pGridInv == nullptr)
+		return;
+
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (!m_dwUseItemTime || (dwServerTime - m_dwUseItemTime) >= 200)
+	{
+		short SourPos = m_pGridInv->CheckPos(pItem->m_pGridControl->m_eItemType);
+		if (SourPos == -1)
+			SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+		int SourPage = 15 * (pItem->m_pGridControl->m_dwControlID - 67072);
+		if (SourPage < 0 || SourPage > 45)
+			SourPage = 0;
+
+		memset(&m_stCapsuleItem, 0, sizeof(m_stCapsuleItem));
+		m_stCapsuleItem.Header.ID = g_pObjectManager->m_dwCharID;
+		m_stCapsuleItem.Header.Type = 972;
+		m_stCapsuleItem.SourType = 1;
+		m_stCapsuleItem.SourPos = SourPage + SourPos;
+		m_stCapsuleItem.ItemID = 0;
+		m_stCapsuleItem.GridX = nCellX;
+		m_stCapsuleItem.GridY = nCellY;
+
+		auto pText = static_cast<SText*>(m_pControlContainer->FindControl(T_INPUT_GOLD));
+		auto pEdit = static_cast<SEditableText*>(m_pControlContainer->FindControl(E_INPUT_GOLD));
+
+		if (pText && pEdit)
+		{
+			m_nCoinMsgType = 6;
+			pText->SetText(g_pMessageStringTable[349], 0);
+			m_pControlContainer->SetFocusedControl(pEdit);
+			m_pInputGoldPanel->SetVisible(1);
+
+			auto pInputBG2 = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_INPUT_BG2));
+
+			if (pInputBG2)
+				pInputBG2->SetVisible(1);
+
+			pEdit->m_nMaxStringLen = 16;
+		}
+	}
 }
 
 void TMFieldScene::UseItem(SGridControlItem* pItem, int nType, int nItemSIndex, int nCellX, int nCellY)
