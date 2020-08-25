@@ -19057,7 +19057,275 @@ int TMFieldScene::AirMove_ShowUI(bool bShow)
 
 int TMFieldScene::Affect_Main(unsigned int dwServerTime)
 {
-	return 0;
+	if (!m_pMyHuman || !m_pMiniPanel)
+		return 0;
+
+	int i = 0;
+	int nAvailCount = 0;
+	m_pAffectDesc->SetVisible(0);
+	m_pAffectDesc->SetText((char*)"", 0);
+	bool bomb = false;
+	for (int i = 0; i < 32; ++i)
+	{
+		if ((unsigned char)m_pMyHuman->m_stAffect[i].Type <= 50)
+		{
+			if (!m_pAffectIcon[i]->IsVisible())
+				m_pAffect[i]->SetVisible(0);
+
+			int sTime = 8 * m_pMyHuman->m_stAffect[i].Time - (dwServerTime - m_dwStartAffectTime[i]) / 1000;
+
+			char szVal[128]{};
+			GetTimeString(szVal, sTime, m_pMyHuman->m_stAffect[i].Time, i);
+			int nTime = m_pMyHuman->m_stAffect[i].Time;
+
+			if (m_pAffectIcon[i] && i && (unsigned char)m_pMyHuman->m_stAffect[i].Type > 0 || !i && nTime > 0)
+			{
+				m_pAffectIcon[i]->m_nPosX = BASE_ScreenResize(30.0f);
+				m_pAffectIcon[i]->m_nPosX = ((float)(BASE_ScreenResize(1.0f) + m_pAffectIcon[i]->m_nWidth) * (float)(nAvailCount + 1))
+					+ m_pAffectIcon[i]->m_nPosX;
+				m_pAffectIcon[i]->m_nPosY = BASE_ScreenResize(80.0f);
+
+				if (m_pAffectIcon[i]->m_bOver == 1)
+				{
+					if (m_pAffectL[i])
+					{
+						m_pAffect[i]->SetVisible(0);
+						m_pAffectL[i]->SetVisible(0);
+					}
+
+					char strAffectString[128]{};
+					if (m_pMyHuman->m_stAffect[i].Type == 8)
+					{
+						auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+						int efvalue = m_pMyHuman->m_stAffect[i].Value;
+						int CheckBit = 0;
+						int Cnt = 0;
+						for (int k = 0; k < 10; ++k)
+						{
+							CheckBit = 1 << k;
+							if ((1 << k) & efvalue)
+							{
+								sprintf(strAffectString, "%s %s", strAffectString, g_pAffectSubTable[k]);
+								++Cnt;
+							}
+						}
+
+						int slen = strlen(strAffectString) + 4;
+						sprintf(strAffectString, "%s : %s", strAffectString, szVal);
+						m_pAffectDesc->SetText(strAffectString, 0);
+						m_pAffectDesc->m_nPosX = m_pAffectIcon[i]->m_nPosX;
+						if ((float)(m_pAffectDesc->m_nWidth + 60.0f) + m_pAffectDesc->m_nPosX > (float)g_pDevice->m_dwScreenWidth)
+							m_pAffectDesc->m_nPosX = (float)g_pDevice->m_dwScreenWidth - (float)(m_pAffectDesc->m_nWidth + 60.0f);
+
+						m_pAffectDesc->m_nPosY = m_pAffectIcon[i]->m_nPosY + 40.0f;
+						m_pAffectDesc->SetVisible(1);
+					}
+					else
+					{
+						sprintf(strAffectString, "%s : %s", g_pAffectTable[(unsigned char)m_pMyHuman->m_stAffect[i].Type], szVal);
+						m_pAffectDesc->SetText(strAffectString, 0);
+						m_pAffectDesc->m_nPosX = m_pAffectIcon[i]->m_nPosX;
+						if ((float)(m_pAffectDesc->m_nWidth + 60.0f) + m_pAffectDesc->m_nPosX > (float)g_pDevice->m_dwScreenWidth)
+							m_pAffectDesc->m_nPosX = (float)g_pDevice->m_dwScreenWidth - (float)(m_pAffectDesc->m_nWidth + 60.0f);
+						m_pAffectDesc->m_nPosY = m_pAffectIcon[i]->m_nPosY + 40.0f;
+						m_pAffectDesc->SetVisible(1);					
+					}
+				}
+				else
+				{
+					int len = strlen(m_pAffect[i]->m_Font.m_szString);
+					int test = 1;
+					for (int l = 0; l < len; ++l)
+					{
+						if (!isdigit(m_pAffect[i]->m_Font.m_szString[l]) && m_pAffect[i]->m_Font.m_szString[l] != ' ')
+							test = 0;
+					}
+
+					m_pAffect[i]->m_nPosX = m_pAffectIcon[i]->m_nPosX + (test ? -8.0f : 3.0f);
+					if ((float)(m_pAffect[i]->m_nWidth + 60.0f) + m_pAffect[i]->m_nPosX > (float)g_pDevice->m_dwScreenWidth)
+						m_pAffect[i]->m_nPosX = (float)g_pDevice->m_dwScreenWidth - (float)(m_pAffect[i]->m_nWidth + 60.0f);
+
+					m_pAffect[i]->m_nPosY = m_pAffectIcon[i]->m_nPosY + 24.0f;
+					m_pAffect[i]->SetVisible(1);
+				}
+
+				++nAvailCount;
+				if (!m_dwAffectBlinkTime[i] && sTime <= 10 && sTime > 1)
+					m_dwAffectBlinkTime[i] = dwServerTime;
+				else if (!m_dwAffectBlinkTime[i] || sTime >= 10)
+					m_pAffectIcon[i]->SetVisible(1);
+				else
+				{
+					unsigned int dwDelay = 3 * nTime * nTime + 200;
+					if (dwServerTime - m_dwAffectBlinkTime[i] >= dwDelay)
+					{
+						m_pAffectIcon[i]->SetVisible(m_pAffectIcon[i]->m_bVisible == 0);
+						m_dwAffectBlinkTime[i] = dwServerTime;
+					}
+				}
+				if (nTime >= 10)
+				{
+					m_pAffectIcon[i]->SetVisible(1);
+					m_dwAffectBlinkTime[i] = 0;
+				}
+			}
+		}
+	}
+
+	nAvailCount = 0;
+	int YnAvailCount = 0;
+	int index = 0;
+
+	if (m_pMyHuman->m_pTitleProgressBar)
+	{
+		for (int i = 0; i < 32; ++i)
+		{
+			m_pTargetAffectIcon[i]->m_GCPanel.nTextureIndex = -1;
+			index = (int)m_TargetAffect[i] >> 8;
+			if (index == 0)
+			{
+				m_pTargetAffectIcon[i]->m_GCPanel.nTextureIndex = -1;
+			}
+			else
+			{
+				m_pTargetAffectIcon[i]->m_GCPanel.nTextureIndex = g_AffectSkillType[index];
+				++nAvailCount;
+
+				auto vecTitleProgressBar = m_pMyHuman->m_pTitleProgressBar->GetPos();
+				m_pTargetAffectIcon[i]->m_nPosX = vecTitleProgressBar.x
+					- (float)(m_pTargetAffectIcon[i]->m_nWidth * 2.0f);
+				m_pTargetAffectIcon[i]->m_nPosX = ((float)(BASE_ScreenResize(1.0f) + m_pTargetAffectIcon[i]->m_nWidth) * (float)(nAvailCount + 1))
+					+ m_pTargetAffectIcon[i]->m_nPosX;				
+				m_pTargetAffectIcon[i]->m_nPosY = ((float)(m_pMyHuman->m_pTitleProgressBar->m_nHeight * 2.0f) / 3.0f) + vecTitleProgressBar.y;
+
+				if (nAvailCount > 9)
+				{
+					m_pTargetAffectIcon[i]->m_nPosY = m_pTargetAffectIcon[i]->m_nPosY + m_pTargetAffectIcon[i]->m_nHeight;					
+					m_pTargetAffectIcon[i]->m_nPosX = vecTitleProgressBar.x - (float)(m_pTargetAffectIcon[i]->m_nWidth * 2.0f);
+					m_pTargetAffectIcon[i]->m_nPosX = ((float)(BASE_ScreenResize(1.0f)
+						+ m_pTargetAffectIcon[i]->m_nWidth)
+						* (float)(++YnAvailCount + 1))
+						+ m_pTargetAffectIcon[i]->m_nPosX;
+				}
+			}
+
+			m_pTargetAffectIcon[i]->m_GCPanel.nLayer = 29;
+		}
+	}
+
+	int j = 0;
+	index = 0;
+	m_pPartyAffectText->SetVisible(0);
+	auto PartyExit = (SButton*)m_pControlContainer->FindControl(475139);
+	if (PartyExit)
+	{
+		PartyExit->SetVisible(1);
+		float size = (((float)(m_pPartyList->m_nNumItem - m_pPartyList->m_nStartItemIndex)
+			* m_pPartyList->m_nHeight)
+			/ (float)m_pPartyList->m_nVisibleCount)
+			+ 30.0f;
+
+		
+		auto vecPartyExitPos = PartyExit->GetPos();
+		PartyExit->SetPos(vecPartyExitPos.x, size);
+
+		m_pPartyAutoButton->SetVisible(0);
+		m_pPartyAutoText->SetVisible(0);
+
+		auto partyback = (SPanel*)m_pControlContainer->FindControl(7602196);
+		if (partyback)
+			partyback->SetVisible(0);
+		if (m_pPartyList->m_nNumItem >= 1)
+		{
+			m_pPartyPanel->SetSize(m_pPartyPanel->m_nWidth,	(float)m_pPartyList->m_nNumItem * 20.0f);
+		}
+		else
+		{
+			PartyExit->SetVisible(0);
+			m_pPartyAutoButton->SetVisible(1);
+			m_pPartyAutoText->SetVisible(1);
+			if (partyback)
+				partyback->SetVisible(1);
+			if (m_bAutoParty)
+				m_pPartyAutoButton->m_GCPanel.bVisible = 1;
+			else
+				m_pPartyAutoButton->m_GCPanel.bVisible = 0;
+
+			m_pPartyPanel->SetSize(m_pPartyPanel->m_nWidth, 50.0f);
+		}
+	}
+	for (i = 0; i < 13; ++i)
+	{
+		for (j = 0; j < 32; ++j)
+		{
+			m_pPartyAffectIcon[i][j]->m_GCPanel.nTextureIndex = -1;
+			m_pPartyAffectIcon[i][j]->m_GCPanel.nLayer = 29;
+		}
+	}
+
+	for (i = 0; i < m_pPartyList->m_nNumItem; ++i)
+	{
+		auto pPartyItem = (SListBoxPartyItem*)m_pPartyList->m_pItemList[i];
+		auto pHuman = (TMHuman*)g_pObjectManager->GetHumanByID(pPartyItem->m_dwCharID);
+		nAvailCount = 0;
+		YnAvailCount = 0;
+
+		for (j = 0; j < 32; ++j)
+		{
+			if (pHuman)
+			{
+				index = (signed int)pHuman->m_usAffect[j] >> 8;
+
+				if (!index)
+				{
+					m_pPartyAffectIcon[i][j]->m_GCPanel.nTextureIndex = -1;
+				}
+				else
+				{
+					m_pPartyAffectIcon[i][j]->m_GCPanel.nTextureIndex = g_AffectSkillType[index];
+					++nAvailCount;
+
+					auto vecPartyListPos = m_pPartyList->GetPos();
+					m_pPartyAffectIcon[i][j]->m_nPosX = (float)(vecPartyListPos.x + m_pPartyList->m_nWidth)
+						- 20.0f;
+					m_pPartyAffectIcon[i][j]->m_nPosX = ((BASE_ScreenResize(1.0f) + m_pPartyAffectIcon[i][j]->m_nWidth)
+						* (float)(nAvailCount + 1))
+						+ m_pPartyAffectIcon[i][j]->m_nPosX;
+
+					m_pPartyAffectIcon[i][j]->m_nPosY = (float)((float)((float)(i
+						- m_pPartyList->m_nStartItemIndex)
+						* m_pPartyList->m_nHeight)
+						/ (float)m_pPartyList->m_nVisibleCount)
+						+ 12.0f;
+
+					if (nAvailCount > 10)
+					{
+						m_pPartyAffectIcon[i][j]->m_nPosX = (float)(vecPartyListPos.x + m_pPartyList->m_nWidth)
+							- 20.0f;
+						m_pPartyAffectIcon[i][j]->m_nPosX = ((BASE_ScreenResize(1.0f)
+							+ m_pPartyAffectIcon[i][j]->m_nWidth)
+							* (float)(++YnAvailCount + 1))
+							+ m_pPartyAffectIcon[i][j]->m_nPosX;
+						m_pPartyAffectIcon[i][j]->m_nPosY = (((float)(i
+							- m_pPartyList->m_nStartItemIndex)
+							* m_pPartyList->m_nHeight)
+							/ (float)m_pPartyList->m_nVisibleCount)
+							+ 22.0f;
+					}
+					if (m_pPartyAffectIcon[i][j]->IsOver() == 1)
+					{
+						m_pPartyAffectText->SetRealPos(m_pPartyAffectIcon[i][j]->m_nPosX - m_pPartyAffectIcon[i][j]->m_nWidth,
+							m_pPartyAffectIcon[i][j]->m_nPosY - (float)(m_pPartyAffectIcon[i][j]->m_nHeight * 1.5f));
+
+						m_pPartyAffectText->SetText(g_pAffectTable[index], 0);
+						m_pPartyAffectText->SetVisible(1);
+					}
+				}
+			}
+		}
+	}
+
+	return 1;
 }
 
 int TMFieldScene::StrByteCheck(char* szString)

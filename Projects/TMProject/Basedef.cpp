@@ -5,6 +5,10 @@
 #include "ItemEffect.h"
 #include <WinInet.h>
 
+char g_pAffectTable[MAX_EFFECT_STRING_TABLE][24];
+char g_pAffectSubTable[MAX_SUB_EFFECT_STRING_TABLE][24];
+int g_pHitRate[1024];
+
 HWND hWndMain;
 char EncodeByte[4];
 int g_nChannelWidth;
@@ -324,8 +328,8 @@ void BASE_InitEffectString()
     if (fpEffectString)
     {
         for (int i = 1; i < MAX_EFFECT_STRING_TABLE; ++i)
-            fscanf(fpEffectString, "%s", g_pAffectTable[i]);
-
+            fscanf(fpEffectString, "%24s", &g_pAffectTable[i][0]);
+   
         fclose(fpEffectString);
     }
 
@@ -335,7 +339,7 @@ void BASE_InitEffectString()
     if (fpEffectSubString)
     {
         for (int j = 0; j < MAX_SUB_EFFECT_STRING_TABLE; ++j)
-            fscanf(fpEffectSubString, "%s", g_pAffectSubTable[j]);
+            fscanf(fpEffectSubString, "%s", &g_pAffectSubTable[j][0]);
 
         fclose(fpEffectSubString);
     }

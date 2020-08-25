@@ -2323,64 +2323,10 @@ const static char g_pItemGrid[8][4][2] =
 	}
 };
 
-static char g_pAffectTable[MAX_EFFECT_STRING_TABLE][24] =
-{
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"Slow",
-	"Haste",
-	"Drag Reduction",
-	"Power-up",
-	"Reduced avoidance",
-	"Increase in avoidance",
-	"Attack speed reduction",
-	"SPEED",
-	"Demijieop",
-	"Reduction in attacks",
-	"Magic Shield",
-	"Reduction in defense",
-	"Assault",
-	"Gross",
-	"Increase in skill",
-	"Polymorph",
-	"Tikrayipeu",
-	"Magic Stamina",
-	"Immunity",
-	"Poison",
-	"Melee attack",
-	"Lightning",
-	"Elemental",
-	"Self-destruct",
-	"Protectors",
-	"Avoid falling",
-	"Frost",
-	"Hyde",
-	"Drain",
-	"Vision",
-	"Coin Armor"
-};
+extern char g_pAffectTable[MAX_EFFECT_STRING_TABLE][24];
+extern char g_pAffectSubTable[MAX_SUB_EFFECT_STRING_TABLE][24];
 
-static char g_pAffectSubTable[MAX_SUB_EFFECT_STRING_TABLE][24];
-static int g_pHitRate[1024]{};
-
-
+extern int g_pHitRate[1024];
 
 extern HWND hWndMain;
 extern char EncodeByte[4];
