@@ -6208,13 +6208,13 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketCNFMobKill(reinterpret_cast<MSG_CNFMobKill*>(pStd));
 		break;
 	case 0x37F:
-		return OnPacketREQParty(pStd);
+		return OnPacketREQParty(reinterpret_cast<MSG_REQParty*>(pStd));
 		break;
 	case 0x37D:
-		return OnPacketAddParty(pStd);
+		return OnPacketAddParty(reinterpret_cast<MSG_AddParty*>(pStd));
 		break;
 	case 0x37E:
-		return OnPacketRemoveParty(pStd);
+		return OnPacketRemoveParty(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x292:
 		return OnPacketSetHpMode(reinterpret_cast<MSG_SetHpMode*>(pStd));
