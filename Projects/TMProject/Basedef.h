@@ -1295,6 +1295,13 @@ struct MSG_SetHpDam
 	short Dam;
 };
 
+struct MSG_Carry
+{
+	MSG_STANDARD Header;
+	STRUCT_ITEM Carry[64];
+	int Coin;
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },

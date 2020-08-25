@@ -4860,12 +4860,80 @@ int TMHuman::OnPacketTrade(MSG_Trade* pStd)
 
 int TMHuman::OnPacketQuitTrade(MSG_STANDARD* pStd)
 {
-	return 0;
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        g_pObjectManager->m_stTrade.OpponentID = 0;
+        g_pObjectManager->m_stTrade.MyCheck = 0;
+        SGridControl::m_sLastMouseOverIndex = -1;
+        if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        {
+            auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+            auto pTradePanel = g_pCurrentScene->m_pControlContainer->FindControl(576);
+            auto pATradePanel = pScene->m_pControlContainer->FindControl(646);
+            if (pTradePanel && pTradePanel->IsVisible() == 1)
+                pScene->SetVisibleTrade(0);
+            if (pATradePanel && pATradePanel->IsVisible() == 1)
+                pScene->SetVisibleAutoTrade(0, 0);
+        }
+    }
+
+    return 1;
 }
 
-int TMHuman::OnPacketCarry(MSG_STANDARD* pStd)
+int TMHuman::OnPacketCarry(MSG_Carry* pStd)
 {
-	return 0;
+    auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+    if (pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+        pScene->Bag_View();
+
+    if (pScene->m_pMyHuman == this)
+    {
+        //pScene->m_pControlContainer->FindControl(65554u);
+        for (int nCarryIndex = 0; nCarryIndex < 63; ++nCarryIndex)
+        {
+            if (nCarryIndex / 15 < 4)
+            {
+                auto pPickupItem = pScene->m_pGridInvList[nCarryIndex / 15]->PickupAtItem(nCarryIndex % 15 % 5, nCarryIndex % 15 / 5);
+                if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickupItem)
+                    g_pCursor->m_pAttachedItem = 0;
+                
+                SAFE_DELETE(pPickupItem);
+            }
+        }
+
+        pScene->m_pGridInvList[0]->Empty();
+        pScene->m_pGridInvList[1]->Empty();
+        pScene->m_pGridInvList[2]->Empty();
+        pScene->m_pGridInvList[3]->Empty();
+        memcpy(g_pObjectManager->m_stMobData.Carry, pStd->Carry, sizeof(pStd->Carry));
+
+        for (int nCarryIndex = 0; nCarryIndex < 63; ++nCarryIndex)
+        {
+            if (pStd->Carry[nCarryIndex].sIndex > 40)
+            {
+                auto pItemCarry = new STRUCT_ITEM;
+                if (pItemCarry)
+                {
+                    memset(pItemCarry, 0, sizeof(STRUCT_ITEM));
+                    memcpy(pItemCarry, &pStd->Carry[nCarryIndex], sizeof(STRUCT_ITEM));                   
+                    if (nCarryIndex / 15 < 4)
+                        pScene->m_pGridInvList[nCarryIndex / 15]->AddItem(new SGridControlItem(0, pItemCarry, 0.0f, 0.0f), nCarryIndex % 15 % 5, nCarryIndex % 15 / 5);
+                }
+            }
+        }
+
+        g_pObjectManager->m_stMobData.Coin = pStd->Coin;
+        g_pObjectManager->m_stTrade.OpponentID = 0;
+        g_pObjectManager->m_stTrade.MyCheck = 0;
+        if (pScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        {
+            pScene->SetVisibleTrade(0);
+            pScene->SetVisibleInventory();
+        }
+        pScene->UpdateScoreUI(0);
+    }
+
+	return 1;
 }
 
 int TMHuman::OnPacketCNFCheck(MSG_STANDARD* pStd)
