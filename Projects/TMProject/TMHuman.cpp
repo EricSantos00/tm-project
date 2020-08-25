@@ -4401,9 +4401,94 @@ int TMHuman::OnPacketUpdateScore(MSG_STANDARD* pStd)
     return 1;
 }
 
-int TMHuman::OnPacketSetHpMp(MSG_STANDARD* pStd)
+int TMHuman::OnPacketSetHpMp(MSG_SetHpMp* pStd)
 {
-	return 0;
+    if (g_pCurrentScene->GetSceneType() != ESCENE_TYPE::ESCENE_FIELD)
+        return 1;
+
+    m_stScore.Hp = pStd->Hp;
+    m_stScore.Mp = pStd->Mp;
+    
+    auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+    if (pFScene->m_cAutoAttack == 1 && pFScene->m_pTargetHuman == this && pStd->Hp <= 0)
+        pFScene->m_pTargetHuman = 0;
+    if (m_stScore.Hp >= m_stScore.MaxHp)
+        m_stScore.Hp = m_stScore.MaxHp;
+
+    m_pProgressBar->SetCurrentProgress(m_stScore.Hp);
+    SetGuildBattleHPBar(m_stScore.Hp);
+    SetGuildBattleLifeCount();
+
+    if (pFScene->m_pMyHuman == this && !pFScene->m_bAirMove)
+    {
+        pFScene->m_nReqHP = pStd->ReqHp;
+        pFScene->m_nReqMP = pStd->ReqMp;
+        memcpy(&g_pObjectManager->m_stMobData.CurrentScore, &m_stScore, sizeof(m_stScore));
+        if (pFScene->m_pHPBar)
+            pFScene->m_pHPBar->SetCurrentProgress(m_stScore.Hp);
+        if (pFScene->m_pMPBar)
+            pFScene->m_pMPBar->SetCurrentProgress(m_stScore.Mp);
+
+        if (m_pMountHPBar && pFScene->m_pMHPBar && pFScene->m_pMHPBarT)
+            pFScene->m_pMHPBar->SetCurrentProgress(m_pMountHPBar->GetCurrentProgress());
+        if (pFScene->m_pMainCharName)
+            pFScene->m_pMainCharName->SetText(m_szName, 0);
+        if (pFScene->m_pCurrentHPText)
+        {
+            char szHP[32]{};
+            sprintf(szHP, "%d", m_stScore.Hp);
+            if (pFScene->m_pCurrentHPText)
+                pFScene->m_pCurrentHPText->SetText(szHP, 0);
+        }
+        if (pFScene->m_pMaxHPText)
+        {
+            char szHP[32]{};
+            sprintf(szHP, "/ %d", m_stScore.MaxHp);
+            if (pFScene->m_pMaxHPText)
+                pFScene->m_pMaxHPText->SetText(szHP, 0);
+        }
+        if (pFScene->m_pCurrentMPText)
+        {
+            char szMP[32]{};
+            sprintf(szMP, "%d", m_stScore.Mp);
+            if (pFScene->m_pCurrentMPText)
+                pFScene->m_pCurrentMPText->SetText(szMP, 0);
+        }
+        if (pFScene->m_pMaxMPText)
+        {
+            char szMP[32]{};
+            sprintf(szMP, "/ %d", m_stScore.MaxMp);
+            if (pFScene->m_pMaxMPText)
+                pFScene->m_pMaxMPText->SetText(szMP, 0);
+        }
+        if (pFScene->m_pCurrentMHPText && m_pMountHPBar)
+        {
+            int nHP = m_pMountHPBar->GetCurrentProgress();
+            if (!m_cMount)
+                nHP = 0;
+
+            char szMHP[32]{};
+            sprintf(szMHP, "%d", nHP);
+            pFScene->m_pCurrentMHPText->SetText(szMHP, 0);
+        }
+        if (pFScene->m_pMaxMHPText && m_pMountHPBar)
+        {
+            int nMaxHP = m_pMountHPBar->GetMaxProgress();
+            if (!m_cMount)
+                nMaxHP = 0;
+
+            char szMHP[32]{};
+            sprintf(szMHP, "%d", nMaxHP);
+            pFScene->m_pMaxMHPText->SetText(szMHP, 0);
+        }
+    }
+    if (m_stScore.Hp > 0 && (m_cDie == 1 || m_eMotion == ECHAR_MOTION::ECMOTION_DEAD))
+    {
+        m_cDie = 0;
+        SetAnimation(ECHAR_MOTION::ECMOTION_LEVELUP, 0);
+    }
+
+    return 1;
 }
 
 int TMHuman::OnPacketSetHpDam(MSG_STANDARD* pStd)

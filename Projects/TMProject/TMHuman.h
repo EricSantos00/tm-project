@@ -80,7 +80,7 @@ public:
     int OnPacketUpdateEquip(MSG_STANDARD* pStd);
     int OnPacketUpdateAffect(MSG_STANDARD* pStd);
     int OnPacketUpdateScore(MSG_STANDARD* pStd);
-    int OnPacketSetHpMp(MSG_STANDARD* pStd);
+    int OnPacketSetHpMp(MSG_SetHpMp* pStd);
     int OnPacketSetHpDam(MSG_STANDARD* pStd);
     int OnPacketMessageChat(MSG_STANDARD* pStd);
     int OnPacketMessageChat_Index(MSG_STANDARD* pStd);

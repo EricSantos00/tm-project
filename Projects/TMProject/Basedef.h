@@ -1279,6 +1279,15 @@ struct MSG_SetHpMode
 	short Mode;
 };
 
+struct MSG_SetHpMp
+{
+	MSG_STANDARD Header;
+	int Hp;
+	int Mp;
+	int ReqHp;
+	int ReqMp;
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },
