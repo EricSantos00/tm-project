@@ -32,6 +32,7 @@
 #include "SGrid.h"
 #include "TMEffectStart.h"
 #include "TMSkillTownPortal.h"
+#include "TMEffectLevelUp.h"
 #include "ItemEffect.h"
 
 TMVector2 TMHuman::m_vecPickSize[100]{
@@ -3313,7 +3314,7 @@ int TMHuman::OnPacketEvent(unsigned int dwCode, char* buf)
     case 0x182:
         return OnPacketSendItem((MSG_STANDARD*)buf);
         break;
-    case 0x36B:
+    case MSG_UpdateEquip_Opcode:
         return OnPacketUpdateEquip((MSG_STANDARD*)buf);
         break;
     case 0x3B9:
@@ -3880,7 +3881,100 @@ int TMHuman::OnPacketSendItem(MSG_STANDARD* pStd)
 
 int TMHuman::OnPacketUpdateEquip(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pEquip = reinterpret_cast<MSG_UpdateEquip*>(pStd);
+    STRUCT_ITEM item{};
+    item.sIndex = pEquip->sEquip[0] & 0xFFF;
+
+    TMEffectParticle* pParticle = nullptr;
+    if (m_stLookInfo.FaceMesh != g_pItemList[item.sIndex].nIndexMesh || BASE_GetItemAbility(&item, EF_CLASS) != m_nClass)
+        pParticle = new TMEffectParticle(TMVector3{ m_vecPosition.x, m_fHeight + 1.0f, m_vecPosition.y }, 1, 3, 3.0f, 0, 1, 56, 1.0f, 1, TMVector3{}, 1000u);
+
+    if (pParticle)
+        g_pCurrentScene->m_pEffectContainer->AddChild(pParticle);
+
+    if (g_pSoundManager && g_pSoundManager->GetSoundData(158))
+        g_pSoundManager->GetSoundData(158)->Play();
+
+    auto pLightMap = new TMShade(4, 7, 1.0f);
+
+    if (pLightMap)
+    {
+        pLightMap->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pLightMap->SetPosition(m_vecPosition);
+        pLightMap->m_dwLifeTime = 3000;
+        pLightMap->SetColor(0xAAAAAAAA);
+        g_pCurrentScene->m_pEffectContainer->AddChild(pLightMap);
+    }
+
+    SetAnimation(ECHAR_MOTION::ECMOTION_LEVELUP, 0);
+
+    if (!m_cHide)
+    {
+        auto pLevelUp = new TMEffectLevelUp(TMVector3{ m_vecPosition.x, m_fHeight, m_vecPosition.y }, 0);
+
+        if (pLevelUp)
+            g_pCurrentScene->m_pEffectContainer->AddChild(pLevelUp);
+    }
+
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        auto pMobData = &g_pObjectManager->m_stMobData;
+        g_pObjectManager->m_stMobData.Equip[0].sIndex = pEquip->sEquip[0] & 0xFFF;
+
+        if (m_cMount == 1)
+        {
+            int nMountHP = BASE_GetItemAbility(&pMobData->Equip[14], EF_MOUNTHP);
+            m_pMountHPBar->SetCurrentProgress(nMountHP);
+            auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+            if (g_pCurrentScene)
+            {
+                pFScene->m_pMHPBar->SetCurrentProgress(nMountHP);
+                char szMHP[32] = { 0 };
+                sprintf_s(szMHP, "%d", nMountHP);
+
+                pFScene->m_pCurrentMHPText->SetText(szMHP, 0);
+            }
+        }
+    }
+
+    SetPacketEquipItem(pEquip->sEquip);
+
+    if (pEquip->sEquip[14] & 0xFFF && ((pEquip->sEquip[14] & 0xFFF) < 3980) || (pEquip->sEquip[14] & 0xFFF) >= 3999)
+        SetMountCostume(pEquip->Equip2[14]);
+
+    SetColorItem(pEquip->Equip2);
+    float fCon = static_cast<float>(m_stScore.Con);
+
+    SetCharHeight(fCon);
+    SetRace(pEquip->sEquip[0] & 0xFFF);
+
+    STRUCT_ITEM itemL{};
+    itemL.sIndex = pEquip->sEquip[6] & 0xFFF;
+
+    int nWeaponTypeL = BASE_GetItemAbility(&itemL, EF_WTYPE);
+    if (nWeaponTypeL == 41)
+    {
+        m_stLookInfo.RightMesh = m_stLookInfo.LeftMesh;
+        m_stLookInfo.RightSkin = m_stLookInfo.LeftSkin;
+
+        m_stSancInfo.Sanc6 = m_stSancInfo.Sanc7;
+        m_stSancInfo.Legend6 = m_stSancInfo.Legend7;
+    }
+
+    InitObject();
+
+    CheckWeapon(pEquip->sEquip[6] & 0xFFF, pEquip->sEquip[7] & 0xFFF);
+    InitAngle(0.0f, m_fAngle, 0.0f);
+
+    TMFieldScene* pScene = nullptr;
+    if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    if (pScene)
+        pScene->UpdateScoreUI(0);
+
+    SGridControl::m_sLastMouseOverIndex = -1;
+	return 1;
 }
 
 int TMHuman::OnPacketUpdateAffect(MSG_STANDARD* pStd)

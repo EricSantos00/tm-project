@@ -854,6 +854,13 @@ struct MSG_SendItem
 	STRUCT_ITEM Item;
 };
 
+constexpr auto MSG_UpdateEquip_Opcode = 0x36B;
+struct MSG_UpdateEquip
+{
+	MSG_STANDARD Header;
+	unsigned short sEquip[16];
+	char Equip2[16];
+};
 
 constexpr auto MSG_AccountLogin_Opcode = 0x20D;
 struct MSG_AccountLogin
