@@ -425,3 +425,9 @@ struct stTeleportPos
 	int nPrice;
 	char* szTarget;
 };
+
+struct stIDDis
+{
+	unsigned int dwID;
+	int nLen;
+};

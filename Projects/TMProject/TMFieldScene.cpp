@@ -8006,6 +8006,1162 @@ void TMFieldScene::MouseMove(int nX, int nY)
 
 int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServerTime, int bMoving, TMHuman* pTarget)
 {
+	if (m_pPotalPanel->m_bVisible == 1)
+		return 0;
+	if (g_pEventTranslator->m_bAlt == 1)
+		return 0;
+	if (m_pMyHuman->m_cHide == 1)
+		return 0;
+	if (m_pMyHuman->m_cCantAttk)
+		return 0;
+	m_pTargetItem = 0;
+	if (m_pMyHuman->m_bSkillBlack == 1)
+		return 0;
+
+	int nSpecForce = 0;
+	auto pMobData = &g_pObjectManager->m_stMobData;
+	if (pMobData && pMobData->LearnedSkill[0] & 0x20000000)
+		nSpecForce = 1;
+
+	TMHuman* pOver = pTarget ? pTarget : m_pMouseOverHuman;
+
+	if (pOver && pOver->m_cShadow == 1 && pOver->m_nClass == 66 && !m_pMyHuman->m_JewelGlasses)
+		return 0;
+
+	m_pTargetHuman = nullptr;
+
+	char cSkillIndex = g_pObjectManager->m_cShortSkill[g_pObjectManager->m_cSelectShortSkill];
+	if ((unsigned char)cSkillIndex > 104)
+		cSkillIndex += 95;
+
+	if (pOver && cSkillIndex == 6 && pOver->m_nClass == 66)
+		return 0;
+
+	if (m_pMyHuman->m_sCostume >= 4150 && m_pMyHuman->m_sCostume < 4200 && (cSkillIndex == 64 || cSkillIndex == 66 || cSkillIndex == 68 || cSkillIndex == 70 || cSkillIndex == 71))
+		return 0;
+
+	int nCannonIndex = -1;
+
+	if (!IsValidClassSkill((unsigned char)cSkillIndex))
+		return 0;
+
+	int ItemType = BASE_GetItemAbility(&pMobData->Equip[6], 21);
+	if (cSkillIndex == 79 && ItemType != 101)
+		return 0;
+	if (cSkillIndex == 75 && ItemType != 101)
+		return 0;
+	if (cSkillIndex == 92 && ItemType != 41)
+		return 0;
+
+	switch (cSkillIndex)
+	{
+	case 99:
+		return 0;
+	case 83:
+		return 0;
+	case 84:
+		m_ItemMixClass.ResultItemListSet(0, 0, 0);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	case 97:
+		bool bFind = false;
+		for (int i = 0; i < 100; ++i)
+		{
+			auto pItem = (TMCannon*)g_pObjectManager->GetItemByID(i + 15001);
+			if (pItem && pItem->m_stItem.sIndex == 746 && 
+				m_pMyHuman->m_vecPosition.x == pItem->m_vecBasePosition.x && 
+				m_pMyHuman->m_vecPosition.y == pItem->m_vecBasePosition.y)
+			{
+				bFind = 1;
+				nCannonIndex = i + 15001;
+				break;
+			}
+		}
+		if (!bFind)
+			return GetItemFromGround(dwServerTime);
+		break;
+	}
+
+	if (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_WALK && m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_RUN)
+		return 0;
+	if ((unsigned char)cSkillIndex >= 248)
+		return GetItemFromGround(dwServerTime);
+	if (m_stAutoTrade.TargetID == m_pMyHuman->m_dwID)
+		return GetItemFromGround(dwServerTime);
+	if (g_pSpell[(unsigned char)cSkillIndex].Passive == 1)
+		return GetItemFromGround(dwServerTime);
+
+	if (pOver)
+	{
+		if (g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1 && pOver && pOver->m_bParty == 1)
+			return GetItemFromGround(dwServerTime);
+		if (g_pSpell[(unsigned __int8)cSkillIndex].Aggressive == 1 && pOver && m_pMyHuman->m_usGuild && g_pObjectManager->m_usAllyGuild && 
+			(m_pMyHuman->m_usGuild == pOver->m_usGuild || g_pObjectManager->m_usAllyGuild == pOver->m_usGuild))
+		{
+			return GetItemFromGround(dwServerTime);
+		}
+	}
+
+	if (g_bCastleWar)
+	{
+		if (!TMFieldScene::m_bPK && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+		{
+			if (pOver)
+			{
+				if (pOver->m_cMantua == m_pMyHuman->m_cMantua)
+				{
+					if ((pOver->m_dwID > 0 && pOver->m_dwID < 1000) && pOver->IsInPKZone() == 1)
+						return TMFieldScene::GetItemFromGround(dwServerTime);
+				}
+			}
+		}
+		if (!TMFieldScene::m_bPK
+			&& g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1
+			&& pOver
+			&& pOver->m_cSummons == 1
+			&& g_pObjectManager->m_usWarGuild != pOver->m_usGuild
+			&& pOver->m_usGuild
+			&& !pOver->IsInCastleZone())
+		{
+			return GetItemFromGround(dwServerTime);
+		}
+	}
+	else
+	{
+		if (!TMFieldScene::m_bPK && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1 && m_pMyHuman->m_cMantua > 0)
+		{
+			if (pOver)
+			{
+				if (!pOver->m_cMantua)
+				{
+					if ((pOver->m_dwID > 0 && pOver->m_dwID < 1000) && pOver->IsInPKZone((TMObject*)pOver) == 1)
+						return GetItemFromGround(dwServerTime);
+				}
+			}
+		}
+		if (!TMFieldScene::m_bPK
+			&& g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1
+			&& pOver
+			&& pOver->m_cSummons == 1
+			&& g_pObjectManager->m_usWarGuild != pOver->m_usGuild
+			&& pOver->m_usGuild)
+		{
+			return TMFieldScene::GetItemFromGround(dwServerTime);
+		}
+	}
+
+	int Delay = g_pSpell[(unsigned char)cSkillIndex].Delay;
+	if (m_nMySanc >= 9 && Delay >= 2)
+		--Delay;
+	if (m_pMyHuman->m_DilpunchJewel == 1)
+		--Delay;
+	if (Delay < 1)
+		Delay = 1;
+
+	if (pOver && pOver->m_nClass == 66 && pOver->m_cShadow == 1 && !m_pMyHuman->m_JewelGlasses)
+		return 0;
+	if (dwServerTime < m_dwSkillLastTime[(unsigned char)cSkillIndex] + 1000 * Delay)
+		return 0;
+
+	if ((int)m_pMyHuman->m_vecPosition.x >= 2362 && (int)m_pMyHuman->m_vecPosition.x <= 2370 && 
+		(int)m_pMyHuman->m_vecPosition.y >= 3927 && (int)m_pMyHuman->m_vecPosition.y <= 3935)
+		return 0;
+
+	if (dwServerTime > m_dwOldAttackTime + 1000 &&
+		(g_pSpell[(unsigned char)cSkillIndex].TargetType == 0 || 
+			g_pSpell[(unsigned char)cSkillIndex].TargetType == 3 || 
+			g_pSpell[(unsigned char)cSkillIndex].TargetType == 4 || 
+			g_pSpell[(unsigned char)cSkillIndex].TargetType == 5 ||
+			g_pSpell[(unsigned char)cSkillIndex].TargetType == 6))
+	{
+		int nSpecial = m_pMyHuman->m_stScore.Level;
+		if ((unsigned char)cSkillIndex < 96)
+			nSpecial = g_pObjectManager->m_stMobData.CurrentScore.Special[((unsigned char)cSkillIndex - 24 * (unsigned char)g_pObjectManager->m_stMobData.Class) / 8 + 1];
+
+		auto pChatList = m_pChatList;
+		if (BASE_GetManaSpent((unsigned char)cSkillIndex, (unsigned char)g_pObjectManager->m_stMobData.SaveMana, nSpecial) > g_pObjectManager->m_stMobData.CurrentScore.Mp)
+		{
+			auto ipNewItem = new SListBoxItem(g_pMessageStringTable[30],
+				0xFFFFAAAA,
+				0.0f,
+				0.0f,
+				300.0f,
+				16.0f,
+				0,
+				0x77777777,
+				1,
+				0);
+
+			pChatList->AddItem(ipNewItem);
+
+			GetSoundAndPlay(33, 0, 0);
+			return 0;
+		}
+		if (cSkillIndex == 85 && (100 * m_pMyHuman->m_stScore.Special[2]) > g_pObjectManager->m_stMobData.Coin)
+		{
+			auto ipNewItem = new SListBoxItem(g_pMessageStringTable[155],
+				0xFFFFAAAA,
+				0.0f,
+				0.0f,
+				300.0f,
+				16.0f,
+				0,
+				0x77777777,
+				1,
+				0);
+
+			pChatList->AddItem(ipNewItem);
+
+			GetSoundAndPlay(33, 0, 0);
+			return 0;
+		}
+		if (m_pMyHuman->IsInTown() == 1	&& g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+			return 0;
+
+		MSG_Attack stAttack{};
+		stAttack.Header.Type = MSG_Attack_Multi_Opcode;
+		stAttack.Header.ID = m_pMyHuman->m_dwID;
+		stAttack.AttackerID = m_pMyHuman->m_dwID;
+		stAttack.PosX = (int)m_pMyHuman->m_vecPosition.x;
+		stAttack.PosY = (int)m_pMyHuman->m_vecPosition.y;
+		stAttack.TargetX = (int)m_pMyHuman->m_vecPosition.x;
+		stAttack.TargetY = (int)m_pMyHuman->m_vecPosition.y;
+
+		if (m_stMoveStop.NextX)
+		{
+			stAttack.PosX = m_stMoveStop.NextX;
+			stAttack.TargetX = stAttack.PosX;
+			stAttack.PosY = m_stMoveStop.NextY;
+			stAttack.TargetY = stAttack.PosY;
+		}
+
+		stAttack.CurrentMp = -1;
+		stAttack.SkillIndex = (unsigned char)cSkillIndex;
+		stAttack.SkillParm = 0;
+		stAttack.Motion = -1;
+
+		if (g_pSpell[(unsigned char)cSkillIndex].TargetType == 5)
+		{
+			stAttack.FlagLocal = 0;
+			int nTargetIndex = 0;
+			int nCritical = (unsigned char)g_pObjectManager->m_stMobData.Critical;
+
+			auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+			if (!pNode)
+				return 1;
+
+			float fMyAngle = atan2f(vec.x - m_pMyHuman->m_vecPosition.x, vec.z - m_pMyHuman->m_vecPosition.y);
+
+			int nMastery = m_pMyHuman->m_stScore.Special[3] / 75;
+			if (nMastery > 3)
+				nMastery = 3;
+
+			int nMX = (int)m_pMyHuman->m_vecPosition.x;
+			int nMY = (int)m_pMyHuman->m_vecPosition.y;
+			int nMobCount = 0;
+
+			while (pNode != nullptr && nMobCount <= 1000)
+			{
+				++nMobCount;
+				if (pNode == m_pMyHuman)
+				{
+					pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+					continue;
+				}
+
+				int nDX = (int)pNode->m_vecPosition.x;
+				int nDY = (int)pNode->m_vecPosition.y;
+				int x1 = (int)m_pMyHuman->m_vecPosition.x;
+				int y1 = (int)m_pMyHuman->m_vecPosition.y;
+
+				if (m_stMoveStop.NextX)
+				{
+					x1 = m_stMoveStop.NextX;
+					y1 = m_stMoveStop.NextY;
+				}
+
+				int nDistanceFromMe = BASE_GetDistance(x1, y1, nDX, nDY);
+				if (pNode->m_nClass == 56 && !pNode->m_stLookInfo.FaceMesh)
+				{
+					nDistanceFromMe -= 12;
+					if (nDistanceFromMe < 0)
+						nDistanceFromMe = 0;
+				}
+
+				if (nDistanceFromMe <= nMastery + 3)
+				{
+					float fNodeAngle = atan2f(pNode->m_vecPosition.x - m_pMyHuman->m_vecPosition.x,	pNode->m_vecPosition.y - m_pMyHuman->m_vecPosition.y);
+					if (fabsf(fNodeAngle - fMyAngle) > 0.7853982f)
+					{
+						int nDTX = nDX;
+						int nDTY = nDY;
+						BASE_GetHitPosition(x1, y1, &nDTX, &nDTY, (char*)m_HeightMapData, 8);
+						if (pNode->m_nClass == 56 && !pNode->m_stLookInfo.FaceMesh)
+						{
+							nDTX = nDX;
+							nDTY = nDY;
+						}
+
+						if (nDTX != nDX && nDTY != nDY)
+						{
+							pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+							continue;
+						}
+
+						if (!pNode->IsInPKZone() && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1 && 
+							(pNode->m_dwID > 0 && pNode->m_dwID < 1000))
+						{
+							pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+							continue;
+						}
+
+						if (pNode->IsInPKZone() == 1 && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+						{
+							if (pNode->m_bParty == 1)
+							{
+								pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+								continue;
+							}
+
+							if (!TMFieldScene::m_bPK)
+							{
+								if (pNode->m_dwID > 0 && pNode->m_dwID < 1000 && g_pObjectManager->m_usWarGuild != pNode->m_usGuild)
+								{
+									if (!g_bCastleWar)
+									{
+										pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+										continue;
+									}
+
+									if (m_pMyHuman->m_cMantua && pNode->m_cMantua == m_pMyHuman->m_cMantua)
+									{
+										pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+										continue;
+									}
+								}
+
+								if (pNode->m_cSummons == 1 && g_pObjectManager->m_usWarGuild != pNode->m_usGuild && pNode->m_usGuild)
+								{
+									if (!g_bCastleWar)
+									{
+										pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+										continue;
+									}
+
+									if (m_pMyHuman->m_cMantua > 0 && pNode->m_cMantua == m_pMyHuman->m_cMantua && !pNode->IsInCastleZone())
+									{
+										pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+										continue;
+									}
+								}
+
+								if (pNode->m_cSummons == 1 && !pNode->m_usGuild)
+								{
+									if (!g_bCastleWar)
+									{
+										pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+										continue;
+									}
+
+									if (m_pMyHuman->m_cMantua > 0 && pNode->m_cMantua == m_pMyHuman->m_cMantua && !pNode->IsInCastleZone())
+									{
+										pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+										continue;
+									}
+								}
+							}
+
+							if (m_pMyHuman->m_cMantua > 0 && pNode->m_cMantua > 0 && m_pMyHuman->m_cMantua == pNode->m_cMantua && 
+								!TMFieldScene::m_bPK)
+							{
+								if (!g_bCastleWar)
+								{
+									pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+									continue;
+								}
+
+								if (pNode->m_dwID <= 0 || pNode->m_dwID >= 1000)
+								{
+									pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+									continue;
+								}
+							}
+
+							if (!TMFieldScene::m_bPK && g_bCastleWar > 0 && !pNode->IsInCastleZone())
+							{
+								if (pNode->m_dwID > 0 && pNode->m_dwID < 1000)
+								{
+									pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+									continue;
+								}
+							}
+
+							if (pNode->m_dwID <= 0 || pNode->m_dwID >= 1000 && 
+								!pNode->m_bParty && !pNode->m_cSummons && pNode->IsMerchant())
+							{
+								pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+								continue;
+							}
+						}
+
+						if (pNode->m_cDie == 1)
+						{
+							pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+							continue;
+						}
+
+						stAttack.Dam[nTargetIndex].TargetID = pNode->m_dwID;
+						stAttack.Dam[nTargetIndex++].Damage = -1;
+						stAttack.TargetX = nDX;
+						stAttack.TargetY = nDY;
+					}
+				}
+
+				pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+				if (g_pSpell[(unsigned char)cSkillIndex].MaxTarget <= nTargetIndex || nTargetIndex >= 13)
+					break;
+			};
+		}
+		if (g_pSpell[(unsigned char)cSkillIndex].TargetType == 3 || g_pSpell[(unsigned char)cSkillIndex].TargetType == 4 || g_pSpell[(unsigned char)cSkillIndex].TargetType == 6)
+		{
+			stAttack.FlagLocal = 0;
+			int nTargetIndex = 0;
+			int nCritical = (unsigned char)g_pObjectManager->m_stMobData.Critical;
+
+			auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+			if (!pNode)
+				return 1;
+
+			int nSX = (int)vec.x;
+			int nSY = (int)vec.z;
+			if (!(int)vec.x && !nSY && pOver)
+			{
+				nSX = (signed int)pOver->m_vecPosition.x;
+				nSY = (signed int)pOver->m_vecPosition.y;
+			}
+
+			int nMobCount = 0;
+
+			while (pNode != nullptr && nMobCount < 1000)
+			{
+				++nMobCount;
+				int x2 = (int)pNode->m_vecPosition.x;
+				int y2 = (int)pNode->m_vecPosition.y;
+
+				if (cSkillIndex == 0 || cSkillIndex == 16 || cSkillIndex == 7 || cSkillIndex == 17 || cSkillIndex == 23 ||
+					cSkillIndex == 35 || cSkillIndex == 39 || cSkillIndex == 51 || cSkillIndex == 55)
+				{
+					if (!pOver)
+						return 1;
+
+					nSX = (int)pOver->m_vecPosition.x;
+					nSY = (int)pOver->m_vecPosition.y;
+
+					if (pOver->m_nClass == 56 && !pOver->m_stLookInfo.FaceMesh)
+					{
+						int nMX = (int)m_pMyHuman->m_vecPosition.x;
+						int nMY = (int)m_pMyHuman->m_vecPosition.y;
+						if (m_stMoveStop.NextX)
+						{
+							nMX = m_stMoveStop.NextX;
+							nMY = m_stMoveStop.NextY;
+						}
+
+						int nDistanceFromMe = BASE_GetDistance(nMX, nMY, (int)pOver->m_vecPosition.x, (int)pOver->m_vecPosition.y) - 12;
+						if (nDistanceFromMe < 1)
+						{
+							nSX = (signed int)pOver->m_vecPosition.x;
+							nSY = (signed int)pOver->m_vecPosition.y;
+						}
+					}
+				}
+				if (cSkillIndex == 95 && pNode != pOver)
+				{
+					if (!pOver)
+						return 0;
+
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					nSX = (int)pOver->m_vecPosition.x;
+					nSY = (int)pOver->m_vecPosition.y;
+					continue;
+				}
+
+				if (pNode && pNode->m_usGuild && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1 &&
+					(m_pMyHuman->m_usGuild == pNode->m_usGuild || g_pObjectManager->m_usAllyGuild == pNode->m_usGuild))
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+
+				int nMX = (int)m_pMyHuman->m_vecPosition.x;
+				int nMY = (int)m_pMyHuman->m_vecPosition.y;
+				if (m_stMoveStop.NextX)
+				{
+					nMX = m_stMoveStop.NextX;
+					nMY = m_stMoveStop.NextY;
+				}
+
+				int nDistanceFromMe = BASE_GetDistance(nMX, nMY, nSX, nSY);
+				if (cSkillIndex == 0 && nDistanceFromMe == 2 && (nSX == (int)m_pMyHuman->m_vecPosition.x || nSY == (int)m_pMyHuman->m_vecPosition.y))
+				{
+					nDistanceFromMe = 1;
+				}
+				if (pOver && pOver->m_nClass == 56 && !pOver->m_stLookInfo.FaceMesh)
+				{
+					nDistanceFromMe -= 12;
+					if (nDistanceFromMe < 0)
+						nDistanceFromMe = 0;
+				}
+				if (cSkillIndex == 0 || cSkillIndex == 35 || cSkillIndex == 16 || cSkillIndex == 7 || cSkillIndex == 17 ||
+					cSkillIndex == 23 || cSkillIndex == 39 || cSkillIndex == 51 || cSkillIndex == 55 || cSkillIndex == 79 || cSkillIndex == 97)
+				{
+					if (nDistanceFromMe > nSpecForce + g_pSpell[(unsigned char)cSkillIndex].Range && g_pSpell[(unsigned char)cSkillIndex].Range != -1)
+					{
+						if (cSkillIndex == 35 || cSkillIndex == 39 || cSkillIndex == 97)
+							return 0;
+
+						int tx = nSX;
+						int ty = nSY;
+						bool bHit = true;
+
+						BASE_GetHitPosition((int)m_pMyHuman->m_vecPosition.x, (int)m_pMyHuman->m_vecPosition.y, &tx, &ty, (char*)m_HeightMapData, 8);
+
+						if (tx != nSX || ty != nSY)
+							bHit = false;
+
+						if (!bMoving)
+							return 0;
+
+						if (nDistanceFromMe < nSpecForce + g_pSpell[(unsigned char)cSkillIndex].Range)
+							return 0;
+
+						if (!bHit)
+							return 0;
+
+						if ((int)m_pMyHuman->m_eMotion >= 4 && (int)m_pMyHuman->m_eMotion <= 9)
+						{
+							unsigned int dwMod = MeshManager::m_BoneAnimationList[m_pMyHuman->m_nSkinMeshType].numAniCut[m_pMyHuman->m_pSkinMesh->m_nAniIndex];
+							if (dwMod > 2)
+								dwMod -= 2;
+
+							if (g_pEventTranslator->button[0])
+							{
+								if (dwServerTime < m_pMyHuman->m_dwStartAnimationTime + 4 * dwMod * m_pMyHuman->m_pSkinMesh->m_dwFPS)
+									return 1;
+							}
+						}
+
+						if (m_pGround == nullptr)
+							return 0;
+
+						if (vec.y < -5000.0f && pOver)
+						{
+							vec.x = pOver->m_vecPosition.x;
+							vec.z = pOver->m_vecPosition.y;
+							vec.y = pOver->m_fHeight;
+						}
+
+						m_pMyHuman->SetSpeed(m_bMountDead);
+						if (vec.x == m_pMyHuman->m_vecPosition.x && vec.z == m_pMyHuman->m_vecPosition.y)
+							return 1;
+
+						m_pTargetItem = nullptr;
+						m_pMyHuman->m_pMoveSkillTargetHuman = pOver;
+						m_dwLastSetTargetHuman = dwServerTime;
+						if (m_pMyHuman->m_cCantMove)
+							return 0;
+
+						int nMoveSX = (int)m_pMyHuman->m_vecPosition.x;
+						int nMoveSY = (int)m_pMyHuman->m_vecPosition.y;
+						if (m_stMoveStop.NextX)
+						{
+							nMoveSX = m_stMoveStop.NextX;
+							nMoveSY = m_stMoveStop.NextY;
+						}
+
+						if (!pOver)
+							return 0;
+
+						tx = (int)pOver->m_vecPosition.x;
+						ty = (int)pOver->m_vecPosition.y;
+
+						int nMoveDistance2 = BASE_GetDistance(nMoveSX, nMoveSY, tx, ty);
+						int PlusX = 1;
+						int PlusY = 1;
+						if (nMoveSX > tx)
+							PlusX = -1;
+						if (nMoveSY > ty)
+							PlusY = -1;
+
+						int nBreak = 0;
+						while (nMoveDistance2 > nSpecForce + g_pSpell[(unsigned char)cSkillIndex].Range)
+						{
+							if (nBreak > 500)
+								return 1;
+
+							if (nMoveSX != tx)
+								nMoveSX += PlusX;
+							if (nMoveSY != ty)
+								nMoveSY += PlusY;
+
+							nMoveDistance2 = BASE_GetDistance(nMoveSX, nMoveSY, tx, ty);
+							++nBreak;
+						}
+
+						m_vecMyNext.x = nMoveSX;
+						m_vecMyNext.y = nMoveSY;
+						return 0;
+					}
+					if (cSkillIndex == 97)
+					{
+						if (nDistanceFromMe < 4)
+							return 1;
+
+						auto pCannon = (TMItem*)g_pObjectManager->GetItemByID(nCannonIndex);
+						float fAngle = atan2f((float)(nSX - (int)m_pMyHuman->m_vecPosition.x), (float)(nSY - (int)m_pMyHuman->m_vecPosition.y));
+
+						if (fAngle < 0.0f)
+							fAngle = fAngle + D3DXToRadian(360);
+						if (pCannon->m_fAngle - D3DXToRadian(90) > fAngle)
+							return 1;
+						if (fAngle > pCannon->m_fAngle + D3DXToRadian(90))
+							return 1;
+					}
+					if (cSkillIndex == 35)
+					{
+						if ((pOver->m_dwID > 0 && pOver->m_dwID < 1000 || pOver->m_bParty == 1) &&
+							g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1 && !pOver->IsInPKZone())
+						{
+							return 1;
+						}
+					}
+					if (g_pSpell[(unsigned char)cSkillIndex].Range == -1)
+					{
+						if (nDistanceFromMe > nSpecForce + BASE_GetMobAbility(&g_pObjectManager->m_stMobData, 27))
+							return 1;
+					}
+
+					int sx = (int)m_pMyHuman->m_vecPosition.x;
+					int sy = (int)m_pMyHuman->m_vecPosition.y;
+					int nDTX = nSX;
+					int nDTY = nSY;
+					BASE_GetHitPosition(sx, sy, &nDTX, &nDTY, (char*)m_HeightMapData, 8);
+					if (pOver && pOver->m_nClass == 56 && !pOver->m_stLookInfo.FaceMesh)
+					{
+						nDTX = nSX;
+						nDTY = nSY;
+					}
+
+					if (nDTX != nSX || nDTY != nSY)
+						return 1;
+				}
+				else
+				{
+					nSX = (int)m_pMyHuman->m_vecPosition.x;
+					nSY = (int)m_pMyHuman->m_vecPosition.y;
+					if (m_stMoveStop.NextX)
+					{
+						nSX = m_stMoveStop.NextX;
+						nSY = m_stMoveStop.NextY;
+					}
+				}
+
+				int nDistance = BASE_GetDistance(nSX, nSY, x2, y2);
+				int nTX = x2;
+				int nTY = y2;
+				BASE_GetHitPosition2(nSX, nSY, &nTX, &nTY, (char*)m_HeightMapData, 8);
+				int nGridDistance = -1;
+				switch (g_pSpell[(unsigned char)cSkillIndex].TargetType)
+				{
+				case 3:
+					nGridDistance = 1;
+					break;
+				case 4:
+					nGridDistance = 2;
+					break;
+				case 6:
+					nGridDistance = 3;
+					break;
+				}
+
+				if (pNode->IsInPKZone() == 1
+					&& g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1
+					&& m_pMyHuman)
+				{
+					if (pNode->m_dwID > 0 && pNode->m_dwID < 1000)
+					{
+						if (!TMFieldScene::m_bPK && g_pObjectManager->m_usWarGuild != pNode->m_usGuild)
+						{
+							if (!g_bCastleWar)
+							{
+								pNode = (TMHuman*)pNode->m_pNextLink;
+								continue;
+							}
+							if (m_pMyHuman->m_cMantua > 0 && pNode->m_cMantua == m_pMyHuman->m_cMantua)
+							{
+								pNode = (TMHuman*)pNode->m_pNextLink;
+								continue;
+							}
+						}
+					}
+
+					if (TMFieldScene::m_bPK == 1
+						&& g_bCastleWar > 0
+						&& m_pMyHuman->m_cMantua > 0
+						&& pOver
+						&& pOver->m_cMantua > 0
+						&& m_pMyHuman->m_cMantua == pOver->m_cMantua
+						&& g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+					{
+						int isInPos = (int)m_pMyHuman->m_vecPosition.x >> 7 != 8 && (int)m_pMyHuman->m_vecPosition.x >> 7 != 9 || 
+									  (int)m_pMyHuman->m_vecPosition.y >> 7 != 15 && (int)m_pMyHuman->m_vecPosition.y >> 7 != 16 ? 0 : 1;
+
+						if (isInPos)
+							return 1;
+					}
+
+					if (!TMFieldScene::m_bPK
+						&& pNode->m_cSummons == 1
+						&& g_pObjectManager->m_usWarGuild != pNode->m_usGuild
+						&& pNode->m_usGuild)
+					{
+						if (!g_bCastleWar)
+						{
+							pNode = (TMHuman*)pNode->m_pNextLink;
+							continue;
+						}
+
+						if (m_pMyHuman->m_cMantua > 0 && pNode->m_cMantua == m_pMyHuman->m_cMantua && !pNode->IsInCastleZone())
+						{
+							pNode = (TMHuman*)pNode->m_pNextLink;
+							continue;
+						}
+					}
+
+					if (!TMFieldScene::m_bPK && pNode->m_cSummons == 1 && !pNode->m_usGuild)
+					{
+						if (!g_bCastleWar)
+						{
+							pNode = (TMHuman*)pNode->m_pNextLink;
+							continue;
+						}
+
+						if (m_pMyHuman->m_cMantua > 0 && pNode->m_cMantua == m_pMyHuman->m_cMantua && !pNode->IsInCastleZone())
+						{
+							pNode = (TMHuman*)pNode->m_pNextLink;
+							continue;
+						}
+					}
+					if (m_pMyHuman->m_cMantua > 0 && pNode->m_cMantua > 0 && m_pMyHuman->m_cMantua == pNode->m_cMantua && !TMFieldScene::m_bPK)
+					{
+						if (!g_bCastleWar)
+						{
+							pNode = (TMHuman*)pNode->m_pNextLink;
+							continue;
+						}
+
+						if (pNode->m_dwID <= 0 || pNode->m_dwID >= 1000)
+						{
+							pNode = (TMHuman*)pNode->m_pNextLink;
+							continue;
+						}
+					}
+
+					if (!TMFieldScene::m_bPK && g_bCastleWar > 0 && !pNode->IsInCastleZone())
+					{
+						if (pNode->m_dwID > 0 && pNode->m_dwID < 1000)
+						{
+							pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+							continue;
+						}
+					}
+
+					if (!TMFieldScene::m_bPK
+						&& g_bCastleWar > 0
+						&& m_pMyHuman->m_cMantua == 3)
+					{
+						if (pNode->m_dwID > 0 && pNode->m_dwID < 1000)
+						{
+							pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+							continue;
+						}
+
+						if (pNode->m_cMantua > 0 && pNode->m_cMantua != 4)
+						{
+							pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+							continue;
+						}
+					}
+
+					if (pNode->m_bParty == 1)
+					{
+						pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+						continue;
+					}
+
+					if (!TMFieldScene::m_bPK)
+					{
+						if (pNode->m_dwID > 0 && pNode->m_dwID < 1000)
+						{
+							if (!pNode->m_cMantua && g_pObjectManager->m_usWarGuild != pNode->m_usGuild && !g_bCastleWar)
+							{
+								pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+								continue;
+							}
+						}
+					}
+				}
+
+				if ((pNode->m_dwID <= 0 || pNode->m_dwID >= 1000) && !pNode->m_bParty && !pNode->m_cSummons && pNode->IsMerchant())
+				{
+					pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+					continue;
+				}
+
+				if (pNode->m_cDie == 1)
+				{
+					pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+					continue;
+				}
+				if (pNode->IsInPKZone() == 1 && !m_pMyHuman->IsInPKZone() && !g_pSpell[(unsigned char)cSkillIndex].Aggressive)
+				{
+					pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+					continue;
+				}
+
+				if (nDistance <= nGridDistance
+					&& nTX == x2
+					&& nTY == y2
+					&& pNode != m_pMyHuman
+					&& (!pNode->IsInTown() || !g_pSpell[(unsigned char)cSkillIndex].Aggressive))
+				{
+					if ((pNode->m_dwID <= 0 || pNode->m_dwID >= 1000 && !pNode->m_bParty && !pNode->m_cSummons) || 
+						(pNode->m_dwID > 0 && pNode->m_dwID < 1000 && (!g_pSpell[(unsigned char)cSkillIndex].Aggressive || pNode->IsInPKZone())))
+					{
+						if (g_pSpell[(unsigned char)cSkillIndex].Range == -1 && !nTargetIndex)
+						{
+							stAttack.Dam[0].TargetID = pNode->m_dwID;
+							stAttack.Dam[0].Damage = -2;
+							stAttack.Progress = TMFieldScene::m_usProgress;
+							nTargetIndex = 1;
+						}
+
+						stAttack.Dam[nTargetIndex].TargetID = pNode->m_dwID;
+						stAttack.Dam[nTargetIndex].Damage = -1;
+						if (pOver
+							&& pOver == pNode
+							&& nTargetIndex
+							&& (g_pSpell[(unsigned char)cSkillIndex].TargetType == 3
+								|| g_pSpell[(unsigned char)cSkillIndex].TargetType == 4
+								|| g_pSpell[(unsigned char)cSkillIndex].TargetType == 6))
+						{
+							unsigned int dwID = stAttack.Dam[0].TargetID;
+							int nDamage = stAttack.Dam[0].Damage;
+							stAttack.Dam[0].TargetID = stAttack.Dam[nTargetIndex].TargetID;
+							stAttack.Dam[0].Damage = stAttack.Dam[nTargetIndex].Damage;
+							stAttack.Dam[nTargetIndex].TargetID = dwID;
+							stAttack.Dam[nTargetIndex].Damage = nDamage;
+						}
+
+						++nTargetIndex;
+					}
+				}
+
+				pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+				if (g_pSpell[(unsigned char)cSkillIndex].TargetType == 3 && nTargetIndex > 7
+					|| g_pSpell[(unsigned char)cSkillIndex].MaxTarget <= nTargetIndex
+					|| nTargetIndex >= 13)
+				{
+					break;
+				}
+			}
+
+			stAttack.TargetX = nSX;
+			stAttack.TargetY = nSY;
+		}
+		else if (cSkillIndex == 29 || cSkillIndex == 44)
+		{
+			if (m_pMyHuman->m_bParty == 1)
+			{
+				int nIndex = 0;
+				int nIndexCount = 0;
+
+				stIDDis stPartys[12]{};
+
+				auto pPartyList = m_pPartyList;
+				for (int k = 0; k < pPartyList->m_nNumItem; ++k)
+				{
+					auto pPartyItem = (SListBoxPartyItem*)pPartyList->m_pItemList[k];
+					auto pHuman = (TMHuman*)g_pObjectManager->GetHumanByID(pPartyItem->m_dwCharID);
+
+					if (pHuman && (m_pMyHuman->IsInPKZone() || pHuman->IsInPKZone() != 1))
+					{
+						int nMX = (signed int)m_pMyHuman->m_vecPosition.x;
+						int nMY = (signed int)m_pMyHuman->m_vecPosition.y;
+						if (m_stMoveStop.NextX)
+						{
+							nMX = m_stMoveStop.NextX;
+							nMY = m_stMoveStop.NextY;
+						}
+
+						int nDistanceFromMe = BASE_GetDistance(nMX, nMY, (int)pHuman->m_vecPosition.x, (int)pHuman->m_vecPosition.y);
+						if (nDistanceFromMe < nSpecForce + g_pSpell[(unsigned char)cSkillIndex].Range)
+						{
+							stPartys[nIndex].dwID = pPartyItem->m_dwCharID;
+							stPartys[nIndex++].nLen = nDistanceFromMe;
+						}
+					}
+
+					nIndexCount = nIndex;
+					if (nIndex >= 12)
+						nIndexCount = 12;
+
+					int nMaxIndex = 0;
+
+					for (int nIndex = 0; nIndex < nIndexCount; ++nIndex)
+					{
+						nMaxIndex = nIndex;
+
+						stIDDis stMax{};
+						stMax.dwID = stPartys[nIndex].dwID;
+						stMax.nLen = stPartys[nIndex].nLen;
+						for (int j = nIndex + 1; j < nIndexCount; ++j)
+						{
+							if (stMax.nLen > stPartys[j].nLen)
+							{
+								stMax.dwID = stPartys[j].dwID;
+								stMax.nLen = stPartys[j].nLen;
+								nMaxIndex = j;
+							}
+						}
+
+						stPartys[nMaxIndex].dwID = stPartys[nIndex].dwID;
+						stPartys[nMaxIndex].nLen = stPartys[nIndex].nLen;
+						stPartys[nIndex].dwID = stMax.dwID;
+						stPartys[nIndex].nLen = stMax.nLen;
+					}
+					int nTargetI = 0;
+					for (nIndex = 0; nIndex < nIndexCount && g_pSpell[(unsigned char)cSkillIndex].MaxTarget > nTargetI && nTargetI < 13; ++nIndex)
+					{
+						stAttack.Dam[nTargetI].TargetID = stPartys[nIndex].dwID;
+						stAttack.Dam[nTargetI++].Damage = -1;
+					}
+				}
+			}
+			else
+			{
+				stAttack.Dam[0].TargetID = m_pMyHuman->m_dwID;
+				stAttack.Dam[0].Damage = -1;
+			}
+		}
+		else if (cSkillIndex == 42)
+		{
+			if (m_pMyHuman->m_bParty == 1)
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[31], 1000);
+			else
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[32], 1000);
+
+			m_pMessagePanel->SetVisible(1, 1);
+			return 1;
+		}
+		else if (cSkillIndex == 73)
+		{
+			if (g_pObjectManager->m_stMobData.CurrentScore.Mp < g_pSpell[73].ManaSpent)
+				return 1;
+
+			if (dwServerTime - m_pMyHuman->m_dwOldMovePacketTime > 1000)
+			{
+				int targetx = (signed int)vec.x;
+				int targety = (int)vec.z;
+				int x = (int)m_pMyHuman->m_vecPosition.x;
+				int y = (int)m_pMyHuman->m_vecPosition.y;
+
+				char cRouteBuffer[48]{};
+				BASE_GetRoute(x, y, &targetx, &targety, cRouteBuffer, 8, (char*)m_HeightMapData, 8);
+				if (!strlen(cRouteBuffer))
+					return 1;
+
+				MSG_Action stAction{};
+				stAction.Header.ID = m_pMyHuman->m_dwID;
+				stAction.PosX = x;
+				stAction.PosY = y;
+				stAction.Effect = 6;
+				stAction.Header.Type = MSG_Action2_Opcode;
+				stAction.Speed = g_nMyHumanSpeed;
+				stAction.TargetX = targetx;
+				stAction.TargetY = targety;
+				m_stMoveStop.LastX = x;
+				m_stMoveStop.LastY = stAction.PosY;
+				m_stMoveStop.NextX = stAction.TargetX;
+				m_stMoveStop.NextY = stAction.TargetY;
+				SendOneMessage((char*)&stAction, sizeof(stAction));
+				IncSkillSel();
+				m_dwSkillLastTime[(unsigned char)cSkillIndex] = dwServerTime;
+				m_pMyHuman->m_dwOldMovePacketTime = dwServerTime;
+			}
+			return 1;
+		}
+		else
+		{
+			stAttack.Dam[0].TargetID = m_pMyHuman->m_dwID;
+			stAttack.Dam[0].Damage = -1;
+			stAttack.TargetX = (int)m_pMyHuman->m_vecPosition.x;
+			stAttack.TargetY = (int)m_pMyHuman->m_vecPosition.y;
+
+			if (m_stMoveStop.NextX)
+			{
+				stAttack.TargetX = m_stMoveStop.NextX;
+				stAttack.TargetY = m_stMoveStop.NextY;
+			}
+			if (cSkillIndex == 56
+				|| cSkillIndex == 57
+				|| cSkillIndex == 58
+				|| cSkillIndex == 59
+				|| cSkillIndex == 60
+				|| cSkillIndex == 61
+				|| cSkillIndex == 62
+				|| cSkillIndex == 63
+				|| (unsigned char)cSkillIndex == 200
+				|| (unsigned char)cSkillIndex == 216)
+			{
+				m_dwSkillLastTime[(unsigned char)cSkillIndex] = dwServerTime;
+				m_pMyHuman->m_dwOldMovePacketTime = dwServerTime;
+			}
+		}
+
+		if (cSkillIndex == 98)
+		{
+			int nTX = (int)vec.x;
+			int nTY = (int)vec.z;
+			int nMX = (int)m_pMyHuman->m_vecPosition.x;
+			int nMY = (int)m_pMyHuman->m_vecPosition.y;
+			if (m_stMoveStop.NextX)
+			{
+				nMX = m_stMoveStop.NextX;
+				nMY = m_stMoveStop.NextY;
+			}
+
+			int nDistance = BASE_GetDistance(nMX, nMY, nTX, nTY);
+			int nMobAttackRange = nSpecForce + g_pSpell[(unsigned char)cSkillIndex].Range;
+			int nDX = nTX;
+			int nDY = nTY;
+			BASE_GetHitPosition(nMX, nMY, &nDX, &nDY, (char*)m_HeightMapData, 8);
+			if (nMobAttackRange == -1)
+				nMobAttackRange = 1;
+
+			if (BASE_GetItemAbility(&pMobData->Equip[6], 21) < 100)
+			{
+				if (nSpecForce + BASE_GetMobAbility(pMobData, 27) > nMobAttackRange)
+					nMobAttackRange = nSpecForce + BASE_GetMobAbility(pMobData, 27);
+			}
+
+			BASE_GetDistance(nMX, nMY, nDX, nDY);
+			if (nDistance > nMobAttackRange || nDX != nTX || nDY != nTY)
+				return 1;
+
+			if (BASE_GetDistance(nMX, nMY, (int)vec.x, (int)vec.z) > nSpecForce + g_pSpell[(unsigned char)cSkillIndex].Range)
+				return 1;
+			stAttack.Dam[0].TargetID = m_pMyHuman->m_dwID;
+			stAttack.Dam[0].Damage = -1;
+			stAttack.TargetX = (int)vec.x;
+			stAttack.TargetY = (int)vec.z;
+			int bValue = g_pAttribute[(int)stAttack.TargetY >> 2][(int)stAttack.TargetX >> 2];
+			if (bValue & 1 && !(bValue & 0x40))
+				return 1;
+		}
+		if (cSkillIndex == 102)
+		{
+			int nCls = m_pMyHuman->m_sHeadIndex % 10;
+			if (!IsValidSkill(31) && !IsValidSkill(39) && !IsValidSkill(47))
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[357], 1000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+		}
+		if ((int)stAttack.Dam[0].TargetID > 0 || cSkillIndex == 97 || cSkillIndex == 35 || cSkillIndex == 51)
+		{
+			for (int l = g_pSpell[(unsigned char)cSkillIndex].MaxTarget; l < 13; ++l)
+			{
+				stAttack.Dam[l].TargetID = 0;
+				stAttack.Dam[l].Damage = 0;
+			}
+
+			int nSize = sizeof(MSG_Attack);
+			if (g_pSpell[(unsigned char)cSkillIndex].MaxTarget == 1)
+			{
+				stAttack.Header.Type = MSG_Attack_One_Opcode;
+				nSize = sizeof(MSG_AttackOne);
+			}
+			if (g_pSpell[(unsigned char)cSkillIndex].MaxTarget == 2)
+			{
+				stAttack.Header.Type = MSG_Attack_Two_Opcode;
+				nSize = sizeof(MSG_AttackTwo);
+			}
+
+			MSG_Attack stAttackLocal{};
+			memcpy(&stAttackLocal, &stAttack, nSize);
+			stAttackLocal.Header.ID = m_dwID;
+			stAttackLocal.FlagLocal = 1;
+			if (nSpecForce)
+				stAttackLocal.DoubleCritical |= 8;
+
+			OnPacketEvent(stAttack.Header.Type, (char*)&stAttackLocal);
+			SendOneMessage((char*)&stAttack, nSize);
+			IncSkillSel();
+			m_dwOldAttackTime = dwServerTime;
+			m_dwSkillLastTime[(unsigned char)cSkillIndex] = dwServerTime;
+		}
+		if (cSkillIndex != 85)
+			return 1;
+	}
+
+	if (g_pSpell[(unsigned char)cSkillIndex].TargetType == 2 && !pOver)
+	{
+		pOver = m_pMyHuman;
+		pOver->m_bMouseOver = 1;
+	}
+	if (!pOver || pOver->m_bMouseOver != 1 && !pTarget || m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_WALK || m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_RUN)
+	{
+		m_pMouseOverHuman = 0;
+		return GetItemFromGround(dwServerTime);
+	}
+
+	if (m_pMyHuman->m_cHide == 1)
+		return 1;
+	if (m_stAutoTrade.TargetID == m_pMyHuman->m_dwID)
+		return 1;
+
+	int Special = m_pMyHuman->m_stScore.Level;
+	if ((unsigned char)cSkillIndex < 96)
+		Special = g_pObjectManager->m_stMobData.CurrentScore.Special[((unsigned char)cSkillIndex - 24 * (unsigned char)g_pObjectManager->m_stMobData.Class) / 8 + 1];
+
+	if (BASE_GetManaSpent((unsigned char)cSkillIndex, (unsigned char)g_pObjectManager->m_stMobData.SaveMana, Special) > g_pObjectManager->m_stMobData.CurrentScore.Mp)
+	{
+		auto ipNewItem = new SListBoxItem(g_pMessageStringTable[30],
+			0xFFFFAAAA,
+			0.0f,
+			0.0f,
+			300.0f,
+			16.0f,
+			0,
+			0x77777777,
+			1u,
+			0);
+
+		m_pChatList->AddItem(ipNewItem);
+
+		GetSoundAndPlay(33, 0, 0);
+		return 1;
+	}
+
+	if (pOver->IsInPKZone() == 1 && !m_pMyHuman->IsInPKZone())
+		return 1;
+	if ((m_pMyHuman->IsInTown() == 1 || pOver->IsInTown() == 1) && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+		return 1;
+
+
+
 	return 0;
 }
 
