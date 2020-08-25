@@ -4930,6 +4930,7 @@ int TMHuman::OnPacketCarry(MSG_Carry* pStd)
             pScene->SetVisibleTrade(0);
             pScene->SetVisibleInventory();
         }
+
         pScene->UpdateScoreUI(0);
     }
 
@@ -4938,12 +4939,25 @@ int TMHuman::OnPacketCarry(MSG_Carry* pStd)
 
 int TMHuman::OnPacketCNFCheck(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pMyCheckButton = (SButton*)g_pCurrentScene->m_pControlContainer->FindControl(617);
+    pMyCheckButton->m_bSelected = 1;
+	return 1;
 }
 
-int TMHuman::OnPacketSetClan(MSG_STANDARD* pStd)
+int TMHuman::OnPacketSetClan(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+    if (pStd->Parm == 4)
+    {
+        m_pNameLabel->m_GCBorder.dwColor = 0x5500AA00;
+        m_pNameLabel->m_cBorder = 1;
+        m_cSummons = 1;
+    }
+    else
+    {
+       m_cSummons = 0;
+    }
+
+    return 1;
 }
 
 int TMHuman::OnPacketReqRanking(MSG_STANDARD* pStd)
