@@ -18972,6 +18972,39 @@ void TMFieldScene::SysMsgChat(char* str)
 
 void TMFieldScene::GetTimeString(char* szVal, int sTime, int nTime, int i)
 {
+	if (nTime >= 1000000)
+	{
+		int add = m_pMyHuman->m_stAffect[i].Time / 1000000;
+		int Year = m_pMyHuman->m_stAffect[i].Time % 1000000 / 10000;
+		int nYearDay = 365;
+		if (!(Year % 4))
+			nYearDay = 366;
+
+		int nDafaultDay = 0;
+		switch (add)
+		{
+		case 4:
+			nDafaultDay = 7;
+			break;
+		case 5:
+			nDafaultDay = 15;
+			break;
+		case 6:
+			nDafaultDay = 30;
+			break;
+		}
+
+		if (add)
+			sprintf(szVal, g_pMessageStringTable[291], nDafaultDay - nYearDay * (m_nYear - Year) - (m_nDays - m_pMyHuman->m_stAffect[i].Time % 10000));
+	}
+	else if (sTime > 86400)
+		sprintf(szVal, g_pMessageStringTable[291], sTime / 86400);
+	else if (sTime > 3600)
+		sprintf(szVal, g_pMessageStringTable[292], sTime / 3600);
+	else if (sTime <= 600)
+		sprintf(szVal, "%5d", sTime);
+	else
+		sprintf(szVal, g_pMessageStringTable[293], sTime / 60);
 }
 
 void TMFieldScene::Bag_View()
