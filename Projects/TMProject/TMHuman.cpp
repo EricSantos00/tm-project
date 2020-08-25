@@ -4336,7 +4336,72 @@ int TMHuman::OnPacketMessageWhisper(MSG_STANDARD* pStd)
 
 int TMHuman::OnPacketUpdateEtc(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pUpdateEtc = reinterpret_cast<MSG_UpdateEtc*>(pStd);
+
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        if (g_pObjectManager->m_stMobData.LearnedSkill != pUpdateEtc->LearnedSkill)
+        {
+            if (g_pSoundManager)
+            {
+                auto pSoundData = g_pSoundManager->GetSoundData(31);
+
+                if (pSoundData)
+                    pSoundData->Play(0, 0);
+            }
+
+            bool bChange{ false };
+
+            for (int i = 0; i < 20; ++i)
+            {
+                int nBit = (unsigned char)g_pObjectManager->m_cShortSkill[i] - 24 * g_pObjectManager->m_stMobData.Class;
+                
+                if ((unsigned char)g_pObjectManager->m_cShortSkill[i] >= 96)
+                    nBit = g_pObjectManager->m_cShortSkill[i] - 72;
+
+                if (((1 << nBit) & pUpdateEtc->LearnedSkill[0]) != 1 << nBit)
+                {
+                    if ((unsigned char)g_pObjectManager->m_cShortSkill[i] < 24)
+                    {
+                        g_pObjectManager->m_cShortSkill[i] = -1;
+                        bChange = true;
+                    }
+                }
+            }
+
+            if (bChange)
+            {
+                MSG_SetShortSkill stSetShortSkill{};
+                stSetShortSkill.Header.ID = g_pCurrentScene->m_pMyHuman->m_dwID;
+                stSetShortSkill.Header.Type = MSG_SetShortSkill_Opcode;
+                
+                memcpy(stSetShortSkill.Skill, g_pObjectManager->m_cShortSkill, sizeof(stSetShortSkill.Skill));
+                
+                for (int j = 0; j < 20; ++j)
+                {
+                    if (stSetShortSkill.Skill[j] >= 0 && stSetShortSkill.Skill[j] < 96)
+                        stSetShortSkill.Skill[j] -= 24 * g_pObjectManager->m_stMobData.Class;
+
+                    else if (stSetShortSkill.Skill[j] >= 105 && stSetShortSkill.Skill[j] < 153)
+                        stSetShortSkill.Skill[j] -= 12 * g_pObjectManager->m_stMobData.Class;
+                }
+                SendOneMessage((char*)&stSetShortSkill, sizeof(stSetShortSkill));
+            }
+        }
+        g_pObjectManager->m_stMobData.LearnedSkill[0] = pUpdateEtc->LearnedSkill[0];
+        g_pObjectManager->m_stMobData.LearnedSkill[1] = pUpdateEtc->LearnedSkill[1];
+        g_pObjectManager->m_stMobData.Exp = pUpdateEtc->Exp;
+        g_pObjectManager->m_stMobData.ScoreBonus = pUpdateEtc->ScoreBonus;
+        g_pObjectManager->m_stMobData.SpecialBonus = pUpdateEtc->SpecialBonus;
+        g_pObjectManager->m_stMobData.SkillBonus = pUpdateEtc->SkillBonus;
+        g_pObjectManager->m_stMobData.Coin = pUpdateEtc->Coin;
+        g_pObjectManager->m_nFakeExp = pUpdateEtc->FakeExp;
+        g_pObjectManager->m_stSelCharData.Coin[g_pObjectManager->m_cCharacterSlot] = pUpdateEtc->Coin;
+
+        if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+            static_cast<TMFieldScene*>(g_pCurrentScene)->UpdateScoreUI(0);
+    }
+    return 1;
 }
 
 int TMHuman::OnPacketUpdateCoin(MSG_STANDARD* pStd)

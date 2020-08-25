@@ -916,6 +916,19 @@ struct MSG_UpdateScore
 	char LearnedSkill;
 };
 
+constexpr auto MSG_UpdateEtc_Opcode = 0x337;
+struct MSG_UpdateEtc
+{
+	MSG_STANDARD Header;
+	int FakeExp;
+	long long Exp;
+	unsigned int LearnedSkill[2];
+	short ScoreBonus;
+	short SpecialBonus;
+	short SkillBonus;
+	int Coin;
+};
+
 constexpr auto MSG_MessagePanel_Opcode = 0x101;
 struct MSG_MessagePanel
 {
