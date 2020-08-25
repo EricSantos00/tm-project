@@ -3038,6 +3038,10 @@ int BASE_GetDoubleCritical(STRUCT_MOB* mob, unsigned short* sProgress, unsigned 
     return 1;
 }
 
+void BASE_GetHitPosition2(int sx, int sy, int* tx, int* ty, char* pHeight, int MH)
+{
+}
+
 int IsPassiveSkill(int nSkillIndex)
 {
     if (nSkillIndex >= 5400)
