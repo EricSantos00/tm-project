@@ -32,6 +32,7 @@
 #include "SGrid.h"
 #include "TMEffectStart.h"
 #include "TMSkillTownPortal.h"
+#include "ItemEffect.h"
 
 TMVector2 TMHuman::m_vecPickSize[100]{
   { 0.40000001f, 2.0f },
@@ -3692,7 +3693,189 @@ int TMHuman::OnPacketRemoveMob(MSG_STANDARD* pStd)
 
 int TMHuman::OnPacketSendItem(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pSendItem = reinterpret_cast<MSG_SendItem*>(pStd);
+
+    TMFieldScene* pFScene{};
+
+    if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    if (pFScene)
+        pFScene->Bag_View();
+
+    auto pMobData = &g_pObjectManager->m_stMobData;
+
+    if (pFScene && g_pCurrentScene->m_pMyHuman == this)
+    {
+        if (pSendItem->DestType == 0)
+        {
+            if (pSendItem->DestPos == 6 && BASE_GetItemAbility(&g_pObjectManager->m_stMobData.Equip[6], EF_WTYPE) == 41)
+            {
+                m_stLookInfo.RightMesh = 0;
+                m_stLookInfo.RightSkin = 0;
+            }
+
+            memcpy(&pMobData->Equip[pSendItem->DestPos], &pSendItem->Item, sizeof(STRUCT_ITEM));
+
+            if (pSendItem->DestPos)
+                memcpy(&g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][pSendItem->DestPos], &pSendItem->Item, sizeof(STRUCT_ITEM));
+
+            SGridControl* pGridEquip[16]{};
+
+            pGridEquip[1] = pFScene->m_pGridHelm;
+            pGridEquip[2] = pFScene->m_pGridCoat;
+            pGridEquip[3] = pFScene->m_pGridPants;
+            pGridEquip[4] = pFScene->m_pGridGloves;
+            pGridEquip[5] = pFScene->m_pGridBoots;
+            pGridEquip[6] = pFScene->m_pGridLeft;
+            pGridEquip[7] = pFScene->m_pGridRight;
+            pGridEquip[8] = pFScene->m_pGridRing;
+            pGridEquip[9] = pFScene->m_pGridNecklace;
+            pGridEquip[10] = pFScene->m_pGridOrb;
+            pGridEquip[11] = pFScene->m_pGridCabuncle;
+            pGridEquip[12] = pFScene->m_pGridGuild;
+            pGridEquip[13] = pFScene->m_pGridEvent;
+            pGridEquip[14] = pFScene->m_pGridDRing;
+            pGridEquip[15] = pFScene->m_pGridMantua;
+
+            if (pSendItem->DestPos > 0 && pSendItem->DestPos < 16)
+            {
+                if (pGridEquip[pSendItem->DestPos] != nullptr)
+                {
+                    SGridControlItem* pItem = pGridEquip[pSendItem->DestPos]->PickupItem(0, 0);
+
+                    if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pItem)
+                        g_pCursor->m_pAttachedItem = nullptr;
+
+                    delete pItem;
+                }
+
+                if (pSendItem->Item.sIndex > 0)
+                {
+                    auto pstItem = new STRUCT_ITEM();
+
+                    if (pstItem)
+                    {
+                        memcpy(pstItem, &pMobData->Equip[pSendItem->DestPos], sizeof(STRUCT_ITEM));
+
+                        auto pItem = new SGridControlItem(0, pstItem, 0.0f, 0.0f);
+
+                        if (pItem)
+                        {
+                            if (pGridEquip[pSendItem->DestPos])
+                            {
+                                pGridEquip[pSendItem->DestPos]->Empty();
+                                pGridEquip[pSendItem->DestPos]->AddItem(pItem, 0, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if (pSendItem->DestType == 1)
+        {
+            memcpy(&pMobData->Carry[pSendItem->DestPos], &pSendItem->Item, sizeof(STRUCT_ITEM));
+            memcpy(g_pObjectManager->m_stMobData.Carry, pMobData->Carry, sizeof(g_pObjectManager->m_stMobData.Carry));
+
+            int Page = pSendItem->DestPos / 15;
+            int CellIndexX = pSendItem->DestPos % 15 % 5;
+            int CellIndexY = pSendItem->DestPos % 15 / 5;
+
+            if (Page >= 0 && Page <= 3)
+            {
+                SGridControl* pGrid = pFScene->m_pGridInvList[Page];
+
+                SGridControlItem* pOldGridItem = pGrid->PickupAtItem(CellIndexX, CellIndexY);
+
+                if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pOldGridItem)
+                    g_pCursor->m_pAttachedItem = nullptr;
+
+                delete pOldGridItem;
+
+                if (pSendItem->Item.sIndex > 0)
+                {
+                    auto pstItem = new STRUCT_ITEM();
+
+                    if (pstItem)
+                    {
+                        memcpy(pstItem, &pSendItem->Item, sizeof(STRUCT_ITEM));
+
+                        auto pItem = new SGridControlItem(0, pstItem, 0.0f, 0.0f);
+
+                        if (pItem)
+                            pGrid->AddItem(pItem, CellIndexX, CellIndexY);
+                    }
+                }
+            }
+        }
+        else if (pSendItem->DestType == 2)
+        {
+            memcpy(&g_pObjectManager->m_stItemCargo[pSendItem->DestPos], &pSendItem->Item, sizeof(STRUCT_ITEM));
+
+            int CellIndexX = pSendItem->DestPos % 40 % 5;
+            int CellIndexY = pSendItem->DestPos % 40 / 5;
+
+            auto pGrid = pFScene->m_pCargoGridList[pSendItem->DestPos / 40];
+
+            // TODO:
+            // Check if this is correct
+            pGrid->PickupAtItem(CellIndexX, CellIndexY);
+
+            if (pSendItem->Item.sIndex > 0)
+            {
+                auto pstItem = new STRUCT_ITEM();
+
+                if (pstItem)
+                {
+                    memcpy(pstItem, &pSendItem->Item, sizeof(STRUCT_ITEM));
+
+                    auto pItem = new SGridControlItem(0, pstItem, 0.0f, 0.0f);
+
+                    if (pItem)
+                        pGrid->AddItem(pItem, CellIndexX, CellIndexY);
+                }
+            }
+        }
+    }
+
+    SetPacketMOBItem(pMobData);
+    SetCharHeight(static_cast<float>(m_stScore.Con));
+    SetRace(pMobData->Equip[0].sIndex);
+
+    if (m_nWeaponTypeL == 41)
+    {
+        m_stLookInfo.RightMesh = m_stLookInfo.LeftMesh;
+        m_stLookInfo.RightSkin = m_stLookInfo.LeftSkin;
+        m_stSancInfo.Sanc6 = m_stSancInfo.Sanc7;
+        m_stSancInfo.Legend6 = m_stSancInfo.Legend7;
+    }
+
+    InitObject();
+    CheckWeapon(pMobData->Equip[6].sIndex, pMobData->Equip[7].sIndex);
+    InitAngle(0, m_fAngle, 0);
+
+    if (m_cMount == 1)
+    {
+        int nMountHP = BASE_GetItemAbility(&pMobData->Equip[14], EF_MOUNTHP);
+
+        m_pMountHPBar->SetCurrentProgress(nMountHP);
+
+        if (pFScene)
+        {
+            pFScene->m_pMHPBar->SetCurrentProgress(nMountHP);
+
+            char szMHP[32]{};
+            sprintf_s(szMHP, "%d", nMountHP);
+
+            pFScene->m_pCurrentMHPText->SetText(szMHP, 0);
+        }
+    }
+
+    if (pFScene)
+        pFScene->UpdateScoreUI(0);
+
+    SGridControl::m_sLastMouseOverIndex = -1;
+    return 1;
 }
 
 int TMHuman::OnPacketUpdateEquip(MSG_STANDARD* pStd)
