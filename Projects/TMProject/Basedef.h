@@ -862,6 +862,13 @@ struct MSG_UpdateEquip
 	char Equip2[16];
 };
 
+constexpr auto MSG_UpdateAffect_Opcode = 0x3B9;
+struct MSG_UpdateAffect
+{
+	MSG_STANDARD Header;
+	STRUCT_AFFECT Affect[32];
+};
+
 constexpr auto MSG_AccountLogin_Opcode = 0x20D;
 struct MSG_AccountLogin
 {
@@ -914,6 +921,19 @@ struct MSG_UpdateScore
 	unsigned short Magic;
 	unsigned short Rsv;
 	char LearnedSkill;
+};
+
+constexpr auto MSG_UpdateEtc_Opcode = 0x337;
+struct MSG_UpdateEtc
+{
+	MSG_STANDARD Header;
+	int FakeExp;
+	long long Exp;
+	unsigned int LearnedSkill[2];
+	short ScoreBonus;
+	short SpecialBonus;
+	short SkillBonus;
+	int Coin;
 };
 
 constexpr auto MSG_MessagePanel_Opcode = 0x101;
