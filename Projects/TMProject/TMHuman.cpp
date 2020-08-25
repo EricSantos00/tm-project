@@ -34,6 +34,8 @@
 #include "TMSkillTownPortal.h"
 #include "TMFireEffect.h"
 #include "TMEffectSpark.h"
+#include "TMEffectLevelUp.h"
+#include "ItemEffect.h"
 
 TMVector2 TMHuman::m_vecPickSize[100] = {
   { 0.40000001f, 2.0f },
@@ -3423,7 +3425,7 @@ int TMHuman::OnPacketEvent(unsigned int dwCode, char* buf)
     case 0x182:
         return OnPacketSendItem((MSG_STANDARD*)buf);
         break;
-    case 0x36B:
+    case MSG_UpdateEquip_Opcode:
         return OnPacketUpdateEquip((MSG_STANDARD*)buf);
         break;
     case 0x3B9:
@@ -3803,12 +3805,287 @@ int TMHuman::OnPacketRemoveMob(MSG_STANDARD* pStd)
 
 int TMHuman::OnPacketSendItem(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pSendItem = reinterpret_cast<MSG_SendItem*>(pStd);
+
+    TMFieldScene* pFScene{};
+
+    if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    if (pFScene)
+        pFScene->Bag_View();
+
+    auto pMobData = &g_pObjectManager->m_stMobData;
+
+    if (pFScene && g_pCurrentScene->m_pMyHuman == this)
+    {
+        if (pSendItem->DestType == 0)
+        {
+            if (pSendItem->DestPos == 6 && BASE_GetItemAbility(&g_pObjectManager->m_stMobData.Equip[6], EF_WTYPE) == 41)
+            {
+                m_stLookInfo.RightMesh = 0;
+                m_stLookInfo.RightSkin = 0;
+            }
+
+            memcpy(&pMobData->Equip[pSendItem->DestPos], &pSendItem->Item, sizeof(STRUCT_ITEM));
+
+            if (pSendItem->DestPos)
+                memcpy(&g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][pSendItem->DestPos], &pSendItem->Item, sizeof(STRUCT_ITEM));
+
+            SGridControl* pGridEquip[16]{};
+
+            pGridEquip[1] = pFScene->m_pGridHelm;
+            pGridEquip[2] = pFScene->m_pGridCoat;
+            pGridEquip[3] = pFScene->m_pGridPants;
+            pGridEquip[4] = pFScene->m_pGridGloves;
+            pGridEquip[5] = pFScene->m_pGridBoots;
+            pGridEquip[6] = pFScene->m_pGridLeft;
+            pGridEquip[7] = pFScene->m_pGridRight;
+            pGridEquip[8] = pFScene->m_pGridRing;
+            pGridEquip[9] = pFScene->m_pGridNecklace;
+            pGridEquip[10] = pFScene->m_pGridOrb;
+            pGridEquip[11] = pFScene->m_pGridCabuncle;
+            pGridEquip[12] = pFScene->m_pGridGuild;
+            pGridEquip[13] = pFScene->m_pGridEvent;
+            pGridEquip[14] = pFScene->m_pGridDRing;
+            pGridEquip[15] = pFScene->m_pGridMantua;
+
+            if (pSendItem->DestPos > 0 && pSendItem->DestPos < 16)
+            {
+                if (pGridEquip[pSendItem->DestPos] != nullptr)
+                {
+                    SGridControlItem* pItem = pGridEquip[pSendItem->DestPos]->PickupItem(0, 0);
+
+                    if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pItem)
+                        g_pCursor->m_pAttachedItem = nullptr;
+
+                    delete pItem;
+                }
+
+                if (pSendItem->Item.sIndex > 0)
+                {
+                    auto pstItem = new STRUCT_ITEM();
+
+                    if (pstItem)
+                    {
+                        memcpy(pstItem, &pMobData->Equip[pSendItem->DestPos], sizeof(STRUCT_ITEM));
+
+                        auto pItem = new SGridControlItem(0, pstItem, 0.0f, 0.0f);
+
+                        if (pItem)
+                        {
+                            if (pGridEquip[pSendItem->DestPos])
+                            {
+                                pGridEquip[pSendItem->DestPos]->Empty();
+                                pGridEquip[pSendItem->DestPos]->AddItem(pItem, 0, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if (pSendItem->DestType == 1)
+        {
+            memcpy(&pMobData->Carry[pSendItem->DestPos], &pSendItem->Item, sizeof(STRUCT_ITEM));
+            memcpy(g_pObjectManager->m_stMobData.Carry, pMobData->Carry, sizeof(g_pObjectManager->m_stMobData.Carry));
+
+            int Page = pSendItem->DestPos / 15;
+            int CellIndexX = pSendItem->DestPos % 15 % 5;
+            int CellIndexY = pSendItem->DestPos % 15 / 5;
+
+            if (Page >= 0 && Page <= 3)
+            {
+                SGridControl* pGrid = pFScene->m_pGridInvList[Page];
+
+                SGridControlItem* pOldGridItem = pGrid->PickupAtItem(CellIndexX, CellIndexY);
+
+                if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pOldGridItem)
+                    g_pCursor->m_pAttachedItem = nullptr;
+
+                delete pOldGridItem;
+
+                if (pSendItem->Item.sIndex > 0)
+                {
+                    auto pstItem = new STRUCT_ITEM();
+
+                    if (pstItem)
+                    {
+                        memcpy(pstItem, &pSendItem->Item, sizeof(STRUCT_ITEM));
+
+                        auto pItem = new SGridControlItem(0, pstItem, 0.0f, 0.0f);
+
+                        if (pItem)
+                            pGrid->AddItem(pItem, CellIndexX, CellIndexY);
+                    }
+                }
+            }
+        }
+        else if (pSendItem->DestType == 2)
+        {
+            memcpy(&g_pObjectManager->m_stItemCargo[pSendItem->DestPos], &pSendItem->Item, sizeof(STRUCT_ITEM));
+
+            int CellIndexX = pSendItem->DestPos % 40 % 5;
+            int CellIndexY = pSendItem->DestPos % 40 / 5;
+
+            auto pGrid = pFScene->m_pCargoGridList[pSendItem->DestPos / 40];
+
+            // TODO:
+            // Check if this is correct
+            pGrid->PickupAtItem(CellIndexX, CellIndexY);
+
+            if (pSendItem->Item.sIndex > 0)
+            {
+                auto pstItem = new STRUCT_ITEM();
+
+                if (pstItem)
+                {
+                    memcpy(pstItem, &pSendItem->Item, sizeof(STRUCT_ITEM));
+
+                    auto pItem = new SGridControlItem(0, pstItem, 0.0f, 0.0f);
+
+                    if (pItem)
+                        pGrid->AddItem(pItem, CellIndexX, CellIndexY);
+                }
+            }
+        }
+    }
+
+    SetPacketMOBItem(pMobData);
+    SetCharHeight(static_cast<float>(m_stScore.Con));
+    SetRace(pMobData->Equip[0].sIndex);
+
+    if (m_nWeaponTypeL == 41)
+    {
+        m_stLookInfo.RightMesh = m_stLookInfo.LeftMesh;
+        m_stLookInfo.RightSkin = m_stLookInfo.LeftSkin;
+        m_stSancInfo.Sanc6 = m_stSancInfo.Sanc7;
+        m_stSancInfo.Legend6 = m_stSancInfo.Legend7;
+    }
+
+    InitObject();
+    CheckWeapon(pMobData->Equip[6].sIndex, pMobData->Equip[7].sIndex);
+    InitAngle(0, m_fAngle, 0);
+
+    if (m_cMount == 1)
+    {
+        int nMountHP = BASE_GetItemAbility(&pMobData->Equip[14], EF_MOUNTHP);
+
+        m_pMountHPBar->SetCurrentProgress(nMountHP);
+
+        if (pFScene)
+        {
+            pFScene->m_pMHPBar->SetCurrentProgress(nMountHP);
+
+            char szMHP[32]{};
+            sprintf_s(szMHP, "%d", nMountHP);
+
+            pFScene->m_pCurrentMHPText->SetText(szMHP, 0);
+        }
+    }
+
+    if (pFScene)
+        pFScene->UpdateScoreUI(0);
+
+    SGridControl::m_sLastMouseOverIndex = -1;
+    return 1;
 }
 
 int TMHuman::OnPacketUpdateEquip(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pEquip = reinterpret_cast<MSG_UpdateEquip*>(pStd);
+    STRUCT_ITEM item{};
+    item.sIndex = pEquip->sEquip[0] & 0xFFF;
+
+    TMEffectParticle* pParticle = nullptr;
+    if (m_stLookInfo.FaceMesh != g_pItemList[item.sIndex].nIndexMesh || BASE_GetItemAbility(&item, EF_CLASS) != m_nClass)
+        pParticle = new TMEffectParticle(TMVector3{ m_vecPosition.x, m_fHeight + 1.0f, m_vecPosition.y }, 1, 3, 3.0f, 0, 1, 56, 1.0f, 1, TMVector3{}, 1000u);
+
+    if (pParticle)
+        g_pCurrentScene->m_pEffectContainer->AddChild(pParticle);
+
+    if (g_pSoundManager && g_pSoundManager->GetSoundData(158))
+        g_pSoundManager->GetSoundData(158)->Play();
+
+    auto pLightMap = new TMShade(4, 7, 1.0f);
+
+    if (pLightMap)
+    {
+        pLightMap->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pLightMap->SetPosition(m_vecPosition);
+        pLightMap->m_dwLifeTime = 3000;
+        pLightMap->SetColor(0xAAAAAAAA);
+        g_pCurrentScene->m_pEffectContainer->AddChild(pLightMap);
+    }
+
+    SetAnimation(ECHAR_MOTION::ECMOTION_LEVELUP, 0);
+
+    if (!m_cHide)
+    {
+        auto pLevelUp = new TMEffectLevelUp(TMVector3{ m_vecPosition.x, m_fHeight, m_vecPosition.y }, 0);
+
+        if (pLevelUp)
+            g_pCurrentScene->m_pEffectContainer->AddChild(pLevelUp);
+    }
+
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        auto pMobData = &g_pObjectManager->m_stMobData;
+        g_pObjectManager->m_stMobData.Equip[0].sIndex = pEquip->sEquip[0] & 0xFFF;
+
+        if (m_cMount == 1)
+        {
+            int nMountHP = BASE_GetItemAbility(&pMobData->Equip[14], EF_MOUNTHP);
+            m_pMountHPBar->SetCurrentProgress(nMountHP);
+            auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+            if (g_pCurrentScene)
+            {
+                pFScene->m_pMHPBar->SetCurrentProgress(nMountHP);
+                char szMHP[32] = { 0 };
+                sprintf_s(szMHP, "%d", nMountHP);
+
+                pFScene->m_pCurrentMHPText->SetText(szMHP, 0);
+            }
+        }
+    }
+
+    SetPacketEquipItem(pEquip->sEquip);
+
+    if (pEquip->sEquip[14] & 0xFFF && ((pEquip->sEquip[14] & 0xFFF) < 3980) || (pEquip->sEquip[14] & 0xFFF) >= 3999)
+        SetMountCostume(pEquip->Equip2[14]);
+
+    SetColorItem(pEquip->Equip2);
+    float fCon = static_cast<float>(m_stScore.Con);
+
+    SetCharHeight(fCon);
+    SetRace(pEquip->sEquip[0] & 0xFFF);
+
+    STRUCT_ITEM itemL{};
+    itemL.sIndex = pEquip->sEquip[6] & 0xFFF;
+
+    int nWeaponTypeL = BASE_GetItemAbility(&itemL, EF_WTYPE);
+    if (nWeaponTypeL == 41)
+    {
+        m_stLookInfo.RightMesh = m_stLookInfo.LeftMesh;
+        m_stLookInfo.RightSkin = m_stLookInfo.LeftSkin;
+
+        m_stSancInfo.Sanc6 = m_stSancInfo.Sanc7;
+        m_stSancInfo.Legend6 = m_stSancInfo.Legend7;
+    }
+
+    InitObject();
+
+    CheckWeapon(pEquip->sEquip[6] & 0xFFF, pEquip->sEquip[7] & 0xFFF);
+    InitAngle(0.0f, m_fAngle, 0.0f);
+
+    TMFieldScene* pScene = nullptr;
+    if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    if (pScene)
+        pScene->UpdateScoreUI(0);
+
+    SGridControl::m_sLastMouseOverIndex = -1;
+	return 1;
 }
 
 int TMHuman::OnPacketUpdateAffect(MSG_STANDARD* pStd)
@@ -3818,7 +4095,256 @@ int TMHuman::OnPacketUpdateAffect(MSG_STANDARD* pStd)
 
 int TMHuman::OnPacketUpdateScore(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pUpdateScore = reinterpret_cast<MSG_UpdateScore*>(pStd);
+
+    if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+        static_cast<TMFieldScene*>(g_pCurrentScene)->Bag_View();
+
+    m_cHide = m_dwID < 1000 == 1 && pUpdateScore->Score.Reserved & 1;
+    
+    if (m_dwID >= 1000 && pUpdateScore->ReqHp == 1)
+    {
+        TMHuman* pHuman = g_pObjectManager->GetHumanByID(m_dwID);
+
+        if (pHuman != nullptr)
+        {
+            pHuman->m_BigHp = pHuman->m_usHP;
+            pHuman->m_MaxBigHp = pHuman->m_usHP;
+        }
+    }
+
+    TMFieldScene* pFScene{};
+
+    if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    if (pFScene == nullptr)
+        return 1;
+
+    SListBox* pPartyList = pFScene->m_pPartyList;
+
+    if (pPartyList != nullptr)
+    {
+        for (int i = 0; i < pPartyList->m_nNumItem; ++i)
+        {
+            auto pPartyItem = static_cast<SListBoxPartyItem*>(pPartyList->m_pItemList[i]);
+            if (pPartyItem->m_dwCharID == m_dwID)
+            {
+                char szVal[32]{};
+
+                sprintf_s(szVal, "%d", pUpdateScore->Score.Level + 1);
+
+                pPartyItem->m_pLevelText->SetText(szVal, 0);
+
+                if (pUpdateScore->Score.Hp > pUpdateScore->Score.MaxHp)
+                    pUpdateScore->Score.Hp = pUpdateScore->Score.MaxHp;
+
+                pPartyItem->m_pHpProgress->SetMaxProgress(pUpdateScore->Score.MaxHp);
+                pPartyItem->m_pHpProgress->SetCurrentProgress(pUpdateScore->Score.Hp);
+                break;
+            }
+        }
+    }
+
+    memcpy(&m_stScore, &pUpdateScore->Score, sizeof(m_stScore));
+
+    if (g_pCurrentScene && g_pCurrentScene->m_pMyHuman == this)
+    {
+        if (g_pObjectManager->m_stMobData.CurrentScore.Level < pUpdateScore->Score.Level && Is2stClass() == 2)
+        {
+            auto pMobData = &g_pObjectManager->m_stMobData;
+            if (pFScene->m_pLevelQuest[pMobData->CurrentScore.Level + 1])
+            {
+                if (g_nBattleMaster % 10 >= 6 && pUpdateScore->Score.Level >= 350 || g_nBattleMaster % 10 < 6 && pUpdateScore->Score.Level < 350)
+                {
+                    pFScene->m_pQuestMemo->SetVisible(1);
+
+                    DWORD dwCol = 0xFFAAAAFF;
+
+                    char szStr[128]{};
+
+                    if (pFScene->m_pLevelQuest[pMobData->CurrentScore.Level + 1] == 100)
+                        dwCol = pFScene->LoadMsgText4(
+                            szStr,
+                            (char*)"UI\\QuestMessage.txt",
+                            pMobData->CurrentScore.Level + 2,
+                            pMobData->Equip[0].sIndex % 10);
+                    else
+                        sprintf_s(szStr, g_pMessageStringTable[307]);
+
+                    if (dwCol != 0xFF000000)
+                    {
+                        pFScene->m_pMessagePanel->SetMessage(szStr, 3000);
+
+                        auto pItem = new SListBoxItem(szStr, dwCol, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+                        
+                        if (pItem)
+                            pFScene->m_pChatListnotice->AddItem(pItem);
+                    }
+                }
+            }
+        }
+        memcpy(&g_pObjectManager->m_stMobData.CurrentScore, &pUpdateScore->Score, sizeof(STRUCT_SCORE));
+        m_sGuildLevel = static_cast<unsigned char>(g_pObjectManager->m_stMobData.GuildLevel);
+        g_pObjectManager->m_stMobData.Magic = pUpdateScore->Magic;
+    }
+
+    unsigned short usGuild = pUpdateScore->Guild;
+
+    m_usGuild = usGuild;
+
+    if (usGuild)
+    {
+        m_stGuildMark.bHideGuildmark = 0;
+        m_stGuildMark.nGuild = usGuild & 0xFFF;
+        m_stGuildMark.nSubGuild = BASE_GetSubGuild(m_sGuildLevel);
+        m_stGuildMark.nGuildChannel = ((int)usGuild >> 12) & 0xF;
+        m_stGuildMark.sGuildIndex = m_sGuildLevel;
+        
+        if (pFScene && !m_pAutoTradeDesc->IsVisible())
+            pFScene->Guildmark_Create(&m_stGuildMark);
+    }
+    else
+    {
+        m_stGuildMark.bHideGuildmark = 1;
+        m_stGuildMark.pGuildMark->SetVisible(0);
+    }
+
+    SetCharHeight(static_cast<float>(m_stScore.Con));
+
+    if (m_nClass == 40)
+        m_fScale *= (((float)m_stScore.Special[3] * 0.003f) + 1.0f);
+
+    if (pFScene && g_pCurrentScene->m_pMyHuman == this)
+    {
+        DWORD dwServerTime = g_pTimerManager->GetServerTime();
+
+        for (int l = 0; l < 32; ++l)
+        {
+            if ((((m_usAffect[l] & 0xFF) - 1) * 8
+                + 4
+                - (dwServerTime - pFScene->m_dwStartAffectTime[l]) / 1000)
+                / 8 != (pUpdateScore->Affect[l] & 0xFF)
+                || (int)m_usAffect[l] >> 8 != (int)pUpdateScore->Affect[l] >> 8)
+            {
+                memcpy(&m_usAffect[l], &pUpdateScore->Affect[l], sizeof(m_usAffect[l]));
+                pFScene->m_dwStartAffectTime[l] = dwServerTime;
+            }
+        }
+    }
+    else
+    {
+        memcpy(m_usAffect, pUpdateScore->Affect, sizeof(m_usAffect));
+    }
+
+    if (this == g_pCurrentScene->m_pMyHuman)
+    {
+        g_pObjectManager->m_stMobData.Critical = pUpdateScore->Critical;
+        g_pObjectManager->m_stMobData.SaveMana = pUpdateScore->SaveMana;
+    }
+
+    char oldShaow = m_cShadow;
+    CheckAffect();
+    UpdateScore(pUpdateScore->GuildLevel);
+
+    if (this == g_pCurrentScene->m_pMyHuman && pFScene)
+    {
+        if (!m_cOnlyMove)
+            SetSpeed(pFScene->m_bMountDead);
+    }
+    else if (!m_cOnlyMove)
+    {
+        SetSpeed(0);
+    }
+
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        auto pMobData = &g_pObjectManager->m_stMobData;
+
+        memcpy(pMobData->Resist, pUpdateScore->Resist, sizeof(pMobData->Resist));
+
+        g_pObjectManager->m_stSelCharData.Guild[g_pObjectManager->m_cCharacterSlot] = usGuild;
+
+        if (!usGuild)
+            g_pObjectManager->m_usWarGuild = -1;
+
+        memcpy(&pMobData->CurrentScore, &pUpdateScore->Score, sizeof(pMobData->CurrentScore));
+
+        if (m_cMount == 1)
+        {
+            int nMountHP = BASE_GetItemAbility(&pMobData->Equip[14], EF_MOUNTHP);
+            m_pMountHPBar->SetCurrentProgress(nMountHP);
+            
+            if (pFScene)
+            {
+                pFScene->m_pMHPBar->SetCurrentProgress(nMountHP);
+
+                if (nMountHP < 0)
+                    nMountHP = 0;
+
+                char szMHP[32]{};
+                sprintf(szMHP, "%d", nMountHP);
+                pFScene->m_pCurrentMHPText->SetText(szMHP, 0);
+            }
+        }
+
+        if (pFScene)
+        {
+            pFScene->SetSanc();
+            pFScene->m_nReqHP = pUpdateScore->ReqHp;
+            pFScene->m_nReqMP = pUpdateScore->ReqMp;
+        }
+
+        if (pFScene)
+            pFScene->UpdateScoreUI(0);
+    }
+
+    if (m_cMount)
+    {
+        D3DXVECTOR3 m_vOldAngle{ m_pMount->m_vAngle };
+        
+        if (m_cShadow == 1)
+        {
+            memset(&m_stMountSanc, 0, sizeof(m_stMountSanc));
+        }
+        else
+        {
+            m_stMountSanc.Sanc0 = m_stOldMountSanc.Sanc0;
+            m_stMountSanc.Sanc4 = m_stOldMountSanc.Sanc4;
+            m_stMountSanc.Legend0 = m_stOldMountSanc.Legend0;
+            m_stMountSanc.Legend4 = m_stOldMountSanc.Legend4;
+        }
+        UpdateMount();
+        m_pMount->SetAngle(m_vOldAngle);
+    }
+
+    m_c8thSkill = pUpdateScore->LearnedSkill;
+
+    if (oldShaow == 1 && !m_cShadow)
+    {
+        m_stSancInfo.Sanc0 = m_stOldSancInfo.Sanc0;
+        m_stSancInfo.Sanc4 = m_stOldSancInfo.Sanc4;
+        m_stSancInfo.Legend0 = m_stOldSancInfo.Legend0;
+        m_stSancInfo.Legend4 = m_stOldSancInfo.Legend4;
+        
+        m_stColorInfo.Sanc0 = m_stOldColorInfo.Sanc0;
+        m_stColorInfo.Sanc4 = m_stOldColorInfo.Sanc4;
+        m_stColorInfo.Legend0 = m_stOldColorInfo.Legend0;
+        m_stColorInfo.Legend4 = m_stOldColorInfo.Legend4;
+
+        InitObject();
+
+        if (g_pCurrentScene->m_pMyHuman == this)
+        {
+            CheckWeapon(
+                g_pObjectManager->m_stMobData.Equip[6].sIndex, 
+                g_pObjectManager->m_stMobData.Equip[7].sIndex);
+
+            InitAngle(0, m_fAngle, 0);
+        }
+    }
+
+    return 1;
 }
 
 int TMHuman::OnPacketSetHpMp(MSG_STANDARD* pStd)
