@@ -89,12 +89,12 @@ public:
     int OnPacketUpdateEtc(MSG_STANDARD* pStd);
     int OnPacketUpdateCoin(MSG_STANDARDPARM* pStd);
     int OnPacketUpdateRMB(MSG_STANDARDPARM* pStd);
-    int OnPacketTrade(MSG_STANDARD* pStd);
+    int OnPacketTrade(MSG_Trade* pStd);
     int OnPacketQuitTrade(MSG_STANDARD* pStd);
-    int OnPacketCarry(MSG_STANDARD* pStd);
+    int OnPacketCarry(MSG_Carry* pStd);
     int OnPacketCNFCheck(MSG_STANDARD* pStd);
-    int OnPacketSetClan(MSG_STANDARD* pStd);
-    int OnPacketReqRanking(MSG_STANDARD* pStd);
+    int OnPacketSetClan(MSG_STANDARDPARM* pStd);
+    int OnPacketReqRanking(MSG_STANDARDPARM2* pStd);
     int OnPacketVisualEffect(MSG_STANDARD* pStd);
     int IsMerchant();
     void Init();

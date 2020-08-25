@@ -4960,9 +4960,28 @@ int TMHuman::OnPacketSetClan(MSG_STANDARDPARM* pStd)
     return 1;
 }
 
-int TMHuman::OnPacketReqRanking(MSG_STANDARD* pStd)
+int TMHuman::OnPacketReqRanking(MSG_STANDARDPARM2* pStd)
 {
-	return 0;
+    auto pHuman = (TMHuman*)g_pObjectManager->GetHumanByID(pStd->Parm1);
+    if (pHuman)
+    {
+        static const char szVS[4][16] = {
+            "1 : 1",
+            "5 : 5",
+            "10 : 10",
+            "All : All"
+        };
+
+        char szTemp[128]{};
+        sprintf(szTemp, g_pMessageStringTable[153], pHuman->m_szName, szVS[pStd->Parm2 % 4]);
+
+        auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+        pScene->m_pMessageBox->SetMessage(szTemp, 927, g_pMessageStringTable[154]);
+        pScene->m_pMessageBox->SetVisible(1);
+        pScene->m_pMessageBox->m_dwArg = pStd->Parm1;
+    }
+
+    return 1;
 }
 
 int TMHuman::OnPacketVisualEffect(MSG_STANDARD* pStd)
