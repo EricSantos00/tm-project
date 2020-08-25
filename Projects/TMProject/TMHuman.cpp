@@ -3457,28 +3457,28 @@ int TMHuman::OnPacketEvent(unsigned int dwCode, char* buf)
         return OnPacketUpdateEtc((MSG_STANDARD*)buf);
         break;
     case 0x3AF:
-        return OnPacketUpdateCoin((MSG_STANDARD*)buf);
+        return OnPacketUpdateCoin(reinterpret_cast<MSG_STANDARDPARM*>(buf));
         break;
     case 0x1CF:
-        return OnPacketUpdateRMB((MSG_STANDARD*)buf);
+        return OnPacketUpdateRMB(reinterpret_cast<MSG_STANDARDPARM*>(buf));
         break;
     case 0x383:
-        return OnPacketTrade((MSG_STANDARD*)buf);
+        return OnPacketTrade(reinterpret_cast<MSG_Trade*>(buf));
         break;
     case 0x384:
         return OnPacketQuitTrade((MSG_STANDARD*)buf);
         break;
     case 0x185:
-        return OnPacketCarry((MSG_STANDARD*)buf);
+        return OnPacketCarry(reinterpret_cast<MSG_Carry*>(buf));
         break;
     case 0x386:
         return OnPacketCNFCheck((MSG_STANDARD*)buf);
         break;
     case 0x193:
-        return OnPacketSetClan((MSG_STANDARD*)buf);
+        return OnPacketSetClan(reinterpret_cast<MSG_STANDARDPARM*>(buf));
         break;
     case 0x39F:
-        return OnPacketReqRanking((MSG_STANDARD*)buf);
+        return OnPacketReqRanking(reinterpret_cast<MSG_STANDARDPARM2*>(buf));
         break;
     case 0x3AD:
         return OnPacketVisualEffect((MSG_STANDARD*)buf);
@@ -9076,6 +9076,21 @@ int TMHuman::ChangeRouteBuffer(int nSX, int nSY, TMVector2* pRouteTable, int* pM
 
 void TMHuman::SetHandEffect(int nHandEffect)
 {
+    if (m_dwDelayDel)
+        return;
+
+    m_nHandEffect = nHandEffect;
+    if (m_pSkinMesh)
+    {
+        if (m_bSwordShadow[0] == 1 && m_pSkinMesh->m_pSwingEffect[0])
+            m_pSkinMesh->m_pSwingEffect[0]->m_nHandEffect = m_nHandEffect;
+        else if (m_pSkinMesh->m_pSwingEffect[0])
+            m_pSkinMesh->m_pSwingEffect[0]->m_nHandEffect = 0;
+        if (m_bSwordShadow[1] == 1 && m_pSkinMesh->m_pSwingEffect[1])
+            m_pSkinMesh->m_pSwingEffect[1]->m_nHandEffect = m_nHandEffect;
+        else if (m_pSkinMesh->m_pSwingEffect[1])
+            m_pSkinMesh->m_pSwingEffect[1]->m_nHandEffect = 0;
+    }
 }
 
 void TMHuman::CheckAffect()
