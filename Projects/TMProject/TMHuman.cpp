@@ -6856,13 +6856,13 @@ void TMHuman::Attack(ECHAR_MOTION eMotion, TMHuman* pTarget, short cSkillIndex)
         {
             if (m_nSkinMeshType == 1)
             {
-                m_eMotionBuffer[i] = (ECHAR_MOTION)(g_pSpell[cSkillIndex].Act2[i + m_cMount ? 3 : 0] - 1);
+                m_eMotionBuffer[i] = (ECHAR_MOTION)(g_pSpell[cSkillIndex].Act2[i + (m_cMount ? 3 : 0)] - 1);
                 if ((int)m_eMotionBuffer[i] > 0)
                     ++m_nMotionCount;
             }
             else
             {
-                m_eMotionBuffer[i] = (ECHAR_MOTION)(g_pSpell[cSkillIndex].Act1[i + m_cMount ? 3 : 0] - 1);
+                m_eMotionBuffer[i] = (ECHAR_MOTION)(g_pSpell[cSkillIndex].Act1[i + (m_cMount ? 3 : 0)] - 1);
                 if ((int)m_eMotionBuffer[i] > 0)
                     ++m_nMotionCount;
             }

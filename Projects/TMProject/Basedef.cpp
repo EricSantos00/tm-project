@@ -1279,7 +1279,7 @@ int IsValidClassSkill(int nSkillIndex)
         return 1;
     }
 
-    return 0;
+    return 1;
 }
 
 int IsClearString(char* str, int target)
