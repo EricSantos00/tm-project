@@ -87,8 +87,8 @@ public:
     int OnPacketMessageChat_Param(MSG_STANDARD* pStd);
     int OnPacketMessageWhisper(MSG_STANDARD* pStd);
     int OnPacketUpdateEtc(MSG_STANDARD* pStd);
-    int OnPacketUpdateCoin(MSG_STANDARD* pStd);
-    int OnPacketUpdateRMB(MSG_STANDARD* pStd);
+    int OnPacketUpdateCoin(MSG_STANDARDPARM* pStd);
+    int OnPacketUpdateRMB(MSG_STANDARDPARM* pStd);
     int OnPacketTrade(MSG_STANDARD* pStd);
     int OnPacketQuitTrade(MSG_STANDARD* pStd);
     int OnPacketCarry(MSG_STANDARD* pStd);

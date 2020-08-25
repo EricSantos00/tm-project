@@ -4743,19 +4743,119 @@ int TMHuman::OnPacketUpdateEtc(MSG_STANDARD* pStd)
     return 1;
 }
 
-int TMHuman::OnPacketUpdateCoin(MSG_STANDARD* pStd)
+int TMHuman::OnPacketUpdateCoin(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        g_pObjectManager->m_stMobData.Coin = pStd->Parm;
+        if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+            static_cast<TMFieldScene*>(g_pCurrentScene)->UpdateScoreUI(0);
+    }
+
+    return 1;
 }
 
-int TMHuman::OnPacketUpdateRMB(MSG_STANDARD* pStd)
+int TMHuman::OnPacketUpdateRMB(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        g_pObjectManager->m_RMBCount = pStd->Parm;
+        if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+            static_cast<TMFieldScene*>(g_pCurrentScene)->UpdateScoreUI(0);
+    }
+
+    return 1;
 }
 
-int TMHuman::OnPacketTrade(MSG_STANDARD* pStd)
+int TMHuman::OnPacketTrade(MSG_Trade* pStd)
 {
-	return 0;
+    if (g_pCurrentScene->m_pMyHuman != this || g_pCurrentScene->GetSceneType() != ESCENE_TYPE::ESCENE_FIELD)
+        return 1;
+
+    auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+    auto pOpCheckButton = (SButton*)g_pCurrentScene->m_pControlContainer->FindControl(601);
+    pOpCheckButton->SetSelected((unsigned char)pStd->MyCheck);
+
+
+    if (g_pObjectManager->m_stTrade.OpponentID || !pStd->OpponentID)
+    {
+        bool bChanged = false;
+
+        SGridControl* pGridOp[15];
+        for (int i = 0; i < 15; ++i)
+        {
+            pGridOp[i] = (SGridControl*)pScene->m_pControlContainer->FindControl(i + 8182);
+            auto pPickedItem = pGridOp[i]->PickupItem(0, 0);
+            if (pPickedItem && memcmp(pPickedItem->m_pItem, &pStd->Item[i], sizeof(STRUCT_ITEM)))
+                bChanged = 1;
+            if (!pPickedItem && pStd->Item[i].sIndex > 0)
+                bChanged = 1;
+            if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+                g_pCursor->m_pAttachedItem = 0;
+            
+            SAFE_DELETE(pPickedItem);
+
+            if (pStd->Item[i].sIndex > 0)
+            {
+                auto pstItem = new STRUCT_ITEM;
+                if (pstItem)
+                {
+                    memcpy(pstItem, &pStd->Item[i], sizeof(STRUCT_ITEM));
+                    pGridOp[i]->AddItem(new SGridControlItem(0, pstItem, 0.0f, 0.0f), 0, 0);
+                }
+            }
+        }
+
+        auto pOPGold = (SText*)pScene->m_pControlContainer->FindControl(603);
+
+        char szGold[128]{};
+        sprintf(szGold, "%10d", pStd->TradeMoney);
+        if (bChanged == 1 || strcmp(szGold, pOPGold->GetText()))
+        {
+            auto pMyCheck = (SButton*)pScene->m_pControlContainer->FindControl(617);
+            auto pOtherCheck = (SButton*)pScene->m_pControlContainer->FindControl(601);
+            pMyCheck->m_bSelected = 0;
+            pOtherCheck->m_bSelected = 0;
+
+            pScene->m_dwLastCheckTime = g_pApp->m_pTimerManager->GetServerTime();
+            g_pObjectManager->m_stTrade.MyCheck = pMyCheck->m_bSelected;
+        }
+
+        pOPGold->SetText(szGold, 0);
+        if (!pScene->m_pControlContainer->FindControl(576)->IsVisible())
+        {
+            auto pTextMyName = (SText*)pScene->m_pControlContainer->FindControl(618);
+            auto pTextOPName = (SText*)pScene->m_pControlContainer->FindControl(602);
+            auto pNode = (TMHuman*)g_pObjectManager->GetHumanByID(pStd->OpponentID);
+            if (pNode)
+            {
+                char szMyName[128]{};
+                sprintf(szMyName, "[%s]:%d", m_szName, strlen(m_szName));
+                char szOPName[128]{};
+                sprintf(szOPName, "[%s]:%d", pNode->m_szName, strlen(pNode->m_szName));
+                pTextMyName->SetText(szMyName, 1);
+                pTextOPName->SetText(szOPName, 1);
+                pScene->SetVisibleTrade(1);
+            }
+        }
+        return 1;
+    }
+
+    auto pOpp = (TMHuman*)g_pObjectManager->GetHumanByID(pStd->OpponentID);
+    if (pOpp)
+    {
+        char szMessage[128]{};
+        sprintf(szMessage, g_pMessageStringTable[64], pOpp->m_szName, pOpp->m_stScore.Level + 1);
+        pScene->m_pMessageBox->SetMessage(szMessage, 601, g_pMessageStringTable[28]);
+        pScene->m_pMessageBox->m_dwArg = pStd->OpponentID;
+        pScene->m_pMessageBox->SetVisible(1);
+        g_pCursor->DetachItem();
+        memcpy(&g_pObjectManager->m_stTrade, pStd, sizeof(g_pObjectManager->m_stTrade));
+        g_pObjectManager->m_stTrade.OpponentID = 0;
+        g_pObjectManager->m_stTrade.TradeMoney = 0;
+    }
+
+    return 1;
 }
 
 int TMHuman::OnPacketQuitTrade(MSG_STANDARD* pStd)
