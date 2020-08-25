@@ -3979,7 +3979,61 @@ int TMHuman::OnPacketUpdateEquip(MSG_STANDARD* pStd)
 
 int TMHuman::OnPacketUpdateAffect(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pUpdateAffect = reinterpret_cast<MSG_UpdateAffect*>(pStd);
+
+    TMFieldScene* pFScene{};
+
+    if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    if (pFScene && g_pCurrentScene->m_pMyHuman == this)
+    {
+        m_DilpunchJewel = 0;
+        m_MoonlightJewel = 0;
+        m_BloodJewel = 0;
+        m_JewelGlasses = 0;
+        m_RedJewel = 0;
+
+        unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+        for (int i = 0; i < 32; ++i)
+        {
+            if ((8 * pUpdateAffect->Affect[i].Time - 8 - (dwServerTime - pFScene->m_dwStartAffectTime[i]) / 1000) / 8 != pUpdateAffect->Affect[i].Time
+                || m_stAffect[i].Type != pUpdateAffect->Affect[i].Type)
+            {
+                memcpy(&m_stAffect[i], &pUpdateAffect->Affect[i], sizeof(m_stAffect[i]));
+                pFScene->m_dwStartAffectTime[i] = g_pTimerManager->GetServerTime();
+            }
+
+            if (pUpdateAffect->Affect[i].Type == 8)
+            {
+                if (pUpdateAffect->Affect[i].Value & 0x1)
+                    m_DilpunchJewel = 1;
+                if (pUpdateAffect->Affect[i].Value & 0x2)
+                    m_MoonlightJewel = 1;
+                if (pUpdateAffect->Affect[i].Value & 0x4)
+                    m_JewelGlasses = 1;
+                if (pUpdateAffect->Affect[i].Value & 0x8)
+                    m_BloodJewel = 1;
+                if (pUpdateAffect->Affect[i].Value & 0x10)
+                    m_RedJewel = 1;
+            }
+        }
+
+        if (!pFScene->m_nYear && !pFScene->m_nDays || pFScene->m_dwEventTime && dwServerTime > (pFScene->m_dwEventTime + 3600000))
+        {
+            pFScene->m_dwEventTime = dwServerTime;
+            MSG_MessageWhisper stWhisper{};
+            stWhisper.Header.ID = g_pObjectManager->m_dwCharID;
+            stWhisper.Header.Type = MSG_MessageWhisper_Opcode;
+            sprintf_s(stWhisper.MobName, "day");
+            SendOneMessage((char*)&stWhisper, sizeof(stWhisper));
+        }
+
+        if (pFScene)
+            pFScene->UpdateScoreUI(1u);
+    }
+    return 1;
 }
 
 int TMHuman::OnPacketUpdateScore(MSG_STANDARD* pStd)

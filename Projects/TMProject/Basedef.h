@@ -862,6 +862,13 @@ struct MSG_UpdateEquip
 	char Equip2[16];
 };
 
+constexpr auto MSG_UpdateAffect_Opcode = 0x3B9;
+struct MSG_UpdateAffect
+{
+	MSG_STANDARD Header;
+	STRUCT_AFFECT Affect[32];
+};
+
 constexpr auto MSG_AccountLogin_Opcode = 0x20D;
 struct MSG_AccountLogin
 {
