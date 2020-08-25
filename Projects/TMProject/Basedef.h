@@ -891,6 +891,24 @@ struct MSG_MessageChat
 	char String[128];
 };
 
+constexpr auto MSG_UpdateScore_Opcode = 0x336;
+struct MSG_UpdateScore
+{
+	MSG_STANDARD Header;
+	STRUCT_SCORE Score;
+	char Critical;
+	char SaveMana;
+	unsigned short Affect[32];
+	unsigned short Guild;
+	unsigned short GuildLevel;
+	char Resist[4];
+	int ReqHp;
+	int ReqMp;
+	unsigned short Magic;
+	unsigned short Rsv;
+	char LearnedSkill;
+};
+
 constexpr auto MSG_MessagePanel_Opcode = 0x101;
 struct MSG_MessagePanel
 {

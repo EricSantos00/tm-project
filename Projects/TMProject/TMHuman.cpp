@@ -3890,7 +3890,256 @@ int TMHuman::OnPacketUpdateAffect(MSG_STANDARD* pStd)
 
 int TMHuman::OnPacketUpdateScore(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pUpdateScore = reinterpret_cast<MSG_UpdateScore*>(pStd);
+
+    if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+        static_cast<TMFieldScene*>(g_pCurrentScene)->Bag_View();
+
+    m_cHide = m_dwID < 1000 == 1 && pUpdateScore->Score.Reserved & 1;
+    
+    if (m_dwID >= 1000 && pUpdateScore->ReqHp == 1)
+    {
+        TMHuman* pHuman = g_pObjectManager->GetHumanByID(m_dwID);
+
+        if (pHuman != nullptr)
+        {
+            pHuman->m_BigHp = pHuman->m_usHP;
+            pHuman->m_MaxBigHp = pHuman->m_usHP;
+        }
+    }
+
+    TMFieldScene* pFScene{};
+
+    if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    if (pFScene == nullptr)
+        return 1;
+
+    SListBox* pPartyList = pFScene->m_pPartyList;
+
+    if (pPartyList != nullptr)
+    {
+        for (int i = 0; i < pPartyList->m_nNumItem; ++i)
+        {
+            auto pPartyItem = static_cast<SListBoxPartyItem*>(pPartyList->m_pItemList[i]);
+            if (pPartyItem->m_dwCharID == m_dwID)
+            {
+                char szVal[32]{};
+
+                sprintf_s(szVal, "%d", pUpdateScore->Score.Level + 1);
+
+                pPartyItem->m_pLevelText->SetText(szVal, 0);
+
+                if (pUpdateScore->Score.Hp > pUpdateScore->Score.MaxHp)
+                    pUpdateScore->Score.Hp = pUpdateScore->Score.MaxHp;
+
+                pPartyItem->m_pHpProgress->SetMaxProgress(pUpdateScore->Score.MaxHp);
+                pPartyItem->m_pHpProgress->SetCurrentProgress(pUpdateScore->Score.Hp);
+                break;
+            }
+        }
+    }
+
+    memcpy(&m_stScore, &pUpdateScore->Score, sizeof(m_stScore));
+
+    if (g_pCurrentScene && g_pCurrentScene->m_pMyHuman == this)
+    {
+        if (g_pObjectManager->m_stMobData.CurrentScore.Level < pUpdateScore->Score.Level && Is2stClass() == 2)
+        {
+            auto pMobData = &g_pObjectManager->m_stMobData;
+            if (pFScene->m_pLevelQuest[pMobData->CurrentScore.Level + 1])
+            {
+                if (g_nBattleMaster % 10 >= 6 && pUpdateScore->Score.Level >= 350 || g_nBattleMaster % 10 < 6 && pUpdateScore->Score.Level < 350)
+                {
+                    pFScene->m_pQuestMemo->SetVisible(1);
+
+                    DWORD dwCol = 0xFFAAAAFF;
+
+                    char szStr[128]{};
+
+                    if (pFScene->m_pLevelQuest[pMobData->CurrentScore.Level + 1] == 100)
+                        dwCol = pFScene->LoadMsgText4(
+                            szStr,
+                            (char*)"UI\\QuestMessage.txt",
+                            pMobData->CurrentScore.Level + 2,
+                            pMobData->Equip[0].sIndex % 10);
+                    else
+                        sprintf_s(szStr, g_pMessageStringTable[307]);
+
+                    if (dwCol != 0xFF000000)
+                    {
+                        pFScene->m_pMessagePanel->SetMessage(szStr, 3000);
+
+                        auto pItem = new SListBoxItem(szStr, dwCol, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+                        
+                        if (pItem)
+                            pFScene->m_pChatListnotice->AddItem(pItem);
+                    }
+                }
+            }
+        }
+        memcpy(&g_pObjectManager->m_stMobData.CurrentScore, &pUpdateScore->Score, sizeof(STRUCT_SCORE));
+        m_sGuildLevel = static_cast<unsigned char>(g_pObjectManager->m_stMobData.GuildLevel);
+        g_pObjectManager->m_stMobData.Magic = pUpdateScore->Magic;
+    }
+
+    unsigned short usGuild = pUpdateScore->Guild;
+
+    m_usGuild = usGuild;
+
+    if (usGuild)
+    {
+        m_stGuildMark.bHideGuildmark = 0;
+        m_stGuildMark.nGuild = usGuild & 0xFFF;
+        m_stGuildMark.nSubGuild = BASE_GetSubGuild(m_sGuildLevel);
+        m_stGuildMark.nGuildChannel = ((int)usGuild >> 12) & 0xF;
+        m_stGuildMark.sGuildIndex = m_sGuildLevel;
+        
+        if (pFScene && !m_pAutoTradeDesc->IsVisible())
+            pFScene->Guildmark_Create(&m_stGuildMark);
+    }
+    else
+    {
+        m_stGuildMark.bHideGuildmark = 1;
+        m_stGuildMark.pGuildMark->SetVisible(0);
+    }
+
+    SetCharHeight(static_cast<float>(m_stScore.Con));
+
+    if (m_nClass == 40)
+        m_fScale *= (((float)m_stScore.Special[3] * 0.003f) + 1.0f);
+
+    if (pFScene && g_pCurrentScene->m_pMyHuman == this)
+    {
+        DWORD dwServerTime = g_pTimerManager->GetServerTime();
+
+        for (int l = 0; l < 32; ++l)
+        {
+            if ((((m_usAffect[l] & 0xFF) - 1) * 8
+                + 4
+                - (dwServerTime - pFScene->m_dwStartAffectTime[l]) / 1000)
+                / 8 != (pUpdateScore->Affect[l] & 0xFF)
+                || (int)m_usAffect[l] >> 8 != (int)pUpdateScore->Affect[l] >> 8)
+            {
+                memcpy(&m_usAffect[l], &pUpdateScore->Affect[l], sizeof(m_usAffect[l]));
+                pFScene->m_dwStartAffectTime[l] = dwServerTime;
+            }
+        }
+    }
+    else
+    {
+        memcpy(m_usAffect, pUpdateScore->Affect, sizeof(m_usAffect));
+    }
+
+    if (this == g_pCurrentScene->m_pMyHuman)
+    {
+        g_pObjectManager->m_stMobData.Critical = pUpdateScore->Critical;
+        g_pObjectManager->m_stMobData.SaveMana = pUpdateScore->SaveMana;
+    }
+
+    char oldShaow = m_cShadow;
+    CheckAffect();
+    UpdateScore(pUpdateScore->GuildLevel);
+
+    if (this == g_pCurrentScene->m_pMyHuman && pFScene)
+    {
+        if (!m_cOnlyMove)
+            SetSpeed(pFScene->m_bMountDead);
+    }
+    else if (!m_cOnlyMove)
+    {
+        SetSpeed(0);
+    }
+
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        auto pMobData = &g_pObjectManager->m_stMobData;
+
+        memcpy(pMobData->Resist, pUpdateScore->Resist, sizeof(pMobData->Resist));
+
+        g_pObjectManager->m_stSelCharData.Guild[g_pObjectManager->m_cCharacterSlot] = usGuild;
+
+        if (!usGuild)
+            g_pObjectManager->m_usWarGuild = -1;
+
+        memcpy(&pMobData->CurrentScore, &pUpdateScore->Score, sizeof(pMobData->CurrentScore));
+
+        if (m_cMount == 1)
+        {
+            int nMountHP = BASE_GetItemAbility(&pMobData->Equip[14], EF_MOUNTHP);
+            m_pMountHPBar->SetCurrentProgress(nMountHP);
+            
+            if (pFScene)
+            {
+                pFScene->m_pMHPBar->SetCurrentProgress(nMountHP);
+
+                if (nMountHP < 0)
+                    nMountHP = 0;
+
+                char szMHP[32]{};
+                sprintf(szMHP, "%d", nMountHP);
+                pFScene->m_pCurrentMHPText->SetText(szMHP, 0);
+            }
+        }
+
+        if (pFScene)
+        {
+            pFScene->SetSanc();
+            pFScene->m_nReqHP = pUpdateScore->ReqHp;
+            pFScene->m_nReqMP = pUpdateScore->ReqMp;
+        }
+
+        if (pFScene)
+            pFScene->UpdateScoreUI(0);
+    }
+
+    if (m_cMount)
+    {
+        D3DXVECTOR3 m_vOldAngle{ m_pMount->m_vAngle };
+        
+        if (m_cShadow == 1)
+        {
+            memset(&m_stMountSanc, 0, sizeof(m_stMountSanc));
+        }
+        else
+        {
+            m_stMountSanc.Sanc0 = m_stOldMountSanc.Sanc0;
+            m_stMountSanc.Sanc4 = m_stOldMountSanc.Sanc4;
+            m_stMountSanc.Legend0 = m_stOldMountSanc.Legend0;
+            m_stMountSanc.Legend4 = m_stOldMountSanc.Legend4;
+        }
+        UpdateMount();
+        m_pMount->SetAngle(m_vOldAngle);
+    }
+
+    m_c8thSkill = pUpdateScore->LearnedSkill;
+
+    if (oldShaow == 1 && !m_cShadow)
+    {
+        m_stSancInfo.Sanc0 = m_stOldSancInfo.Sanc0;
+        m_stSancInfo.Sanc4 = m_stOldSancInfo.Sanc4;
+        m_stSancInfo.Legend0 = m_stOldSancInfo.Legend0;
+        m_stSancInfo.Legend4 = m_stOldSancInfo.Legend4;
+        
+        m_stColorInfo.Sanc0 = m_stOldColorInfo.Sanc0;
+        m_stColorInfo.Sanc4 = m_stOldColorInfo.Sanc4;
+        m_stColorInfo.Legend0 = m_stOldColorInfo.Legend0;
+        m_stColorInfo.Legend4 = m_stOldColorInfo.Legend4;
+
+        InitObject();
+
+        if (g_pCurrentScene->m_pMyHuman == this)
+        {
+            CheckWeapon(
+                g_pObjectManager->m_stMobData.Equip[6].sIndex, 
+                g_pObjectManager->m_stMobData.Equip[7].sIndex);
+
+            InitAngle(0, m_fAngle, 0);
+        }
+    }
+
+    return 1;
 }
 
 int TMHuman::OnPacketSetHpMp(MSG_STANDARD* pStd)
