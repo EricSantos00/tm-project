@@ -16062,6 +16062,7 @@ int TMFieldScene::OnPacketRMBShopList(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketBuy(MSG_STANDARD* pStd)
 {
+	// Just that
 	return 1;
 }
 
@@ -16232,9 +16233,80 @@ int TMFieldScene::OnPacketCNFMobKill(MSG_CNFMobKill* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketREQParty(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketREQParty(MSG_REQParty* pStd)
 {
-	return 0;
+	auto pPartyList = m_pPartyList;
+	pStd->Leader.Name[15] = 0;
+
+	auto pPartyItem = new SListBoxPartyItem(pStd->Leader.Name,
+		0xFFFFFFFF,
+		0.0f,
+		0.0f,
+		104.0f,
+		20.0f,
+		pStd->Leader.ID,
+		pStd->Leader.Class,
+		pStd->Leader.Level,
+		pStd->Leader.Hp,
+		pStd->Leader.MaxHp);
+
+	if (!pStd->Leader.PartyIndex)
+		pPartyItem->m_nState = 1;
+	if (pPartyList->m_nNumItem > 0)
+		pPartyList->Empty();
+
+	pPartyList->AddItem(pPartyItem);
+
+	if (m_pPartyPanel)
+		m_pPartyPanel->SetVisible(1);
+	if (m_pPartyBtn)
+		m_pPartyBtn->m_bSelected = 0;
+
+	auto pNode = (TMHuman*)g_pObjectManager->GetHumanByID(pStd->Leader.ID);
+	if (pNode)
+		pNode->SetInMiniMap(0xAAFFFF00);
+	if (!m_pPartyPanel->IsVisible())
+		SetVisibleParty();
+
+	auto pChatList = m_pChatList;
+
+	char szMsg[128]{};
+	sprintf(szMsg, g_pMessageStringTable[62], pStd->Leader.Name);
+
+	pChatList->AddItem(new SListBoxItem(szMsg, 0xFFCCAAFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+	if (!m_bAutoParty)
+	{
+		sprintf(szMsg, g_pMessageStringTable[63], pStd->Leader.Name);
+
+		pChatList->AddItem(new SListBoxItem(szMsg, 0xFFCCAAFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+		m_pPartyAutoButton->SetVisible(0);
+		m_pPartyAutoText->SetVisible(0);
+
+		auto partyback = (SPanel*)m_pControlContainer->FindControl(7602196);
+		if (partyback)
+			partyback->SetVisible(0);
+	}
+	else
+	{
+		MSG_CNFParty2 stCnfParty{};
+
+		stCnfParty.Header.ID = m_pMyHuman->m_dwID;
+		stCnfParty.Header.Type = MSG_CNFParty2_Opcode;
+		stCnfParty.LeaderID = pStd->Leader.ID;
+		sprintf(stCnfParty.LeaderName, pStd->Leader.Name);
+		
+		if (pNode)
+			pNode->m_bParty = 1;
+
+		SendOneMessage((char*)&stCnfParty, sizeof(stCnfParty));
+	}
+
+	m_dwChatTime = g_pTimerManager->GetServerTime();
+
+	GetSoundAndPlay(33, 0, 0);
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketAddParty(MSG_STANDARD* pStd)

@@ -3436,7 +3436,7 @@ int TMHuman::OnPacketEvent(unsigned int dwCode, char* buf)
         return OnPacketUpdateScore((MSG_STANDARD*)buf);
         break;
     case 0x181:
-        return OnPacketSetHpMp((MSG_STANDARD*)buf);
+        return OnPacketSetHpMp(reinterpret_cast<MSG_SetHpMp*>(buf));
         break;
     case 0x18A:
         return OnPacketSetHpDam((MSG_STANDARD*)buf);
