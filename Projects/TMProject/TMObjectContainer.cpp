@@ -514,19 +514,19 @@ int TMObjectContainer::Load(const char* szFileName)
 			{
 				int nTexIndex = dwObjType - 501;
 				unsigned int col[3][2];
-				col[0][0] = 0xFFAA00;
+				col[0][0] = 0x00FFAA00;
 				col[0][1] = 0x33331100;
-				col[1][0] = 0xFFAA00;
+				col[1][0] = 0x00FFAA00;
 				col[1][1] = 0x33331100;
 				col[2][0] = 0x00AA00FF;
 				col[2][1] = 0x11033;
 
 				D3DCOLORVALUE GCol = g_pCurrentScene->GroundGetColor(TMVector2(m_fOffsetX + vecPosition.x, m_fOffsetY + vecPosition.y));
 
-				unsigned int dwGA = (unsigned int)(float)(GCol.a * 256.0) & 0xFF;
-				unsigned int dwGR = (unsigned int)(float)(GCol.r * 256.0) & 0xFF;
-				unsigned int dwGG = (unsigned int)(float)(GCol.g * 256.0) & 0xFF;
-				unsigned int dwGB = (unsigned int)(float)(GCol.b * 256.0) & 0xFF;
+				unsigned int dwGA = (unsigned int)(GCol.a * 256.0f) & 0xFF;
+				unsigned int dwGR = (unsigned int)(GCol.r * 256.0f) & 0xFF;
+				unsigned int dwGG = (unsigned int)(GCol.g * 256.0f) & 0xFF;
+				unsigned int dwGB = (unsigned int)(GCol.b * 256.0f) & 0xFF;
 				unsigned int dwCA = (col[nTexIndex][0] & 0xFF000000) >> 24;
 				unsigned int dwCR = ((unsigned int)0xFF0000 & col[nTexIndex][0]) >> 16;
 				unsigned int dwCG = (col[nTexIndex][0] & 0xFF00) >> 8;

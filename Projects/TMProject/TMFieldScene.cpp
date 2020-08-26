@@ -4580,6 +4580,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 	}
 	if (idwControlID == 65881)
 	{
+		m_dwLastLogout = g_pTimerManager->GetServerTime();
 		MSG_STANDARDPARM stParm{};
 		stParm.Header.ID = m_pMyHuman->m_dwID;
 		stParm.Header.Type = MSG_SysQuit_Opcode;
