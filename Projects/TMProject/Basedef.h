@@ -750,6 +750,8 @@ constexpr auto MSG_CloseTrade_Opcode = 0x384;
 constexpr auto MSG_Withdraw_Opcode = 0x387;
 constexpr auto MSG_Deposit_Opcode = 0x388;
 
+constexpr auto MSG_CombineItem_Opcode = 0x3A6;
+constexpr auto MSG_CombineItemTiny_Opcode = 0x3C0;
 struct MSG_CombineItem
 {
 	MSG_STANDARD Header;

@@ -11098,10 +11098,92 @@ void TMFieldScene::SetVisibleTrade(int bShow)
 
 void TMFieldScene::ClearCombine()
 {
+	for (int i = 0; i < 3; ++i)
+	{
+		auto pGridInv = m_pGridInvList[i];
+		for (int nY = 0; nY < 3; ++nY)
+		{
+			for (int nX = 0; nX < 5; ++nX)
+			{
+				auto pItem = pGridInv->GetItem(nX, nY);
+				if (pItem)
+				{
+					if (pItem->m_GCObj.dwColor == 0xFFFF0000)
+						pItem->m_GCObj.dwColor = 0xFFFFFFFF;
+				}
+			}
+		}
+	}
+
+	memset(&g_pObjectManager->m_stCombineItem, 0, sizeof(g_pObjectManager->m_stCombineItem));
+	g_pObjectManager->m_stCombineItem.Header.ID = m_pMyHuman->m_dwID;
+	g_pObjectManager->m_stCombineItem.Header.Type = MSG_CombineItem_Opcode;
+	for (int i = 0; i < 8; ++i)
+		g_pObjectManager->m_stCombineItem.CarryPos[i] = -1;
+
+	SGridControl* pGridMix[8]{};
+	for (int i = 0; i < 8; ++i)
+	{
+		SGridControlItem* pPickedItem = nullptr;
+		pGridMix[i] = (SGridControl*)m_pControlContainer->FindControl(i + 65861);
+		if (pGridMix[i])
+			pPickedItem = pGridMix[i]->PickupItem(0, 0);
+
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+			g_pCursor->m_pAttachedItem = 0;
+		
+		SAFE_DELETE(pPickedItem);
+	}
+
+	m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	SetEquipGridState(1);
 }
 
 void TMFieldScene::ClearCombine4()
 {
+	for (int i = 0; i < 3; ++i)
+	{
+		auto pGridInv = m_pGridInvList[i];
+		for (int nY = 0; nY < 3; ++nY)
+		{
+			for (int nX = 0; nX < 5; ++nX)
+			{
+				auto pItem = pGridInv->GetItem(nX, nY);
+				if (pItem)
+				{
+					if (pItem->m_GCObj.dwColor == 0xFFFF0000)
+						pItem->m_GCObj.dwColor = 0xFFFFFFFF;
+				}
+			}
+		}
+	}
+
+	memset(&g_pObjectManager->m_stCombineItem4, 0, sizeof(g_pObjectManager->m_stCombineItem4));
+	g_pObjectManager->m_stCombineItem4.Header.ID = m_pMyHuman->m_dwID;
+	g_pObjectManager->m_stCombineItem4.Header.Type = MSG_CombineItemTiny_Opcode;
+	for (int i = 0; i < 8; ++i)
+		g_pObjectManager->m_stCombineItem4.CarryPos[i] = -1;
+
+	SGridControl* pGridMix[8]{};
+	for (int i = 0; i < 3; ++i)
+	{
+		SGridControlItem* pPickedItem = nullptr;
+		if (m_pGridItemMix4[i])
+			pPickedItem = m_pGridItemMix4[i]->PickupItem(0, 0);
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+			g_pCursor->m_pAttachedItem = 0;
+
+		SAFE_DELETE(pPickedItem);
+	}
+
+	m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	SetEquipGridState(1);
 }
 
 void TMFieldScene::DoCombine()
