@@ -11240,10 +11240,91 @@ void TMFieldScene::DoCombine4()
 
 void TMFieldScene::SetVisibleMixItem(int bShow)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	if (m_pInputGoldPanel->IsVisible() == 1)
+		SetInVisibleInputCoin();
+	if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+		SetVisibleSkill();
+	if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+		SetVisibleCharInfo();
+	if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+		SetVisibleAutoTrade(0, 0);
+
+	if (bShow == 1)
+	{
+		if (m_pInvenPanel)
+		{
+			if (!m_pInvenPanel->m_bVisible)
+				SetVisibleInventory();
+		}
+
+		m_pItemMixPanel->SetVisible(1);
+		g_pDevice->m_nWidthShift = 0;
+		g_pCursor->DetachItem();
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		TMFieldScene::SetEquipGridState(0);
+	}
+	else
+	{
+		if (m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+
+		g_pDevice->m_nWidthShift = 0;
+		m_pItemMixPanel->SetVisible(0);
+		ClearCombine();
+	}
 }
 
 void TMFieldScene::SetVisibleMixItemTiini(int bShow)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	if (m_pInputGoldPanel->IsVisible() == 1)
+		SetInVisibleInputCoin();
+	if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+		SetVisibleSkill();
+	if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+		SetVisibleCharInfo();
+	if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+		SetVisibleAutoTrade(0, 0);
+
+	if (bShow == 1)
+	{
+		if (m_pInvenPanel)
+		{
+			if (!m_pInvenPanel->m_bVisible)
+				SetVisibleInventory();
+		}
+		m_pItemMixPanel4->SetVisible(1);
+		g_pDevice->m_nWidthShift = 0;
+		g_pCursor->DetachItem();
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV6;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV6;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV6;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV6;
+		SetEquipGridState(0);
+	}
+	else
+	{
+		if (m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+
+		g_pDevice->m_nWidthShift = 0;
+		m_pItemMixPanel4->SetVisible(0);
+		ClearCombine4();
+	}
 }
 
 void TMFieldScene::SetVisibleHellGateStore(int bShow)
