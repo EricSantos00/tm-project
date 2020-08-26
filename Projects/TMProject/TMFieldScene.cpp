@@ -11329,6 +11329,57 @@ void TMFieldScene::SetVisibleMixItemTiini(int bShow)
 
 void TMFieldScene::SetVisibleHellGateStore(int bShow)
 {
+	if (m_pInputGoldPanel->IsVisible() == 1)
+		SetInVisibleInputCoin();
+	if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+		SetVisibleSkill();
+	if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+		SetVisibleCharInfo();
+	if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+		SetVisibleAutoTrade(0, 0);
+	if (bShow == 1)
+	{
+		if (m_pInvenPanel && !m_pInvenPanel->m_bVisible)
+			SetVisibleInventory();
+		if (m_pHellStoreDesc)
+			LoadMsgText2(m_pHellStoreDesc, (char*)"UI\\hellStoredesc.txt", 0, 20);
+
+		m_pHellgateStore->SetVisible(1);
+		g_pDevice->m_nWidthShift = 0;
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+		SetEquipGridState(0);
+	}
+	else
+	{
+		if (m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+
+		g_pDevice->m_nWidthShift = 0;
+		m_pHellgateStore->SetVisible(0);
+		m_dwHellStoreID = 0;
+		m_nHellStoreValue = 0;
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		SetEquipGridState(1);
+	}
+	if (!bShow)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			auto pBtnHellStore = (SButton*)m_pControlContainer->FindControl(i + 6193);
+			if (pBtnHellStore)
+				pBtnHellStore->SetSelected(0);
+		}
+	}
 }
 
 void TMFieldScene::SetVisibleGamble(int bShow, char cType)
@@ -11337,6 +11388,81 @@ void TMFieldScene::SetVisibleGamble(int bShow, char cType)
 
 void TMFieldScene::SetVisiblePotal(int bShow, int nPos)
 {
+	if (m_bAirmove_ShowUI == 1)
+		AirMove_ShowUI(0);
+
+	auto pPotalPanel = m_pPotalPanel;
+	if (!pPotalPanel)
+		return;
+
+	char strTmp1[32]{};
+	strcpy(strTmp1, g_pMessageStringTable[382]);
+	char strTmp2[32]{};
+	strcpy(strTmp2, g_pMessageStringTable[383]);
+	char strTmp3[32]{};
+	strcpy(strTmp3, g_pMessageStringTable[384]);
+	if (m_pPotalText1)
+		m_pPotalText1->SetText(strTmp1, 0);
+	if (m_pPotalText2)
+		m_pPotalText2->SetText(strTmp2, 0);
+	if (m_pPotalText3)
+		m_pPotalText3->SetText(strTmp3, 0);
+
+	pPotalPanel->SetVisible(bShow);
+	char szPotalPos[64]{};
+	sprintf(szPotalPos, "UI\\PotalPos.txt");
+	if (bShow == 1)
+		LoadMsgText2(m_pPotalList, szPotalPos, 10 * nPos, 10 * (nPos + 1) - 1);
+	if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+		SetVisibleSkill();
+	if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+		SetVisibleCharInfo();
+	if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+		SetVisibleCargo(0);
+	if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+		SetVisibleCargo(0);
+	if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+		SetVisibleAutoTrade(0, 0);
+	if (bShow == 1 && m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+		SetVisibleInventory();
+	if (bShow == 1 && m_pShopPanel && m_pShopPanel->m_bVisible == 1)
+		SetVisibleShop(0);
+	if (bShow)
+	{
+		m_pSkillPanel->m_bVisible = 0;
+
+		char szStr[128]{};
+		sprintf(szStr, "%s", g_pMessageStringTable[310]);
+		TMScene::LoadMsgText2(m_pPotalList, szPotalPos, 10 * nPos, 10 * (nPos + 1) - 1);
+		switch (nPos)
+		{
+		case 0:
+			sprintf(szStr, "%s", g_pMessageStringTable[310]);
+			break;
+		case 1:
+			sprintf(szStr, "%s", g_pMessageStringTable[311]);
+			break;
+		case 2:
+			sprintf(szStr, "%s", g_pMessageStringTable[312]);
+			break;
+		case 3:
+			sprintf(szStr, "%s", g_pMessageStringTable[313]);
+			break;
+		case 4:
+			sprintf(szStr, "%s", g_pMessageStringTable[314]);
+			break;
+		case 5:
+			sprintf(szStr, "%s", g_pMessageStringTable[315]);
+			break;
+		}
+
+		m_pPotalText->SetText(szStr, 0);
+		m_pPotalText->SetTextColor(0xFFFFFFFF);
+	}
+	else
+	{
+		memset(&m_stPotalItem, 0, sizeof(m_stPotalItem));
+	}
 }
 
 void TMFieldScene::SetVisibleMiniMap()
