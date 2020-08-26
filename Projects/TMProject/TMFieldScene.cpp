@@ -15452,7 +15452,83 @@ int TMFieldScene::OnKeyDebug(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeySkill(char iCharCode, int lParam)
 {
-	return 0;
+	if (!m_pSkillPanel->IsVisible())
+		return 0;
+
+	int nBase = 0;
+	float fWRatio = RenderDevice::m_fWidthRatio;
+	float fHRatio = RenderDevice::m_fHeightRatio;
+	if (m_pGridSkillBelt3->IsVisible() == 1)
+		nBase = 10;
+
+	int CodeIndex = -1;
+	switch (iCharCode)
+	{
+	case '!':
+		CodeIndex = 0;
+		break;
+	case '@':
+		CodeIndex = 1;
+		break;
+	case '#':
+		CodeIndex = 2;
+		break;
+	case '$':
+		CodeIndex = 3;
+		break;
+	case '%':
+		CodeIndex = 4;
+		break;
+	case '^':
+		CodeIndex = 5;
+		break;
+	case '&':
+		CodeIndex = 6;
+		break;
+	case '*':
+		CodeIndex = 7;
+		break;
+	case '(':
+		CodeIndex = 8;
+		break;
+	case ')':
+		CodeIndex = 9;
+		break;
+	}
+	if (CodeIndex == -1)
+		return 0;
+
+	for (int i = 0; i < 24; ++i)
+	{
+		auto pGrid = m_pSkillSecGrid[i];
+		if (PointInRect((int)g_pCursor->m_nPosX, (int)g_pCursor->m_nPosY, pGrid->m_GCPanel.nPosX, pGrid->m_GCPanel.nPosY, pGrid->m_GCPanel.nWidth * fWRatio, pGrid->m_GCPanel.nHeight * fHRatio) == 1)
+		{
+			auto pGridItem = pGrid->GetItem(0, 0);
+			SetShortSkill(CodeIndex + nBase, pGridItem);
+			break;
+		}
+	}
+	for (int i = 0; i < 12; ++i)
+	{
+		auto pGrid = m_pSkillSecGrid2[i];
+		if (PointInRect((int)g_pCursor->m_nPosX, (int)g_pCursor->m_nPosY, pGrid->m_GCPanel.nPosX, pGrid->m_GCPanel.nPosY, pGrid->m_GCPanel.nWidth * fWRatio, pGrid->m_GCPanel.nHeight * fHRatio) == 1)
+		{
+			auto pGridItem = pGrid->GetItem(0, 0);
+			SetShortSkill(CodeIndex + nBase, pGridItem);
+			break;
+		}
+	}
+	if (PointInRect((int)g_pCursor->m_nPosX, (int)g_pCursor->m_nPosY, m_pGridSkillBelt->m_GCPanel.nPosX, m_pGridSkillBelt->m_GCPanel.nPosY, 
+		m_pGridSkillBelt->m_GCPanel.nWidth * fWRatio, m_pGridSkillBelt->m_GCPanel.nHeight * fHRatio) == 1)
+	{
+		auto pItem = m_pGridSkillBelt->GetAtItem((int)((8 * (int)(g_pCursor->m_nPosX - m_pGridSkillBelt->m_GCPanel.nPosX)) / (m_pGridSkillBelt->m_GCPanel.nWidth * fWRatio)),
+			(int)((int)(g_pCursor->m_nPosY - m_pGridSkillBelt->m_GCPanel.nPosY)	/ (m_pGridSkillBelt->m_GCPanel.nHeight * fHRatio)));
+
+		if (pItem)
+			SetShortSkill(nBase, pItem);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyDash(char iCharCode, int lParam)
