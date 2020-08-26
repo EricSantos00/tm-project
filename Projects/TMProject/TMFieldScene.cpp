@@ -13684,6 +13684,21 @@ void TMFieldScene::SetWeather(int nWeather)
 
 void TMFieldScene::SetVisibleKhepraPortal(bool bVisible)
 {
+	if (m_pKhepraPortal && m_pKhepraPortalEff1 && m_pKhepraPortalEff2)
+	{
+		if (bVisible == 1)
+		{
+			m_pKhepraPortal->m_fHeight = -8.3000002f;
+			m_pKhepraPortalEff1->m_vecPosition.y = -4.73f;
+			m_pKhepraPortalEff2->m_vecPosition.y = -7.8000002f;
+		}
+		else
+		{
+			m_pKhepraPortal->m_fHeight = -20.0f;
+			m_pKhepraPortalEff1->m_vecPosition.y = -20.0f;
+			m_pKhepraPortalEff2->m_vecPosition.y = -20.0f;
+		}
+	}
 }
 
 void TMFieldScene::InitBoard()
