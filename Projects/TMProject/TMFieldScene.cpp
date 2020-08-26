@@ -6233,16 +6233,16 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketCombineComplete(pStd);
 		break;
 	case 0x3AC:
-		return OnPacketCastleState(pStd);
+		return OnPacketCastleState(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x3A1:
-		return OnPacketStartTime(pStd);
+		return OnPacketStartTime(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x3B0:
-		return OnPacketRemainCount(pStd);
+		return OnPacketRemainCount(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x3A8:
-		return OnPacketWarInfo(pStd);
+		return OnPacketWarInfo(reinterpret_cast<MSG_STANDARDPARM3*>(pStd));
 		break;
 	case 0x3A4:
 		return OnPacketGuildDisable(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
@@ -6251,7 +6251,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketEnvEffect(pStd);
 		break;
 	case 0x3BB:
-		return OnPacketRemainNPCCount(pStd);
+		return OnPacketRemainNPCCount(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x1BF:
 		return OnPacketRESULTGAMBLE(pStd);
@@ -6278,7 +6278,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketNuke(pStd);
 		break;
 	case 0x1C6:
-		return OnPacketRandomQuiz(pStd);
+		return OnPacketRandomQuiz(reinterpret_cast<MSG_RandomQuiz*>(pStd));
 		break;
 	case 0x2C8:
 		return OnPacketAutoKick(pStd);
@@ -6287,13 +6287,13 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketItemPrice(reinterpret_cast<MSG_STANDARDPARM2*>(pStd));
 		break;
 	case 0xDC3:
-		return OnPacketCapsuleInfo(pStd);
+		return OnPacketCapsuleInfo(reinterpret_cast<MSG_CAPSULEINFO*>(pStd));
 		break;
 	case 0x3CF:
-		return OnPacketRunQuest12Start(pStd);
+		return OnPacketRunQuest12Start(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x3D0:
-		return OnPacketRunQuest12Count(pStd);
+		return OnPacketRunQuest12Count(reinterpret_cast<MSG_STANDARDPARM2*>(pStd));
 		break;
 	case 0x3AE:
 		return OnPacketDelayQuit((MSG_STANDARDPARM*)pStd);
@@ -13557,7 +13557,7 @@ int TMFieldScene::GetItemFromGround(unsigned int dwServerTime)
 	if (BASE_GetItemAbility(&pOverItem->m_stItem, 34) <= 0)
 	{
 		GetItem(pOverItem);
-		return;
+		return 1;
 	}
 
 	if (BASE_GetItemAbility(&pOverItem->m_stItem, 34) == 10 && pOverItem->m_stItem.sIndex >= 4100 && pOverItem->m_stItem.sIndex < 4200)
