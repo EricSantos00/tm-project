@@ -50,6 +50,7 @@
 #include "TMItem.h"
 #include "TMCannon.h"
 #include "TMEffectCharge.h"
+#include "TMSkillExplosion2.h"
 
 RECT TMFieldScene::m_rectWarning[7] =
 {
@@ -18125,12 +18126,38 @@ int TMFieldScene::OnPacketGuildDisable(MSG_STANDARDPARM* pStd)
 
 int TMFieldScene::OnPacketEnvEffect(MSG_STANDARD* pStd)
 {
-	return 0;
+	auto pEnvEffect = reinterpret_cast<MSG_EnvEffect*>(pStd);
+	if (pEnvEffect->x1 > pEnvEffect->x2 || pEnvEffect->y1 > pEnvEffect->y2)
+		return 1;
+
+	for (int nY = pEnvEffect->y1; nY < pEnvEffect->y2; nY += 3)
+	{
+		for (int nX = pEnvEffect->x1 + 1; nX < pEnvEffect->x2; nX += 4)
+		{
+			unsigned int dwColor = 0x44444444;
+
+			TMVector2 vec{ (float)nX, (float)nY + 1.0f };
+			float fHeight = (float)GroundGetMask(vec) * 0.1f;
+			if (pEnvEffect->Effect == 32)
+			{		
+				auto pExplosion = new TMSkillExplosion2(TMVector3(vec.x, fHeight, vec.y), 0, 1.5f, 210, dwColor);
+				m_pEffectContainer->AddChild(pExplosion);
+			}
+		}
+	}
+
+	return 1;
 }
 
-int TMFieldScene::OnPacketRemainNPCCount(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRemainNPCCount(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	char szText[128]{};
+	sprintf(szText, "%d / %d", pStd->Parm & 0xFF, pStd->Parm >> 16);
+
+	m_dwRemainTime = g_pTimerManager->GetServerTime();
+	m_pRemainText->SetText(szText, 0);
+	m_pRemainText->SetVisible(1);
+	return 1;
 }
 
 int TMFieldScene::OnPacketRESULTGAMBLE(MSG_STANDARD* pStd)

@@ -209,7 +209,7 @@ public:
 	int OnPacketWarInfo(MSG_STANDARDPARM3* pStd);
 	int OnPacketGuildDisable(MSG_STANDARDPARM* pStd);
 	int OnPacketEnvEffect(MSG_STANDARD* pStd);
-	int OnPacketRemainNPCCount(MSG_STANDARD* pStd);
+	int OnPacketRemainNPCCount(MSG_STANDARDPARM* pStd);
 	int OnPacketRESULTGAMBLE(MSG_STANDARD* pStd);
 	int OnPacketREQArray(MSG_STANDARD* pStd);
 	int OnPacketAttack(MSG_STANDARD* pStd);

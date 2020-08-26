@@ -1375,6 +1375,17 @@ struct MSG_CNFRemoveServerLogin
 	STRUCT_EXT2 Ext2;
 };
 
+struct MSG_EnvEffect
+{
+	MSG_STANDARD Header;
+	short x1;
+	short y1;
+	short x2;
+	short y2;
+	short Effect;
+	short EffectParm;
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },
