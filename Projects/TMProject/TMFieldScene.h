@@ -174,9 +174,9 @@ public:
 	int OnPacketSoundEffect(MSG_STANDARDPARM* pStd);
 	int OnPacketCreateMob(MSG_STANDARD* pStd);
 	int OnPacketCNFCharacterLogout(MSG_STANDARD* pStd);
-	int OnPacketCNFRemoveServer(MSG_STANDARD* pStd);
-	int OnPacketCNFAccountLogin(MSG_STANDARD* pStd);
-	int OnPacketCNFCharacterLogin(MSG_STANDARD* pStd);
+	int OnPacketCNFRemoveServer(MSG_CNFRemoveServer* pStd);
+	int OnPacketCNFAccountLogin(MSG_CNFRemoveServerLogin* pStd);
+	int OnPacketCNFCharacterLogin(MSG_CNFCharacterLogin* pStd);
 	int OnPacketItemSold(MSG_STANDARDPARM2* pStd);
 	int OnPacketUpdateCargoCoin(MSG_STANDARDPARM* pStd);
 	int OnPacketWeather(MSG_STANDARDPARM* pStd);

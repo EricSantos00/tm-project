@@ -6166,19 +6166,19 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case 0x7B1:
 		return OnPacketLongMessagePanel(pStd);
 	case 0x3B2:
-		return OnPacketReqSummon(pStd);
+		return OnPacketReqSummon(reinterpret_cast<MSG_ReqSummon*>(pStd));
 	case 0x3B3:
 		return OnPacketCancelSummon(pStd);
 	case 0x3A3:
-		return OnPacketSoundEffect(pStd);
+		return OnPacketSoundEffect(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 	case 0x116:
 		return OnPacketCNFCharacterLogout(pStd);
 	case 0x52A:
-		return OnPacketCNFRemoveServer(pStd);
+		return OnPacketCNFRemoveServer(reinterpret_cast<MSG_CNFRemoveServer*>(pStd));
 	case 0x10A:
-		return OnPacketCNFAccountLogin(pStd);
+		return OnPacketCNFAccountLogin(reinterpret_cast<MSG_CNFRemoveServerLogin*>(pStd));
 	case 0x114:
-		return OnPacketCNFCharacterLogin(pStd);
+		return OnPacketCNFCharacterLogin(reinterpret_cast<MSG_CNFCharacterLogin*>(pStd));
 	case 0x3E8:
 		return OnPacketUndoSellItem(pStd);
 	case 0x39B:
@@ -16967,19 +16967,122 @@ int TMFieldScene::OnPacketCNFCharacterLogout(MSG_STANDARD* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketCNFRemoveServer(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCNFRemoveServer(MSG_CNFRemoveServer* pStd)
 {
-	return 0;
+	if (pStd->Header.ID != g_pObjectManager->m_dwCharID || g_pSocketManager->Sock)
+	{
+		if (pStd->Header.ID == g_pObjectManager->m_dwCharID && g_pSocketManager->Sock)
+		{
+			memcpy(&m_stRemoveServer, pStd, sizeof(m_stRemoveServer));
+			m_bMsgRemoveServer = 1;
+		}
+		return 1;
+	}
+
+	m_pMessagePanel->SetMessage(g_pMessageStringTable[7], 0);
+	m_pMessagePanel->SetVisible(1, 0);
+
+	g_bMoveServer = 0;
+	int nServer = 0;
+
+	sscanf(pStd->TID, "*%d", &nServer);
+	g_pObjectManager->m_nServerIndex = nServer;
+	CheckPKNonePK(g_pObjectManager->m_nServerIndex);
+	sprintf(g_pApp->m_szServerIP, "%s", g_pServerList[g_pObjectManager->m_nServerGroupIndex][nServer]);
+
+	if (g_pSocketManager->ConnectServer(g_pApp->m_szServerIP, TM_CONNECTION_PORT, 0, 1124))
+	{
+		MSG_AccountLogin stAccountLogin{};
+		stAccountLogin.Header.ID = 0;
+		stAccountLogin.Header.Type = MSG_AccountLogin_Opcode;
+		stAccountLogin.Version = 1758;
+		stAccountLogin.Force = 1;
+
+		ULONG dwSize = 0;
+		IP_ADAPTER_INFO stInfo{};
+		GetAdaptersInfo(&stInfo, &dwSize);
+		if (dwSize)
+		{
+			PIP_ADAPTER_INFO pInfo = (PIP_ADAPTER_INFO)malloc(dwSize);
+			GetAdaptersInfo(pInfo, &dwSize);
+
+			char* sour = pInfo->AdapterName;
+			int tpos = 0;
+			int grid = 0;
+			char temp[256]{};
+			for (int i = 0; i < strlen(pInfo->AdapterName); ++i)
+			{
+				if (sour[i] != '{' && sour[i] != '}' && sour[i] != '-')
+				{
+					temp[tpos++] = sour[i];
+					if (!(++grid % 8))
+						temp[tpos++] = 32;
+				}
+			}
+
+			temp[tpos] = 0;
+			sscanf(temp, "%x %x %x %x",	stAccountLogin.Mac,	&stAccountLogin.Mac[1],	&stAccountLogin.Mac[2],	&stAccountLogin.Mac[3]);
+			free(pInfo);
+		}
+
+		strncpy(stAccountLogin.AccountName, pStd->AccountName, sizeof(pStd->AccountName));
+		strncpy(stAccountLogin.TID, pStd->TID, sizeof(pStd->TID));
+		sprintf(stAccountLogin.AccountPass, "");
+		SendOneMessage((char*)&stAccountLogin, sizeof(stAccountLogin));
+		return 1;
+	}
+
+	m_pMessagePanel->SetMessage(g_pMessageStringTable[8], 4000);
+	m_pMessagePanel->SetVisible(1, 1);
+	if (m_eSceneType != ESCENE_TYPE::ESCENE_LOGIN)
+		g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTSERVER_STATE);
+	return 1;
 }
 
-int TMFieldScene::OnPacketCNFAccountLogin(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCNFAccountLogin(MSG_CNFRemoveServerLogin* pStd)
 {
-	return 0;
+	memcpy(&g_pObjectManager->m_stSelCharData, &pStd->SelChar, sizeof(pStd->SelChar));
+	memcpy(g_pObjectManager->m_stItemCargo, pStd->Cargo, sizeof(pStd->Cargo));
+	g_pObjectManager->m_nCargoCoin = pStd->Coin;
+	memset(g_pObjectManager->m_stMemo, 0, sizeof(g_pObjectManager->m_stMemo));
+
+	/*for (int i = 0; i < 16; ++i)
+		g_pSocketManager->SendQueue[i] = *((unsigned char*)&pStd->Tick + i + 4);*/
+
+	g_pSocketManager->SendCount = 0;
+	g_pSocketManager->RecvCount = 0;
+	return 1;
 }
 
-int TMFieldScene::OnPacketCNFCharacterLogin(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCNFCharacterLogin(MSG_CNFCharacterLogin* pStd)
 {
-	return 0;
+	m_pMessagePanel->SetVisible(0, 1);
+	g_pTimerManager->SetServerTime(pStd->Header.Tick);
+	g_pObjectManager->m_dwCharID = pStd->ClientID;
+	memcpy(&g_pObjectManager->m_stMobData, &pStd->MOB, sizeof(pStd->MOB));
+	g_pObjectManager->m_nFakeExp = pStd->Ext1.Data[0];
+	g_pObjectManager->m_stMobData.HomeTownX = pStd->PosX;
+	g_pObjectManager->m_stMobData.HomeTownY = pStd->PosY;
+	memcpy(g_pObjectManager->m_cShortSkill, g_pObjectManager->m_stMobData.ShortSkill, sizeof(g_pObjectManager->m_stMobData.ShortSkill));
+
+	memcpy(&g_pObjectManager->m_cShortSkill[4], pStd->ShortSkill, sizeof(pStd->ShortSkill));
+	for (int i = 0; i < 20; ++i)
+	{
+		if ((unsigned char)g_pObjectManager->m_cShortSkill[i] < 24)
+			g_pObjectManager->m_cShortSkill[i] += 24 * g_pObjectManager->m_stMobData.Class;
+	}
+
+	g_nWeather = pStd->Weather;
+
+	m_pHPBar->ResetBar();
+	m_pMPBar->ResetBar();
+	if (m_pMHPBar)
+		m_pMHPBar->ResetBar();
+	if (m_pMHPBarT)
+		m_pMHPBarT->ResetBar();
+
+	g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_FIELD2_STATE);
+	return 1;
 }
 
 int TMFieldScene::OnPacketItemSold(MSG_STANDARDPARM2* pStd)

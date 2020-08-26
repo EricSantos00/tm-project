@@ -6,6 +6,8 @@ constexpr auto MAX_VISIBLE_CARRY = MAX_CARRY - 4;
 constexpr int MAX_STRING = 2000;
 constexpr int MAX_STRING_LENGTH = 128;
 
+constexpr auto TM_CONNECTION_PORT = 8281;
+
 constexpr int MAX_SERVER = 10; // Max number of game servers that can connect to DB server
 constexpr int MAX_SERVERGROUP = 10;	// Max number of servers that can exist
 constexpr int MAX_SERVERNUMBER = (MAX_SERVER + 1); // DB + TMSrvs + BISrv
@@ -1350,6 +1352,27 @@ struct MSG_ReqSummon
 	MSG_STANDARD Header;
 	int Result;
 	char Name[16];
+};
+
+struct MSG_CNFRemoveServerLogin
+{
+	MSG_STANDARD Header;
+	STRUCT_SELCHAR SelChar;
+	char AccountName[16];
+	STRUCT_ITEM Cargo[128];
+	int Coin;
+	char SecretCode[16];
+	int SSN1;
+	int SSN2;
+	short PosX;
+	short PosY;
+	STRUCT_MOB MOB;
+	unsigned short Slot;
+	unsigned short ClientID;
+	unsigned short Weather;
+	char ShortSkill[16];
+	STRUCT_EXT1 Ext1;
+	STRUCT_EXT2 Ext2;
 };
 
 const static int g_pDistanceTable[7][7] =
