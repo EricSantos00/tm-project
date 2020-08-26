@@ -20444,12 +20444,32 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketNuke(MSG_STANDARD* pStd)
 {
-	return 0;
+	// just that
+	return 1;
 }
 
-int TMFieldScene::OnPacketRandomQuiz(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRandomQuiz(MSG_RandomQuiz* pStd)
 {
-	return 0;
+	pStd->Question[127] = 0;
+	pStd->Answer[0][31] = 0;
+	pStd->Answer[1][31] = 0;
+	pStd->Answer[2][31] = 0;
+	pStd->Answer[3][31] = 0;
+
+	if (m_pQuizQuestion)
+		m_pQuizQuestion->SetText(pStd->Question, 0);
+	if (m_pQuizButton[0])
+		m_pQuizButton[0]->SetText(pStd->Answer[0]);
+	if (m_pQuizButton[1])
+		m_pQuizButton[1]->SetText(pStd->Answer[1]);
+	if (m_pQuizButton[2])
+		m_pQuizButton[2]->SetText(pStd->Answer[2]);
+	if (m_pQuizButton[3])
+		m_pQuizButton[3]->SetText(pStd->Answer[3]);
+	if (m_pQuizBG)
+		m_pQuizBG->SetVisible(1);
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketAutoKick(MSG_STANDARD* pStd)

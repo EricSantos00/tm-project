@@ -1386,6 +1386,13 @@ struct MSG_EnvEffect
 	short EffectParm;
 };
 
+struct MSG_RandomQuiz
+{
+	MSG_STANDARD Header;
+	char Question[128];
+	char Answer[4][32];
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },
