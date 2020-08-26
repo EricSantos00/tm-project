@@ -1345,6 +1345,13 @@ struct MSG_UpdateItem
 	char dummy;
 };
 
+struct MSG_ReqSummon
+{
+	MSG_STANDARD Header;
+	int Result;
+	char Name[16];
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },

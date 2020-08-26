@@ -16224,14 +16224,20 @@ int TMFieldScene::OnPacketLongMessagePanel(MSG_STANDARD* pStd)
 	return 0;
 }
 
-int TMFieldScene::OnPacketReqSummon(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketReqSummon(MSG_ReqSummon* pStd)
 {
-	return 0;
+	pStd->Name[15] = 0;
+
+	m_pHelpSummon->SetVisible(1);
+
+	sprintf(m_szSummoner, pStd->Name);
+	return 1;
 }
 
 int TMFieldScene::OnPacketCancelSummon(MSG_STANDARD* pStd)
 {
-	return 0;
+	m_pHelpSummon->SetVisible(0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketAction(MSG_STANDARD* pStd)
