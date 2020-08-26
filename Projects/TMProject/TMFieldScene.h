@@ -203,10 +203,10 @@ public:
 	int OnPacketSetShortSkill(MSG_SetShortSkill* pStd);
 	int OnPacketClearMenu(MSG_STANDARD* pStd);
 	int OnPacketCombineComplete(MSG_STANDARD* pStd);
-	int OnPacketCastleState(MSG_STANDARD* pStd);
-	int OnPacketStartTime(MSG_STANDARD* pStd);
-	int OnPacketRemainCount(MSG_STANDARD* pStd);
-	int OnPacketWarInfo(MSG_STANDARD* pStd);
+	int OnPacketCastleState(MSG_STANDARDPARM* pStd);
+	int OnPacketStartTime(MSG_STANDARDPARM* pStd);
+	int OnPacketRemainCount(MSG_STANDARDPARM* pStd);
+	int OnPacketWarInfo(MSG_STANDARDPARM3* pStd);
 	int OnPacketGuildDisable(MSG_STANDARDPARM* pStd);
 	int OnPacketEnvEffect(MSG_STANDARD* pStd);
 	int OnPacketRemainNPCCount(MSG_STANDARD* pStd);

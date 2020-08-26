@@ -18001,7 +18001,13 @@ int TMFieldScene::OnPacketWithdraw(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketReqChallange(MSG_STANDARD* pStd)
 {
-	return 0;
+	if (!m_pMessageBox->IsVisible())
+	{
+		m_pMessageBox->SetMessage(g_pMessageStringTable[407], 60, 0);
+		m_pMessageBox->SetVisible(1);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketCloseShop(MSG_STANDARD* pStd)
@@ -18038,27 +18044,75 @@ int TMFieldScene::OnPacketClearMenu(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketCombineComplete(MSG_STANDARD* pStd)
 {
-	return 0;
+	SetVisibleMixItem(0);
+	SetVisibleMixItemTiini(0);
+	SetVisibleMixPanel(0);
+	return 1;
 }
 
-int TMFieldScene::OnPacketCastleState(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCastleState(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	g_bCastleWar2 = pStd->Parm;
+
+	DS_SOUND_MANAGER::m_nCastleIndex = -1;
+	if (!g_bCastleWar2)
+	{
+		DS_SOUND_MANAGER::m_nMusicIndex = -1;
+		DS_SOUND_MANAGER::m_nCastleIndex = -1;
+	}
+
+	return 1;
+
 }
 
-int TMFieldScene::OnPacketStartTime(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketStartTime(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	m_nLastTime = pStd->Parm;
+
+	m_dwStartRankTime = g_pTimerManager->GetServerTime();
+
+	char szTimer[128]{};
+	sprintf(szTimer, "%d", m_dwStartRankTime);
+	m_pRankTimeText->SetText(szTimer, 0);
+	m_bRankTimeOn = 1;
+	return 1;
 }
 
-int TMFieldScene::OnPacketRemainCount(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRemainCount(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	char szText[128]{};
+	sprintf(szText, "%s %d", g_pMessageStringTable[230], pStd->Parm);
+	m_dwRemainTime = g_pTimerManager->GetServerTime();
+	m_pRemainText->SetText(szText, 0);
+	m_pRemainText->SetVisible(1);
+	return 1;
 }
 
-int TMFieldScene::OnPacketWarInfo(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketWarInfo(MSG_STANDARDPARM3* pStd)
 {
-	return 0;
+	switch (pStd->Header.Size)
+	{
+	case sizeof(MSG_STANDARDPARM):
+		g_pObjectManager->m_usWarGuild = pStd->Parm1;
+		if (!pStd->Parm1)
+			g_pObjectManager->m_usWarGuild = -1;
+		break;
+	case sizeof(MSG_STANDARDPARM2):
+		g_pObjectManager->m_usWarGuild = pStd->Parm1;
+		if (!pStd->Parm1)
+			g_pObjectManager->m_usWarGuild = -1;
+		m_cWarClan = pStd->Parm2;
+		break;
+	case sizeof(MSG_STANDARDPARM3):
+		g_pObjectManager->m_usWarGuild = pStd->Parm1;
+		if (!pStd->Parm1)
+			g_pObjectManager->m_usWarGuild = -1;
+		m_cWarClan = pStd->Parm2;
+		g_pObjectManager->m_usAllyGuild = pStd->Parm3;
+		break;
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketGuildDisable(MSG_STANDARDPARM* pStd)
