@@ -70,9 +70,7 @@ int TMMesh::Render(char cMulti, int nTexOffset)
 
 	DWORD dwTime = g_pTimerManager->GetServerTime();
 	float fProgress;
-	if (cMulti == 1)
-		fProgress = (float)(dwTime % 10000);
-	else if (cMulti == 100)
+	if (cMulti == 100)
 		fProgress = (float)(dwTime % 8000) / 8000.0f;
 	else
 		fProgress = (float)(dwTime % 4000) / 4000.0f;
