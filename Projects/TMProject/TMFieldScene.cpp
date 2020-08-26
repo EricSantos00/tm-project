@@ -11384,6 +11384,53 @@ void TMFieldScene::SetVisibleHellGateStore(int bShow)
 
 void TMFieldScene::SetVisibleGamble(int bShow, char cType)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+	if (bShow || m_pGambleStore->m_bVisible != 1 || !m_pReelPanel2->m_dwStopTime && m_pReelPanel2->m_bRoling != 1)
+	{
+		if (m_pInputGoldPanel->IsVisible() == 1)
+			SetInVisibleInputCoin();
+		if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+			SetVisibleSkill();
+		if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+			SetVisibleCharInfo();
+		if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+			SetVisibleCargo(0);
+		if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+			SetVisibleCargo(0);
+		if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+			SetVisibleAutoTrade(0, 0);
+		if (bShow == 1 && m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+		if (bShow == 1 && m_pShopPanel && m_pShopPanel->m_bVisible == 1)
+			SetVisibleShop(0);
+		auto pGambleStore = m_pGambleStore;
+		if (bShow == 1)
+		{
+			if (pGambleStore)
+			{
+				pGambleStore->SetVisible(1);
+				if (cType == 1)
+				{
+					m_pReelPanel->SetVisible(1);
+					m_pReelPanel2->SetVisible(0);
+				}
+				else if (cType == 2)
+				{
+					m_pReelPanel->SetVisible(0);
+					m_pReelPanel2->SetVisible(1);
+				}
+			}
+
+			m_pGridHelm->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+			SetEquipGridState(0);
+		}
+		else
+		{
+			if (pGambleStore)
+				pGambleStore->SetVisible(0);
+			g_pDevice->m_nWidthShift = 0;
+		}
+	}
 }
 
 void TMFieldScene::SetVisiblePotal(int bShow, int nPos)
