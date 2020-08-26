@@ -10701,6 +10701,26 @@ int TMFieldScene::TimeDelay(unsigned int dwServerTime)
 
 int TMFieldScene::GetItem(TMItem* pItem)
 {
+	IVector2 vecGrid{};
+	for (int i = 0; i < 4; ++i)
+	{
+		auto pGrid = m_pGridInvList[i];
+		int nGridIndex = BASE_GetItemAbility(&pItem->m_stItem, 33);
+		vecGrid = pGrid->CanAddItemInEmpty(g_pItemGridXY[nGridIndex][0], g_pItemGridXY[nGridIndex][1]);
+		if (vecGrid.x > -1 && vecGrid.y > -1 || BASE_GetItemAbility(&pItem->m_stItem, 38) == 2)
+		{
+			m_pMyHuman->MoveGet(pItem);
+			return 1;
+		}
+	}
+
+	auto pListBox = m_pChatList;
+	auto pBoxItem = new SListBoxItem(g_pMessageStringTable[1], 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0);
+
+	pListBox->AddItem(pBoxItem);
+
+	GetSoundAndPlay(33, 0, 0);
+	m_dwGetItemTime = g_pTimerManager->GetServerTime();
 	return 0;
 }
 
@@ -21460,6 +21480,7 @@ int TMFieldScene::MouseClick_QuestNPC(unsigned int dwServerTime, TMHuman* pOver)
 
 void TMFieldScene::NewCCMode()
 {
+	;
 }
 
 void TMFieldScene::InsertInChatList(SListBox* pChatList, STRUCT_MOB *pMobData, SEditableText* pEditChat, unsigned int dwColor, int colorId, unsigned int startId)
