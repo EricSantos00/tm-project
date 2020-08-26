@@ -166,7 +166,7 @@ public:
 	int OnPacketMessageChat(MSG_MessageChat* pStd);
 	int OnPacketMessageChat_Index(MSG_MessageChat* pStd);
 	int OnPacketMessageChat_Param(MSG_STANDARD* pStd);
-	int OnPacketMessageWhisper(MSG_STANDARD* pStd);
+	int OnPacketMessageWhisper(MSG_MessageWhisper* pMsg);
 	int OnPacketLongMessagePanel(MSG_STANDARD* pStd);
 	int OnPacketReqSummon(MSG_ReqSummon* pStd);
 	int OnPacketCancelSummon(MSG_STANDARD* pStd);

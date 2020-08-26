@@ -6163,7 +6163,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case 0x106:
 		return OnPacketMessageChat_Param(pStd);
 	case 0x334:
-		return OnPacketMessageWhisper(pStd);
+		return OnPacketMessageWhisper(reinterpret_cast<MSG_MessageWhisper*>(pStd));
 	case 0x7B1:
 		return OnPacketLongMessagePanel(pStd);
 	case 0x3B2:
@@ -16235,9 +16235,128 @@ int TMFieldScene::OnPacketMessageChat_Param(MSG_STANDARD* pStd)
 	return 0;
 }
 
-int TMFieldScene::OnPacketMessageWhisper(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketMessageWhisper(MSG_MessageWhisper* pMsg)
 {
-	return 0;
+	if (g_pObjectManager->GetHumanByID(pMsg->Header.ID))
+		return 0;
+
+	auto pChatList = m_pChatList;
+	pMsg->MobName[15] = 0;
+	pMsg->String[127] = 0;
+	pMsg->String[126] = 0;
+
+	int nIndex = 0;
+	unsigned int dwColor = 0xFFFFFF00;
+	bool bDrawText = true;
+	
+	char szMsg[128]{};
+	if (pMsg->String[0] == '-' && pMsg->Color == 3)
+	{
+		if (m_pChatGuild && !m_pChatGuild->m_bSelected)
+			bDrawText = false;
+
+		dwColor = 0xFFAAFFFF;
+		nIndex = 1;
+		if (pMsg->String[1] == '-')
+		{
+			dwColor = 0xFF00FFFF;
+			nIndex = 2;
+		}
+
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, &pMsg->String[nIndex]);	
+	}
+	else if (pMsg->Color == 7)
+	{
+		dwColor = 0xFFBBBBBB;
+		nIndex = 0;
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, pMsg->String);		
+	}
+	else if (pMsg->String[0] == '=')
+	{
+		if (m_pPartyList->m_nNumItem > 1)
+		{
+			dwColor = 0xFFFF99FF;
+			nIndex = 1;
+		}
+
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, &pMsg->String[nIndex]);		
+	}
+	else if (pMsg->String[0] == '@')
+	{
+		if (m_pChatParty && !m_pChatParty->m_bSelected)
+			bDrawText = false;
+
+		if (pMsg->String[1] == '@')
+		{
+			dwColor = 0xF0F60AFF;
+			nIndex = 2;
+		}
+		else
+		{
+			dwColor = 0xFF00AAFF;
+			nIndex = 1;
+		}
+
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, &pMsg->String[nIndex]);
+	}
+	else if (pMsg->String[0] != '!')
+	{
+		SYSTEMTIME sysTime{};
+		GetLocalTime(&sysTime);
+
+		m_pHelpList[3]->AddItem(new SListBoxItem((char*)" ", 0xFFFFFFFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+		sprintf(szMsg, g_pMessageStringTable[226], pMsg->MobName);
+		char szTime[128]{};
+		sprintf(szTime, "%s [%02d:%02d:%02d]", szMsg, sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
+		m_pHelpList[3]->AddItem(new SListBoxItem(szTime, 0xFFFFFFFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+		sprintf(szMsg, "%s", &pMsg->String[1]);
+		m_pHelpList[3]->AddItem(new SListBoxItem(szMsg, 0xFFFFFFCC, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+		if (m_pHelpMemo)
+			m_pHelpMemo->SetVisible(1);
+
+		return 1;
+	}
+
+	if (!bDrawText)
+		return 1;
+
+	if (strlen(pMsg->MobName) + strlen(pMsg->String) <= 43)
+	{
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, &pMsg->String[nIndex]);
+
+		if(pChatList)
+			pChatList->AddItem(new SListBoxItem(szMsg, dwColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0));
+	}
+	else
+	{
+		char szMsg2[128]{};
+		char szMsg3[128]{};
+
+		if (IsClearString(pMsg->String, 42))
+		{
+			strncpy(szMsg3, pMsg->String, 43);
+			sprintf(szMsg2, "%s", &pMsg->String[43]);
+		}
+		else
+		{
+			strncpy(szMsg3, pMsg->String, 42);
+			sprintf(szMsg2, "%s", &pMsg->String[42]);
+		}
+
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, &szMsg3[nIndex]);
+
+		if(pChatList)
+			pChatList->AddItem(new SListBoxItem(szMsg, dwColor, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+		if (strlen(pMsg->String) > 43 && pChatList)
+			pChatList->AddItem(new SListBoxItem(szMsg2, dwColor, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777, 1, 0));
+	}
+
+	m_dwChatTime = g_pTimerManager->GetServerTime();
+	return 1;
 }
 
 int TMFieldScene::OnPacketLongMessagePanel(MSG_STANDARD* pStd)
