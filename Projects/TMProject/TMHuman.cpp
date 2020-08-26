@@ -4784,7 +4784,7 @@ int TMHuman::OnPacketTrade(MSG_Trade* pStd)
         SGridControl* pGridOp[15];
         for (int i = 0; i < 15; ++i)
         {
-            pGridOp[i] = (SGridControl*)pScene->m_pControlContainer->FindControl(i + 8182);
+            pGridOp[i] = (SGridControl*)pScene->m_pControlContainer->FindControl(i + 8192);
             auto pPickedItem = pGridOp[i]->PickupItem(0, 0);
             if (pPickedItem && memcmp(pPickedItem->m_pItem, &pStd->Item[i], sizeof(STRUCT_ITEM)))
                 bChanged = 1;
