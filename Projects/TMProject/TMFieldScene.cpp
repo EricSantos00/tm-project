@@ -11754,10 +11754,26 @@ void TMFieldScene::SetVisibleSkill()
 
 void TMFieldScene::SetVisibleServerWar()
 {
+	auto pInputGoldPanel = (SControl*)m_pInputGoldPanel;
+	auto pEdit = (SEditableText*)m_pControlContainer->FindControl(65889);
+	auto pText = (SText*)m_pControlContainer->FindControl(65888);
+
+	m_nCoinMsgType = 9;
+	pText->SetText(g_pMessageStringTable[374], 0);
+	m_pControlContainer->SetFocusedControl(pEdit);
+	pInputGoldPanel->SetVisible(1);
 }
 
 void TMFieldScene::SetVisibleRefuseServerWar()
 {
+	auto pInputGoldPanel = (SControl*)m_pInputGoldPanel;
+	auto pEdit = (SEditableText*)m_pControlContainer->FindControl(65889);
+	auto pText = (SText*)m_pControlContainer->FindControl(65888);
+
+	m_nCoinMsgType = 10;
+	pText->SetText(g_pMessageStringTable[375], 0);
+	m_pControlContainer->SetFocusedControl(pEdit);
+	pInputGoldPanel->SetVisible(1);
 }
 
 void TMFieldScene::SetInVisibleInputCoin()
