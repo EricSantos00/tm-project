@@ -11188,10 +11188,54 @@ void TMFieldScene::ClearCombine4()
 
 void TMFieldScene::DoCombine()
 {
+	if (g_nCombineMode == 1)
+	{
+		for (int i = 0; i < 6; ++i)
+		{
+			if (!g_pObjectManager->m_stCombineItem.Item[i].sIndex)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[274], 2000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return;
+			}
+		}
+	}
+
+	bool bFind = false;
+	for (int i = 0; i < 8; ++i)
+	{
+		if (g_pObjectManager->m_stCombineItem.CarryPos[i] != -1)
+		{
+			bFind = true;
+			break;
+		}
+	}
+
+	if (bFind)
+		SendOneMessage((char*)&g_pObjectManager->m_stCombineItem, sizeof(g_pObjectManager->m_stCombineItem));
 }
 
 void TMFieldScene::DoCombine4()
 {
+	if (g_pObjectManager->m_stCombineItem4.Item[0].sIndex && g_pObjectManager->m_stCombineItem4.Item[1].sIndex)
+	{
+		bool bFind = false;
+		for (int i = 0; i < 8; ++i)
+		{
+			if (g_pObjectManager->m_stCombineItem4.CarryPos[i] != -1)
+			{
+				bFind = true;
+				break;
+			}
+		}
+		if (bFind)
+			SendOneMessage((char*)&g_pObjectManager->m_stCombineItem4, sizeof(g_pObjectManager->m_stCombineItem4));
+	}
+	else
+	{
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[274], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+	}
 }
 
 void TMFieldScene::SetVisibleMixItem(int bShow)

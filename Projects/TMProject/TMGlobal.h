@@ -153,6 +153,8 @@ extern int g_bEffectFirst;
 extern int g_bEvent;
 extern int g_bRunning;
 
+extern int g_nCombineMode;
+
 static stTeleportPos g_TeleportTable[37] =
 {
   { 2116, 2100, 700, g_pMessageStringTable[209] },
