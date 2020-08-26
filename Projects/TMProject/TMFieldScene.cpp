@@ -20536,7 +20536,7 @@ int TMFieldScene::OnPacketRunQuest12Start(MSG_STANDARDPARM* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketRunQuest12Count(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRunQuest12Count(MSG_STANDARDPARM2* pStd)
 {
 	char szText[128]{};
 	sprintf(szText, "%d / %d", pStd->Parm1, pStd->Parm2);
@@ -20594,6 +20594,15 @@ void TMFieldScene::Guildmark_Link(SPanel* pPanel, int nMarkIndex, int nGuildInde
 
 void TMFieldScene::SysMsgChat(char* str)
 {
+	auto pEdit = m_pEditChat;
+	auto pChatList = m_pChatListnotice;
+
+	pChatList->AddItem(new SListBoxItem(str, 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+	pEdit->SetText((char*)"");
+
+	m_pControlContainer->SetFocusedControl(nullptr);
+	if (g_pObjectManager->m_bTvControl != 1)
+		pEdit->SetText((char*)"");
 }
 
 void TMFieldScene::GetTimeString(char* szVal, int sTime, int nTime, int i)

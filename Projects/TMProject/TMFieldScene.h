@@ -219,7 +219,7 @@ public:
 	int OnPacketItemPrice(MSG_STANDARDPARM2* pStd);
 	int OnPacketCapsuleInfo(MSG_CAPSULEINFO* pStd);
 	int OnPacketRunQuest12Start(MSG_STANDARDPARM* pStd);
-	int OnPacketRunQuest12Count(MSG_STANDARD* pStd);
+	int OnPacketRunQuest12Count(MSG_STANDARDPARM2* pStd);
 	int OnPacketDelayQuit(MSG_STANDARDPARM* pStd);
 	int OnPacketUndoSellItem(MSG_STANDARD* pStd);
 	int Guildmark_Create(stGuildMarkInfo* pMark);
