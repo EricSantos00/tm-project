@@ -20484,14 +20484,56 @@ int TMFieldScene::OnPacketItemPrice(MSG_STANDARDPARM2* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketCapsuleInfo(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCapsuleInfo(MSG_CAPSULEINFO* pStd)
 {
-	return 0;
+	bool bFind = false;
+	for (int i = 0; i < 12; ++i)
+	{
+		if (g_pObjectManager->m_stCapsuleInfo[i].CIndex == pStd->CIndex)
+		{
+			g_pObjectManager->m_stCapsuleInfo[i] = *pStd;
+			bFind = true;
+			break;
+		}
+	}
+	if (!bFind)
+	{
+		for (int i = 0; i < 12; ++i)
+		{
+			if (!g_pObjectManager->m_stCapsuleInfo[i].CIndex)
+			{
+				g_pObjectManager->m_stCapsuleInfo[i] = *pStd;
+				bFind = true;
+				break;
+			}
+		}
+	}
+
+	if (!bFind)
+		g_pObjectManager->m_stCapsuleInfo[0] = *pStd;
+
+	SGridControl::m_bNeedUpdate = 1;
+	return 1;
 }
 
-int TMFieldScene::OnPacketRunQuest12Start(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRunQuest12Start(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	if (pStd->Parm)
+	{
+		m_nQuest12MaxMobs = pStd->Parm;
+
+		char szText[128]{};
+		sprintf(szText, "0 / %d", m_nQuest12MaxMobs);
+		m_pRemainText->SetPos((float)g_pDevice->m_dwScreenWidth - 130.0f,
+			30.0f * RenderDevice::m_fHeightRatio);
+
+		m_pRemainText->SetText(szText, 0);
+		m_pRemainText->SetVisible(1);
+	}
+	else
+		m_pRemainText->SetVisible(0);
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketRunQuest12Count(MSG_STANDARD* pStd)

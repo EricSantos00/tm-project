@@ -214,11 +214,11 @@ public:
 	int OnPacketREQArray(MSG_STANDARD* pStd);
 	int OnPacketAttack(MSG_STANDARD* pStd);
 	int OnPacketNuke(MSG_STANDARD* pStd);
-	int OnPacketRandomQuiz(MSG_STANDARD* pStd);
+	int OnPacketRandomQuiz(MSG_RandomQuiz* pStd);
 	int OnPacketAutoKick(MSG_STANDARD* pStd);
 	int OnPacketItemPrice(MSG_STANDARDPARM2* pStd);
-	int OnPacketCapsuleInfo(MSG_STANDARD* pStd);
-	int OnPacketRunQuest12Start(MSG_STANDARD* pStd);
+	int OnPacketCapsuleInfo(MSG_CAPSULEINFO* pStd);
+	int OnPacketRunQuest12Start(MSG_STANDARDPARM* pStd);
 	int OnPacketRunQuest12Count(MSG_STANDARD* pStd);
 	int OnPacketDelayQuit(MSG_STANDARDPARM* pStd);
 	int OnPacketUndoSellItem(MSG_STANDARD* pStd);
