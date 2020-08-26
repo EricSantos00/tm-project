@@ -168,10 +168,10 @@ public:
 	int OnPacketMessageChat_Param(MSG_STANDARD* pStd);
 	int OnPacketMessageWhisper(MSG_STANDARD* pStd);
 	int OnPacketLongMessagePanel(MSG_STANDARD* pStd);
-	int OnPacketReqSummon(MSG_STANDARD* pStd);
+	int OnPacketReqSummon(MSG_ReqSummon* pStd);
 	int OnPacketCancelSummon(MSG_STANDARD* pStd);
 	int OnPacketAction(MSG_STANDARD* pStd);
-	int OnPacketSoundEffect(MSG_STANDARD* pStd);
+	int OnPacketSoundEffect(MSG_STANDARDPARM* pStd);
 	int OnPacketCreateMob(MSG_STANDARD* pStd);
 	int OnPacketCNFCharacterLogout(MSG_STANDARD* pStd);
 	int OnPacketCNFRemoveServer(MSG_STANDARD* pStd);

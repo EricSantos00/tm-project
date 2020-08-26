@@ -16254,9 +16254,12 @@ int TMFieldScene::OnPacketAction(MSG_STANDARD* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketSoundEffect(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketSoundEffect(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	int nSoundIndex = pStd->Parm;
+
+	GetSoundAndPlayIfNot(nSoundIndex, 0, 0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
