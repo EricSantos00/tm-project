@@ -18063,7 +18063,6 @@ int TMFieldScene::OnPacketCastleState(MSG_STANDARDPARM* pStd)
 	}
 
 	return 1;
-
 }
 
 int TMFieldScene::OnPacketStartTime(MSG_STANDARDPARM* pStd)
@@ -21217,6 +21216,78 @@ void TMFieldScene::GameAuto()
 
 int TMFieldScene::MouseClick_MixNPC(TMHuman* pOver)
 {
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 67 && 
+		m_pGround->m_vecOffsetIndex.x == 13 && m_pGround->m_vecOffsetIndex.y == 13)
+	{
+		m_ItemMixClass.ResultItemListSet(67, 13, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 67 && 
+		m_pGround->m_vecOffsetIndex.x == 28 && m_pGround->m_vecOffsetIndex.y == 24 && pOver->m_dwID != 1033)
+	{
+		m_ItemMixClass.ResultItemListSet(67, 28, 24);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 54 && 
+		m_pGround->m_vecOffsetIndex.x == 19 && m_pGround->m_vecOffsetIndex.y == 13)
+	{
+		m_ItemMixClass.ResultItemListSet(54, 19, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 54 && 
+		m_pGround->m_vecOffsetIndex.x == 25 && m_pGround->m_vecOffsetIndex.y == 13)
+	{
+		g_nCombineMode = 1;
+		if (m_pItemMixPanel)
+			SetVisibleMixItem(m_pItemMixPanel->m_bVisible == 0);
+
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 55)
+	{
+		m_ItemMixClass.ResultItemListSet(55, 19, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 56)
+	{
+		m_ItemMixClass.ResultItemListSet(56, 19, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 66 && 
+		m_pGround->m_vecOffsetIndex.x == 25 && m_pGround->m_vecOffsetIndex.y == 13)
+	{
+		m_ItemMixClass.ResultItemListSet(66, 25, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 68 && 
+		m_pGround->m_vecOffsetIndex.x == 19 && m_pGround->m_vecOffsetIndex.y == 15)
+	{
+		g_nCombineMode = 1;
+		m_ItemMixClass.ResultItemListSet(68, 19, 15);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 68)
+	{		
+		SetVisibleMixItemTiini(m_pItemMixPanel4->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 67 && 
+		(pOver->m_stScore.Reserved & 0xF) == 8 && 
+		m_pGround->m_vecOffsetIndex.x == 25 && m_pGround->m_vecOffsetIndex.y == 13)
+	{
+		m_ItemMixClass.ResultItemListSet(67, 25, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+
 	return 0;
 }
 
