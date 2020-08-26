@@ -3452,7 +3452,7 @@ int TMHuman::OnPacketEvent(unsigned int dwCode, char* buf)
         return OnPacketMessageChat_Param((MSG_STANDARD*)buf);
         break;
     case 0x334:
-        return OnPacketMessageWhisper((MSG_STANDARD*)buf);
+        return OnPacketMessageWhisper(reinterpret_cast<MSG_MessageWhisper*>(buf));
         break;
     case 0x337:
         return OnPacketUpdateEtc((MSG_STANDARD*)buf);
@@ -4899,9 +4899,130 @@ int TMHuman::OnPacketMessageChat_Param(MSG_STANDARD* pStd)
 	return 0;
 }
 
-int TMHuman::OnPacketMessageWhisper(MSG_STANDARD* pStd)
+int TMHuman::OnPacketMessageWhisper(MSG_MessageWhisper* pMsg)
 {
-	return 0;
+    auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+    
+    SListBox* pChatList = pScene->m_pChatList;
+
+    pMsg->MobName[15] = 0;
+    pMsg->String[127] = 0;
+    pMsg->String[126] = 0;
+
+    int nIndex = 0;
+    unsigned int dwColor = 0xFFFFFF00;
+    int bDrawText = 1;
+
+    char szMsg[128]{};
+
+    if (pMsg->String[0] == '-' && pMsg->Color == 3)
+    {
+        if (!pScene->m_pChatGuild->m_bSelected)
+            bDrawText = 0;
+
+        dwColor = 0xFFAAFFFF;
+
+        nIndex = 1;
+        if (pMsg->String[1] == '-')
+        {
+            dwColor = 0xFF00FFFF;
+            nIndex = 2;
+        }
+
+        sprintf_s(szMsg, "[%s]> %s", pMsg->MobName, &pMsg->String[nIndex]);
+    }
+    else if (pMsg->Color == 7)
+    {
+        dwColor = 0xFFBBBBBB;
+        sprintf_s(szMsg, "[%s]> %s", pMsg->MobName, pMsg->String);
+    }
+    else if (pMsg->String[0] == '=')
+    {
+        if (pScene->m_pPartyList->m_nNumItem > 1)
+        {
+            dwColor = 0xFFFF99FF;
+            nIndex = 1;
+        }
+        sprintf_s(szMsg, "[%s]> %s", pMsg->MobName, &pMsg->String[nIndex]);
+    }
+    else if (pMsg->String[0] == '@')
+    {
+        if (pMsg->String[1] == '@')
+        {
+            dwColor = 0xF0F60AFF;
+            nIndex = 2;
+        }
+        else
+        {
+            dwColor = 0xFF00AAFF;
+            nIndex = 1;
+        }
+        sprintf_s(szMsg, "[%s]> %s", pMsg->MobName, &pMsg->String[nIndex]);
+    }
+    else if (pMsg->String[0] != '!')
+    {
+        if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD && !pScene->m_pChatWhisper->m_bSelected)
+            bDrawText = 0;
+
+        sprintf_s(szMsg, "[%s] : %s> %s", pMsg->MobName, m_szName, pMsg->String);
+
+        _SYSTEMTIME sysTime;
+        GetLocalTime(&sysTime);
+
+        if (pScene->m_pHelpList[3] != nullptr)
+            pScene->m_pHelpList[3]->AddItem(new SListBoxItem(" ", 0xFFFFFFFF, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777u, 1u, 0));
+
+        sprintf_s(szMsg, g_pMessageStringTable[226], pMsg->MobName);
+
+        char szTime[128]{};
+        sprintf_s(szTime, "%s [%02d:%02d:%02d]", szMsg, sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
+
+        if (pScene->m_pHelpList[3] != nullptr)
+            pScene->m_pHelpList[3]->AddItem(new SListBoxItem(szTime, 0xFFFFFFFF, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777u, 1u, 0));
+
+        sprintf_s(szMsg, "%s", &pMsg->String[1]);
+
+        if (pScene->m_pHelpList[3] != nullptr)
+            pScene->m_pHelpList[3]->AddItem(new SListBoxItem(szMsg, 0xFFFFFFCC, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777u, 1u, 0));
+
+        if (pScene->m_pHelpMemo)
+            pScene->m_pHelpMemo->SetVisible(1);
+    }
+
+    if (!bDrawText)
+        return 1;
+
+    if (strlen(pMsg->MobName) + strlen(szMsg) <= 55)
+    {
+        if (pChatList)
+            pChatList->AddItem(new SListBoxItem(szMsg, dwColor, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777u, 1u, 0));
+    }
+    else
+    {
+        char szMsg2[128]{};
+        char szMsg3[128]{};
+
+        if (IsClearString(szMsg, 54))
+        {
+            strncpy(szMsg3, szMsg, 55);
+            sprintf(szMsg2, "%s", &szMsg[55]);
+        }
+        else
+        {
+            strncpy(szMsg3, szMsg, 54);
+            sprintf(szMsg2, "%s", &szMsg[54]);
+        }
+
+        if (pChatList)
+            pChatList->AddItem(new SListBoxItem(szMsg3, dwColor, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777u, 1u, 0));
+
+        if (strlen(szMsg) > 55)
+        {
+            if (pChatList)
+                pChatList->AddItem(new SListBoxItem(szMsg2, dwColor, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777u, 1u, 0));
+        }
+    }
+    return 1;
 }
 
 int TMHuman::OnPacketUpdateEtc(MSG_STANDARD* pStd)
