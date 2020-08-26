@@ -13850,6 +13850,59 @@ void TMFieldScene::SetRunMode()
 
 void TMFieldScene::UseTicket(int nCellX, int nCellY)
 {
+	auto pGrid = (SGridControl*)m_pControlContainer->FindControl(65554);
+	auto pItem = pGrid->GetItem(nCellX, nCellY);
+	if (!pItem)
+		return;
+
+	if (BASE_GetItemAbility(pItem->m_pItem, 38) != 14)
+		return;
+
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+	if (m_dwUseItemTime && dwServerTime - m_dwUseItemTime < 200)
+		return;
+
+	int SourPos = pGrid->CheckPos(pItem->m_pGridControl->m_eItemType);
+	if (SourPos == -1)
+		SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+	MSG_UseItem stUseItem{};
+	stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+	stUseItem.Header.Type = MSG_UseItem_Opcode;
+	stUseItem.SourType = 1;
+	stUseItem.SourPos = SourPos;
+	stUseItem.ItemID = 0;
+	stUseItem.GridX = (int)m_pMyHuman->m_vecPosition.x;
+	stUseItem.GridY = (int)m_pMyHuman->m_vecPosition.y;
+	SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+
+	m_dwUseItemTime = dwServerTime;
+	g_pEventTranslator->m_bRBtn = 1;
+
+	int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+	if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
+		nAmount = 0;
+
+	if (nAmount > 1)
+	{
+		BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+		sprintf(pItem->m_GCText.strString, "%2d", nAmount - 1);
+		pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+	}
+	else
+	{
+		auto pPickedItem = pGrid->PickupItem(nCellX, nCellY);
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+			g_pCursor->m_pAttachedItem = 0;
+		
+		SAFE_DELETE(pPickedItem);
+	}
+
+	GetSoundAndPlay(47, 0, 0);
+
+	UpdateScoreUI(0);
+	if (nAmount <= 1)
+		memset(&g_pObjectManager->m_stMobData.Carry[SourPos], 0, sizeof(STRUCT_ITEM));
 }
 
 char TMFieldScene::UseQuickSloat(char key)
