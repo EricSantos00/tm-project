@@ -13538,7 +13538,54 @@ void TMFieldScene::CreateGate(int nZoneIndex, int bInit)
 
 int TMFieldScene::GetItemFromGround(unsigned int dwServerTime)
 {
-	return 0;
+	if (g_pObjectManager->m_cShortSkill[g_pObjectManager->m_cSelectShortSkill] == 31)
+		return 0;
+
+	auto pOverItem = m_pMouseOverItem;
+	if (!pOverItem)
+		return 0;
+	if (dwServerTime <= m_dwGetItemTime + 1000)
+		return 0;
+	if (!pOverItem->m_bMouseOver)
+		return 0;
+	if (pOverItem->m_stItem.sIndex >= 1733 && pOverItem->m_stItem.sIndex <= 1736)
+		return 1;
+	if (pOverItem->m_stItem.sIndex >= 3145 && pOverItem->m_stItem.sIndex <= 3149)
+		return 1;
+
+	if (BASE_GetItemAbility(&pOverItem->m_stItem, 34) <= 0)
+	{
+		GetItem(pOverItem);
+		return;
+	}
+
+	if (BASE_GetItemAbility(&pOverItem->m_stItem, 34) == 10 && pOverItem->m_stItem.sIndex >= 4100 && pOverItem->m_stItem.sIndex < 4200)
+	{
+		if (m_pGambleStore->m_bVisible == 1)
+			return 1;
+
+		if (pOverItem->m_stItem.sIndex == 4102)
+		{
+			SetVisibleGamble(1, 2);
+			return 1;
+		}
+		if (pOverItem->m_stItem.sIndex == 4103)
+		{
+			SetVisibleGamble(1, 1);
+			return 1;
+		}
+	}
+
+	MSG_UpdateItem stUpdateItem{};
+	stUpdateItem.Header.ID = m_pMyHuman->m_dwID;
+	stUpdateItem.ItemID = pOverItem->m_dwID;
+	stUpdateItem.Header.Type = MSG_UpdateItem_Opcode;
+	stUpdateItem.State = 1;
+	SendOneMessage((char*)&stUpdateItem, sizeof(stUpdateItem));
+
+	m_dwGetItemTime = g_pTimerManager->GetServerTime();
+
+	return 1;
 }
 
 int TMFieldScene::GetWeaponDamage()

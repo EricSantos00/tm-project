@@ -1321,6 +1321,16 @@ struct MSG_HellBuy
 	int Coin;
 };
 
+constexpr auto MSG_UpdateItem_Opcode = 0x374;
+struct MSG_UpdateItem
+{
+	MSG_STANDARD Header;
+	int ItemID;
+	short State;
+	char Height;
+	char dummy;
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },
