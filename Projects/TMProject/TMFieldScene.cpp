@@ -6165,7 +6165,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case 0x334:
 		return OnPacketMessageWhisper(reinterpret_cast<MSG_MessageWhisper*>(pStd));
 	case 0x7B1:
-		return OnPacketLongMessagePanel(pStd);
+		return OnPacketLongMessagePanel(reinterpret_cast<MSG_LongMessagePanel*>(pStd));
 	case 0x3B2:
 		return OnPacketReqSummon(reinterpret_cast<MSG_ReqSummon*>(pStd));
 	case 0x3B3:
@@ -16359,9 +16359,40 @@ int TMFieldScene::OnPacketMessageWhisper(MSG_MessageWhisper* pMsg)
 	return 1;
 }
 
-int TMFieldScene::OnPacketLongMessagePanel(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketLongMessagePanel(MSG_LongMessagePanel* pMsg)
 {
-	return 0;
+	pMsg->Line[0][127] = 0;
+	pMsg->Line[1][127] = 0;
+	pMsg->Line[2][127] = 0;
+	pMsg->Line[3][127] = 0;
+
+	if (pMsg->Parm1 == 10)
+	{
+		for (int i = 0; i < 4; ++i)
+			strcpy(m_szEventTextTemp[i], pMsg->Line[i]);
+		m_dwEventStartTime = 0;
+
+		return 1;
+	}
+	if (m_pQuizPanel)
+	{
+		if (!pMsg->Parm1 && m_pQuizCaption)
+			m_pQuizCaption->SetText(g_pMessageStringTable[260], 0);
+		else if (pMsg->Parm1 == 1 && m_pQuizCaption)
+			m_pQuizCaption->SetText(g_pMessageStringTable[259], 0);
+
+		for (int j = 0; j < 4; ++j)
+		{
+			m_pChatListnotice->AddItem(new SListBoxItem(pMsg->Line[j], 0xFFCCAAFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+			m_pQuizText[j]->SetText(pMsg->Line[j], 0);
+		}
+
+		m_dwQuizStart = g_pTimerManager->GetServerTime();
+		m_pQuizPanel->SetVisible(1);
+		
+		GetSoundAndPlay(33, 0, 0);
+	}
+	return 1;
 }
 
 int TMFieldScene::OnPacketReqSummon(MSG_ReqSummon* pStd)

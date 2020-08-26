@@ -1393,6 +1393,14 @@ struct MSG_RandomQuiz
 	char Answer[4][32];
 };
 
+struct MSG_LongMessagePanel
+{
+	MSG_STANDARD Header;
+	short Parm1;
+	short Parm2;
+	char Line[4][128];
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },
