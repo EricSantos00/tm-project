@@ -20538,7 +20538,14 @@ int TMFieldScene::OnPacketRunQuest12Start(MSG_STANDARDPARM* pStd)
 
 int TMFieldScene::OnPacketRunQuest12Count(MSG_STANDARD* pStd)
 {
-	return 0;
+	char szText[128]{};
+	sprintf(szText, "%d / %d", pStd->Parm1, pStd->Parm2);
+
+	m_pRemainText->SetPos((float)g_pDevice->m_dwScreenWidth - 130.0f,
+		30.0f * RenderDevice::m_fHeightRatio);
+
+	m_pRemainText->SetText(szText, 0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketDelayQuit(MSG_STANDARDPARM* pStd)
