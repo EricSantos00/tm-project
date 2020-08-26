@@ -14922,14 +14922,61 @@ void TMFieldScene::SendCapsuleItem()
 
 void TMFieldScene::SetQuestStatus(bool bStart)
 {
+	if (bStart == 1)
+		m_dwQuestStartTime = timeGetTime();
+	else
+		m_dwQuestStartTime = 0;
+
+	m_pQuestRemainTime->SetVisible(bStart);
 }
 
 void TMFieldScene::UpdateQuestTime()
 {
+	if (m_dwQuestStartTime)
+	{
+		int nLeftSecond = 900 - (timeGetTime() - m_dwQuestStartTime) / 1000;
+
+		char strText[128]{};
+		sprintf(strText, "[%02d:%02d]", nLeftSecond / 60, nLeftSecond % 60);
+
+		m_pQuestRemainTime->SetText(strText, 0);
+		if (!m_pQuestRemainTime->IsVisible())
+			m_pQuestRemainTime->SetVisible(1);
+	}
 }
 
 void TMFieldScene::SetButtonTextXY(SButton* pButton)
 {
+	if (m_pSystemPanel && pButton)
+	{
+		TMVector2 vecXY{};
+		auto vec = pButton->GetPos();
+
+		int nLen = strlen(pButton->m_GCPanel.pFont->m_szString);
+		if (RenderDevice::m_fWidthRatio == 0.80000001f)
+		{
+			vecXY.x = 43.0f - ((float)(nLen - 1) * 3.0f);
+			vecXY.y = 2.0f;
+		}
+		else if (RenderDevice::m_fWidthRatio == 1.28f)
+		{
+			vecXY.x = 66.0f - ((float)(nLen - 1) * 4.0f);
+			vecXY.y = 5.0f;
+		}
+		else if (RenderDevice::m_fWidthRatio == 1.6f)
+		{
+			vecXY.x = 75.0f - ((float)(nLen - 1) * 5.0f);
+			vecXY.y = 5.0f;
+		}
+		else if (RenderDevice::m_fWidthRatio == 2.0f)
+		{
+			vecXY.x = 90.0f - ((float)(nLen - 1) * 5.0f);
+			vecXY.y = 5.0f;
+		}
+
+		pButton->m_GCPanel.pFont->m_nPosX = (int)((m_pSystemPanel->m_nPosX + vec.x) + vecXY.x);
+		pButton->m_GCPanel.pFont->m_nPosY = (int)((m_pSystemPanel->m_nPosY + vec.y) + vecXY.y);
+	}
 }
 
 int TMFieldScene::OnMsgBoxEvent(unsigned int idwControlID, unsigned int idwEvent, unsigned int dwServerTime)
