@@ -16958,31 +16958,27 @@ int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
 				GroundGetMask(pHuman->m_vecPosition) * 0.1f + 0.05000000f,
 				(float)pCreateMob->PosY + 0.5f);
 
-			if (pHuman->m_nSkinMeshType && pHuman->m_nSkinMeshType != 1)
-			{
-				if ((pCreateMob->CreateType & 0x7FFF) != 3 && pHuman->m_nSkinMeshType != 35 && pHuman->m_nSkinMeshType != 36)
-				{
-					auto pChild = new TMEffectStart(vecEffectPos, 1, nullptr);
-
-					if (pChild && m_pEffectContainer)
-						m_pEffectContainer->AddChild(pChild);
-
-					auto pSoundManager = g_pSoundManager;
-					if (pSoundManager && m_pMyHuman == pHuman)
-					{
-						auto pSoundData = pSoundManager->GetSoundData(151);
-						pSoundData->Play();
-					}
-				}
-			}
-			else
+			if (!pHuman->m_nSkinMeshType || pHuman->m_nSkinMeshType == 1)
 			{
 				auto pEffect = new TMEffectStart(vecEffectPos, 0, nullptr);
 
 				if (pEffect && m_pEffectContainer)
 					m_pEffectContainer->AddChild(pEffect);
 			}
+			else if ((pCreateMob->CreateType & 0x7FFF) != 3 && pHuman->m_nSkinMeshType != 35 && pHuman->m_nSkinMeshType != 36)
+			{
+				auto pChild = new TMEffectStart(vecEffectPos, 1, nullptr);
 
+				if (pChild && m_pEffectContainer)
+					m_pEffectContainer->AddChild(pChild);
+
+				auto pSoundManager = g_pSoundManager;
+				if (pSoundManager && m_pMyHuman == pHuman)
+				{
+					auto pSoundData = pSoundManager->GetSoundData(151);
+					pSoundData->Play();
+				}
+			}
 			if ((pCreateMob->CreateType & 0x7FFF) == 3)
 			{
 				if (pHuman->m_nClass == 62 && pHuman->m_stLookInfo.FaceMesh == 2)
