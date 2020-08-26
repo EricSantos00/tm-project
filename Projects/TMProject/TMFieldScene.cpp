@@ -14747,10 +14747,42 @@ void TMFieldScene::VisibleInputTradeName()
 
 void TMFieldScene::VisibleInputPass()
 {
+	auto pInputGoldPanel = (SControl*)m_pInputGoldPanel;
+	auto pText = (SText*)m_pControlContainer->FindControl(65888);
+	auto pEdit = (SEditableText*)m_pControlContainer->FindControl(65889);
+	if (pText && pEdit)
+	{
+		m_nCoinMsgType = 11;
+		pText->SetText(g_pMessageStringTable[405], 0);
+		m_pControlContainer->SetFocusedControl(pEdit);
+		pInputGoldPanel->SetVisible(1);
+
+		auto pInputBG2 = (SPanel*)m_pControlContainer->FindControl(574);
+		if (pInputBG2)
+			pInputBG2->SetVisible(1);
+
+		pEdit->m_nMaxStringLen = 12;
+	}
 }
 
 void TMFieldScene::VisibleInputGuildName()
 {
+	auto pInputGoldPanel = (SControl*)m_pInputGoldPanel;
+	auto pText = (SText*)m_pControlContainer->FindControl(65888);
+	auto pEdit = (SEditableText*)m_pControlContainer->FindControl(65889);
+	if (pText && pEdit)
+	{
+		m_nCoinMsgType = 8;
+		pText->SetText(g_pMessageStringTable[363], 0);
+		m_pControlContainer->SetFocusedControl(pEdit);
+		pInputGoldPanel->SetVisible(1);
+
+		auto pInputBG2 = (SPanel*)m_pControlContainer->FindControl(574);
+		if (pInputBG2)
+			pInputBG2->SetVisible(1);
+
+		pEdit->m_nMaxStringLen = 20;
+	}
 }
 
 void TMFieldScene::VisibleInputCharName(SGridControlItem* pItem, int nCellX, int nCellY)
