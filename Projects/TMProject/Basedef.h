@@ -47,6 +47,7 @@ constexpr auto MSG_DeleteItem_Opcode = 0x2E4;
 constexpr auto MSG_SplitItem_Opcode = 0x2E5;
 constexpr auto MSG_DoJackpotBet_Opcode = 0x2BE;
 constexpr auto MSG_InviteGuild_Opcode = 0x3D5;
+constexpr auto MSG_Quest_Opcode = 0x28B;
 struct MSG_STANDARDPARM2
 {
 	MSG_STANDARD Header;
@@ -1121,8 +1122,6 @@ struct MSG_REQShopList
 	MSG_STANDARD Header;
 	unsigned short TargetID;
 };
-
-constexpr auto MSG_Quest_Opcode = 0x28B;
 
 constexpr auto MSG_Buy_Opcode = 0x379;
 struct MSG_Buy

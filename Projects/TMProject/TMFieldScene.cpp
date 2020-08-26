@@ -19950,7 +19950,129 @@ int TMFieldScene::MouseClick_SkillMasterNPC(unsigned int dwServerTime, TMHuman* 
 
 int TMFieldScene::MouseClick_QuestNPC(unsigned int dwServerTime, TMHuman* pOver)
 {
-	return 0;
+	if ((pOver->m_stScore.Reserved & 0xF) == 15 && !m_pMyHuman->IsInTown())
+	{
+		if (pOver->m_cMantua > 0 && m_pMyHuman->m_cMantua > 0 && pOver->m_cMantua != m_pMyHuman->m_cMantua && m_pMyHuman->m_cMantua != 3)
+			return 1;
+
+		if (m_pMyHuman->m_pMantua && 
+			((int)m_pMyHuman->m_pMantua->m_Look.Skin0 < 2 || (int)m_pMyHuman->m_pMantua->m_Look.Skin0 >= 8	&& (int)m_pMyHuman->m_pMantua->m_Look.Skin0 <= 14))
+		{
+			if (g_pObjectManager->m_stMobData.Equip[10].sIndex == 1742 && (g_pObjectManager->m_stMobData.Equip[11].sIndex < 1760 || 
+				g_pObjectManager->m_stMobData.Equip[11].sIndex > 1763))
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[241], 4000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+			if (g_pObjectManager->m_stMobData.Equip[10].sIndex != 1742 || g_pObjectManager->m_stMobData.Equip[11].sIndex < 1760	|| 
+				g_pObjectManager->m_stMobData.Equip[11].sIndex > 1763)
+			{
+				return 1;
+			}
+		}
+	}
+	if ((pOver->m_stScore.Reserved & 0xF) == 13)
+	{
+		if (!m_pMessageBox->IsVisible())
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[131], 13, 0);
+			m_pMessageBox->m_dwArg = pOver->m_dwID;
+			m_pMessageBox->SetVisible(1);
+		}
+
+		return 1;
+	}
+	if ((pOver->m_stScore.Reserved & 0xF) == 14)
+	{
+		char cLifeStone = 0;
+		char cSapha = 0;
+		for (int i = 0; i < 63; ++i)
+		{
+			if (g_pObjectManager->m_stMobData.Carry[i].sIndex == 1740 && g_pObjectManager->m_stMobData.Carry[i + 1].sIndex == 1741)
+				cLifeStone = 1;
+			if (g_pObjectManager->m_stMobData.Carry[i].sIndex == 697)
+				++cSapha;
+			if (cLifeStone == 1 && cSapha >= 20 && m_pMyHuman->m_stScore.Level >= 299)
+			{
+				if (!m_pMessageBox->IsVisible())
+				{
+					m_pMessageBox->SetMessage(g_pMessageStringTable[233], 233, 0);
+					m_pMessageBox->m_dwArg = pOver->m_dwID;
+					m_pMessageBox->SetVisible(1);
+				}
+				return 1;
+			}
+		}
+	}
+	if ((pOver->m_stScore.Reserved & 0xF) == 15 || (pOver->m_stScore.Reserved & 0xF) == 10)
+	{
+		if (!m_pMessageBox->IsVisible())
+		{
+			if (pOver->m_sHeadIndex == 51 && _locationCheck(pOver->m_vecPosition, 16, 16))
+				m_pMessageBox->SetMessage(g_pMessageStringTable[404], pOver->m_stScore.Reserved & 0xF, 0);
+			else
+				m_pMessageBox->SetMessage(g_pMessageStringTable[152], pOver->m_stScore.Reserved & 0xF, 0);
+
+			m_pMessageBox->m_dwArg = pOver->m_dwID;
+			m_pMessageBox->SetVisible(1);
+		}
+
+		return 1;
+	}
+	if ((pOver->m_stScore.Reserved & 0xF) == 4 && pOver->m_sHeadIndex == 271)
+	{
+		if (!m_pMessageBox->IsVisible())
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[348], 271, 0);
+			m_pMessageBox->m_dwArg = pOver->m_dwID;
+			m_pMessageBox->SetVisible(1);
+		}
+		return 1;
+	}
+
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && (pOver->m_stScore.Reserved & 0xF) == 9 && pOver->m_sHeadIndex == 51)
+	{
+		m_pInputGoldPanel->SetVisible(1);
+		auto pText = (SText*)m_pControlContainer->FindControl(65888);
+		if (pText)
+		{
+			m_nCoinMsgType = 7;
+			pText->SetText(g_pMessageStringTable[136], 0);
+			auto pEdit = (SEditableText*)g_pCurrentScene->m_pControlContainer->FindControl(65889);
+			m_pControlContainer->SetFocusedControl((SControl*)pEdit);
+		}
+	}
+	else if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 58 && (pOver->m_stScore.Reserved & 0xF) == 11)
+	{
+		if (!m_pMessageBox->IsVisible())
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[152], pOver->m_sHeadIndex, 0);
+			m_pMessageBox->m_dwArg = pOver->m_dwID;
+			m_pMessageBox->SetVisible(1);
+		}
+		return 1;
+	}
+	else if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 58 && pOver->m_stScore.Reserved == 76)
+	{
+		if (!m_pMessageBox->IsVisible())
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[152], pOver->m_sHeadIndex, 0);
+			m_pMessageBox->m_dwArg = pOver->m_dwID;
+			m_pMessageBox->SetVisible(1);
+		}
+		return 1;
+	}
+
+	MSG_STANDARDPARM2 stQuest{};
+	stQuest.Header.Type = MSG_Quest_Opcode;
+	stQuest.Header.ID = m_pMyHuman->m_dwID;
+	stQuest.Parm1 = pOver->m_dwID;
+	stQuest.Parm2 = 0;
+	SendOneMessage((char*)&stQuest, sizeof(stQuest));
+	m_dwNPCClickTime = dwServerTime;
+
+	return 1;
 }
 
 void TMFieldScene::NewCCMode()
