@@ -21060,10 +21060,79 @@ int TMFieldScene::StrByteCheck(char* szString)
 
 void TMFieldScene::SetVisibleMixPanel(int bShow)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+	if (m_pInputGoldPanel->IsVisible() == 1)
+		SetInVisibleInputCoin();
+	if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+		SetVisibleSkill();
+	if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+		SetVisibleCharInfo();
+	if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+		SetVisibleAutoTrade(0, 0);
+
+	if (bShow == 1)
+	{
+		if (m_pInvenPanel)
+		{
+			if (!m_pInvenPanel->m_bVisible)
+				SetVisibleInventory();
+		}
+
+		m_ItemMixClass.m_pMixPanel->SetVisible(1);
+		m_pInvenPanel->SetPos(RenderDevice::m_fWidthRatio * 514.0f,
+			RenderDevice::m_fHeightRatio * 35.0f);
+
+		g_pDevice->m_nWidthShift = 0;
+		g_pCursor->DetachItem();
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV8;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV8;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV8;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV8;
+		SetEquipGridState(0);
+	}
+	else
+	{
+		if (m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+
+		g_pDevice->m_nWidthShift = 0;
+		m_ItemMixClass.m_pMixPanel->SetVisible(0);
+		ClearMixPannel();
+	}
 }
 
 void TMFieldScene::ClearMixPannel()
 {
+	for (int i = 0; i < 4; ++i)
+	{
+		auto pGridInv = m_pGridInvList[i];
+		for (int nY = 0; nY < 3; ++nY)
+		{
+			for (int nX = 0; nX < 5; ++nX)
+			{
+				auto pItem = pGridInv->GetItem(nX, nY);
+				if (pItem)
+				{
+					if (pItem->m_GCObj.dwColor == 0xFFFF0000)
+						pItem->m_GCObj.dwColor = 0xFFFFFFFF;
+				}
+			}
+		}
+	}
+
+	m_ItemMixClass.ClearGridList();
+	m_ItemMixClass.m_stCombineItem.Header.ID = m_pMyHuman->m_dwID;
+	m_ItemMixClass.m_stCombineItem.Header.Type = MSG_CombineItemTiny_Opcode;
+
+	m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	SetEquipGridState(1);
 }
 
 void TMFieldScene::SetVisibleMissionPanel(int bShow)
