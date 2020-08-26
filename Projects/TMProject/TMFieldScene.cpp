@@ -13854,7 +13854,148 @@ void TMFieldScene::UseTicket(int nCellX, int nCellY)
 
 char TMFieldScene::UseQuickSloat(char key)
 {
-	return 0;
+	SGridControlItem* pItemFind = nullptr;
+	SGridControl* pGridSloat = nullptr;
+	if (key == 'Q' || key == 'q')
+	{
+		pItemFind = m_pQuick_Sloat[0]->GetAtItem(0, 0);
+		pGridSloat = m_pQuick_Sloat[0];
+	}
+	else if (key == 'W' || key == 'w')
+	{
+		pItemFind = m_pQuick_Sloat[1]->GetAtItem(0, 0);
+		pGridSloat = m_pQuick_Sloat[1];
+	}
+	else if (key == 'E' || key == 'e')
+	{
+		pItemFind = m_pQuick_Sloat[2]->GetAtItem(0, 0);
+		pGridSloat = m_pQuick_Sloat[2];
+	}
+	else if (key == 'R' || key == 'r')
+	{
+		pItemFind = m_pQuick_Sloat[3]->GetAtItem(0, 0);
+		pGridSloat = m_pQuick_Sloat[3];
+	}
+	else if(key == 'T' || key == 't')
+	{
+		pItemFind = m_pQuick_Sloat[4]->GetAtItem(0, 0);
+		pGridSloat = m_pQuick_Sloat[4];
+	}
+
+	if (!pItemFind)
+		return 0;
+
+	int page = 0;
+
+	SGridControlItem* pItem = nullptr;
+	SGridControl* pGridInv = nullptr;
+	bool bFind = false;
+	for (int i = 0; i < 4; ++i)
+	{
+		pGridInv = m_pGridInvList[i];
+		for (int j = 0; j < 3; ++j)
+		{
+			for (int k = 0; k < 5; ++k)
+			{
+				pItem = pGridInv->GetItem(k, j);
+				if (pItem && pItem->m_pItem->sIndex == pItemFind->m_pItem->sIndex)
+				{
+					bFind = true;
+					page = 15 * i;
+					break;
+				}
+			}
+			if (bFind == true)
+				break;
+		}
+		if (bFind == true)
+			break;
+	}
+	if (bFind != true || !pItem)
+		return 0;
+
+	int nType = BASE_GetItemAbility(pItem->m_pItem, 38);
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+	if (m_dwUseItemTime && dwServerTime - m_dwUseItemTime < 200)
+		return 0;
+
+	int SourType = pGridInv->CheckType(pItem->m_pGridControl->m_eItemType, pItem->m_pGridControl->m_eGridType);
+	int SourPos = pGridInv->CheckPos(pItem->m_pGridControl->m_eItemType);
+	if (SourPos == -1)
+		SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+	SourPos = page + SourPos;
+
+	MSG_UseItem stUseItem{};
+	stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+	stUseItem.Header.Type = MSG_UseItem_Opcode;
+	stUseItem.SourType = SourType;
+	stUseItem.SourPos = SourPos;
+	stUseItem.ItemID = 0;
+	stUseItem.GridX = (int)m_pMyHuman->m_vecPosition.x;
+	stUseItem.GridY = (int)m_pMyHuman->m_vecPosition.y;
+
+	if (nType == 15)
+	{
+		stUseItem.DestType = 0;
+		stUseItem.DestPos = 14;
+	}
+
+	SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+
+	m_dwUseItemTime = dwServerTime;
+	int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+
+	if (nAmount > 1)
+	{
+		BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+		sprintf(pItem->m_GCText.strString, "%2d", nAmount - 1);
+		pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+		sprintf(pItemFind->m_GCText.strString, "%2d", nAmount - 1);
+		pItemFind->m_GCText.pFont->SetText(pItemFind->m_GCText.strString, pItemFind->m_GCText.dwColor, 0);
+	}
+	else
+	{
+		auto pPickedItem = m_pGridInvList[stUseItem.SourPos / 15]->PickupItem(stUseItem.SourPos % 15 % 5, stUseItem.SourPos % 15 / 5);
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+			g_pCursor->m_pAttachedItem = 0;
+		
+		SAFE_DELETE(pPickedItem);
+
+		g_pCursor->DetachItem();
+		bool bFind = false;
+		for (int i = 0; i < 4; ++i)
+		{
+			auto pGridInv = m_pGridInvList[i];
+			for (int l = 0; l < 3; ++l)
+			{
+				for (int m = 0; m < 5; ++m)
+				{
+					auto pItem = pGridInv->GetItem(m, l);
+					if (pItem && pItem->m_pItem->sIndex == pItemFind->m_pItem->sIndex)
+					{
+						bFind = true;
+						break;
+					}
+				}
+				if (bFind == true)
+					break;
+			}
+			if (bFind == true)
+				break;
+		}
+		if (!bFind)
+		{
+			auto pReturnItem = pGridSloat->PickupItem(0, 0);
+			SAFE_DELETE(pReturnItem);
+		}
+	}
+	if (nAmount <= 1)
+		memset(&g_pObjectManager->m_stMobData.Carry[SourPos], 0, sizeof(STRUCT_ITEM));
+
+	GetSoundAndPlay(41, 0, 0);
+	UpdateScoreUI(16);
+
+	return 1;
 }
 
 void TMFieldScene::UpdateFireWorkButton(int nIndex)
