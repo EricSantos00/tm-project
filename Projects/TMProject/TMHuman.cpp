@@ -37,6 +37,7 @@
 #include "TMEffectLevelUp.h"
 #include "ItemEffect.h"
 #include "TMFont3.h"
+#include "TMSkillJudgement.h"
 
 TMVector2 TMHuman::m_vecPickSize[100] = {
   { 0.40000001f, 2.0f },
@@ -3616,7 +3617,237 @@ int TMHuman::OnPacketChaosCube(MSG_Action* pAction)
 
 int TMHuman::OnPacketIllusion(MSG_STANDARD* pStd)
 {
-	return 0;
+    auto pAction = (MSG_Action*)pStd;
+    auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+    if (!m_cHide && pStd->Type == MSG_Action2_Opcode)
+    {
+        g_pObjectManager->m_stMobData.CurrentScore.Mp -= g_pSpell[73].ManaSpent;
+        bool bExpand = false;
+        if (m_nClass == 4 || m_nClass == 8)
+            bExpand = true;
+
+        auto pEffect = new TMEffectSkinMesh(m_nSkinMeshType, TMVector3(0.0f, 0.0f, 0.0f), TMVector3(0.0f, 0.0f, 0.0f), 0, nullptr);
+
+        if (m_cMount > 0 && m_pMount)
+        {
+            pEffect->m_nSkinMeshType = m_nMountSkinMeshType;
+            memcpy(&pEffect->m_stLookInfo, &m_stMountLook, sizeof(m_stMountLook));
+            pEffect->m_nSkinMeshType2 = m_nSkinMeshType;
+            memcpy(&pEffect->m_stLookInfo2, &m_stLookInfo, sizeof(m_stLookInfo));
+        }
+        else
+        {
+            memcpy(&pEffect->m_stLookInfo, &m_stLookInfo, sizeof(m_stLookInfo));
+        }
+
+        pEffect->m_StartColor.r = 1.0f;
+        pEffect->m_StartColor.g = 1.0f;
+        pEffect->m_StartColor.b = 1.0f;
+        pEffect->m_fScale = m_fScale;
+        pEffect->InitObject(bExpand);
+        pEffect->m_nFade = 1;
+        pEffect->m_dwLifeTime = 3000;
+        pEffect->InitPosition(m_vecPosition.x, m_fHeight + 0.1f, m_vecPosition.y);
+
+        if (m_cMount > 0 && m_pMount)
+        {
+            if (pEffect->m_pSkinMesh)
+                pEffect->m_pSkinMesh->SetAnimation(MeshManager::m_sAnimationArray[m_nSkinMeshType][m_nWeaponTypeIndex][g_MobAniTable[m_nMountSkinMeshType].dwAniTable[(int)m_eMotion]]);
+            if (pEffect->m_pSkinMesh2)
+                pEffect->m_pSkinMesh2->SetAnimation(MeshManager::m_sAnimationArray[m_nSkinMeshType][m_nWeaponTypeIndex][g_MobAniTable[m_nSkinMeshType].dwAniTable[(int)m_eMotion + 28]]);
+        }
+        else
+        {
+            pEffect->m_pSkinMesh->SetAnimation(MeshManager::m_sAnimationArray[m_nSkinMeshType][m_nWeaponTypeIndex][g_MobAniTable[m_nSkinMeshType].dwAniTable[(int)m_eMotion]]);
+        }
+
+        pEffect->m_fStartAngle = m_fAngle;
+        pEffect->m_fAngle = pEffect->m_fStartAngle;
+        if (m_nWeaponTypeL != 101)
+            pEffect->m_fAngle = m_fAngle + D3DXToRadian(360);
+        pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pEffect->m_nMotionType = 0;
+
+        g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+    }
+    else if (!m_cHide && pAction->Effect != 5)
+    {
+        int nType = 1;
+        if (pAction->Effect == 6)
+            nType = 2;
+
+        auto pPortal = new TMSkillTownPortal(TMVector3(m_vecPosition.x,
+            m_fHeight + 0.050000001f, m_vecPosition.y), nType);
+
+        g_pCurrentScene->m_pEffectContainer->AddChild(pPortal);
+        _dwAttackDelay = g_pTimerManager->GetRealTime();
+    }
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        auto pCamera = g_pObjectManager->m_pCamera;
+        bool bDestIsDungeon = false;
+        bool bNowIsDungeon = false;
+
+        if ((int)pAction->TargetY >> 7 > 25)
+        {
+            bDestIsDungeon = true;
+            pScene->m_bIsDungeon = 1;
+        }
+        else
+            pScene->m_bIsDungeon = 0;
+
+        if ((int)m_vecPosition.y >> 7 > 25)
+            bNowIsDungeon = true;
+
+        if (bDestIsDungeon == 1 && !bNowIsDungeon)
+        {
+            pCamera->m_fMaxCamLen = 11.0f;
+            if (pCamera->m_fSightLength > 11.0f)
+                pCamera->m_fSightLength = 11.0f;
+        }
+        else if (bNowIsDungeon == 1 && !bDestIsDungeon)
+        {
+            pCamera->m_fMaxCamLen = 15.0f;
+            pCamera->m_fSightLength = pCamera->m_fSightLength + 4.0f;
+            if (pCamera->m_fSightLength > 15.0f)
+                pCamera->m_fSightLength = 15.0f;
+        }
+        if (pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+        {
+            int nNowX = (int)m_vecPosition.x;
+            int nNowY = (int)m_vecPosition.y;
+            bool bQuestEnd = false;
+            bool bQuestStart = false;
+
+            bQuestStart = nNowX >> 7 == 25
+                && nNowY >> 7 == 13
+                && (int)pAction->TargetX >> 7 >= 26
+                && (int)pAction->TargetX >> 7 <= 30
+                && (int)pAction->TargetY >> 7 >= 8
+                && (int)pAction->TargetY >> 7 <= 12;
+
+            if (bQuestStart)
+                pScene->SetQuestStatus(1);
+            else if (bQuestEnd == 1)
+                pScene->SetQuestStatus(0);
+
+            pScene->m_vecMyNext.x = pAction->TargetX;
+            pScene->m_vecMyNext.y = pAction->TargetY;
+            pScene->m_stMoveStop.NextX = pAction->TargetX;
+            pScene->m_stMoveStop.NextY = pAction->TargetY;
+        }
+        m_LastSendTargetPos.x = pAction->TargetX;
+        m_LastSendTargetPos.y = pAction->TargetY;
+    }
+
+    TMVector2 vecPosition{ (float)pAction->TargetX + 0.5f, (float)pAction->TargetY + 0.5f };
+
+    InitPosition(vecPosition.x, pScene->GroundGetMask(vecPosition), vecPosition.y);
+
+    if (pScene->m_pMyHuman != this)
+    {
+        m_LastSendTargetPos.x = pAction->TargetX;
+        m_LastSendTargetPos.y = pAction->TargetY;
+    }
+    else if (pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+    {
+        pScene->m_vecMyNext.x = pAction->TargetX;
+        pScene->m_vecMyNext.y = pAction->TargetY;
+        pScene->m_stMoveStop.NextX = pAction->TargetX;
+        pScene->m_stMoveStop.NextY = pAction->TargetY;
+    }
+
+    m_cDie = 0;
+    if (!m_cHide && pAction->Effect != 5 && pStd->Type != 872)
+    {
+        if (m_nClass != 1 && m_nClass != 2 && m_nClass != 4 && m_nClass != 8 && m_nClass != 26)
+        {
+            auto pEffect = new TMEffectStart(
+                TMVector3((float)pAction->TargetX + 0.5f, ((float)pScene->GroundGetMask(m_vecPosition) * 0.1f) + 0.05f, (float)pAction->TargetY + 0.5f),
+                1, nullptr);
+
+            pScene->m_pEffectContainer->AddChild(pEffect);
+        }
+        else
+        {
+            auto pEffect = new TMEffectStart(
+                TMVector3((float)pAction->TargetX + 0.5f, ((float)pScene->GroundGetMask(m_vecPosition) * 0.1f) + 0.05f, (float)pAction->TargetY + 0.5f),
+                0, nullptr);
+
+            pScene->m_pEffectContainer->AddChild(pEffect);
+        }
+
+        if (g_pObjectManager->m_pCamera->m_pFocusedObject == this)
+            GetSoundAndPlay(151, 0, 0);
+
+        int nType = 1;
+        if (pAction->Effect == 6)
+            nType = 2;
+
+        if (pAction->Effect == 6 && m_nClass == 62 && m_stLookInfo.FaceMesh == 2)
+        {
+            InitPosition(m_vecPosition.x, ((float)pScene->GroundGetMask(m_vecPosition) * 0.1f) - 2.0f, m_vecPosition.y);
+            TMVector3 vecPos{ m_vecPosition.x, ((float)pScene->GroundGetMask(m_vecPosition) * 0.1f) + 0.2f, m_vecPosition.y };
+
+            auto pJudgement = new TMSkillJudgement(vecPos, 4, 0.1f);
+
+            pScene->m_pEffectContainer->AddChild(pJudgement);
+        }
+        else
+        {
+            auto pPartal = new TMSkillTownPortal(
+                TMVector3((float)pAction->TargetX + 0.5f, ((float)pScene->GroundGetMask(m_vecPosition) * 0.1f) + 0.05f, (float)pAction->TargetY + 0.5f),
+                nType);
+
+            pScene->m_pEffectContainer->AddChild(pPartal);
+        }
+    }
+
+    if (pScene->m_pMyHuman == this)
+    {
+        auto pCamera = g_pObjectManager->m_pCamera;
+        auto fHAngle = pCamera->m_fHorizonAngle;
+        
+        pScene->Warp();
+        if (pStd->Type == MSG_Action2_Opcode)
+            pCamera->m_fHorizonAngle = fHAngle;
+        if (pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+            pScene->m_bLastMyAttr = BASE_GetAttr(pAction->TargetX, pAction->TargetY);
+
+        InitPosition(vecPosition.x,
+            (float)pScene->GroundGetMask(vecPosition) * 0.1f,
+            vecPosition.y);
+    }
+    if (pStd->Type == MSG_Action2_Opcode)
+    {
+        SetAnimation(ECHAR_MOTION::ECMOTION_STAND02, 0);
+        if (g_pObjectManager->m_pCamera->m_pFocusedObject == this)
+            GetSoundAndPlay(175, 0, 0);
+    }
+    else
+    {
+        SetAnimation(ECHAR_MOTION::ECMOTION_LEVELUP, 0);
+        if (!m_cHide)
+        {
+            auto pLevelUp = new TMEffectLevelUp(TMVector3(m_vecPosition.x, m_fHeight, m_vecPosition.y), 0);
+            pScene->m_pEffectContainer->AddChild(pLevelUp);
+
+            if (!m_cSummons)
+            {
+                auto pPortal = new TMSkillTownPortal(
+                    TMVector3((float)pAction->TargetX + 0.5f, ((float)pScene->GroundGetMask(m_vecPosition) * 0.1f) + 0.05f, (float)pAction->TargetY + 0.5f),
+                    1);
+
+                pScene->m_pEffectContainer->AddChild(pPortal);
+            }
+        }
+    }
+
+    m_bIgnoreHeight = 0;    
+    if (pScene && pScene->m_pMyHuman == this && pScene->m_bAirMove == 1)
+        pScene->AirMove_End();
+
+    return 1;
 }
 
 int TMHuman::OnPacketFireWork(MSG_STANDARD* pStd)
