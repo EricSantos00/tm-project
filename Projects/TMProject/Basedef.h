@@ -1246,6 +1246,15 @@ struct MSG_CNFParty2
 	char LeaderName[16];
 };
 
+constexpr auto MSG_ApplyBonus_Opcode = 0x277;
+struct MSG_ApplyBonus
+{
+	MSG_STANDARD Header;
+	short BonusType;
+	short Detail;
+	unsigned short TargetID;
+};
+
 constexpr auto MSG_ReqBuy_Opcode = 0x398;
 struct MSG_ReqBuy
 {
@@ -1299,6 +1308,15 @@ struct MSG_Carry
 {
 	MSG_STANDARD Header;
 	STRUCT_ITEM Carry[64];
+	int Coin;
+};
+
+struct MSG_HellBuy
+{
+	MSG_STANDARD Header;
+	unsigned short TargetID;
+	short TargetCarryPos;
+	short MyCarryPos;
 	int Coin;
 };
 

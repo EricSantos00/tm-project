@@ -14153,7 +14153,467 @@ void TMFieldScene::SetButtonTextXY(SButton* pButton)
 
 int TMFieldScene::OnMsgBoxEvent(unsigned int idwControlID, unsigned int idwEvent, unsigned int dwServerTime)
 {
-	return 0;
+	switch (m_pMessageBox->m_dwMessage)
+	{
+	case 601:
+	{
+		g_pObjectManager->m_stTrade.OpponentID = m_pMessageBox->m_dwArg;
+
+		MSG_Trade stTrade{};
+		memcpy(&stTrade, &g_pObjectManager->m_stTrade, sizeof(stTrade));
+		stTrade.Header.ID = m_pMyHuman->m_dwID;
+		stTrade.Header.Type = MSG_Trade_Opcode;
+		SendOneMessage((char*)&stTrade, sizeof(stTrade));
+		if (m_pTradePanel && !m_pTradePanel->IsVisible())
+		{
+			auto pNode = g_pObjectManager->GetHumanByID(m_pMessageBox->m_dwArg);
+			if (!pNode)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[37], 2000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+
+			auto pTextMyName = static_cast<SText*>(m_pControlContainer->FindControl(TMT_TRADE_MYNAME));
+			auto pTextOPName = static_cast<SText*>(m_pControlContainer->FindControl(TMT_TRADE_OPNAME));
+
+			char szMyName[128]{};
+			char szOPName[128]{};
+			sprintf_s(szMyName, "[%s]:%d", m_pMyHuman->m_szName, strlen(m_pMyHuman->m_szName));
+			sprintf_s(szOPName, "[%s]:%d", pNode->m_szName, strlen(pNode->m_szName));
+			pTextMyName->SetText(szMyName, 1);
+			pTextOPName->SetText(szOPName, 1);
+			SetVisibleTrade(1);
+		}
+	}
+	break;
+	case 11:
+	{
+		m_dwLastTown = g_pTimerManager->GetServerTime();
+		m_cLastTown = 1;
+		m_pMyHuman->m_bCNFMobKill = 0;
+
+		MSG_STANDARDPARM stDelayStart{};
+		stDelayStart.Header.ID = m_pMyHuman->m_dwID;
+		stDelayStart.Header.Type = 942;
+		stDelayStart.Parm = 2;
+		SendOneMessage((char*)&stDelayStart, sizeof(stDelayStart));
+	}
+	break;
+	case 4:
+	{
+		MSG_ApplyBonus stApplyBonus{};
+
+		stApplyBonus.Header.ID = m_pMyHuman->m_dwID;
+		stApplyBonus.Header.Type = MSG_ApplyBonus_Opcode;
+		stApplyBonus.BonusType = 2;
+		stApplyBonus.Detail = m_pMessageBox->m_dwArg >> 16;
+		stApplyBonus.TargetID = m_pMessageBox->m_dwArg;
+		SendOneMessage((char*)&stApplyBonus, sizeof(stApplyBonus));
+	}
+	break;
+	case 6193:
+	case 6194:
+	case 6195:
+	case 6196:
+	{
+		char Value = 0;
+		int GridX = 0;
+		int GridY = 0;
+		if (m_pMessageBox->m_dwMessage == 6193 || m_pMessageBox->m_dwMessage == 6196)
+		{
+			GridX = 2;
+			GridY = 4;
+			if (m_pMessageBox->m_dwMessage == 6193)
+				Value = 1;
+			else
+				Value = 4;
+		}
+		else if (m_pMessageBox->m_dwMessage == 6194)
+		{
+			GridX = 2;
+			GridY = 3;
+			Value = 2;
+		}
+		if (m_pMessageBox->m_dwMessage == 6195)
+		{
+			GridX = 1;
+			GridY = 1;
+			Value = 3;
+		}
+
+		for (int i = 0; i < 4; ++i)
+		{
+			SGridControl* pMyGrid = static_cast<TMFieldScene*>(g_pCurrentScene)->m_pGridInvList[i];
+
+			IVector2 vecGrid = pMyGrid->CanAddItemInEmpty(GridX, GridY);
+
+			if (vecGrid.x > -1 && vecGrid.y > -1)
+			{
+				MSG_HellBuy stHellBuy{};
+				
+				stHellBuy.Header.ID = m_pMyHuman->m_dwID;
+				stHellBuy.Header.Type = 701;
+				stHellBuy.TargetID = m_pMessageBox->m_dwArg;
+				stHellBuy.TargetCarryPos = static_cast<unsigned char>(Value);
+				stHellBuy.MyCarryPos = vecGrid.x + 5 * vecGrid.y;
+
+				SendOneMessage((char*)&stHellBuy, sizeof(stHellBuy));
+
+				if (g_pSoundManager)
+				{
+					auto pSoundData = g_pSoundManager->GetSoundData(336);
+
+					if (pSoundData)
+						pSoundData->Play(0, 0);
+				}
+				return 1;
+			}
+		}
+	
+		auto pItem = new SListBoxItem(g_pMessageStringTable[1], 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+
+		if (pItem)
+			m_pChatList->AddItem(pItem);
+
+		if (g_pSoundManager)
+		{
+			auto pSoundData = g_pSoundManager->GetSoundData(33);
+
+			if (pSoundData)
+				pSoundData->Play(0, 0);
+		}
+	}
+	break;
+	case 816:
+	{
+		MSG_STANDARDPARM stGuildDep{};
+		stGuildDep.Header.ID = m_pMyHuman->m_dwID;
+		stGuildDep.Header.Type = 652;
+		stGuildDep.Parm = m_pMessageBox->m_dwArg;
+		SendOneMessage((char*)&stGuildDep, sizeof(stGuildDep));
+		m_pPGTPanel->SetVisible(0);
+	}
+	break;
+	case 817:
+	{
+		MSG_STANDARDPARM2 stParam{};
+
+		stParam.Header.ID = m_pMyHuman->m_dwID;
+		stParam.Header.Type = 3598;
+		stParam.Parm1 = m_pMyHuman->m_usGuild;
+		stParam.Parm2 = m_pMessageBox->m_dwArg;
+		SendOneMessage((char*)&stParam, sizeof(stParam));
+		m_pPGTPanel->SetVisible(0);
+	}
+	break;
+	case 862:
+	{
+		MSG_STANDARDPARM2 stParam{};
+
+		stParam.Header.ID = m_pMyHuman->m_dwID;
+		stParam.Header.Type = 3602;
+		stParam.Parm1 = m_pMyHuman->m_usGuild;
+		stParam.Parm2 = m_pMessageBox->m_dwArg;
+		SendOneMessage((char*)&stParam, sizeof(stParam));
+		m_pPGTPanel->SetVisible(0);
+	}
+	break;
+	case 818:
+		m_pPGTPanel->SetVisible(0);
+		break;
+	case 16:
+	{
+		m_dwGetItemTime = g_pTimerManager->GetServerTime();
+		int nX = (int)m_pMyHuman->m_vecPosition.x;
+		int nY = (int)m_pMyHuman->m_vecPosition.y;
+		char bAttr = BASE_GetAttr(nX, nY);
+		if (bAttr & 0x10)
+		{
+			MSG_STANDARDPARM stParam{};
+			stParam.Header.ID = g_pObjectManager->m_dwCharID;
+			stParam.Header.Type = 656;
+			stParam.Parm = 0;
+			SendOneMessage((char*)&stParam, sizeof(stParam));
+		}
+		else
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[38], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+
+		if (g_nKeyType == 1)
+			m_pControlContainer->SetFocusedControl(m_pEditChat);
+
+		m_pMessageBox->SetVisible(0);
+		return 1;
+	}
+	break;
+	case 927:
+	{
+		MSG_STANDARDPARM2 stQuest{};
+
+		stQuest.Header.Type = 927;
+		stQuest.Header.ID = m_pMyHuman->m_dwID;
+		stQuest.Parm1 = m_pMessageBox->m_dwArg;
+		stQuest.Parm2 = 4;
+		SendOneMessage((char*)&stQuest, sizeof(stQuest));
+		m_pPGTOver = nullptr;
+	}
+	break;
+	case 883:
+	{
+		int nCellX = m_pMessageBox->m_dwArg >> 16;
+		int nCellY = m_pMessageBox->m_dwArg & 0xFFFF;
+
+		SGridControlItem* pItem = m_pGridInv->GetItem(nCellX, nCellY);
+
+		if (pItem)
+		{
+			int nType = BASE_GetItemAbility(pItem->m_pItem, EF_VOLATILE);
+
+			UseItem(pItem, nType, pItem->m_pItem->sIndex, nCellX, nCellY);
+		}
+	}
+	break;
+	case 13:
+	{
+		MSG_STANDARDPARM2 stParam{};
+
+		stParam.Header.Type = MSG_Quest_Opcode;
+		stParam.Header.ID = m_pMyHuman->m_dwID;
+		stParam.Parm1 = m_pMessageBox->m_dwArg;
+		stParam.Parm2 = 0;
+
+		SendOneMessage((char*)&stParam, sizeof(stParam));
+	}
+	break;
+	case 15:
+	case 10:
+	case 1742:
+	case 233:
+	case 58:
+	{
+		MSG_STANDARDPARM2 stParam{};
+
+		stParam.Header.Type = MSG_Quest_Opcode;
+		stParam.Header.ID = m_pMyHuman->m_dwID;
+		stParam.Parm1 = m_pMessageBox->m_dwArg;
+		stParam.Parm2 = 1;
+
+		SendOneMessage((char*)&stParam, sizeof(stParam));
+	}
+	break;
+	case 646:
+		SendReqBuy(m_pMessageBox->m_dwArg);
+		break;
+	case 38:
+	{
+		int nCellX = (m_pMessageBox->m_dwArg & 0xFFFF0000) >> 16;
+		int nCellY = m_pMessageBox->m_dwArg & 0xFFFF;
+		UseTicket(nCellX, nCellY);
+	}
+	break;
+	case 99:
+		m_cResurrect = 1;
+		m_dwLastResurrect = g_pTimerManager->GetServerTime();
+		return 1;
+	case 228:
+		m_cLastRelo = 1;
+		m_dwLastRelo = g_pTimerManager->GetServerTime();
+		break;
+	case 50001:
+	{
+		MSG_STANDARDPARM stRemoveParty{};
+
+		stRemoveParty.Header.Type = 894;
+		stRemoveParty.Header.ID = m_pMyHuman->m_dwID;
+		stRemoveParty.Parm = m_pMessageBox->m_dwArg;
+		SendOneMessage((char*)&stRemoveParty, sizeof(stRemoveParty));
+		break;
+	}
+	case 60:
+	{
+		MSG_STANDARDPARM2 stParam{};
+
+		stParam.Header.ID = g_pObjectManager->m_dwCharID;
+		stParam.Header.Type = 655;
+		stParam.Parm1 = m_dwTID;
+		stParam.Parm2 = 0;
+		SendOneMessage((char*)&stParam, sizeof(stParam));
+	}
+	break;
+	case 65859:
+		DoCombine();
+		break;
+	case 6434:
+		DoCombine4();
+		break;
+	case 81923:
+		m_ItemMixClass.DoCombine(m_pMessagePanel, m_pGridInvList, m_Coin);
+		break;
+	case 86019:
+		m_MissionClass.DoCombine(m_pMessagePanel, m_pGridInvList, m_pMyHuman->Is2stClass(), m_Level, m_Coin);
+		SetVisibleMissionPanel(0);
+		break;
+	case 51:
+	{
+		MSG_STANDARDPARM2 stQuest{};
+
+		stQuest.Header.Type = MSG_Quest_Opcode;
+		stQuest.Header.ID = m_pMyHuman->m_dwID;
+		stQuest.Parm1 = m_pMessageBox->m_dwArg;
+		stQuest.Parm2 = 0;
+		SendOneMessage((char*)&stQuest, sizeof(stQuest));
+		m_dwNPCClickTime = dwServerTime;
+	}
+	break;
+	case 740:
+	{
+		SGridControlItem* pSellItem = SGridControl::m_pSellItem;
+
+		short sDestType = m_pGridInv->CheckType(
+			pSellItem->m_pGridControl->m_eItemType,
+			pSellItem->m_pGridControl->m_eGridType);
+
+		if (sDestType != 1)
+			return 1;
+
+		short sDestPos = pSellItem->m_nCellIndexX + 5 * pSellItem->m_nCellIndexY;
+
+		// TODO:
+		// Check if this is correct
+		pSellItem->m_pGridControl->PickupAtItem(pSellItem->m_nCellIndexX, pSellItem->m_nCellIndexY);
+
+		int DestPage = 15 * (pSellItem->m_pGridControl->m_dwControlID - 67072);
+		if (DestPage < 0 || DestPage > 45)
+			DestPage = 0;
+
+		MSG_STANDARDPARM2 stDeleteItem{};
+
+		stDeleteItem.Header.ID = m_pMyHuman->m_dwID;
+		stDeleteItem.Header.Type = MSG_DeleteItem_Opcode;
+		stDeleteItem.Parm1 = DestPage + sDestPos;
+		stDeleteItem.Parm2 = pSellItem->m_pItem->sIndex;
+		SendOneMessage((char*)&stDeleteItem, sizeof(stDeleteItem));
+		SGridControl::m_pSellItem = nullptr;
+	}
+	break;
+	case 890:
+	{
+		if (m_pGridInv == nullptr || m_pGridShop == nullptr)
+			return 1;
+
+		SGridControlItem* pSellItem = SGridControl::m_pSellItem;
+
+		if (pSellItem)
+		{
+			short sDestType = m_pGridInv->CheckType(
+				pSellItem->m_pGridControl->m_eItemType,
+				pSellItem->m_pGridControl->m_eGridType);
+
+			short sDestPos = m_pGridInv->CheckPos(pSellItem->m_pGridControl->m_eItemType);
+			if (sDestPos == -1)
+				sDestPos = pSellItem->m_nCellIndexX + 5 * pSellItem->m_nCellIndexY;
+
+			int DestPage = 15 * (pSellItem->m_pGridControl->m_dwControlID - 67072);
+			if (DestPage < 0 || DestPage > 45)
+				DestPage = 0;
+
+			MSG_Sell stSell{};
+
+			stSell.Header.ID = m_pMyHuman->m_dwID;
+			stSell.Header.Type = MSG_Sell_Opcode;
+			stSell.TargetID = m_pGridShop->m_dwMerchantID;
+			stSell.MyType = sDestType;
+			stSell.MyPos = DestPage + sDestPos;
+
+			SendOneMessage((char*)&stSell, sizeof(stSell));
+		}
+		SGridControl::m_pSellItem = nullptr;
+	}
+	break;
+	case 271:
+	case 88:
+	{
+		MSG_STANDARDPARM2 stQuest{};
+
+		stQuest.Header.Type = MSG_Quest_Opcode;
+		stQuest.Header.ID = m_pMyHuman->m_dwID;
+		stQuest.Parm1 = m_pMessageBox->m_dwArg;
+		stQuest.Parm2 = 0;
+
+		SendOneMessage((char*)&stQuest, sizeof(stQuest));
+	}
+	break;
+	case 84:
+	{
+		unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+		if ((dwServerTime - m_dwOldAttackTime) < 1000)
+			return 1;
+
+		int nSkill = 83 - 24 * g_pObjectManager->m_stMobData.Class;
+
+		if (BASE_GetManaSpent(
+			83,
+			(unsigned char)g_pObjectManager->m_stMobData.SaveMana,
+			g_pObjectManager->m_stMobData.CurrentScore.Special[nSkill / 8 + 1]) <= g_pObjectManager->m_stMobData.CurrentScore.Mp)
+		{
+			MSG_AttackOne stAttack{};
+			
+			stAttack.Header.Type = MSG_Attack_One_Opcode;
+			stAttack.Header.ID = m_pMyHuman->m_dwID;
+			stAttack.AttackerID = m_pMyHuman->m_dwID;
+			stAttack.PosX = m_stMoveStop.NextX;
+			stAttack.TargetX = stAttack.PosX;
+			stAttack.PosY = m_stMoveStop.NextY;
+			stAttack.TargetY = stAttack.PosY;
+			stAttack.CurrentMp = -1;
+			stAttack.SkillIndex = 83;
+			stAttack.SkillParm = 0;
+			stAttack.Motion = -1;
+			SendOneMessage((char*)&stAttack, sizeof(stAttack));
+			m_dwOldAttackTime = dwServerTime;
+			m_dwSkillLastTime[83] = dwServerTime;
+
+			MSG_Sell stSell{};
+
+			stSell.Header.ID = m_pMyHuman->m_dwID;
+			stSell.Header.Type = 724;
+			stSell.MyType = m_sDestType;
+			stSell.MyPos = m_sDestPos;
+
+			SendOneMessage((char*)&stSell, sizeof(stSell));
+
+			m_sDestType = -1;
+			m_sDestPos = -1;
+
+			if (m_pMyHuman->m_pSkinMesh->m_pSwingEffect[0])
+				m_pMyHuman->m_pSkinMesh->m_pSwingEffect[0]->m_cGoldPiece = 1;
+			if (m_pMyHuman->m_pSkinMesh->m_pSwingEffect[1])
+				m_pMyHuman->m_pSkinMesh->m_pSwingEffect[1]->m_cGoldPiece = 1;
+			break;
+		}
+
+		auto pItem = new SListBoxItem(g_pMessageStringTable[30], 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+
+		if (pItem)
+			m_pChatList->AddItem(pItem);
+
+		if (g_pSoundManager)
+		{
+			auto pSoundData = g_pSoundManager->GetSoundData(33);
+			if (pSoundData)
+				pSoundData->Play(0, 0);
+		}
+	}
+	break;
+	default:
+		break;
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyDebug(char iCharCode, int lParam)
