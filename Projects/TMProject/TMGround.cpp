@@ -3411,12 +3411,12 @@ D3DXVECTOR3 TMGround::GetPickPos()
                             vec[1] = D3DXVECTOR3((float)((float)k * 2.0f) + m_vecOffset.x,
                                 (float)m_TileMapData[k + ((j + 1) << 6)].cHeight * 0.1f,
                                 (float)((float)(j + 1) * 2.0f) + m_vecOffset.y);
-                            vec[2] = D3DXVECTOR3((float)((float)(k + 1) * 2.0) + m_vecOffset.x,
+                            vec[2] = D3DXVECTOR3((float)((float)(k + 1) * 2.0f) + m_vecOffset.x,
                                 (float)m_TileMapData[k + (j << 6) + 1].cHeight * 0.1f,
-                                (float)((float)j * 2.0) + m_vecOffset.y);
-                            vec[3] = D3DXVECTOR3((float)((float)(k + 1) * 2.0) + m_vecOffset.x,
+                                (float)((float)j * 2.0f) + m_vecOffset.y);
+                            vec[3] = D3DXVECTOR3((float)((float)(k + 1) * 2.0f) + m_vecOffset.x,
                                 (float)m_TileMapData[k + ((j + 1) << 6) + 1].cHeight * 0.1f,
-                                (float)((float)(j + 1) * 2.0) + m_vecOffset.y);
+                                (float)((float)(j + 1) * 2.0f) + m_vecOffset.y);
 
                             if (fabsf((float)m_pMaskData[j][k] * 0.1f - ((((vec[0].y + vec[1].y) + vec[2].y) + vec[3].y) / 4.0f)) > 1.0f)
                                 continue;

@@ -16,9 +16,9 @@ TMShade::TMShade(int nGridNum, int nTextureIndex, float fScale)
     m_nVertexNum = (m_nGridNum + 1) * (m_nGridNum + 1);
     m_nIndexNum = 6 * m_nGridNum * m_nGridNum;
     m_wpIndex = 0;
-    m_wpIndex = (unsigned short*)malloc(sizeof(unsigned short) * m_nIndexNum);
+    m_wpIndex = new unsigned short[sizeof(unsigned short) * m_nIndexNum];
     m_pVertex = 0;
-    m_pVertex = (RDLVERTEX*)malloc(sizeof(RDLVERTEX) * m_nVertexNum);
+    m_pVertex = new RDLVERTEX[sizeof(RDLVERTEX) * m_nVertexNum];
     m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
     m_bFI = 1;
     m_bShow = 1;
@@ -28,10 +28,13 @@ TMShade::TMShade(int nGridNum, int nTextureIndex, float fScale)
     if (!m_wpIndex || !m_pVertex)
     {
         if (m_wpIndex)
-            free(m_wpIndex);
+            delete[] m_wpIndex;
         if (m_pVertex)
-            free(m_pVertex);
+            delete[] m_pVertex;
     }
+
+    if (m_wpIndex)
+        memset(m_wpIndex, 0, sizeof(unsigned short) * m_nIndexNum);
 
     if (m_wpIndex)
     {
@@ -64,12 +67,12 @@ TMShade::~TMShade()
 {
     if (m_wpIndex != nullptr)
     {
-        free(m_wpIndex);
+        delete[] m_wpIndex;
         m_wpIndex = nullptr;
     }
     if (m_pVertex != nullptr)
     {
-        free(m_pVertex);
+        delete[] m_pVertex;
         m_pVertex = nullptr;
     }
 }
@@ -128,8 +131,10 @@ int TMShade::SetPosition(TMVector2 vecPosition)
                     {
                         if (pGround->m_pMaskData[nMaskY + 1][nMaskX] < 10)
                             nMaskHeight = pGround->m_pMaskData[nMaskY + 1][nMaskX];
+
                         else if (pGround->m_pMaskData[nMaskY - 1][nMaskX] < 10)
                             nMaskHeight = pGround->m_pMaskData[nMaskY - 1][nMaskX];
+
                         else if (pGround->m_pMaskData[nMaskY][nMaskX + 1] < 10)
                             nMaskHeight = pGround->m_pMaskData[nMaskY][nMaskX + 1];
                         else if (pGround->m_pMaskData[nMaskY][nMaskX - 1] < 10)

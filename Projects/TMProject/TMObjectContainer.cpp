@@ -54,8 +54,8 @@ TMObjectContainer::~TMObjectContainer()
 int TMObjectContainer::Load(const char* szFileName)
 {
 	TMVector2 vecPosition;	
-	float m_fOffsetX = 0.0;
-	float m_fOffsetY = 0.0;
+	float m_fOffsetX = 0.0f;
+	float m_fOffsetY = 0.0f;
 	int pos = 0;
 
 	if (m_pGround != nullptr)
@@ -97,14 +97,14 @@ int TMObjectContainer::Load(const char* szFileName)
 		float fScaleV = item->fScaleV;
 
 		pos += sz1;
-		int intx = (int)(float)(vecPosition.x + m_fOffsetX);
-		int inty = (int)(float)(vecPosition.y + m_fOffsetY);
+		int intx = (int)(vecPosition.x + m_fOffsetX);
+		int inty = (int)(vecPosition.y + m_fOffsetY);
 		int Key = (inty >> 5 << 16) + (intx >> 5);
 
 		nCheckSum += dwObjType;
-		nCheckSum += (signed int)vecPosition.x;
-		nCheckSum += (signed int)vecPosition.y;
-		nCheckSum += (signed int)fHeight;
+		nCheckSum += (int)vecPosition.x;
+		nCheckSum += (int)vecPosition.y;
+		nCheckSum += (int)fHeight;
 		nCheckSum += nMaskIndex;
 
 		if (dwObjType == 2)
@@ -116,10 +116,10 @@ int TMObjectContainer::Load(const char* szFileName)
 				if (pGround->m_pSeaList[pGround->m_nSeaIndex] != nullptr)
 				{
 					if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD &&
-						(int)(float)(m_fOffsetX + vecPosition.x) >> 7 > 26 &&
-						(int)(float)(m_fOffsetX + vecPosition.x) >> 7 < 31 &&
-						(int)(float)(m_fOffsetY + vecPosition.y) >> 7 > 20 &&
-						(int)(float)(m_fOffsetY + vecPosition.y) >> 7 < 25)
+						(int)(m_fOffsetX + vecPosition.x) >> 7 > 26 &&
+						(int)(m_fOffsetX + vecPosition.x) >> 7 < 31 &&
+						(int)(m_fOffsetY + vecPosition.y) >> 7 > 20 &&
+						(int)(m_fOffsetY + vecPosition.y) >> 7 < 25)
 					{
 						pGround->m_pSeaList[pGround->m_nSeaIndex]->m_bAlpha = 0;
 					}
@@ -417,7 +417,7 @@ int TMObjectContainer::Load(const char* szFileName)
 					pEffect->m_nFade = 0;
 				}
 
-				pEffect2 = new TMEffectBillBoard(2, 0, fScaleH * 2.8f, fScaleV * 2.8f, fScaleH * 2.8f, 0.0, 1, 80);
+				pEffect2 = new TMEffectBillBoard(2, 0, fScaleH * 2.8f, fScaleV * 2.8f, fScaleH * 2.8f, 0.0f, 1, 80);
 
 				if (pEffect2)
 				{
@@ -449,7 +449,7 @@ int TMObjectContainer::Load(const char* szFileName)
 				}
 				break;
 			case 503:
-				pEffect = new TMEffectBillBoard(101, 0, fScaleH, fScaleV, fScaleH, 0.0, 8, 80);
+				pEffect = new TMEffectBillBoard(101, 0, fScaleH, fScaleV, fScaleH, 0.0f, 8, 80);
 				if (pEffect)
 				{
 					pEffect->SetColor(0xFF5500FF);
@@ -492,7 +492,7 @@ int TMObjectContainer::Load(const char* szFileName)
 				}
 				break;
 			case 505:
-				pEffect = new TMEffectBillBoard(79, 0, fScaleH, fScaleV, fScaleH, 0.0, 1, 80);
+				pEffect = new TMEffectBillBoard(79, 0, fScaleH, fScaleV, fScaleH, 0.0f, 1, 80);
 				if (pEffect)
 				{
 					pEffect->m_nFade = 0;
