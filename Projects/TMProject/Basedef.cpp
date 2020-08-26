@@ -3002,6 +3002,11 @@ void BASE_GetHitPosition2(int sx, int sy, int* tx, int* ty, char* pHeight, int M
 {
 }
 
+void BASE_SetBit(char* byte, int pos)
+{
+    byte[pos / 8] |= 1 << pos % 8;
+}
+
 int IsPassiveSkill(int nSkillIndex)
 {
     if (nSkillIndex >= 5400)

@@ -793,6 +793,20 @@ struct MSG_UseItem
 	unsigned short ItemID;
 };
 
+constexpr auto MSG_UseItem2_Opcode = 0x3C9;
+struct MSG_UseItem2
+{
+	MSG_STANDARD Header;
+	int SourType;
+	int SourPos;
+	int DestType;
+	int DestPos;
+	unsigned short GridX;
+	unsigned short GridY;
+	unsigned short ItemID;
+	char Parm[16];
+};
+
 struct MSG_CAPSULEUSEITEM
 {
 	MSG_STANDARD Header;
@@ -2433,6 +2447,7 @@ void BASE_GetHitPosition(int sx, int sy, int* tx, int* ty, char* pHeight, int MH
 int BASE_Get3DTo2DPos(float fX, float fY, float fZ, int* pX, int* pY);
 int BASE_GetDoubleCritical(STRUCT_MOB* mob, unsigned short* sProgress, unsigned short* cProgress, char* bDoubleCritical);
 void BASE_GetHitPosition2(int sx, int sy, int* tx, int* ty, char* pHeight, int MH);
+void BASE_SetBit(char* byte, int pos);
 
 int IsPassiveSkill(int nSkillIndex);
 

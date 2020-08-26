@@ -14511,18 +14511,115 @@ char TMFieldScene::UseQuickSloat(char key)
 
 void TMFieldScene::UpdateFireWorkButton(int nIndex)
 {
+	if (nIndex >= 0 && nIndex <= 99 && m_pFireWorkPanel)
+	{
+		if (m_pFireWorkButton[nIndex])
+		{
+			m_pFireWorkButton[nIndex]->m_bSelected = m_pFireWorkButton[nIndex]->m_bSelected == 0;
+			m_pFireWorkButton[nIndex]->Update();
+		}
+	}
 }
 
 void TMFieldScene::ClearFireWork()
 {
+	if (m_pFireWorkPanel)
+	{
+		for (int i = 0; i < 100; ++i)
+		{
+			m_pFireWorkButton[i]->m_bSelected = 0;
+			m_pFireWorkButton[i]->Update();
+		}
+	}
 }
 
 void TMFieldScene::UseFireWork()
 {
+	if (!m_pFireWorkPanel)
+		return;
+
+	if (m_nFireWorkCellX < 0 || m_nFireWorkCellY < 0)
+		return;
+
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (m_dwUseItemTime && dwServerTime - m_dwUseItemTime < 200)
+		return;
+
+	if (!m_pGridInv)
+		return;
+
+	auto pItem = m_pGridInv->GetItem(m_nFireWorkCellX, m_nFireWorkCellY);
+	if (!pItem)
+		return;
+
+	int nItemSIndex = pItem->m_pItem->sIndex;
+	auto pMyHuman = m_pMyHuman;
+
+	int SourPos = m_pGridInv->CheckPos(pItem->m_pGridControl->m_eItemType);
+	if (SourPos == -1)
+		SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+	int nType = BASE_GetItemAbility(pItem->m_pItem, 38);
+
+	MSG_UseItem2 stUseItem{};
+	stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+	stUseItem.Header.Type = MSG_UseItem2_Opcode;
+	stUseItem.SourType = 1;
+	stUseItem.SourPos = SourPos;
+
+	if (nType == 15)
+	{
+		stUseItem.DestType = 0;
+		stUseItem.DestPos = 14;
+	}
+
+	stUseItem.ItemID = 0;
+	stUseItem.GridX = (int)pMyHuman->m_vecPosition.x;
+	stUseItem.GridY = (int)pMyHuman->m_vecPosition.y;
+	for (int i = 0; i < 100; ++i)
+	{
+		if (m_pFireWorkButton[i]->m_bSelected)
+			BASE_SetBit(stUseItem.Parm, i);
+	}
+
+	SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+	m_nFireWorkCellX = -1;
+	m_nFireWorkCellY = -1;
+	m_dwUseItemTime = dwServerTime;
+
+	int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+	if (nAmount > 1)
+	{
+		BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+		sprintf(pItem->m_GCText.strString, "%2d", nAmount - 1);
+		pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+	}
+	else
+	{
+		auto pPickedItem = m_pGridInv->PickupItem(pItem->m_nCellIndexX, pItem->m_nCellIndexY);
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+			g_pCursor->m_pAttachedItem = 0;
+
+		SAFE_DELETE(pPickedItem);
+	}
+
+	int nSoundIndex = 41;
+	if (nType >= 11 && nType <= 13)
+		nSoundIndex = 54;
+
+	if (nType != 19)
+		GetSoundAndPlay(nSoundIndex, 0, 0);
+
+	UpdateScoreUI(0);
+
+	if (nAmount <= 1)
+		memset(&g_pObjectManager->m_stMobData.Carry[SourPos], 0, sizeof(STRUCT_ITEM));
 }
 
 void TMFieldScene::DrawCustomFireWork(int nIndex)
 {
+	// This func is funny haha xD
 }
 
 void TMFieldScene::TotoSelect()
