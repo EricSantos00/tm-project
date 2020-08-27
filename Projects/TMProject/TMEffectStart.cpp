@@ -146,9 +146,9 @@ int TMEffectStart::FrameMove(unsigned int dwServerTime)
             for (int i = 0; i < nCount; ++i)
             {
                 char ucColor = (char)(255.0f * fDif);
-                unsigned char dwR = (unsigned char)ucColor << 16;
-                unsigned char dwG = (unsigned char)ucColor << 8;
-                unsigned char dwB = (unsigned char)ucColor;
+                unsigned int dwR = (unsigned char)ucColor << 16;
+                unsigned int dwG = (unsigned char)ucColor << 8;
+                unsigned int dwB = (unsigned char)ucColor;
 
                 pVertex[i].diffuse = (unsigned char)ucColor | dwG | ((unsigned char)ucColor << 16);
             }
