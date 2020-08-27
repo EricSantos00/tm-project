@@ -17619,9 +17619,55 @@ int TMFieldScene::OnPacketCreateItem(MSG_CreateItem* pMsg)
 	return 1;
 }
 
-int TMFieldScene::OnPacketCNFDropItem(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCNFDropItem(MSG_CNFDropItem* pMsg)
 {
-	return 0;
+	SGridControlItem* pGridItem = nullptr;
+	if (pMsg->SourType == 0)
+	{
+		SGridControl* pGridList[16]{};
+		pGridList[0] = nullptr;
+		pGridList[1] = m_pGridHelm;
+		pGridList[2] = m_pGridCoat;
+		pGridList[3] = m_pGridPants;
+		pGridList[4] = m_pGridGloves;
+		pGridList[5] = m_pGridBoots;
+		pGridList[6] = m_pGridLeft;
+		pGridList[7] = m_pGridRight;
+		pGridList[8] = m_pGridRing;
+		pGridList[9] = m_pGridNecklace;
+		pGridList[10] = m_pGridOrb;
+		pGridList[11] = m_pGridCabuncle;
+		pGridList[12] = m_pGridGuild;
+		pGridList[13] = m_pGridEvent;
+		pGridList[14] = m_pGridDRing;
+		pGridList[15] = m_pGridMantua;
+
+		if (pGridList[pMsg->SourPos])
+			pGridItem = pGridList[pMsg->SourPos]->PickupItem(0, 0);
+
+		memset(&g_pObjectManager->m_stMobData.Equip[pMsg->SourPos], 0, sizeof(STRUCT_ITEM));
+	}
+	else if (pMsg->SourType == 1)
+	{
+		auto pGridItem = m_pGridInv->PickupAtItem(pMsg->SourPos % 5, pMsg->SourPos / 5);
+		memset(&g_pObjectManager->m_stMobData.Carry[pMsg->SourPos], 0, sizeof(STRUCT_ITEM));
+	}
+	else if (pMsg->SourType == 2)
+	{
+		pGridItem = static_cast<SGridControl*>(m_pControlContainer->FindControl(65690))->PickupAtItem(pMsg->SourPos % 5, pMsg->SourPos / 5);
+		memset(&g_pObjectManager->m_stItemCargo[pMsg->SourPos], 0, sizeof(STRUCT_ITEM));
+	}
+
+	g_pCursor->DetachItem();
+
+	SAFE_DELETE(pGridItem);
+
+	m_pMyHuman->m_sFamiliar = g_pObjectManager->m_stMobData.Equip[13].sIndex;
+	GetSoundAndPlay(45, 0, 0);
+
+	UpdateScoreUI(0);
+	UpdateMyHuman();
+	return 1;
 }
 
 int TMFieldScene::OnPacketCNFGetItem(MSG_STANDARD* pStd)

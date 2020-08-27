@@ -3007,6 +3007,11 @@ void BASE_SetBit(char* byte, int pos)
     byte[pos / 8] |= 1 << pos % 8;
 }
 
+int BASE_UpdateItem2(int maskidx, int CurrentState, int NextState, int xx, int yy, char* pHeight, int rotate, int height)
+{
+    return 0;
+}
+
 int IsPassiveSkill(int nSkillIndex)
 {
     if (nSkillIndex >= 5400)

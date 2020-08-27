@@ -1425,6 +1425,16 @@ struct MSG_CreateItem
 	char Height;
 	char Create;
 	unsigned short Owner;
+}; 
+
+struct MSG_CNFDropItem
+{
+	MSG_STANDARD Header;
+	int SourType;
+	int SourPos;
+	int Rotate;
+	unsigned short GridX;
+	unsigned short GridY;
 };
 
 const static int g_pDistanceTable[7][7] =
