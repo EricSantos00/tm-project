@@ -221,7 +221,7 @@ public:
 	int OnPacketRunQuest12Start(MSG_STANDARDPARM* pStd);
 	int OnPacketRunQuest12Count(MSG_STANDARDPARM2* pStd);
 	int OnPacketDelayQuit(MSG_STANDARDPARM* pStd);
-	int OnPacketUndoSellItem(MSG_STANDARD* pStd);
+	int OnPacketUndoSellItem(MSG_RepurchaseItems* pMsg);
 	int Guildmark_Create(stGuildMarkInfo* pMark);
 	void Guildmark_MakeFileName(char* szStr, int nGuild, int nChief, int nChannel);
 	int Guildmark_Find_ArrayIndex(int nGuild);

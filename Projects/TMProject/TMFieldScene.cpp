@@ -1558,105 +1558,105 @@ int TMFieldScene::InitializeScene()
 
 	if (pMobData->Equip[1].sIndex > 40 && nClass != 21)
 	{
-		STRUCT_ITEM* pItemHelm = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemHelm = new STRUCT_ITEM;
 		memcpy(pItemHelm, &pMobData->Equip[1], 8);
 				
 		m_pGridHelm->AddItem(new SGridControlItem(nullptr, pItemHelm, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[2].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemCoat = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemCoat = new STRUCT_ITEM;
 		memcpy(pItemCoat, &pMobData->Equip[2], 8);
 
 		m_pGridCoat->AddItem(new SGridControlItem(nullptr, pItemCoat, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[3].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemPants = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemPants = new STRUCT_ITEM;
 		memcpy(pItemPants, &pMobData->Equip[3], 8);
 
 		m_pGridPants->AddItem(new SGridControlItem(nullptr, pItemPants, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[4].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemGloves = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemGloves = new STRUCT_ITEM;
 		memcpy(pItemGloves, &pMobData->Equip[4], 8);
 
 		m_pGridGloves->AddItem(new SGridControlItem(nullptr, pItemGloves, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[5].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemBoots = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemBoots = new STRUCT_ITEM;
 		memcpy(pItemBoots, &pMobData->Equip[5], 8);
 
 		m_pGridBoots->AddItem(new SGridControlItem(nullptr, pItemBoots, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[7].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemRight = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemRight = new STRUCT_ITEM;
 		memcpy(pItemRight, &pMobData->Equip[7], 8);
 
 		m_pGridRight->AddItem(new SGridControlItem(nullptr, pItemRight, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[6].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemLeft = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemLeft = new STRUCT_ITEM;
 		memcpy(pItemLeft, &pMobData->Equip[6], 8);
 
 		m_pGridLeft->AddItem(new SGridControlItem(nullptr, pItemLeft, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[12].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemGuild = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemGuild = new STRUCT_ITEM;
 		memcpy(pItemGuild, &pMobData->Equip[12], 8);
 
 		m_pGridGuild->AddItem(new SGridControlItem(nullptr, pItemGuild, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[13].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemEvent = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemEvent = new STRUCT_ITEM;
 		memcpy(pItemEvent, &pMobData->Equip[13], 8);
 
 		m_pGridEvent->AddItem(new SGridControlItem(nullptr, pItemEvent, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[14].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemDRing = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemDRing = new STRUCT_ITEM;
 		memcpy(pItemDRing, &pMobData->Equip[14], 8);
 
 		m_pGridDRing->AddItem(new SGridControlItem(nullptr, pItemDRing, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[15].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemMantua = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemMantua = new STRUCT_ITEM;
 		memcpy(pItemMantua, &pMobData->Equip[15], 8);
 
 		m_pGridMantua->AddItem(new SGridControlItem(nullptr, pItemMantua, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[8].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemRing = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemRing = new STRUCT_ITEM;
 		memcpy(pItemRing, &pMobData->Equip[8], 8);
 
 		m_pGridRing->AddItem(new SGridControlItem(nullptr, pItemRing, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[9].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemNecklace = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemNecklace = new STRUCT_ITEM;
 		memcpy(pItemNecklace, &pMobData->Equip[9], 8);
 
 		m_pGridNecklace->AddItem(new SGridControlItem(nullptr, pItemNecklace, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[10].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemOrb = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemOrb = new STRUCT_ITEM;
 		memcpy(pItemOrb, &pMobData->Equip[10], 8);
 
 		m_pGridOrb->AddItem(new SGridControlItem(nullptr, pItemOrb, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[11].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemCabuncle = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemCabuncle = new STRUCT_ITEM;
 		memcpy(pItemCabuncle, &pMobData->Equip[11], 8);
 
 		m_pGridCabuncle->AddItem(new SGridControlItem(nullptr, pItemCabuncle, 0.0f, 0.0f), 0, 0);
@@ -1666,7 +1666,7 @@ int TMFieldScene::InitializeScene()
 	{
 		if (pMobData->Carry[nCarryIndex].sIndex > 40)
 		{
-			STRUCT_ITEM* pItemCarry = new STRUCT_ITEM();
+			STRUCT_ITEM* pItemCarry = new STRUCT_ITEM;
 			memcpy(pItemCarry, &pMobData->Carry[nCarryIndex], 8);
 			
 			int Page = nCarryIndex / 15;
@@ -1675,7 +1675,9 @@ int TMFieldScene::InitializeScene()
 				m_pGridInvList[Page]->AddItem(new SGridControlItem(0, pItemCarry, 0.0f, 0.0f),
 					nCarryIndex % 15 % 5,
 					nCarryIndex % 15 / 5);
-			}				
+			}
+			else
+				delete pItemCarry;
 		}
 	}
 
@@ -1684,7 +1686,7 @@ int TMFieldScene::InitializeScene()
 	{
 		if (g_pObjectManager->m_stItemCargo[nCargoIndex].sIndex)
 		{
-			STRUCT_ITEM* pItemCargo = new STRUCT_ITEM();
+			STRUCT_ITEM* pItemCargo = new STRUCT_ITEM;
 			memcpy(pItemCargo, &pCargo[nCargoIndex], 8);
 			
 			int Page = nCargoIndex / 40;
@@ -1693,7 +1695,9 @@ int TMFieldScene::InitializeScene()
 				m_pCargoGridList[Page]->AddItem(new SGridControlItem(0, pItemCargo, 0.0f, 0.0f),
 					nCargoIndex % 40 % 5,
 					nCargoIndex % 40 / 5);
-			}			
+			}
+			else
+				delete pItemCargo;
 		}
 	}
 
@@ -3003,7 +3007,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 							if (!pCargoItem)
 								return 1;
 
-							auto pItem = new STRUCT_ITEM();
+							auto pItem = new STRUCT_ITEM;
 
 							memcpy(pItem, pCargoItem->m_pItem, sizeof(STRUCT_ITEM));
 
@@ -6184,7 +6188,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case 0x114:
 		return OnPacketCNFCharacterLogin(reinterpret_cast<MSG_CNFCharacterLogin*>(pStd));
 	case 0x3E8:
-		return OnPacketUndoSellItem(pStd);
+		return OnPacketUndoSellItem(reinterpret_cast<MSG_RepurchaseItems*>(pStd));
 	case 0x39B:
 		return OnPacketItemSold(reinterpret_cast<MSG_STANDARDPARM2*>(pStd));
 	case 0x339:
@@ -6192,13 +6196,13 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case 0x18B:
 		return OnPacketWeather(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 	case 0x26E:
-		return OnPacketCreateItem(pStd);
+		return OnPacketCreateItem(reinterpret_cast<MSG_CreateItem*>(pStd));
 	case 0x175:
-		return OnPacketCNFDropItem(pStd);
+		return OnPacketCNFDropItem(reinterpret_cast<MSG_CNFDropItem*>(pStd));
 	case 0x171:
-		return OnPacketCNFGetItem(pStd);
+		return OnPacketCNFGetItem(reinterpret_cast<MSG_CNFGetItem*>(pStd));
 	case 0x374:
-		return OnPacketUpdateItem(pStd);
+		return OnPacketUpdateItem(reinterpret_cast<MSG_UpdateItem*>(pStd));
 	case 0x16F:
 		return OnPacketRemoveItem(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 	case 0x1D0:
@@ -17524,8 +17528,6 @@ int TMFieldScene::OnPacketCreateItem(MSG_CreateItem* pMsg)
 		if (!pItem)
 			return 1;
 
-		auto pItem = new TMGate();
-
 		pItem->InitItem(pMsg->Item);
 		pItem->InitGate(pMsg->Item);
 
@@ -18052,38 +18054,30 @@ int TMFieldScene::OnPacketShopList(MSG_STANDARD* pStd)
 
 		for (int i = 0; i < 27; ++i)
 		{
-			auto pItemList = new STRUCT_ITEM();
+			auto pItemList = new STRUCT_ITEM;
+			memcpy(pItemList, &pShopList->List[i], sizeof(STRUCT_ITEM));
 
-			if (pItemList)
+			if (pShopList->List[i].sIndex <= 0)
 			{
-				memcpy(pItemList, &pShopList->List[i], sizeof(STRUCT_ITEM));
+				delete pItemList;
+				continue;
+			}
 
-				if (pShopList->List[i].sIndex > 0)
-				{
-					auto pItem = new SGridControlItem(0, pItemList, 0.0f, 0.0f);
+			auto pItem = new SGridControlItem(0, pItemList, 0.0f, 0.0f);
+			m_pGridShop->AddItem(pItem, i % 5, i / 5);
 
-					if (pItem)
-					{
-						m_pGridShop->AddItem(pItem, i % 5, i / 5);
+			int nAmount = BASE_GetItemAmount(pItemList);
+			if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
+				nAmount = 0;
+			if (nAmount > 0)
+			{
+				sprintf_s(pItem->m_GCText.strString, "%2d", nAmount);
 
-						int nAmount = BASE_GetItemAmount(pItemList);
-
-						if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
-							nAmount = 0;
-
-						if (nAmount > 0)
-						{
-							sprintf_s(pItem->m_GCText.strString, "%2d", nAmount);
-
-							pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
-						}
-					}
-				}
+				pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
 			}
 		}
 
-		auto pREQItem = new STRUCT_ITEM();
-
+		auto pREQItem = new STRUCT_ITEM;
 		if (pREQItem)
 		{
 			pREQItem->sIndex = 4998;
@@ -18130,17 +18124,8 @@ int TMFieldScene::OnPacketShopList(MSG_STANDARD* pStd)
 		{
 			if (pShopList->List[j].sIndex == 5027)
 			{
-				STRUCT_ITEM temp = pShopList->List[j];
-
-				pShopList->List[j] = pShopList->List[j + 1];
-
-				pShopList->List[j + 1] = temp;
-
-				STRUCT_ITEM temp2 = pShopList->List[j + 1];
-
-				pShopList->List[j + 1] = pShopList->List[j + 2];
-
-				pShopList->List[j + 2] = temp2;
+				std::swap(pShopList->List[j], pShopList->List[j + 1]);
+				std::swap(pShopList->List[j + 1], pShopList->List[j + 2]);
 				break;
 			}
 		}
@@ -18148,19 +18133,17 @@ int TMFieldScene::OnPacketShopList(MSG_STANDARD* pStd)
 		for (int k = 0; k < 27; ++k)
 		{
 			auto dst = new STRUCT_ITEM;
+			memcpy(dst, &pShopList->List[k], sizeof(STRUCT_ITEM));
 
-			if (dst)
+			if (pShopList->List[k].sIndex <= 0)
 			{
-				memcpy(dst, &pShopList->List[k], sizeof(STRUCT_ITEM));
-
-				if (pShopList->List[k].sIndex > 0)
-				{
-					auto pItem = new SGridControlItem(0, dst, 0.0f, 0.0f);
-
-					if (pItem)
-						m_pGridSkillMaster->AddItem(pItem, k % 9 % 4, k / 9 + (k - k / 9) / 4);
-				}
+				delete dst;
+				continue;
 			}
+
+			auto pItem = new SGridControlItem(0, dst, 0.0f, 0.0f);
+			if (pItem)
+				m_pGridSkillMaster->AddItem(pItem, k % 9 % 4, k / 9 + (k - k / 9) / 4);
 		}
 
 		if (!m_pSkillMPanel->IsVisible())
@@ -18189,7 +18172,10 @@ int TMFieldScene::OnPacketRMBShopList(MSG_RMBShopList* pMsg)
 			memcpy(pItemList, &pMsg->List[i], sizeof(STRUCT_ITEM));
 
 			if (pMsg->List[i].sIndex <= 0)
+			{
+				delete pItemList;
 				continue;
+			}
 
 			auto pItem = new SGridControlItem(0, pItemList, 0.0f, 0.0f);
 
@@ -18259,7 +18245,10 @@ int TMFieldScene::OnPacketRMBShopList(MSG_RMBShopList* pMsg)
 			memcpy(pNewItem, &pMsg->List[k], sizeof(STRUCT_ITEM));
 
 			if (pMsg->List[k].sIndex <= 0)
+			{
+				delete pNewItem;
 				continue;
+			}
 
 			auto pItem = new SGridControlItem(0, pNewItem, 0.0f, 0.0f);
 			pGridSkillMaster->AddItem(pItem, k % 9 % 4, k / 9 + (k - k / 9) / 4);
@@ -21246,9 +21235,52 @@ int TMFieldScene::OnPacketDelayQuit(MSG_STANDARDPARM* pStd)
 	return 0;
 }
 
-int TMFieldScene::OnPacketUndoSellItem(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketUndoSellItem(MSG_RepurchaseItems* pMsg)
 {
-	return 0;
+	m_bIsUndoShoplist = 1;
+	memset(m_stRepurcharse, 0, sizeof(m_stRepurcharse));
+
+	auto pGrid = m_pGridShop;
+	pGrid->Empty();
+
+	for (int i = 0; i < 10; ++i)
+	{
+		auto pItemList = new STRUCT_ITEM;
+		memcpy(pItemList, &pMsg->Repurcharse[i].stItem, sizeof(STRUCT_ITEM));
+
+		if (pMsg->Repurcharse[i].stItem.sIndex <= 0)
+		{
+			delete pItemList;
+			continue;
+		}
+
+		auto pItem = new SGridControlItem(0, pItemList, 0.0f, 0.0f);
+		memcpy(&m_stRepurcharse[i], &pMsg->Repurcharse[i], sizeof(pMsg->Repurcharse[i]));
+
+		pGrid->AddItem(pItem, i % 5, i / 5);
+		int nAmount = BASE_GetItemAmount(pItemList);
+
+		if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
+			nAmount = 0;
+		if (nAmount > 0)
+		{
+			sprintf(pItem->m_GCText.strString, "%2d", nAmount);
+			pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+		}
+	}
+
+	auto pREQItem = new STRUCT_ITEM;
+	memset(pREQItem, 0, sizeof(STRUCT_ITEM));
+	pREQItem->sIndex = 4999;
+
+	auto pItem = new SGridControlItem(0, pREQItem, 0.0f, 0.0f);
+	pItem->m_GCObj.nTextureIndex = 9;
+
+	pGrid->AddItem(pItem, 4, 7);
+
+
+	SetVisibleShop(1);
+	return 1;
 }
 
 int TMFieldScene::Guildmark_Create(stGuildMarkInfo* pMark)
