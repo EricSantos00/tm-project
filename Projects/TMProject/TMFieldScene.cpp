@@ -21580,6 +21580,147 @@ void TMFieldScene::Bag_View()
 
 void TMFieldScene::AirMove_Main(unsigned int dwServerTime)
 {
+	// TODO: change the state to enum
+	if (m_nAirMove_State && m_pMyHuman)
+	{
+		if (m_bAirMove)
+			m_pMyHuman->m_cHide = 0;
+
+		switch (m_nAirMove_State)
+		{
+		case 1:
+		{
+			AirMove_Start(0);
+		}
+		break;
+		case 2:
+		{
+			if (dwServerTime > m_dwAirMove_TickTime + 2800)
+			{
+				m_nAirMove_State = 3;
+				m_dwAirMove_TickTime = dwServerTime;
+				return;
+			}
+
+			float fVal = sinf((D3DXToRadian(180) * ((float)(dwServerTime - m_dwAirMove_TickTime) / 15000.0f)) / 6.0f);
+			if (fVal >= 0.3f)
+				fVal = 0.3f;
+			if (fVal < 0.0f)
+				fVal = 0.0f;
+
+			if (m_pMyHuman->m_pMount)
+				m_pMyHuman->m_pMount->m_dwFPS = 15;
+			m_pMyHuman->m_fHeight = m_pMyHuman->m_fHeight + fVal;
+		}
+		break;
+		case 3:
+		{
+			int nRnd = rand() % 300;
+			if (dwServerTime >= m_dwAirMove_TickTime + nRnd + 1000)
+			{
+				m_dwAirMove_TickTime = dwServerTime;
+				m_bAirMove_Wing = m_bAirMove_Wing == 0;
+			}
+
+			float fVal = sinf((D3DXToRadian(180) * ((float)(dwServerTime - m_dwAirMove_TickTime) / 10000.0f)) / 6.0f) + ((float)nRnd / 8000.0f);
+			if (m_bAirMove_Wing || m_pMyHuman->m_fHeight >= 14.0)
+			{
+				if (m_pMyHuman->m_fHeight > 8.0)
+					m_pMyHuman->m_fHeight = m_pMyHuman->m_fHeight - fVal;
+			}
+			else
+				m_pMyHuman->m_fHeight = m_pMyHuman->m_fHeight + fVal;
+
+			float AddY = 0.0f;
+			float AddX = 0.0f;
+			float MyX = m_pMyHuman->m_vecPosition.x;
+			float MyY = m_pMyHuman->m_vecPosition.y;
+			if (MyX >= (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nX)
+				AddX = -m_fAirMove_Speed;
+			else if ((float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nX >= MyX)
+				AddX = +m_fAirMove_Speed;
+			if (MyY >= (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY)
+				AddY = -m_fAirMove_Speed;
+			else if ((float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY >= MyY)
+				AddY = +m_fAirMove_Speed;
+
+			float DiffX = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nX - (float)(MyX + AddX);
+			float DiffY = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY - (float)(MyY + AddY);
+			if (DiffX <= 0.5f && DiffX >= -0.5f)
+				AddX = 0.0f;
+			if (DiffY <= 0.5f && DiffY >= -0.5f)
+				AddY = 0.0f;
+
+			if (fabsf(AddX) == m_fAirMove_Speed && fabsf(AddY) == m_fAirMove_Speed)
+			{
+				AddX = AddX / 2.0f;
+				AddY = AddY / 2.0f;
+			}
+			if (AddX != 0.0f || AddY != 0.0f)
+			{
+				m_pMyHuman->m_vecAirMove.x = m_pMyHuman->m_vecAirMove.x + AddX;
+				m_pMyHuman->m_vecAirMove.y = m_pMyHuman->m_vecAirMove.y + AddY;
+
+				float dPosX = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nX - m_pMyHuman->m_vecPosition.x;
+				float dPosY = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY - m_pMyHuman->m_vecPosition.y;
+
+				int nRouteIndex = m_nAirMove_RouteIndex;
+				if (nRouteIndex > 9)
+					nRouteIndex = 9;
+
+				if (fabsf(dPosX) + fabsf(dPosY) < 70.0f
+					&& (nRouteIndex == 9 || g_pAirMoveRoute[m_nAirMove_Index][nRouteIndex + 1].nX == 0 && g_pAirMoveRoute[m_nAirMove_Index][nRouteIndex + 1].nY == 0))
+				{
+					if (m_fAirMove_Speed >= 0.2f)
+						m_fAirMove_Speed = m_fAirMove_Speed - sinf((m_fAirMove_Speed * 0.0023f) * D3DXToRadian(180));
+				}
+				else if (m_fAirMove_Speed <= 0.69999999f)
+					m_fAirMove_Speed = sinf((m_fAirMove_Speed * 0.0049999999f) * D3DXToRadian(180)) + m_fAirMove_Speed;
+
+				if (m_pMyHuman->m_pMount)
+					m_pMyHuman->m_pMount->m_dwFPS = 15 - (int)(m_fAirMove_Speed * 2.0f);
+
+				m_pMyHuman->m_fWantAngle = atan2f(dPosX, dPosY) + D3DXToRadian(90);
+			}
+			else if (g_pAirMoveRoute[m_nAirMove_Index][++m_nAirMove_RouteIndex].nX || g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY)
+			{
+				m_vecAirMove_Dest.x = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nX;
+				m_vecAirMove_Dest.y = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY;
+				m_dwAirMove_TickTime = dwServerTime;
+			}
+			else
+			{
+				m_nAirMove_State = 4;
+				m_dwAirMove_TickTime = dwServerTime;
+			}
+		}
+		break;
+		case 4:
+		{
+			float fHeight = m_pMyHuman->m_fWantHeight;
+			float fDiff = m_pMyHuman->m_fHeight - fHeight;
+			if (dwServerTime > m_dwAirMove_TickTime + 2800)
+			{
+				m_pMyHuman->m_fHeight = fHeight;
+				m_nAirMove_State = 5;
+				m_dwAirMove_TickTime = dwServerTime;
+				return;
+			}
+
+			float fVal = sinf((D3DXToRadian(180) * ((float)(dwServerTime - m_dwAirMove_TickTime) / 15000.0f)) / 6.0f);
+			if (m_pMyHuman->m_pMount)
+				m_pMyHuman->m_pMount->m_dwFPS = 15;
+			if ((float)(m_pMyHuman->m_fHeight - fVal) > 0.0f)
+				m_pMyHuman->m_fHeight = m_pMyHuman->m_fHeight - fVal;
+		}
+		break;
+		case 5:
+		{
+			AirMove_End();
+		}
+		break;
+		}
+	}
 }
 
 void TMFieldScene::AirMove_Start(int nIndex)
