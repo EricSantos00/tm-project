@@ -1401,6 +1401,18 @@ struct MSG_LongMessagePanel
 	char Line[4][128];
 };
 
+constexpr auto MSG_DropItem_Opcode = 0x272;
+struct MSG_DropItem
+{
+	MSG_STANDARD Header;
+	int SourType;
+	int SourPos;
+	int Rotate;
+	unsigned short GridX;
+	unsigned short GridY;
+	unsigned short ItemID;
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },

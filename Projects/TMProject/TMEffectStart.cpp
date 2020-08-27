@@ -145,12 +145,12 @@ int TMEffectStart::FrameMove(unsigned int dwServerTime)
             float fDif = fabsf(sinf(m_fProgress * D3DXToRadian(180)));
             for (int i = 0; i < nCount; ++i)
             {
-                char ucColor = (char)(255.0f * fDif);
+                unsigned char ucColor = (unsigned char)(255.0f * fDif);
                 unsigned int dwR = (unsigned char)ucColor << 16;
                 unsigned int dwG = (unsigned char)ucColor << 8;
                 unsigned int dwB = (unsigned char)ucColor;
 
-                pVertex[i].diffuse = (unsigned char)ucColor | dwG | ((unsigned char)ucColor << 16);
+                pVertex[i].diffuse = ucColor | dwG | (ucColor << 16);
             }
 
             pMesh->m_pVB->Unlock();

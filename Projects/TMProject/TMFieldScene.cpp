@@ -10427,6 +10427,38 @@ int TMFieldScene::MobMove2(TMVector2 vec, unsigned int dwServerTime)
 
 void TMFieldScene::DropItem(unsigned int dwServerTime)
 {
+	auto pAttachItem = g_pCursor->m_pAttachedItem;
+	if (!pAttachItem)
+		return;
+
+	static int dwLastDropTime = 0;
+	if (dwServerTime - dwLastDropTime <= 1000)
+		return;
+
+	int nAX = pAttachItem->m_nCellIndexX;
+	int nAY = pAttachItem->m_nCellIndexY;
+
+	MSG_DropItem stDrop{};
+	stDrop.Header.ID = m_pMyHuman->m_dwID;
+	stDrop.Header.Type = MSG_DropItem_Opcode;
+	stDrop.Rotate = 0;
+	stDrop.SourType = pAttachItem->m_pGridControl->CheckType(pAttachItem->m_pGridControl->m_eItemType,
+		pAttachItem->m_pGridControl->m_eGridType);
+
+	if (stDrop.SourType)
+	{
+		if (stDrop.SourType == 1)
+			stDrop.SourPos = nAX + 5 * nAY;
+		else if (stDrop.SourType == 2)
+			stDrop.SourPos = nAX + 5 * nAY;
+		else
+			stDrop.SourPos = pAttachItem->m_pGridControl->CheckPos(pAttachItem->m_pGridControl->m_eItemType);
+
+		stDrop.GridX = (int)m_pMyHuman->m_vecPosition.x;
+		stDrop.GridY = (int)m_pMyHuman->m_vecPosition.y;
+		SendOneMessage((char*)&stDrop, sizeof(stDrop));
+		dwLastDropTime = dwServerTime;
+	}
 }
 
 int TMFieldScene::TimeDelay(unsigned int dwServerTime)
