@@ -166,7 +166,7 @@ int TMMesh::Render(float fX, float fY, float fZ, float fAngle, float fAngle2, fl
 
 	D3DXMatrixScaling(&matScale, m_fScaleH, m_fScaleV, m_fScaleH);
 	D3DXMatrixTranslation(&matPosition, fX, fY, fZ);
-	D3DXMatrixRotationYawPitchRoll(&mat, fAngle, fAngle2 + -1.5707964f, fAngle3);
+	D3DXMatrixRotationYawPitchRoll(&mat, fAngle, fAngle2 + -D3DXToRadian(90), fAngle3);
 	D3DXMatrixMultiply(&mat, &g_pDevice->m_matWorld, &mat);
 	D3DXMatrixMultiply(&mat, &mat, &matScale);
 	D3DXMatrixMultiply(&mat, &mat, &matPosition);
@@ -204,7 +204,7 @@ int TMMesh::Render(float fX, float fY, float fZ, D3DXQUATERNION quat, char cMult
 void TMMesh::SetTexture(int nIndex)
 {
 	IDirect3DBaseTexture9* texture = nullptr;
-	if (this->m_bEffect == 1)
+	if (m_bEffect == 1)
 		texture = g_pTextureManager->GetEffectTexture(nIndex, m_dwShowTime <= 5000u ? 5000u : m_dwShowTime);
 	else
 		texture = g_pTextureManager->GetModelTexture(nIndex, m_dwShowTime <= 10000 ? 10000u : m_dwShowTime);

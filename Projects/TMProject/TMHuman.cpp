@@ -4585,10 +4585,10 @@ int TMHuman::OnPacketUpdateScore(MSG_STANDARD* pStd)
             pFScene->UpdateScoreUI(0);
     }
 
-    if (m_cMount)
+    if (m_cMount && oldShaow != m_cShadow)
     {
         D3DXVECTOR3 m_vOldAngle{ m_pMount->m_vAngle };
-        
+
         if (m_cShadow == 1)
         {
             memset(&m_stMountSanc, 0, sizeof(m_stMountSanc));
@@ -5922,9 +5922,9 @@ void TMHuman::SetAnimation(ECHAR_MOTION eMotion, int nLoop)
                     dwSpeedTemp = g_MobAniTableEx[nClass][m_nSkinMeshType].dwSpeed[(int)eMotion];
                 }
                               
-                m_pSkinMesh->m_dwFPS = (unsigned int)(float)((float)dwSpeedTemp * 1.0f);
+                m_pSkinMesh->m_dwFPS = (unsigned int)((float)dwSpeedTemp * 1.0f);
                 if (m_cMount == 1 && m_pMount)                   
-                    m_pMount->m_dwFPS = (unsigned int)(float)((float)g_MobAniTable[m_nMountSkinMeshType].dwSpeed[(int)eMotion] * 1.0f);
+                    m_pMount->m_dwFPS = (unsigned int)((float)g_MobAniTable[m_nMountSkinMeshType].dwSpeed[(int)eMotion] * 1.0f);
             }
 
             if ((int)eMotion >= 4 && (int)eMotion <= 9)
@@ -7759,12 +7759,12 @@ void TMHuman::Attack(ECHAR_MOTION eMotion, TMHuman* pTarget, short cSkillIndex)
     if (eMotion != m_eMotion)
     {
         if (g_pCurrentScene->m_pMyHuman == this)
-            TMHuman::SetAnimation(eMotion, 0);
+            SetAnimation(eMotion, 0);
         else if (m_nClass == 66 && 
             m_eMotion != ECHAR_MOTION::ECMOTION_ATTACK04 && m_eMotion != ECHAR_MOTION::ECMOTION_ATTACK05 && m_eMotion != ECHAR_MOTION::ECMOTION_ATTACK06 ||
             m_nClass != 66)
         {
-            TMHuman::SetAnimation(eMotion, 0);
+            SetAnimation(eMotion, 0);
         }
         m_nSkillIndex = -1;
     }

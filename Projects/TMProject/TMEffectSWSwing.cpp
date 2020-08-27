@@ -10,6 +10,7 @@
 #include "TMEffectSpark2.h"
 
 TMEffectSWSwing::TMEffectSWSwing()
+    : TMEffect()
 {
     m_dwOldTime = 0;
     m_dwOldMixTime = 0;

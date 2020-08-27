@@ -7,6 +7,7 @@
 #include "TMCamera.h"
 
 TMEffectBillBoard::TMEffectBillBoard(int nTextureIndex, unsigned int dwLifeTime, float fScaleX, float fScaleY, float fScaleZ, float fVelocity, int nCycleCount, int nCycleTime) :
+	TMEffect(),
 	m_vecScale{},
 	m_vecStartPos{},
 	m_vecDir{},

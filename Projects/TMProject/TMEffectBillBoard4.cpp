@@ -3,6 +3,7 @@
 #include "TMGlobal.h"
 
 TMEffectBillBoard4::TMEffectBillBoard4(int nTextureIndex, unsigned int dwLifeTime, float fScaleX, float fScaleY, float fVelocity, int nCycleCount, int nCycleTime) :
+    TMEffect(),
 	m_vecPosition{}
 {
 	m_dwCreateTime = 0;
