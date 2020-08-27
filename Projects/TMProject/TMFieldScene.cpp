@@ -51,6 +51,7 @@
 #include "TMCannon.h"
 #include "TMEffectCharge.h"
 #include "TMSkillExplosion2.h"
+#include "TMEffectDust.h"
 
 RECT TMFieldScene::m_rectWarning[7] =
 {
@@ -10759,6 +10760,34 @@ int TMFieldScene::GetItem(TMItem* pItem)
 
 void TMFieldScene::FrameMove_KhepraDieEffect(unsigned int dwServerTime)
 {
+	if (m_nKhepraDieFlag < 1 || m_dwKhepraDieTime + 300 >= dwServerTime)
+		return;
+
+	int RndX = rand() % 9;
+	int RndZ = rand() % 9;
+	float X = (float)RndX + 2362.0f;
+	float Y = -6.8000002f;
+	float Z = (float)RndZ + 3927.0f;
+
+	auto pThunder1 = new TMSkillThunderBolt(TMVector3(X, Y, Z), 3);
+	m_pEffectContainer->AddChild(pThunder1);
+	auto pDust1 = new TMEffectDust(TMVector3(X, Y, Z), 50.0f, 0);
+	m_pEffectContainer->AddChild(pDust1);
+	auto pDust2 = new TMEffectDust(TMVector3(X - 0.3f, Y, Z - 0.3f), 50.0f, 0);
+	m_pEffectContainer->AddChild(pDust2);
+	auto pDust3 = new TMEffectDust(TMVector3(X + 0.3f, Y, Z + 0.3f), 50.0f, 0);
+	m_pEffectContainer->AddChild(pDust3);
+
+	m_dwKhepraDieTime += 100 * (rand() % 10 + 1) + 300;
+	m_nKhepraDieFlag++;
+
+	if (m_nKhepraDieFlag >= 10)
+	{
+		auto pPoison = new TMSkillPoison(TMVector3(2365.0f, -9.8000002f, 3930.0f), 0xFFCC6666, 25, 1, 0);
+		m_pEffectContainer->AddChild(pPoison);
+
+		m_nKhepraDieFlag = 0; m_dwKhepraDieTime = 0;
+	}
 }
 
 void TMFieldScene::SetVisibleInventory()
