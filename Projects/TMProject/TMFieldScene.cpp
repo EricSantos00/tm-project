@@ -17659,7 +17659,6 @@ int TMFieldScene::OnPacketCNFDropItem(MSG_CNFDropItem* pMsg)
 	}
 
 	g_pCursor->DetachItem();
-
 	SAFE_DELETE(pGridItem);
 
 	m_pMyHuman->m_sFamiliar = g_pObjectManager->m_stMobData.Equip[13].sIndex;
@@ -17670,9 +17669,41 @@ int TMFieldScene::OnPacketCNFDropItem(MSG_CNFDropItem* pMsg)
 	return 1;
 }
 
-int TMFieldScene::OnPacketCNFGetItem(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCNFGetItem(MSG_CNFGetItem* pMsg)
 {
-	return 0;
+	auto pGrid = m_pGridInv;
+	auto pStructItem = new STRUCT_ITEM;
+	if (!pStructItem)
+		return 1;
+
+	memcpy(pStructItem, &pMsg->Item, sizeof(pMsg->Item));
+	if (BASE_GetItemAbility((STRUCT_ITEM*)pStructItem, 38) == 2)
+	{
+		int coin = (unsigned char)BASE_GetItemAbility(pStructItem, 36) << 8;
+		int tempb = BASE_GetItemAbility(pStructItem, 37);
+
+		g_pObjectManager->m_stMobData.Coin += coin + tempb;
+
+		char szMoney[64]{};
+		sprintf(szMoney, "%10d", g_pObjectManager->m_stMobData.Coin);
+		m_pMoney1->m_cComma = 2;
+		m_pMoney1->SetText(szMoney, 0);
+		m_pMoney2->m_cComma = 2;
+		m_pMoney2->SetText(szMoney, 0);
+
+		sprintf(szMoney, "%10d", g_pObjectManager->m_stMobData.Coin - m_nBet);
+		m_pMoney3->m_cComma = 2;
+		m_pMoney3->SetText(szMoney, 0);
+	}
+	else
+	{
+		pGrid->AddItem(new SGridControlItem(0, pStructItem, 0.0f, 0.0f), pMsg->DestPos % 5, pMsg->DestPos / 5);
+		memcpy(&g_pObjectManager->m_stMobData.Carry[pMsg->DestPos], pStructItem, sizeof(STRUCT_ITEM));
+	}
+
+	GetSoundAndPlay(45, 0, 0);
+	UpdateScoreUI(0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketUpdateItem(MSG_STANDARD* pStd)

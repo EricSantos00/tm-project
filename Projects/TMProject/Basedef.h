@@ -1437,6 +1437,14 @@ struct MSG_CNFDropItem
 	unsigned short GridY;
 };
 
+struct MSG_CNFGetItem
+{
+	MSG_STANDARD Header;
+	int DestType;
+	int DestPos;
+	STRUCT_ITEM Item;
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },

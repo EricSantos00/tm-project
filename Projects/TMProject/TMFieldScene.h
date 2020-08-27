@@ -181,8 +181,8 @@ public:
 	int OnPacketUpdateCargoCoin(MSG_STANDARDPARM* pStd);
 	int OnPacketWeather(MSG_STANDARDPARM* pStd);
 	int OnPacketCreateItem(MSG_CreateItem* pMsg);
-	int OnPacketCNFDropItem(MSG_STANDARD* pStd);
-	int OnPacketCNFGetItem(MSG_STANDARD* pStd);
+	int OnPacketCNFDropItem(MSG_CNFDropItem* pMsg);
+	int OnPacketCNFGetItem(MSG_CNFGetItem* pMsg);
 	int OnPacketUpdateItem(MSG_STANDARD* pStd);
 	int OnPacketRemoveItem(MSG_STANDARDPARM* pStd);
 	int OnPacketAutoTrade(MSG_STANDARD* pStd);
