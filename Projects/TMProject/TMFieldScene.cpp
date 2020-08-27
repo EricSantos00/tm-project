@@ -52,6 +52,7 @@
 #include "TMEffectCharge.h"
 #include "TMSkillExplosion2.h"
 #include "TMEffectDust.h"
+#include "TMGate.h"
 
 RECT TMFieldScene::m_rectWarning[7] =
 {
@@ -10786,7 +10787,8 @@ void TMFieldScene::FrameMove_KhepraDieEffect(unsigned int dwServerTime)
 		auto pPoison = new TMSkillPoison(TMVector3(2365.0f, -9.8000002f, 3930.0f), 0xFFCC6666, 25, 1, 0);
 		m_pEffectContainer->AddChild(pPoison);
 
-		m_nKhepraDieFlag = 0; m_dwKhepraDieTime = 0;
+		m_nKhepraDieFlag = 0; 
+		m_dwKhepraDieTime = 0;
 	}
 }
 
@@ -13617,6 +13619,112 @@ void TMFieldScene::SetSanc()
 
 void TMFieldScene::CreateGate(int nZoneIndex, int bInit)
 {
+	auto pOldItem = (TMItem*)g_pObjectManager->GetItemByID(nZoneIndex + 15001);
+	if (pOldItem)
+		return;
+
+	int a = nZoneIndex == 53 ? 0 : 0;
+	
+	MSG_CreateItem stCreateItem{};
+	stCreateItem.ItemID = nZoneIndex + 15001;
+	stCreateItem.Item.sIndex = g_pInitItem[nZoneIndex].sIndex;
+	stCreateItem.GridX = g_pInitItem[nZoneIndex].PosX;
+	stCreateItem.GridY = g_pInitItem[nZoneIndex].PosY;
+	stCreateItem.Rotate = g_pInitItem[nZoneIndex].Rotate;
+	stCreateItem.Height = 16;
+	stCreateItem.State = 2;
+	auto pCreateItem = &stCreateItem;
+
+	if (BASE_GetItemAbility(&stCreateItem.Item, 34) > 0)
+	{
+		TMGate* pItem = nullptr;
+		if (stCreateItem.Item.sIndex >= 0 && stCreateItem.Item.sIndex <= 6500)
+		{
+			auto pItem = new TMGate();
+
+			pItem->InitItem(pCreateItem->Item);
+			pItem->InitGate(pCreateItem->Item);
+
+			pItem->m_dwID = pCreateItem->ItemID;
+			pItem->m_nMaskIndex = 0;
+			pItem->InitObject();
+			pItem->InitAngle(0.0f, ((float)pCreateItem->Rotate * D3DXToRadian(180)) / 2.0f, 0.0f);
+
+			float fX = (float)pCreateItem->GridX + 0.5f;
+			float fY = (float)pCreateItem->GridY + 0.5f;
+
+			float fHeight = m_pGround->GetHeight(TMVector2(fX, fY));
+
+			if (fHeight < -500.0f)
+			{
+				auto pOtherGround = m_pGroundList[(m_nCurrentGroundIndex + 1) % 2];
+				if (pOtherGround)
+					fHeight = pOtherGround->GetHeight(TMVector2(fX, fY));
+				else
+				{
+					TMScene::FrameMove(0);
+					pOtherGround = m_pGroundList[(m_nCurrentGroundIndex + 1) % 2];
+					if (pOtherGround)
+						fHeight = pOtherGround->GetHeight(TMVector2(fX, fY));
+				}
+			}
+
+			pItem->InitPosition(fX, fHeight, fY);
+			int nMaskIndex = BASE_GetItemAbility(&pCreateItem->Item, 34);
+			BASE_UpdateItem2(nMaskIndex, 1, (unsigned char)pCreateItem->State, pCreateItem->GridX, pCreateItem->GridY, (char*)m_HeightMapData, 
+				(int)(pItem->m_fAngle / D3DXToRadian(90)), pCreateItem->Height);
+
+			pItem->SetState((EGATE_STATE)pCreateItem->State);
+			if (!pOldItem)
+				m_pItemContainer->AddChild(pItem);
+		}
+
+		return;
+	}
+
+	TMItem* pItem = nullptr;
+	if (pOldItem)
+		pItem = pOldItem;
+	else if (g_pItemList[pCreateItem->Item.sIndex].nIndexMesh == 1607)
+	{
+		pItem = new TMCannon();
+		pItem->m_dwObjType = 1607;
+	}
+	else
+	{
+		pItem = new TMItem();
+	}
+
+	if (!pItem)
+		return;
+
+	pItem->InitItem(pCreateItem->Item);
+	pItem->m_dwID = pCreateItem->ItemID;
+	pItem->m_nMaskIndex = 0;
+	pItem->InitObject();
+	pItem->InitAngle(0.0f, ((float)pCreateItem->Rotate * D3DXToRadian(180)) / 2.0f, 0.0f);
+
+	float fX = (float)pCreateItem->GridX + 0.5f;
+	float fY = (float)pCreateItem->GridY + 0.5f;
+
+	float fHeight = GroundGetMask(TMVector2(fX, fY)) * 0.1f;
+	pItem->InitPosition(fX, fHeight + 0.1f, fY);
+
+	if (!pOldItem)
+		m_pItemContainer->AddChild(pItem);
+
+	if (pCreateItem->Create == 1)
+	{
+		if (BASE_GetItemAbility(&pCreateItem->Item, 38) == 2)
+			GetSoundAndPlay(44, 0, 0);
+		else if (pCreateItem->Item.sIndex == 412 || pCreateItem->Item.sIndex == 413 || pCreateItem->Item.sIndex == 4141 || 
+			pCreateItem->Item.sIndex == 419 || pCreateItem->Item.sIndex == 420)
+		{
+			GetSoundAndPlay(48, 0, 0);
+		}
+		else
+			GetSoundAndPlay(45, 0, 0);
+	}
 }
 
 int TMFieldScene::GetItemFromGround(unsigned int dwServerTime)

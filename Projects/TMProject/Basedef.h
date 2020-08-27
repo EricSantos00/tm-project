@@ -1413,6 +1413,20 @@ struct MSG_DropItem
 	unsigned short ItemID;
 };
 
+struct MSG_CreateItem
+{
+	MSG_STANDARD Header;
+	unsigned short GridX;
+	unsigned short GridY;
+	unsigned short ItemID;
+	STRUCT_ITEM Item;
+	char Rotate;
+	char State;
+	char Height;
+	char Create;
+	unsigned short Owner;
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },
@@ -2516,6 +2530,7 @@ int BASE_Get3DTo2DPos(float fX, float fY, float fZ, int* pX, int* pY);
 int BASE_GetDoubleCritical(STRUCT_MOB* mob, unsigned short* sProgress, unsigned short* cProgress, char* bDoubleCritical);
 void BASE_GetHitPosition2(int sx, int sy, int* tx, int* ty, char* pHeight, int MH);
 void BASE_SetBit(char* byte, int pos);
+int BASE_UpdateItem2(int maskidx, int CurrentState, int NextState, int xx, int yy, char* pHeight, int rotate, int height);
 
 int IsPassiveSkill(int nSkillIndex);
 
