@@ -53,6 +53,7 @@
 #include "TMSkillExplosion2.h"
 #include "TMEffectDust.h"
 #include "TMGate.h"
+#include <WinInet.h>
 
 RECT TMFieldScene::m_rectWarning[7] =
 {
@@ -17675,8 +17676,6 @@ int TMFieldScene::OnPacketCNFGetItem(MSG_CNFGetItem* pMsg)
 {
 	auto pGrid = m_pGridInv;
 	auto pStructItem = new STRUCT_ITEM;
-	if (!pStructItem)
-		return 1;
 
 	memcpy(pStructItem, &pMsg->Item, sizeof(pMsg->Item));
 	if (BASE_GetItemAbility((STRUCT_ITEM*)pStructItem, 38) == 2)
@@ -21285,7 +21284,44 @@ int TMFieldScene::OnPacketUndoSellItem(MSG_RepurchaseItems* pMsg)
 
 int TMFieldScene::Guildmark_Create(stGuildMarkInfo* pMark)
 {
-	return 0;
+	if (!pMark || !pMark->pGuildMark)
+		return 0;
+
+	int nFindMarkIndex = Guildmark_Find_ArrayIndex(pMark->nGuild + (pMark->nGuildChannel << 16));
+
+	pMark->bLoadedGuildmark = 1;
+	if (nFindMarkIndex != -1)
+	{
+		Guildmark_Link(pMark->pGuildMark, nFindMarkIndex, pMark->sGuildIndex);
+		return 1;
+	}
+
+	pMark->nMarkIndex = Guildmark_Find_EmptyArrayIndex();
+	if (pMark->nMarkIndex == -1)
+		pMark->nMarkIndex = Guildmark_DeleteIdleGuildmark();
+
+	if (pMark->nMarkIndex != -1)
+	{
+		char strFileName[64]{};
+
+		int nChief = 0;
+		if (pMark->sGuildIndex == 526 || pMark->sGuildIndex == 529 || pMark->sGuildIndex == 532 || pMark->sGuildIndex == 535)
+			nChief = 1;
+		if (pMark->sGuildIndex == 527 || pMark->sGuildIndex == 530 || pMark->sGuildIndex == 533 || pMark->sGuildIndex == 536)
+			nChief = 2;
+		if (pMark->sGuildIndex == 528 || pMark->sGuildIndex == 531 || pMark->sGuildIndex == 534 || pMark->sGuildIndex == 537)
+			nChief = 3;
+
+
+		Guildmark_MakeFileName(strFileName, pMark->nGuild, nChief, pMark->nGuildChannel);
+		strcpy(pMark->strMarkFileName, strFileName);
+		g_pTextureManager->m_stGuildMark[pMark->nMarkIndex].nGuild = pMark->nGuild + (pMark->nGuildChannel << 16);
+		
+		CreateThread(NULL, 0, Guildmark_Download, &pMark, 0, NULL);
+		return 1;
+	}
+
+	return 1;
 }
 
 void TMFieldScene::Guildmark_MakeFileName(char* szStr, int nGuild, int nChief, int nChannel)
@@ -22240,4 +22276,63 @@ void TMFieldScene::InsertInChatList(SListBox* pChatList, STRUCT_MOB *pMobData, S
 		if (strlen(stMsgWhisper.String) > maxLen && ipNewItem && pChatList)
 			pChatList->AddItem(ipNewItem);
 	}
+}
+
+DWORD WINAPI Guildmark_Download(void* pArg)
+{
+	// TODO: we have to find a better way to download the guildmark
+	// currently we have a great treat of data race...
+	auto pMark = (stGuildMarkInfo*)pArg;
+	auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+	if (!g_pCurrentScene || !pMark || !pMark->strMarkFileName[0] || !pMark->pGuildMark)
+	{
+		g_pTextureManager->m_stGuildMark[pMark->nMarkIndex].nGuild = -1;
+		return 0;
+	}
+
+	pFScene->m_dwLastGetGuildmarkTime = timeGetTime();
+
+	char strMarkBuffer[632]{};
+	char strURL[64]{};
+
+	strcpy(strURL, g_pMessageStringTable[377]);
+	strcat(strURL, pMark->strMarkFileName);
+
+	if (!pFScene->m_hInternetSession)
+	{
+		pFScene->m_hInternetSession = InternetOpen("MS", 0, 0, 0, 0);
+		if (!pFScene->m_hInternetSession)
+			return 0;
+	}
+
+	auto m_hHttpFile = InternetOpenUrl(pFScene->m_hInternetSession, strURL, 0, 0, 0x4000000, 0);
+	
+	DWORD dwBytesRead = 0;
+	if (m_hHttpFile)
+	{
+		char szData[1024]{};
+		InternetReadFile(m_hHttpFile, szData, 632, &dwBytesRead);
+		memcpy(strMarkBuffer, szData, dwBytesRead);
+		InternetCloseHandle(m_hHttpFile);
+
+		int bIsCorrectBMP = pFScene->Guildmark_IsCorrectBMP(strMarkBuffer);
+		if (bIsCorrectBMP == 1 && g_pTextureManager->LoadGuildTexture(pMark->nMarkIndex, strMarkBuffer) == 1)
+		{
+			++pFScene->m_nGuildMarkCount;
+			g_pTextureManager->m_stGuildMark[pMark->nMarkIndex].nGuild = pMark->nGuild + (pMark->nGuildChannel << 16);
+			pMark->pGuildMark->m_GCPanel.nMarkIndex = pMark->nMarkIndex;
+			if (pMark->sGuildIndex == 509)
+				pMark->pGuildMark->m_GCPanel.nMarkLayout = 1;
+			else if (pMark->sGuildIndex >= 526 && pMark->sGuildIndex <= 531)
+				pMark->pGuildMark->m_GCPanel.nMarkLayout = 2;
+			else
+				pMark->pGuildMark->m_GCPanel.nMarkLayout = 3;
+		}		
+	}
+
+	if(m_hHttpFile != nullptr)
+		InternetCloseHandle(m_hHttpFile);
+
+	return 1;
 }
