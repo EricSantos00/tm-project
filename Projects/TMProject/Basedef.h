@@ -50,6 +50,7 @@ constexpr auto MSG_SplitItem_Opcode = 0x2E5;
 constexpr auto MSG_DoJackpotBet_Opcode = 0x2BE;
 constexpr auto MSG_InviteGuild_Opcode = 0x3D5;
 constexpr auto MSG_Quest_Opcode = 0x28B;
+constexpr auto MSG_AirMove_Start_Opcode = 0xAD9;
 struct MSG_STANDARDPARM2
 {
 	MSG_STANDARD Header;

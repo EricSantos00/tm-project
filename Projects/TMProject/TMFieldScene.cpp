@@ -21584,6 +21584,34 @@ void TMFieldScene::AirMove_Main(unsigned int dwServerTime)
 
 void TMFieldScene::AirMove_Start(int nIndex)
 {
+	m_nAirMove_State = 2;
+	m_bAirMove = 1;
+	m_eOldMotion = m_pMyHuman->m_eMotion;
+	m_nOldMountSkinMeshType = m_pMyHuman->m_nMountSkinMeshType;
+
+	m_pMyHuman->UpdateMount();
+	m_pMyHuman->m_bIgnoreHeight = 1;
+	m_dwAirMove_TickTime = g_pTimerManager->GetServerTime();
+	m_pMyHuman->m_vecAirMove.x = 0.0f;
+	m_pMyHuman->m_vecAirMove.y = 0.0f;
+
+	auto pParticle = new TMEffectParticle(TMVector3(m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_fHeight + 1.0f, m_pMyHuman->m_vecPosition.y), 
+		1, 10, 3.0f, 0, 1, 56, 1.0f, 1, TMVector3(0.0f, 0.0f, 0.0f), 1000);
+
+	m_pEffectContainer->AddChild(pParticle);
+
+	m_vecAirMove_Dest.x = (float)g_pAirMoveRoute[nIndex][0].nX;
+	m_vecAirMove_Dest.y = (float)g_pAirMoveRoute[nIndex][0].nY;
+
+	MSG_STANDARDPARM2 stAirmoveStart{};
+	stAirmoveStart.Header.Type = MSG_AirMove_Start_Opcode;
+	stAirmoveStart.Header.ID = m_pMyHuman->m_dwID;
+	stAirmoveStart.Parm1 = nIndex;
+	stAirmoveStart.Parm2 = 1;
+	SendOneMessage((char*)&stAirmoveStart, sizeof(stAirmoveStart));
+	m_nAirMove_Index = nIndex;
+	m_nAirMove_RouteIndex = 0;
+	m_fAirMove_Speed = 0.2f;
 }
 
 void TMFieldScene::AirMove_End()
