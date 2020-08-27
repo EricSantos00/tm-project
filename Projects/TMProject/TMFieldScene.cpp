@@ -21616,6 +21616,46 @@ void TMFieldScene::AirMove_Start(int nIndex)
 
 void TMFieldScene::AirMove_End()
 {
+	if (this->m_pMyHuman)
+	{
+		m_pMyHuman->m_vecPosition.x = m_pMyHuman->m_vecPosition.x + m_pMyHuman->m_vecAirMove.x;
+		m_pMyHuman->m_vecPosition.y = m_pMyHuman->m_vecPosition.y + m_pMyHuman->m_vecAirMove.y;
+		m_nAirMove_State = -1;
+		m_bAirMove = 0;
+
+		if (m_nOldMountSkinMeshType <= 0)
+		{
+			SAFE_DELETE(m_pMyHuman->m_pMount);
+			m_pMyHuman->m_cMount = 0;
+			m_pMyHuman->m_nMountSkinMeshType = 0;
+		}
+		else
+		{
+			m_pMyHuman->m_nSkinMeshType = m_nOldMountSkinMeshType;
+			m_nOldMountSkinMeshType = -1;
+			m_pMyHuman->UpdateMount();
+		}
+
+		UpdateMyHuman();
+		m_pMyHuman->m_bIgnoreHeight = 0;
+		m_dwAirMove_TickTime = 0;
+		m_pMyHuman->SetAnimation(m_eOldMotion, 1);
+
+		auto pParticle = new TMEffectParticle(TMVector3(m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_fHeight + 1.0f, m_pMyHuman->m_vecPosition.y),
+			1, 10, 3.0f, 0, 1, 56, 1.0f, 1, TMVector3(0.0f, 0.0f, 0.0f), 1000);
+		m_pEffectContainer->AddChild(pParticle);
+
+		if (m_nAirMove_Index < 0 || m_nAirMove_Index > 10)
+			m_nAirMove_Index = 0;
+
+
+		MSG_STANDARDPARM2 stAirmoveStart{};
+		stAirmoveStart.Header.Type = MSG_AirMove_Start_Opcode;
+		stAirmoveStart.Header.ID = m_pMyHuman->m_dwID;
+		stAirmoveStart.Parm1 = m_nAirMove_Index;
+		stAirmoveStart.Parm2 = 2;
+		SendOneMessage((char*)&stAirmoveStart, sizeof(stAirmoveStart));
+	}
 }
 
 int TMFieldScene::AirMove_ShowUI(bool bShow)
