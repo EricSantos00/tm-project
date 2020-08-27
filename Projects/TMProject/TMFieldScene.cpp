@@ -15109,6 +15109,62 @@ void TMFieldScene::UseItem(SGridControlItem* pItem, int nType, int nItemSIndex, 
 
 void TMFieldScene::SendCapsuleItem()
 {
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+	auto pEditID = (SEditableText*)m_pControlContainer->FindControl(65889);
+
+	int len = strlen(pEditID->GetText());
+	if (len >= 4)
+	{
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[15], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+		return;
+	}
+	if (len > 12)
+	{
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[16], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+		return;
+	}
+	if (!BASE_CheckValidString(pEditID->GetText()))
+	{
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[17], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+		return;
+	}
+
+	char* szName = BASE_TransCurse(pEditID->GetText());
+
+	for (int i = 0; i < len - 1; ++i)
+	{
+		if (szName[i] == -95 && szName[i + 1] == -95)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[17], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return;
+		}
+	}
+
+	int nCellX = m_stCapsuleItem.GridX;
+	int nCellY = m_stCapsuleItem.GridY;
+	auto vec = m_pMyHuman->m_vecPosition;
+
+	m_stCapsuleItem.GridX = (int)vec.x;
+	m_stCapsuleItem.GridY = (int)vec.y;
+
+	sprintf(m_stCapsuleItem.NewMobname, pEditID->GetText());
+	SendOneMessage((char*)&m_stCapsuleItem, sizeof(m_stCapsuleItem));
+
+	m_dwUseItemTime = dwServerTime;
+	g_pEventTranslator->m_bRBtn = 1;
+	
+	auto pPickedItem = m_pGridInv->PickupItem(nCellX, nCellY);
+	if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+		g_pCursor->m_pAttachedItem = nullptr;
+
+	SAFE_DELETE(pPickedItem);
+
+	UpdateScoreUI(0);
+	memset(&g_pObjectManager->m_stMobData.Carry[m_stCapsuleItem.SourPos], 0, sizeof(STRUCT_ITEM));
 }
 
 void TMFieldScene::SetQuestStatus(bool bStart)
