@@ -183,7 +183,7 @@ public:
 	int OnPacketCreateItem(MSG_CreateItem* pMsg);
 	int OnPacketCNFDropItem(MSG_CNFDropItem* pMsg);
 	int OnPacketCNFGetItem(MSG_CNFGetItem* pMsg);
-	int OnPacketUpdateItem(MSG_STANDARD* pStd);
+	int OnPacketUpdateItem(MSG_UpdateItem* pMsg);
 	int OnPacketRemoveItem(MSG_STANDARDPARM* pStd);
 	int OnPacketAutoTrade(MSG_STANDARD* pStd);
 	int OnPacketSwapItem(MSG_STANDARD* pStd);

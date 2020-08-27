@@ -17706,9 +17706,28 @@ int TMFieldScene::OnPacketCNFGetItem(MSG_CNFGetItem* pMsg)
 	return 1;
 }
 
-int TMFieldScene::OnPacketUpdateItem(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketUpdateItem(MSG_UpdateItem* pMsg)
 {
-	return 0;
+	auto pItem = (TMGate*)g_pObjectManager->GetItemByID(pMsg->ItemID);
+	if (pItem && BASE_GetItemAbility(&pItem->m_stItem, 34) > 0)
+	{
+		STRUCT_ITEM stItem{};
+		stItem.sIndex = pItem->m_stItem.sIndex;
+		
+		int nMaskIndex = BASE_GetItemAbility(&stItem, 34);
+		int nState = static_cast<int>(pItem->m_eState);
+		if (nState > static_cast<int>(EGATE_STATE::EGATE_LOCKED))
+			nState -= static_cast<int>(EGATE_STATE::EGATE_LOCKED);
+
+		pItem->m_sAuth = 1;
+		BASE_UpdateItem2(nMaskIndex, nState, pMsg->State, (int)pItem->m_vecPosition.x, (int)pItem->m_vecPosition.y,	(char*)m_HeightMapData,
+			(int)(pItem->m_fAngle / D3DXToRadian(90)), pMsg->Height);
+
+		pItem->SetState((EGATE_STATE)(pMsg->State + static_cast<int>(EGATE_STATE::EGATE_LOCKED)));
+	}
+
+	UpdateScoreUI(0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketRemoveItem(MSG_STANDARDPARM* pStd)
