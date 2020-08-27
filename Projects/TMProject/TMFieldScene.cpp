@@ -21326,30 +21326,100 @@ int TMFieldScene::Guildmark_Create(stGuildMarkInfo* pMark)
 
 void TMFieldScene::Guildmark_MakeFileName(char* szStr, int nGuild, int nChief, int nChannel)
 {
+	if (szStr)
+		sprintf(szStr, "%c%02d%02d%04d.bmp", 'c', g_pObjectManager->m_nServerGroupIndex, nChannel, nGuild);
 }
 
 int TMFieldScene::Guildmark_Find_ArrayIndex(int nGuild)
 {
-	return 0;
+	for (int i = 0; i < 64; ++i)
+	{
+		if (g_pTextureManager->m_stGuildMark[i].nGuild == nGuild)
+			return i;
+	}
+
+	return -1;
 }
 
 int TMFieldScene::Guildmark_Find_EmptyArrayIndex()
 {
-	return 0;
+	for (int i = 0; i < 64; ++i)
+	{
+		if (g_pTextureManager->m_stGuildMark[i].nGuild == -1)
+			return i;
+	}
+
+	return -1;
 }
 
 int TMFieldScene::Guildmark_DeleteIdleGuildmark()
 {
-	return 0;
+	int nMostOld = 0;
+	unsigned int dwMostOldTime = 0;
+	for (int i = 0; i < 64; ++i)
+	{
+		if (!g_pTextureManager->m_stGuildMark[i].nGuild)
+			continue;
+
+		if (!g_pTextureManager->m_stGuildMark[i].dwLastRenderTime)
+		{
+			nMostOld = i;
+			break;
+		}
+		if (!dwMostOldTime)
+		{
+			nMostOld = i;
+			dwMostOldTime = g_pTextureManager->m_stGuildMark[i].dwLastRenderTime;
+		}
+		else if (g_pTextureManager->m_stGuildMark[i].dwLastRenderTime < dwMostOldTime)
+		{
+			nMostOld = i;
+			dwMostOldTime = g_pTextureManager->m_stGuildMark[i].dwLastRenderTime;
+		}
+	}
+
+	g_pTextureManager->m_stGuildMark[nMostOld].nGuild = -1;
+
+	SAFE_RELEASE(g_pTextureManager->m_stGuildMark[nMostOld].pTexture);
+
+	g_pTextureManager->m_stGuildMark[nMostOld].dwLastRenderTime = 0;
+	--m_nGuildMarkCount;
+	return nMostOld;
 }
 
 int TMFieldScene::Guildmark_IsCorrectBMP(char* szMarkBuffer)
 {
+	if (!szMarkBuffer)
+		return 0;
+
+	BITMAPFILEHEADER header;
+	memcpy(&header, szMarkBuffer, sizeof(BITMAPFILEHEADER));
+
+	if (header.bfType != 19778)
+		return 0;
+	if (header.bfSize != 630 && header.bfSize != 632)
+		return 0;
+
+	BITMAPINFO info;
+	memcpy(&info, &szMarkBuffer[14], header.bfOffBits - 14);
+	if (info.bmiHeader.biWidth == 16 && info.bmiHeader.biHeight == 12)
+		return info.bmiHeader.biBitCount == 24;
+	
 	return 0;
 }
 
 void TMFieldScene::Guildmark_Link(SPanel* pPanel, int nMarkIndex, int nGuildIndex)
 {
+	if (pPanel)
+	{
+		pPanel->m_GCPanel.nMarkIndex = nMarkIndex;
+		if (nGuildIndex == 509 || nGuildIndex == 9)
+			pPanel->m_GCPanel.nMarkLayout = 1;
+		else if ((nGuildIndex < 526 || nGuildIndex > 531) && (nGuildIndex < 3 || nGuildIndex > 8))
+			pPanel->m_GCPanel.nMarkLayout = 3;
+		else
+			pPanel->m_GCPanel.nMarkLayout = 2;
+	}
 }
 
 void TMFieldScene::SysMsgChat(char* str)
