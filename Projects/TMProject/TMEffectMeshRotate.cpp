@@ -176,9 +176,171 @@ int TMEffectMeshRotate::Render()
 
 int TMEffectMeshRotate::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	if (g_bHideEffect == 1)
+		return 1;
+	if (!m_bVisible)
+		return 0;
+
+	dwServerTime = g_pTimerManager->GetServerTime();
+
+	IsVisible();
+
+	float fProgress = (float)((m_dwStartTime - dwServerTime) % m_dwRotateTime) / (float)m_dwRotateTime;
+	float fAngle = (fProgress * 3.1415927f) * 2.0f;
+
+	if (m_nType == 1 && m_pOwner)
+	{
+		m_fAngle = m_pOwner->m_fAngle;
+		m_fAngle2 = 0.0f;
+	}
+	else
+	{
+		m_fAngle = fAngle * 2.0f;
+	}
+	if (m_nType == 2)
+		fProgress = (float)(dwServerTime - m_dwStartTime) / (float)m_dwLifeTime;
+
+	if (m_pOwner)
+	{
+		if (m_bCenter)
+		{
+			m_vecPosition.x = m_pOwner->m_vecPosition.x;
+			m_vecPosition.z = m_pOwner->m_vecPosition.y;
+			m_vecPosition.y = m_pOwner->m_fHeight;
+		}
+		else
+		{
+			m_vecPosition.x = (cosf(fAngle) * 1.0f) + m_pOwner->m_vecPosition.x;
+			m_vecPosition.z =(sinf(fAngle) * 1.0f) + m_pOwner->m_vecPosition.y;
+			m_vecPosition.y = m_pOwner->m_fHeight + 1.0f;
+		}
+	}
+	else
+	{
+		if (m_bCenter)
+		{
+			m_vecPosition.x = m_vecStartPos.x;
+			m_vecPosition.z = m_vecStartPos.z;
+		}
+		else
+		{
+			m_vecPosition.x = (cosf(fAngle) * 1.0f) + m_vecStartPos.x;
+			m_vecPosition.z = (sinf(fAngle) * 1.0f) + m_vecStartPos.z;
+		}
+		m_vecPosition.y = m_vecStartPos.y;
+	}
+
+	if (m_pBillBoard)
+	{
+		m_pBillBoard->m_vecPosition = m_vecPosition;
+
+		if (m_nType != 1)
+			m_pBillBoard->m_vecPosition.y += 0.2f;
+	}
+	if (m_bScale == 1)
+		m_fScale = (sinf(fAngle) * 0.1f) + 0.69999999f;
+	
+	switch (m_nType)
+	{
+	case 1:
+	{
+		int nRand = rand() % 5;
+
+		auto pEffect = new TMEffectBillBoard(
+			0,
+			800,
+			((float)nRand * 0.050000001f) + 0.02f,
+			((float)nRand * 0.1f) + 0.02f,
+			((float)nRand * 0.050000001f) + 0.02f,
+			0.00050000002f,
+			1,
+			80);
+
+		if (pEffect)
+		{
+			pEffect->m_vecStartPos = pEffect->m_vecPosition = m_vecPosition;
+			pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+			pEffect->m_bStickGround = 0;
+			pEffect->m_nParticleType = 1;
+			pEffect->m_fParticleV = 0.0f;
+			pEffect->SetColor(0x0FF6688AA);
+			g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+		}
+	}
+	break;
+	case 2:
+	{
+		if (fProgress > 1.0)
+		{
+			g_pObjectManager->DeleteObject(this);
+			return 1;
+		}
+		int nRand = rand() % 20 + 5;
+
+		auto pEffect = new TMEffectBillBoard(
+			0,
+			900,
+			(float)nRand * 0.2f,
+			(float)nRand * 0.2f,
+			(float)nRand * 0.2f,
+			0.00050000002f,
+			1,
+			80);
+
+		if (pEffect)
+		{
+			pEffect->m_vecStartPos = pEffect->m_vecPosition = m_vecPosition;
+			pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+			pEffect->m_bStickGround = 0;
+			pEffect->m_nParticleType = 3;
+			pEffect->m_fParticleV = 2.0f;
+			pEffect->SetColor(0xFF6677CC);
+			g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+		}
+	}
+	break;
+	case 3:
+	{
+		if (fProgress > 1.0)
+		{
+			g_pObjectManager->DeleteObject(this);
+			return 1;
+		}
+		int nRand = rand() % 20 + 3;
+
+		auto pEffect = new TMEffectBillBoard(
+			0,
+			1500,
+			(float)nRand * 0.2f,
+			(float)nRand * 0.2f,
+			(float)nRand * 0.2f,
+			0.0000099999997f,
+			1,
+			80);
+
+		if (pEffect)
+		{
+			m_vecPosition.y -= 0.80000001f;
+			pEffect->m_vecStartPos = pEffect->m_vecPosition = m_vecPosition;
+			pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+			pEffect->m_bStickGround = 0;
+			pEffect->m_nParticleType = 3;
+			pEffect->m_fParticleH = 1.0f;
+			pEffect->m_fParticleV = 5.0f;
+			pEffect->SetColor(0xFFFF0000);
+			g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+		}
+	}
+	break;
+	}
+
+	return 1;
 }
 
 void TMEffectMeshRotate::SetColor(unsigned int dwColor)
 {
+	m_dwA = (dwColor & 0xFF000000) >> 24;
+	m_dwR = (dwColor & 0xFF0000) >> 16;
+	m_dwG = (dwColor & 0xFF00) >> 8;
+	m_dwB = static_cast<unsigned char>(dwColor);
 }
