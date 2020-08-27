@@ -17506,9 +17506,117 @@ int TMFieldScene::OnPacketWeather(MSG_STANDARDPARM* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketCreateItem(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCreateItem(MSG_CreateItem* pMsg)
 {
-	return 0;
+	auto pOldItem = (TMItem*)g_pObjectManager->GetItemByID(pMsg->ItemID);
+	
+	if (BASE_GetItemAbility(&pMsg->Item, 34) > 0)
+	{
+		TMGate* pItem = nullptr;
+
+		if (pOldItem)
+			pItem = static_cast<TMGate*>(pOldItem);
+		else
+		{
+			pItem = new TMGate();
+		}
+
+		if (!pItem)
+			return 1;
+
+		auto pItem = new TMGate();
+
+		pItem->InitItem(pMsg->Item);
+		pItem->InitGate(pMsg->Item);
+
+		pItem->m_dwID = pMsg->ItemID;
+		pItem->m_nMaskIndex = 0;
+		pItem->InitObject();
+		pItem->InitAngle(0.0f, ((float)pMsg->Rotate * D3DXToRadian(180)) / 2.0f, 0.0f);
+
+		float fX = (float)pMsg->GridX + 0.5f;
+		float fY = (float)pMsg->GridY + 0.5f;
+
+		float fHeight = m_pGround->GetHeight(TMVector2(fX, fY));
+
+		if (fHeight < -500.0f)
+		{
+			auto pOtherGround = m_pGroundList[(m_nCurrentGroundIndex + 1) % 2];
+			if (pOtherGround)
+				fHeight = pOtherGround->GetHeight(TMVector2(fX, fY));
+			else
+			{
+				TMScene::FrameMove(0);
+				pOtherGround = m_pGroundList[(m_nCurrentGroundIndex + 1) % 2];
+				if (pOtherGround)
+					fHeight = pOtherGround->GetHeight(TMVector2(fX, fY));
+			}
+		}
+
+		pItem->InitPosition(fX, fHeight, fY);
+		pItem->m_sAuth = 1;
+
+		int nMaskIndex = BASE_GetItemAbility(&pMsg->Item, 34);
+		BASE_UpdateItem2(nMaskIndex, 1, (unsigned char)pMsg->State, pMsg->GridX, pMsg->GridY, (char*)m_HeightMapData,
+			(int)(pItem->m_fAngle / D3DXToRadian(90)), pMsg->Height);
+
+		pItem->SetState((EGATE_STATE)pMsg->State);
+		if (!pOldItem)
+			m_pItemContainer->AddChild(pItem);
+
+		return 1;
+	}
+
+	TMItem* pItem = nullptr;
+	if (pOldItem)
+		pItem = pOldItem;
+	else if (g_pItemList[pMsg->Item.sIndex].nIndexMesh == 1607)
+	{
+		pItem = new TMCannon();
+		pItem->m_dwObjType = 1607;
+		pMsg->Rotate = 1;
+	}
+	else
+	{
+		pItem = new TMItem();
+	}
+
+	if (!pItem)
+		return 1;
+
+	pItem->InitItem(pMsg->Item);
+	pItem->m_dwID = pMsg->ItemID;
+	pItem->m_nMaskIndex = 0;
+	pItem->InitObject();
+	pItem->InitAngle(0.0f, ((float)pMsg->Rotate * D3DXToRadian(180)) / 2.0f, 0.0f);
+
+	float fX = (float)pMsg->GridX + 0.5f;
+	float fY = (float)pMsg->GridY + 0.5f;
+
+	float fHeight = GroundGetMask(TMVector2(fX, fY)) * 0.1f;
+	pItem->InitPosition(fX, fHeight + 0.1f, fY);
+
+	if (!pOldItem)
+		m_pItemContainer->AddChild(pItem);
+
+	if (pMsg->Create == 1)
+	{
+		if (BASE_GetItemAbility(&pMsg->Item, 38) == 2)
+			GetSoundAndPlay(44, 0, 0);
+		else if (pMsg->Item.sIndex == 412 || pMsg->Item.sIndex == 413 || pMsg->Item.sIndex == 4141 ||
+			pMsg->Item.sIndex == 419 || pMsg->Item.sIndex == 420)
+		{
+			GetSoundAndPlay(48, 0, 0);
+		}
+		else if (pMsg->Item.sIndex == 747)
+		{
+			GetSoundAndPlay(306, 0, 0);
+		}
+		else
+			GetSoundAndPlay(45, 0, 0);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketCNFDropItem(MSG_STANDARD* pStd)
