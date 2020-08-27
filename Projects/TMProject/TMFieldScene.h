@@ -188,7 +188,7 @@ public:
 	int OnPacketAutoTrade(MSG_STANDARD* pStd);
 	int OnPacketSwapItem(MSG_STANDARD* pStd);
 	int OnPacketShopList(MSG_STANDARD* pStd);
-	int OnPacketRMBShopList(MSG_STANDARD* pStd);
+	int OnPacketRMBShopList(MSG_RMBShopList* pMsg);
 	int OnPacketBuy(MSG_STANDARD* pStd);
 	int OnPacketSell(MSG_STANDARD* pStd);
 	int OnPacketCNFMobKill(MSG_CNFMobKill* pStd);

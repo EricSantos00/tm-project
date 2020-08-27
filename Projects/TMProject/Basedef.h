@@ -1445,6 +1445,14 @@ struct MSG_CNFGetItem
 	STRUCT_ITEM Item;
 };
 
+struct MSG_RMBShopList
+{
+	MSG_STANDARD Header;
+	int ShopType;
+	STRUCT_ITEM List[39];
+	int Tax;
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },
