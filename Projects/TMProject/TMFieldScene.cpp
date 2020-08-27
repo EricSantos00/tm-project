@@ -21660,7 +21660,192 @@ void TMFieldScene::AirMove_End()
 
 int TMFieldScene::AirMove_ShowUI(bool bShow)
 {
-	return 0;
+	auto pPotalPanel = m_pPotalPanel;
+	if (!pPotalPanel)
+		return 0;
+	if (!m_pPotalList)
+		return 0;
+
+	pPotalPanel->SetVisible(bShow);
+	if (bShow == 1)
+	{
+		if (m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+			SetVisibleSkill();
+		if (m_pCPanel && m_pCPanel->m_bVisible == 1)
+			SetVisibleCharInfo();
+		if (m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+			SetVisibleCargo(0);
+		if (m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+			SetVisibleCargo(0);
+		if (m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+			SetVisibleAutoTrade(0, 0);
+		if (m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+		if (m_pShopPanel && m_pShopPanel->m_bVisible == 1)
+			SetVisibleShop(0);
+
+		char szStr[128]{};
+		sprintf(szStr, "%s", g_pMessageStringTable[378]);
+		m_pPotalText->SetText(szStr, 0);
+		m_pPotalText->SetTextColor(0xFFFFFFFF);
+		if (m_pPotalText1)
+			m_pPotalText1->SetText(g_pMessageStringTable[380], 0);
+		if (m_pPotalText2)
+			m_pPotalText2->SetText(g_pMessageStringTable[379], 0);
+		if (m_pPotalText3)
+			m_pPotalText3->SetText(g_pMessageStringTable[381], 0);
+
+		LoadMsgText3(m_pQuestList[0], (char*)"UI\\QuestSubjects.txt", 400, 0);
+		LoadMsgText3(m_pQuestList[1], (char*)"UI\\QuestSubjects2.txt", 400, 0);
+		LoadMsgText3(m_pQuestList[2], (char*)"UI\\QuestSubjects3.txt", 400, 0);
+		LoadMsgText3(m_pQuestList[3], (char*)"UI\\QuestSubjects4.txt", 400, 0);
+
+		char strAirMoveList[10][256]{};
+		if (!m_pQuestList[0] || !m_pQuestList[1])
+			return 0;
+
+		int i = 0;
+		char strAirMovePlaceName[10][64]{};
+		strncpy(strAirMovePlaceName[0], m_pQuestList[0]->m_pItemList[0]->GetText() + 1, 18);
+		strncpy(strAirMovePlaceName[1], m_pQuestList[0]->m_pItemList[1]->GetText() + 1, 18);
+		strncpy(strAirMovePlaceName[2], m_pQuestList[0]->m_pItemList[6]->GetText() + 1, 18);
+		sprintf(strAirMovePlaceName[3], g_pMessageStringTable[212]);
+		sprintf(strAirMovePlaceName[4], g_pMessageStringTable[218]);
+
+		for (int i = 0; i < 5; ++i)
+		{
+			while (1)
+			{
+				if (strlen(strAirMovePlaceName[i]) >= 18)
+					break;
+
+				strcat(strAirMovePlaceName[i], " ");
+			}
+		}
+
+		for (i = 0; i < 5; ++i)
+			sprintf(strAirMoveList[i], "FFFFFF    %04d %04d  %s               %d", g_pAirMoveList[i].nX, g_pAirMoveList[i].nY, strAirMovePlaceName[i], 0);
+
+		int nCount = 0;
+		m_pPotalList->Empty();
+		for (int j = 0; j < 5; ++j)
+		{
+			char szTemp[256]{};
+			sprintf(szTemp, "%s", strAirMoveList[j]);
+
+			char szCol[7]{};
+			strncpy(szCol, szTemp, 6u);
+
+			unsigned int dwCol = 0;
+			sscanf(szCol, "%x", &dwCol);
+			
+			auto szRet = strstr(szTemp, "\n");
+			if (szRet)
+				szRet[0] = 0;
+
+			char szText[256]{};
+			sprintf(szText, "%s", &szTemp[6]);
+	
+			auto pItem = new SListBoxItem(
+				szText,
+				dwCol | 0xFF000000,
+				0.0f,
+				0.0f,
+				m_pPotalList->m_nWidth,
+				16.0f,
+				0,
+				0x77777777,
+				1,
+				0);
+
+			m_pPotalList->AddItem(pItem);
+			if (++nCount > 100)
+				break;
+		}
+
+		if (m_pPotalList->m_pScrollBar)
+			m_pPotalList->m_pScrollBar->SetCurrentPos(0);
+	}
+
+	m_bAirmove_ShowUI = bShow;
+	if (!bShow)
+	{
+		auto pCharPanel = m_pCPanel;
+		auto pInvPanel = m_pInvenPanel;
+		auto pSkillPanel = m_pSkillPanel;
+		auto pPartyPanel = m_pPartyPanel;
+		auto pTradePanel = m_pTradePanel;
+		auto pAutoTradePanel = m_pAutoTrade;
+		auto pShopPanel = m_pShopPanel;
+		auto pCargoPanel = m_pCargoPanel;
+		auto pCargoPanel1 = m_pCargoPanel1;
+		auto pMinimapPanel = m_pMiniMapPanel;
+		auto pInputGoldPanel = m_pInputGoldPanel;
+		auto pPGTPanel = m_pPGTPanel;
+		auto pSystemPanel = m_pSystemPanel;
+		auto pGambleStore = m_pGambleStore;
+		auto pServerPanel = m_pServerPanel;
+		auto pPotalPanel = m_pPotalPanel;
+		if (g_bActiveWB == 1)
+		{
+			g_pApp->SwitchWebBrowserState(0);
+			return 0;
+		}
+
+		if (pAutoTradePanel && pAutoTradePanel->IsVisible() == 1)
+			SetVisibleAutoTrade(0, 0);
+		else if (pPGTPanel->IsVisible() == 1)
+			pPGTPanel->SetVisible(0);
+		else if (m_pQuestPanel->IsVisible() == 1)
+		{
+			m_pQuestPanel->SetVisible(0);
+			m_pQuestBtn->SetSelected(0);
+			GetSoundAndPlay(51, 0, 0);
+		}
+		else if (m_pFireWorkPanel && m_pFireWorkPanel->IsVisible() == 1)
+			m_pFireWorkPanel->SetVisible(0);
+		else if (m_pTotoPanel && m_pTotoPanel->IsVisible() == 1)
+			m_pTotoPanel->SetVisible(0);
+		else if (pInvPanel->IsVisible() == 1)
+			OnControlEvent(65562, 0);
+		else if (pSkillPanel->IsVisible() == 1)
+			OnControlEvent(65568, 0);
+		else if (pCharPanel->IsVisible() == 1)
+			OnControlEvent(65769, 0);
+		else if (pTradePanel->IsVisible() == 1)
+			SetVisibleTrade(0);
+		else if (pPartyPanel->IsVisible() == 1)
+			SetVisibleParty();
+		else if (pShopPanel->IsVisible()== 1)
+			SetVisibleShop(0);
+		else if (pCargoPanel->IsVisible() == 1)
+			SetVisibleCargo(0);
+		else if (pCargoPanel1->IsVisible() == 1)
+			SetVisibleCargo(0);
+		else if (pGambleStore->IsVisible() == 1)
+			SetVisibleGamble(0, 0);
+		else if (pInputGoldPanel->IsVisible() == 1)
+			pInputGoldPanel->SetVisible(0);
+		else if (m_pMsgPanel && m_pMsgPanel->IsVisible() == 1)
+		{
+			m_pMsgPanel->SetVisible(0);
+			m_pControlContainer->SetFocusedControl(0);
+		}
+		else if (m_pHelpPanel && m_pHelpPanel->IsVisible() == 1)
+		{
+			m_pHelpPanel->SetVisible(0);
+			m_pHelpBtn->SetSelected(0);
+			GetSoundAndPlay(51, 0, 0);
+		}
+		else if (pServerPanel && pServerPanel->IsVisible() == 1)
+			pServerPanel->SetVisible(0);
+		else if (pPotalPanel && pPotalPanel->IsVisible() == 1)
+			pPotalPanel->SetVisible(0);
+		else if (m_pMessageBox && m_pMessageBox->IsVisible() == 1)
+			m_pMessageBox->SetVisible(0);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::Affect_Main(unsigned int dwServerTime)

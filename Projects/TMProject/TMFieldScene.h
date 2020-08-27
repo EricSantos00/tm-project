@@ -843,4 +843,13 @@ const static STRUCT_AIRMOVELIST g_pAirMoveRoute[5][10] =
   }
 };
 
+const static STRUCT_AIRMOVELIST g_pAirMoveList[5] =
+{
+  { 2112, 2051 },
+  { 2372, 2099 },
+  { 2220, 1714 },
+  { 2365, 2279 },
+  { 1826, 1771 }
+};
+
 DWORD WINAPI Guildmark_Download(void* pArg);
