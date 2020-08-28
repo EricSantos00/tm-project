@@ -108,7 +108,54 @@ void TMEffectBillBoard3::SetColor(unsigned int dwColor)
 
 int TMEffectBillBoard3::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	dwServerTime = g_pTimerManager->GetServerTime();
+
+	m_vecPosition = m_vertex1[0].position;
+
+	IsVisible();
+
+	float fProgress = 0.0f;
+
+	if (m_dwLifeTime)
+		fProgress = (float)(dwServerTime - m_dwCreateTime) / (float)m_dwLifeTime;
+	else
+		fProgress = (float)(dwServerTime % 1000) / 1000.0f;
+	
+	if (m_dwLifeTime && (dwServerTime - m_dwCreateTime) > m_dwLifeTime)
+	{
+		m_bVisible = 0;
+		g_pObjectManager->DeleteObject(this);
+	}
+
+	if (m_nFade == 1 && fProgress < 1.0f)
+	{
+		float fAlpha = sinf(fProgress * 3.1415927f);
+		unsigned int dwA = (unsigned int)((float)m_dwA * fAlpha);
+		unsigned int dwR = (unsigned int)((float)m_dwR * fAlpha);
+		unsigned int dwG = (unsigned int)((float)m_dwG * fAlpha);
+		unsigned int dwB = (unsigned int)((float)m_dwB * fAlpha);
+
+		for (int i = 0; i < 4; ++i)
+		{
+			m_vertex1[i].diffuse = dwB | (dwG << 8) | (dwR << 16) | (dwA << 24);
+			m_vertex2[i].diffuse = dwB | (dwG << 8) | (dwR << 16) | (dwA << 24);
+		}
+	}
+
+	if (m_dwShortTime)
+	{
+		float fShort = (float)(dwServerTime - m_dwShortTime) / (float)(m_dwLifeTime + m_dwCreateTime - m_dwShortTime);
+		
+		TMVector3 vecStartPos{ m_vecPosition.x, m_vecPosition.y + m_fScaleV, m_vecPosition.z };
+		TMVector3 vecEndPos
+		{	m_vertex1[1].position.x,
+			m_vertex1[1].position.y + m_fScaleV,
+			m_vertex1[1].position.z 
+		};
+
+		SetPosition(vecStartPos, (vecEndPos * (1.0f - fShort)) + (vecStartPos * fShort));
+	}
+	return 1;
 }
 
 void TMEffectBillBoard3::SetPosition(TMVector3 vecStart, TMVector3 vecEnd)
