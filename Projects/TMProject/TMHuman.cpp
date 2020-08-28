@@ -3612,7 +3612,34 @@ int TMHuman::OnPacketMove(MSG_Action* pAction)
 
 int TMHuman::OnPacketChaosCube(MSG_Action* pAction)
 {
-	return 0;
+    m_cSameHeight = 1;
+    m_vecStartPos.x = (int)m_vecPosition.x;
+    m_vecStartPos.y = (int)m_vecPosition.y;
+    m_vecTargetPos.x = pAction->TargetX;
+    m_vecTargetPos.y = pAction->TargetY;
+
+    for (int i = 0; i < 48; ++i)
+    {
+        m_vecRouteBuffer[i].x = (float)pAction->TargetX + 0.5f;
+        m_vecRouteBuffer[i].y = (float)pAction->TargetY + 0.5f;
+    }
+
+    if (g_pCurrentScene->m_pMyHuman == this)
+    {
+        auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+        if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
+        {
+            pScene->m_vecMyNext.x = pAction->TargetX;
+            pScene->m_vecMyNext.y = pAction->TargetY;
+            pScene->m_stMoveStop.NextX = pAction->TargetX;
+            pScene->m_stMoveStop.NextY = pAction->TargetY;
+        }
+        this->m_LastSendTargetPos.x = pAction->TargetX;
+        this->m_LastSendTargetPos.y = pAction->TargetY;
+    }
+    this->m_dwStartMoveTime = g_pTimerManager->__vftable->GetServerTime(g_pTimerManager);
+    return 1;
+
 }
 
 int TMHuman::OnPacketIllusion(MSG_STANDARD* pStd)
