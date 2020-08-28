@@ -50,7 +50,56 @@ TMEffectBillBoard3::~TMEffectBillBoard3()
 
 int TMEffectBillBoard3::Render()
 {
-	return 0;
+	if (g_bHideEffect == 1)
+		return 1;
+
+	if (!m_bVisible)
+		return 0;
+
+	if (!strlen(g_pTextureManager->m_stEffectTextureList[m_nTextureIndex].szFileName))
+		return 0;
+
+	D3DXMatrixIdentity(&m_matEffect);
+	g_pDevice->m_pd3dDevice->SetTransform((D3DTRANSFORMSTATETYPE)256, &m_matEffect);
+	g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+
+	if (m_efAlphaType == EEFFECT_ALPHATYPE::EF_BRIGHT)
+	{
+		g_pDevice->SetRenderState(D3DRS_DESTBLEND, 2u);
+		g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+	}
+	else
+	{
+		g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
+		g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 4u);
+	}
+
+	g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+	g_pDevice->SetRenderState(D3DRS_FOGENABLE, 0);
+	g_pDevice->SetRenderState(D3DRS_LIGHTING, 0);
+	g_pDevice->SetRenderState(D3DRS_SRCBLEND, 5u);
+	g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 8u);
+	g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+	g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 0);
+	g_pDevice->SetRenderState(D3DRS_CULLMODE, 1u);
+	g_pDevice->m_pd3dDevice->SetFVF(322u);
+	
+	g_pDevice->SetTexture(0, g_pTextureManager->GetEffectTexture(m_nTextureIndex, 5000));
+	g_pDevice->m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2u, m_vertex1, 24u);
+	g_pDevice->m_pd3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2u, m_vertex2, 24u);
+	g_pDevice->SetRenderState(D3DRS_CULLMODE, 3u);
+	g_pDevice->SetRenderState(D3DRS_LIGHTING, 1u);
+	g_pDevice->SetRenderState(D3DRS_SRCBLEND, 2u);
+	g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 7u);
+	g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 1u);
+	g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 1u);
+
+	if (m_efAlphaType == EEFFECT_ALPHATYPE::EF_BRIGHT)
+		g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
+	else
+		g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+
+	return 1;
 }
 
 void TMEffectBillBoard3::SetColor(unsigned int dwColor)
