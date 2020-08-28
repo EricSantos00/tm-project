@@ -104,6 +104,15 @@ int TMEffectBillBoard3::Render()
 
 void TMEffectBillBoard3::SetColor(unsigned int dwColor)
 {
+	for (int i = 0; i < 4; ++i)
+	{
+		m_vertex1[i].diffuse = dwColor;
+		m_vertex2[i].diffuse = dwColor;
+	}
+	m_dwA = (dwColor & 0xFF000000) >> 24;
+	m_dwR = (dwColor & 0xFF0000) >> 16;
+	m_dwG = (dwColor & 0xFF00) >> 8;
+	m_dwB = static_cast<unsigned char>(dwColor);
 }
 
 int TMEffectBillBoard3::FrameMove(unsigned int dwServerTime)
@@ -160,8 +169,17 @@ int TMEffectBillBoard3::FrameMove(unsigned int dwServerTime)
 
 void TMEffectBillBoard3::SetPosition(TMVector3 vecStart, TMVector3 vecEnd)
 {
+	m_vertex1[0].position = TMVector3{ vecStart.x, vecStart.y - m_fScaleV, vecStart.z };
+	m_vertex1[1].position = TMVector3{ vecEnd.x, vecEnd.y - m_fScaleV, vecEnd.z };
+	m_vertex1[2].position = TMVector3{ vecEnd.x, vecEnd.y + m_fScaleV, vecEnd.z };
+	m_vertex1[3].position = TMVector3{ vecStart.x, vecStart.y + m_fScaleV, vecStart.z };
+	m_vertex2[0].position = TMVector3{ vecStart.x - m_fScaleV, vecStart.y, vecStart.z };
+	m_vertex2[1].position = TMVector3{ vecEnd.x - m_fScaleV, vecEnd.y, vecEnd.z };
+	m_vertex2[2].position = TMVector3{ vecEnd.x + m_fScaleV, vecEnd.y, vecEnd.z };
+	m_vertex2[3].position = TMVector3{ vecStart.x + m_fScaleV, vecStart.y, vecStart.z };
 }
 
 void TMEffectBillBoard3::SetShort(unsigned int dwTime)
 {
+	m_dwShortTime = dwTime;
 }
