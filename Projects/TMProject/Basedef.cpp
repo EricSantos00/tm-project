@@ -3086,7 +3086,24 @@ void BASE_SetBit(char* byte, int pos)
 
 int BASE_UpdateItem2(int maskidx, int CurrentState, int NextState, int xx, int yy, char* pHeight, int rotate, int height)
 {
-    return 0;
+    if (maskidx >= 10 || maskidx < 0)
+        return 0;
+
+    for (int y = 0; y <= 5; ++y)
+    {
+        for (int x = 0; x <= 5; ++x)
+        {
+            int xp = xx + x - 2;
+            int  yp = yy + y - 2;
+            if (xp - g_HeightPosX < 1 || yp - g_HeightPosY < 1 || xp - g_HeightPosX > g_HeightWidth - 2 || yp - g_HeightPosY > g_HeightHeight - 2)
+                break;
+
+            if (g_pGroundMask[maskidx][rotate][y][x])
+                pHeight[xp + g_HeightWidth * (yp - g_HeightPosY) - g_HeightPosX] = height;
+        }
+    }
+
+    return 1;
 }
 
 int IsPassiveSkill(int nSkillIndex)
