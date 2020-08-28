@@ -4258,9 +4258,9 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 	}
 	if (idwControlID == B_QUESTLOG)
 	{
-		int nIsVisible = m_pQuestPanel->IsVisible() == 0;
-		m_pQuestPanel->SetVisible(nIsVisible);
-		m_pQuestBtn->SetSelected(nIsVisible);
+		int nIsVisible = m_pQuestPanel->IsVisible();
+		m_pQuestPanel->SetVisible(nIsVisible == 0);
+		m_pQuestBtn->SetSelected(nIsVisible == 0);
 
 		if (!nIsVisible)
 		{
@@ -4286,8 +4286,9 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 				pMobData->Equip[0].sIndex % 10);
 		}
 
-		GetSoundAndPlay(51, 0, 0);		
-
+		// Open the mortal quests list as default
+		OnControlEvent(B_QUEST_BUTTON, 0);
+		GetSoundAndPlay(51, 0, 0);
 		return 0;
 	}
 	if (idwControlID == 1054260)
@@ -14148,7 +14149,10 @@ int TMFieldScene::LoadMsgText(SListBox* pListBox, char* szFileName)
 			szRet[0] = 0;
 
 		if (szTemp[6] == ' ')
+		{
+			sprintf(szText, "%s", &szTemp[6]);
 			pListBox->AddItem(new SListBoxItem(szText, dwCol | 0xFF000000, 0.0f, 0.0f, 400.0f, 16.0f, 0, 0x77777777, 1u, 0));
+		}
 	}
 	if (pListBox->m_pScrollBar)
 		pListBox->m_pScrollBar->SetCurrentPos(0);
