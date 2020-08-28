@@ -9134,8 +9134,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 	if (!pOver || pOver->m_bMouseOver != 1 && !pTarget || m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_WALK || m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_RUN)
 	{
 		m_pMouseOverHuman = 0;
-		GetItemFromGround(dwServerTime);
-		return 1;
+		return GetItemFromGround(dwServerTime);
 	}
 
 	if (m_pMyHuman->m_cHide == 1)
@@ -9258,8 +9257,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 		|| pOver->m_TradeDesc[0]
 		|| dwServerTime <= m_dwOldAttackTime + 1000)
 	{
-		GetItemFromGround(dwServerTime);
-		return 1;
+		return GetItemFromGround(dwServerTime);
 	}
 	if ((pOver->m_stScore.Reserved & 0xF) == 15 && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
 	{
@@ -9379,8 +9377,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 			m_vecMyNext.x = nMoveSX;
 			m_vecMyNext.y = nMoveSY;
 		}
-		GetItemFromGround(dwServerTime);
-		return 1;
+		return GetItemFromGround(dwServerTime);
 	}
 
 	if (g_pSpell[(unsigned char)cSkillIndex].Range == -1)
