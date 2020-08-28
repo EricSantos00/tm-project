@@ -2376,9 +2376,9 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         int nDust = 1;
         if (pScene && pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
         {
-            if (g_nWeather == 1 || 
-                ((int)m_vecPosition.x >> 7 <= 26 || (int)m_vecPosition.x >> 7 >= 31 || 
-                 (int)m_vecPosition.y >> 7 <= 20 || (int)m_vecPosition.y >> 7 >= 25))
+            int isInPos = ((int)m_vecPosition.x >> 7 <= 26 || (int)m_vecPosition.x >> 7 >= 31 ||
+                (int)m_vecPosition.y >> 7 <= 20 || (int)m_vecPosition.y >> 7 >= 25);
+            if (g_nWeather == 1 || !isInPos)
                 nDust = 0;
         }
 
@@ -2388,7 +2388,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
             if (nWalkSndIndex == 8)
                 nTextureIndex = 193;
 
-            float fSpeed = 0.392f;
+            float fSpeed = 0.0392f;
             fSpeed = (float)(m_fScale * TMHuman::m_vecPickSize[m_nSkinMeshType].x) * 0.0392f;
             if (!m_cMount && m_nSkinMeshType != 40 || m_cMount && m_nMountSkinMeshType != 40)
             {
@@ -2435,7 +2435,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
                 }
             }
         }
-    }
+    }    
     if (m_nClass != 45 && !m_cHide)
     {
         unsigned dwFootTerm = (unsigned int)((1000.0f * m_fScale) / m_fMaxSpeed);
@@ -2453,11 +2453,10 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         if (dwServerTime - m_dwFootMastTime > dwFootTerm && m_nLegType > 0 && 
             (m_eMotion == ECHAR_MOTION::ECMOTION_WALK || m_eMotion == ECHAR_MOTION::ECMOTION_RUN))
         {
-            if (nWalkSndIndex == 9 || (nWalkSndIndex == 8 &&
-                (int)m_vecPosition.x >> 7 <= 26
-                || (int)m_vecPosition.x >> 7 >= 31
-                || (int)m_vecPosition.y >> 7 <= 20
-                || (int)m_vecPosition.y >> 7 >= 25))
+            int isInPos = (int)m_vecPosition.x >> 7 <= 26 || (int)m_vecPosition.x >> 7 >= 31 || 
+                (int)m_vecPosition.y >> 7 <= 20 || (int)m_vecPosition.y >> 7 >= 25;
+
+            if (nWalkSndIndex == 9 || (nWalkSndIndex == 8 && !isInPos))
             {
                 unsigned int dwCol = 0xFFFF8866;
                 if (nWalkSndIndex == 9)
@@ -2471,13 +2470,13 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
                 {
                 case 2:
                     nFootType = 195;
-                    if (m_fScale > 1.3)
+                    if (m_fScale > 1.3f)
                         nScale = 3;
                     break;
                 case 3:
                     nFootType = 196;
                     nScale = 3;
-                    dwCol = -21880;
+                    dwCol = 0xFFFFAA88;
                     break;
                 case 4:
                     nFootType = 197;
@@ -2489,7 +2488,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
                     break;
                 }
 
-                if (nFootType == 194 && m_fScale > 1.5)
+                if (nFootType == 194 && m_fScale > 1.5f)
                     nScale = 3;
                 if (m_nSkinMeshType == 39)
                     nScale = 4;
@@ -2500,10 +2499,12 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
                     pFootMark->m_nFade = 1;
                     pFootMark->m_bFI = 0;
                     pFootMark->m_dwLifeTime = 3000;
-                    pFootMark->m_fAngle = m_fAngle - 1.5707964f;
+                    pFootMark->m_fAngle = m_fAngle - D3DXToRadian(90);
+                    pFootMark->SetColor(dwCol);
                     pFootMark->SetPosition(m_vecPosition);
 
                     g_pCurrentScene->m_pShadeContainer->AddChild(pFootMark);
+                    m_dwFootMastTime = dwServerTime;
                 }
             }
         }
