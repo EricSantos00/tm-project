@@ -5,6 +5,10 @@
 #include "ItemEffect.h"
 #include <WinInet.h>
 
+char g_pAffectTable[MAX_EFFECT_STRING_TABLE][24];
+char g_pAffectSubTable[MAX_SUB_EFFECT_STRING_TABLE][24];
+int g_pHitRate[1024];
+
 HWND hWndMain;
 char EncodeByte[4];
 int g_nChannelWidth;
@@ -324,8 +328,8 @@ void BASE_InitEffectString()
     if (fpEffectString)
     {
         for (int i = 1; i < MAX_EFFECT_STRING_TABLE; ++i)
-            fscanf(fpEffectString, "%s", g_pAffectTable[i]);
-
+            fscanf(fpEffectString, "%24s", &g_pAffectTable[i][0]);
+   
         fclose(fpEffectString);
     }
 
@@ -335,7 +339,7 @@ void BASE_InitEffectString()
     if (fpEffectSubString)
     {
         for (int j = 0; j < MAX_SUB_EFFECT_STRING_TABLE; ++j)
-            fscanf(fpEffectSubString, "%s", g_pAffectSubTable[j]);
+            fscanf(fpEffectSubString, "%s", &g_pAffectSubTable[j][0]);
 
         fclose(fpEffectSubString);
     }
@@ -686,8 +690,8 @@ int BASE_GetItemAbility(STRUCT_ITEM* item, char Type)
                 value++;
         }
 
-       /* if (Type == EF_HWORDGUILD || Type == EF_LWORDGUILD)
-            value = value;*/
+        if (Type == EF_HWORDGUILD || Type == EF_LWORDGUILD)
+            value = value;
 
         if (Type == EF_REGENMP || Type == EF_REGENHP)
             value *= sanc;
@@ -1532,20 +1536,6 @@ int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type)
         }
     }
 
-    if (Type == EF_RESIST1 || Type == EF_RESIST2 || Type == EF_RESIST3 || Type == EF_RESIST4)
-    {
-        for (int i = 0; i < 12; i++)
-        {
-            if (g_pItemList[idx].stEffect[i].sEffect == EF_RESISTALL)
-                value += g_pItemList[idx].stEffect[i].sValue;
-        }
-
-        for (int i = 0; i < 3; i++)
-        {
-            if (item->stEffect[i].cEffect == EF_RESISTALL)
-                value += item->stEffect[i].cValue;
-        }
-    }
     if (idx >= 2330 && idx < 2390)
     {
         if (Type == EF_MOUNTHP)
@@ -1578,7 +1568,7 @@ int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type)
         else if (Type == EF_PARRY)
             return g_pMountBonus[cd][2];
 
-        else if (Type == EF_RESIST1 || Type == EF_RESIST2 || Type == EF_RESIST3 || Type == EF_RESIST4)
+        else if (Type == EF_RESISTALL)
             return g_pMountBonus[cd][3];
         else
             return value;
@@ -1596,7 +1586,7 @@ int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type)
         else if (Type == EF_PARRY)
             return g_pMountBonus2[idx - 3980][2];
 
-        else if (Type == EF_RESIST1 || Type == EF_RESIST2 || Type == EF_RESIST3 || Type == EF_RESIST4)
+        else if (Type == EF_RESISTALL)
             return g_pMountBonus2[idx - 3980][3];
         else
             return value;
@@ -2348,21 +2338,6 @@ int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type)
         value += tvalue;
     }
 
-    if (Type == EF_RESIST1 || Type == EF_RESIST2 || Type == EF_RESIST3 || Type == EF_RESIST4)
-    {
-        for (int i = 0; i < 12; i++)
-        {
-            if (g_pItemList[idx].stEffect[i].sEffect == EF_RESISTALL)
-                value += g_pItemList[idx].stEffect[i].sValue;
-        }
-
-        for (int i = 0; i < 3; i++)
-        {
-            if (item->stEffect[i].cEffect == EF_RESISTALL)
-                value += item->stEffect[i].cValue;
-        }
-    }
-
     return value;
 }
 
@@ -2391,21 +2366,6 @@ int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type)
             tvalue = 10;
 
         value += tvalue;
-    }
-
-    if (Type == EF_RESIST1 || Type == EF_RESIST2 || Type == EF_RESIST3 || Type == EF_RESIST4)
-    {
-        for (int i = 0; i < 12; i++)
-        {
-            if (g_pItemList[idx].stEffect[i].sEffect == EF_RESISTALL)
-                value += g_pItemList[idx].stEffect[i].sValue;
-        }
-
-        for (int i = 0; i < 3; i++)
-        {
-            if (item->stEffect[i].cEffect == EF_RESISTALL)
-                value += item->stEffect[i].cValue;
-        }
     }
 
     int sanc = BASE_GetItemSanc(item);
@@ -2541,7 +2501,7 @@ int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char type)
         else if (type == EF_PARRY)
             return g_pMountBonus[cd][2];
 
-        else if (type == EF_RESIST1 || type == EF_RESIST2 || type == EF_RESIST3 || type == EF_RESIST4)
+        else if (type == EF_RESISTALL)
             return g_pMountBonus[cd][3];
         else
             return value;
@@ -2559,7 +2519,7 @@ int BASE_GetItemAbilityNosanc(STRUCT_ITEM* item, char type)
         else if (type == EF_PARRY)
             return g_pMountBonus2[itemId - 3980][2];
 
-        else if (type == EF_RESIST1 || type == EF_RESIST2 || type == EF_RESIST3 || type == EF_RESIST4)
+        else if (type == EF_RESISTALL)
             return g_pMountBonus2[itemId - 3980][3];
         else
             return value;
@@ -3040,6 +3000,16 @@ int BASE_GetDoubleCritical(STRUCT_MOB* mob, unsigned short* sProgress, unsigned 
 
 void BASE_GetHitPosition2(int sx, int sy, int* tx, int* ty, char* pHeight, int MH)
 {
+}
+
+void BASE_SetBit(char* byte, int pos)
+{
+    byte[pos / 8] |= 1 << pos % 8;
+}
+
+int BASE_UpdateItem2(int maskidx, int CurrentState, int NextState, int xx, int yy, char* pHeight, int rotate, int height)
+{
+    return 0;
 }
 
 int IsPassiveSkill(int nSkillIndex)

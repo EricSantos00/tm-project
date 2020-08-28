@@ -422,7 +422,9 @@ int RenderDevice::Unlock(int bEnd)
 			fLastTime = fTime;
 			dwFrames = 0;
 			
-			sprintf(szString, "Ver:%1.3f  FPS : %4.3f", 1.758f, m_fFPS);
+#ifdef _DEBUG
+			sprintf(szString, "FPS: %4.3f | Objects: %d | EN: %d ET: %d", m_fFPS, g_objectnumber, g_effectnumber, g_totaleffect);
+#endif
 		}
 
 		m_bShowEffects = 1;

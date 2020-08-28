@@ -6,6 +6,8 @@ constexpr auto MAX_VISIBLE_CARRY = MAX_CARRY - 4;
 constexpr int MAX_STRING = 2000;
 constexpr int MAX_STRING_LENGTH = 128;
 
+constexpr auto TM_CONNECTION_PORT = 8281;
+
 constexpr int MAX_SERVER = 10; // Max number of game servers that can connect to DB server
 constexpr int MAX_SERVERGROUP = 10;	// Max number of servers that can exist
 constexpr int MAX_SERVERNUMBER = (MAX_SERVER + 1); // DB + TMSrvs + BISrv
@@ -47,6 +49,8 @@ constexpr auto MSG_DeleteItem_Opcode = 0x2E4;
 constexpr auto MSG_SplitItem_Opcode = 0x2E5;
 constexpr auto MSG_DoJackpotBet_Opcode = 0x2BE;
 constexpr auto MSG_InviteGuild_Opcode = 0x3D5;
+constexpr auto MSG_Quest_Opcode = 0x28B;
+constexpr auto MSG_AirMove_Start_Opcode = 0xAD9;
 struct MSG_STANDARDPARM2
 {
 	MSG_STANDARD Header;
@@ -749,6 +753,8 @@ constexpr auto MSG_CloseTrade_Opcode = 0x384;
 constexpr auto MSG_Withdraw_Opcode = 0x387;
 constexpr auto MSG_Deposit_Opcode = 0x388;
 
+constexpr auto MSG_CombineItem_Opcode = 0x3A6;
+constexpr auto MSG_CombineItemTiny_Opcode = 0x3C0;
 struct MSG_CombineItem
 {
 	MSG_STANDARD Header;
@@ -788,6 +794,20 @@ struct MSG_UseItem
 	unsigned short GridX;
 	unsigned short GridY;
 	unsigned short ItemID;
+};
+
+constexpr auto MSG_UseItem2_Opcode = 0x3C9;
+struct MSG_UseItem2
+{
+	MSG_STANDARD Header;
+	int SourType;
+	int SourPos;
+	int DestType;
+	int DestPos;
+	unsigned short GridX;
+	unsigned short GridY;
+	unsigned short ItemID;
+	char Parm[16];
 };
 
 struct MSG_CAPSULEUSEITEM
@@ -873,7 +893,7 @@ constexpr auto MSG_AccountLogin_Opcode = 0x20D;
 struct MSG_AccountLogin
 {
 	MSG_STANDARD Header;
-	char AccountPass[12];
+	char AccountPass[16];
 	char AccountName[16];
 	char TID[52];
 	int Version;
@@ -1122,8 +1142,6 @@ struct MSG_REQShopList
 	unsigned short TargetID;
 };
 
-constexpr auto MSG_Quest_Opcode = 0x28B;
-
 constexpr auto MSG_Buy_Opcode = 0x379;
 struct MSG_Buy
 {
@@ -1246,6 +1264,15 @@ struct MSG_CNFParty2
 	char LeaderName[16];
 };
 
+constexpr auto MSG_ApplyBonus_Opcode = 0x277;
+struct MSG_ApplyBonus
+{
+	MSG_STANDARD Header;
+	short BonusType;
+	short Detail;
+	unsigned short TargetID;
+};
+
 constexpr auto MSG_ReqBuy_Opcode = 0x398;
 struct MSG_ReqBuy
 {
@@ -1300,6 +1327,131 @@ struct MSG_Carry
 	MSG_STANDARD Header;
 	STRUCT_ITEM Carry[64];
 	int Coin;
+};
+
+struct MSG_HellBuy
+{
+	MSG_STANDARD Header;
+	unsigned short TargetID;
+	short TargetCarryPos;
+	short MyCarryPos;
+	int Coin;
+};
+
+constexpr auto MSG_UpdateItem_Opcode = 0x374;
+struct MSG_UpdateItem
+{
+	MSG_STANDARD Header;
+	int ItemID;
+	short State;
+	char Height;
+	char dummy;
+};
+
+struct MSG_ReqSummon
+{
+	MSG_STANDARD Header;
+	int Result;
+	char Name[16];
+};
+
+struct MSG_CNFRemoveServerLogin
+{
+	MSG_STANDARD Header;
+	STRUCT_SELCHAR SelChar;
+	char AccountName[16];
+	STRUCT_ITEM Cargo[128];
+	int Coin;
+	char SecretCode[16];
+	int SSN1;
+	int SSN2;
+	short PosX;
+	short PosY;
+	STRUCT_MOB MOB;
+	unsigned short Slot;
+	unsigned short ClientID;
+	unsigned short Weather;
+	char ShortSkill[16];
+	STRUCT_EXT1 Ext1;
+	STRUCT_EXT2 Ext2;
+};
+
+struct MSG_EnvEffect
+{
+	MSG_STANDARD Header;
+	short x1;
+	short y1;
+	short x2;
+	short y2;
+	short Effect;
+	short EffectParm;
+};
+
+struct MSG_RandomQuiz
+{
+	MSG_STANDARD Header;
+	char Question[128];
+	char Answer[4][32];
+};
+
+struct MSG_LongMessagePanel
+{
+	MSG_STANDARD Header;
+	short Parm1;
+	short Parm2;
+	char Line[4][128];
+};
+
+constexpr auto MSG_DropItem_Opcode = 0x272;
+struct MSG_DropItem
+{
+	MSG_STANDARD Header;
+	int SourType;
+	int SourPos;
+	int Rotate;
+	unsigned short GridX;
+	unsigned short GridY;
+	unsigned short ItemID;
+};
+
+struct MSG_CreateItem
+{
+	MSG_STANDARD Header;
+	unsigned short GridX;
+	unsigned short GridY;
+	unsigned short ItemID;
+	STRUCT_ITEM Item;
+	char Rotate;
+	char State;
+	char Height;
+	char Create;
+	unsigned short Owner;
+};
+
+struct MSG_CNFDropItem
+{
+	MSG_STANDARD Header;
+	int SourType;
+	int SourPos;
+	int Rotate;
+	unsigned short GridX;
+	unsigned short GridY;
+};
+
+struct MSG_CNFGetItem
+{
+	MSG_STANDARD Header;
+	int DestType;
+	int DestPos;
+	STRUCT_ITEM Item;
+};
+
+struct MSG_RMBShopList
+{
+	MSG_STANDARD Header;
+	int ShopType;
+	STRUCT_ITEM List[39];
+	int Tax;
 };
 
 constexpr auto MSG_GetItem_Opcode = 0x270;
@@ -2279,7 +2431,7 @@ const static long long g_pNextLevel[403] =
   4100000000,
   4200000000,
   4290000000
-}; 
+};
 
 const static char g_pItemGrid[8][4][2] =
 {
@@ -2334,64 +2486,10 @@ const static char g_pItemGrid[8][4][2] =
 	}
 };
 
-static char g_pAffectTable[MAX_EFFECT_STRING_TABLE][24] =
-{
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"Slow",
-	"Haste",
-	"Drag Reduction",
-	"Power-up",
-	"Reduced avoidance",
-	"Increase in avoidance",
-	"Attack speed reduction",
-	"SPEED",
-	"Demijieop",
-	"Reduction in attacks",
-	"Magic Shield",
-	"Reduction in defense",
-	"Assault",
-	"Gross",
-	"Increase in skill",
-	"Polymorph",
-	"Tikrayipeu",
-	"Magic Stamina",
-	"Immunity",
-	"Poison",
-	"Melee attack",
-	"Lightning",
-	"Elemental",
-	"Self-destruct",
-	"Protectors",
-	"Avoid falling",
-	"Frost",
-	"Hyde",
-	"Drain",
-	"Vision",
-	"Coin Armor"
-};
+extern char g_pAffectTable[MAX_EFFECT_STRING_TABLE][24];
+extern char g_pAffectSubTable[MAX_SUB_EFFECT_STRING_TABLE][24];
 
-static char g_pAffectSubTable[MAX_SUB_EFFECT_STRING_TABLE][24];
-static int g_pHitRate[1024]{};
-
-
+extern int g_pHitRate[1024];
 
 extern HWND hWndMain;
 extern char EncodeByte[4];
@@ -2454,7 +2552,7 @@ unsigned int BASE_GetItemColor(STRUCT_ITEM* item);
 int BASE_GetColorCount(unsigned int dwColor);
 int BASE_GetManaSpent(int SkillNumber, int SaveMana, int Special);
 int BASE_GetSkillDamage(int dam, int ac, int combat);
-int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weapondamage, int OriginalFace); 
+int BASE_GetSkillDamage(int skillnum, STRUCT_MOB* mob, int weather, int weapondamage, int OriginalFace);
 int BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace);
 int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type);;
 int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type);
@@ -2469,6 +2567,8 @@ void BASE_GetHitPosition(int sx, int sy, int* tx, int* ty, char* pHeight, int MH
 int BASE_Get3DTo2DPos(float fX, float fY, float fZ, int* pX, int* pY);
 int BASE_GetDoubleCritical(STRUCT_MOB* mob, unsigned short* sProgress, unsigned short* cProgress, char* bDoubleCritical);
 void BASE_GetHitPosition2(int sx, int sy, int* tx, int* ty, char* pHeight, int MH);
+void BASE_SetBit(char* byte, int pos);
+int BASE_UpdateItem2(int maskidx, int CurrentState, int NextState, int xx, int yy, char* pHeight, int rotate, int height);
 
 int IsPassiveSkill(int nSkillIndex);
 

@@ -1319,7 +1319,7 @@ int SEditableText::OnKeyDownEvent(unsigned int iKeyCode)
 
 int SEditableText::OnKeyUpEvent(unsigned int iKeyCode)
 {
-	return m_bFocused == 1;;
+	return m_bFocused == 1;
 }
 
 void SEditableText::Update()

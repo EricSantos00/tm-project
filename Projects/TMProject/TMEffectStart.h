@@ -7,7 +7,7 @@ class TMObject;
 class TMEffectStart : public TMEffect
 {
 public:
-	TMEffectStart(TMVector3 vecPosition, int nType, TMObject* pOwner);
+	TMEffectStart(TMVector3 vecPosition, int nType, TMHuman* pOwner);
 	~TMEffectStart();
 	
 	int Render() override;

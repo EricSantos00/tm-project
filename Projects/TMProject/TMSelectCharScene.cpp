@@ -636,7 +636,7 @@ int TMSelectCharScene::OnControlEvent(unsigned int idwControlID, unsigned int id
 		}
 		else
 		{
-			LookSampleHuman(nIndex, 0, 1);
+			LookSampleHuman(nIndex, 0, 0);
 			m_pSampleHuman[nIndex]->m_bSelected = 0;
 
 			SPanel* pPanel = static_cast<SPanel*>(m_pControlContainer->FindControl(1542));
@@ -1743,13 +1743,13 @@ void TMSelectCharScene::LookSampleHuman(int nIndex, int bLook, int bSelect)
 		vecStartPos = { 2044.0F, 2.0f, 2044.0f };
 		fEndHeight = 1.3f;
 
-		vecLastPos = { m_pHuman[nIndex]->m_vecPosition.x, m_pHuman[nIndex]->m_fHeight, m_pHuman[nIndex]->m_vecPosition.y };
+		vecLastPos = TMVector3{ m_pHuman[nIndex]->m_vecPosition.x, m_pHuman[nIndex]->m_fHeight, m_pHuman[nIndex]->m_vecPosition.y };
 	}
 	else
 	{
 		vecStartPos = { 2072.0f, 5.5f, 2072.0f };
 		fEndHeight = 5.19f;
-		vecLastPos = { m_pSampleHuman[nIndex]->m_vecPosition.x, m_pSampleHuman[nIndex]->m_fHeight, m_pSampleHuman[nIndex]->m_vecPosition.y };
+		vecLastPos = TMVector3{ m_pSampleHuman[nIndex]->m_vecPosition.x, m_pSampleHuman[nIndex]->m_fHeight, m_pSampleHuman[nIndex]->m_vecPosition.y };
 	}
 
 	auto pCamera = g_pObjectManager->m_pCamera;

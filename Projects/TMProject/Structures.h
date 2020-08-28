@@ -234,8 +234,14 @@ struct RDLVERTEX
 	unsigned int diffuse;
 	float tu;
 	float tv;
-};
 
+	RDLVERTEX()
+	{
+		diffuse = 0;
+		tu = 0.0f;
+		tv = 0.0f;
+	}
+};
 
 struct RDLNVERTEX2
 {

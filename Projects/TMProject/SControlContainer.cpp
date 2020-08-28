@@ -117,14 +117,14 @@ int SControlContainer::OnKeyDownEvent(unsigned int iKeyCode)
 
 	do
 	{
-		if (pCurrentControl->m_cDeleted && pCurrentControl->m_bVisible == 1)
+		if (!pCurrentControl->m_cDeleted && pCurrentControl->m_bVisible == 1)
 		{
 			if (pCurrentControl->OnKeyDownEvent(iKeyCode))
 				return 1;
 
 			if (pCurrentControl->m_pDown)
 			{
-				pCurrentControl = static_cast<SControl*>(m_pDown);
+				pCurrentControl = static_cast<SControl*>(pCurrentControl->m_pDown);
 
 				continue;
 			}

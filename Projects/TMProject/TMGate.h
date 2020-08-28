@@ -4,12 +4,12 @@
 
 enum class EGATE_STATE
 {
-    EGATE_OPEN = 0x1,
-    EGATE_CLOSED = 0x2,
-    EGATE_LOCKED = 0x3,
-    EGATE_OPENING = 0x4,
-    EGATE_CLOSING = 0x5,
-    EGATE_LOCKING = 0x6,
+    EGATE_OPEN = 1,
+    EGATE_CLOSED = 2,
+    EGATE_LOCKED = 3,
+    EGATE_OPENING = 4,
+    EGATE_CLOSING = 5,
+    EGATE_LOCKING = 6,
 };
 
 class TMEffectBillBoard2;

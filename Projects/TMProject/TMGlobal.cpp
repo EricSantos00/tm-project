@@ -125,3 +125,5 @@ int g_bEffectFirst = 1;
 int g_bEvent;
 
 int g_bRunning = 1;
+
+int g_nCombineMode = 0;

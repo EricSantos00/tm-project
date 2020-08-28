@@ -2376,9 +2376,9 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         int nDust = 1;
         if (pScene && pScene->m_eSceneType == ESCENE_TYPE::ESCENE_FIELD)
         {
-            if (g_nWeather == 1 || 
-                ((int)m_vecPosition.x >> 7 <= 26 || (int)m_vecPosition.x >> 7 >= 31 || 
-                 (int)m_vecPosition.y >> 7 <= 20 || (int)m_vecPosition.y >> 7 >= 25))
+            int isInPos = ((int)m_vecPosition.x >> 7 <= 26 || (int)m_vecPosition.x >> 7 >= 31 ||
+                (int)m_vecPosition.y >> 7 <= 20 || (int)m_vecPosition.y >> 7 >= 25);
+            if (g_nWeather == 1 || !isInPos)
                 nDust = 0;
         }
 
@@ -2388,7 +2388,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
             if (nWalkSndIndex == 8)
                 nTextureIndex = 193;
 
-            float fSpeed = 0.392f;
+            float fSpeed = 0.0392f;
             fSpeed = (float)(m_fScale * TMHuman::m_vecPickSize[m_nSkinMeshType].x) * 0.0392f;
             if (!m_cMount && m_nSkinMeshType != 40 || m_cMount && m_nMountSkinMeshType != 40)
             {
@@ -2411,7 +2411,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         }
         else if (nDust && (!g_pDevice->m_bSavage && !g_pDevice->m_bIntel && m_eMotion == ECHAR_MOTION::ECMOTION_RUN && !m_cHide
                 || (m_nClass == 22 || m_nClass == 20) && m_eMotion == ECHAR_MOTION::ECMOTION_WALK) && 
-            dwServerTime - m_dwLastDustTime > (unsigned int)(float)(1000.0f / m_fMaxSpeed))
+            dwServerTime - m_dwLastDustTime > (unsigned int)(1000.0f / m_fMaxSpeed))
         {
             int nTextureIndex = 0;
             if (nWalkSndIndex == 8)
@@ -2435,7 +2435,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
                 }
             }
         }
-    }
+    }    
     if (m_nClass != 45 && !m_cHide)
     {
         unsigned dwFootTerm = (unsigned int)((1000.0f * m_fScale) / m_fMaxSpeed);
@@ -2453,11 +2453,10 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         if (dwServerTime - m_dwFootMastTime > dwFootTerm && m_nLegType > 0 && 
             (m_eMotion == ECHAR_MOTION::ECMOTION_WALK || m_eMotion == ECHAR_MOTION::ECMOTION_RUN))
         {
-            if (nWalkSndIndex == 9 || (nWalkSndIndex == 8 &&
-                (int)m_vecPosition.x >> 7 <= 26
-                || (int)m_vecPosition.x >> 7 >= 31
-                || (int)m_vecPosition.y >> 7 <= 20
-                || (int)m_vecPosition.y >> 7 >= 25))
+            int isInPos = (int)m_vecPosition.x >> 7 <= 26 || (int)m_vecPosition.x >> 7 >= 31 || 
+                (int)m_vecPosition.y >> 7 <= 20 || (int)m_vecPosition.y >> 7 >= 25;
+
+            if (nWalkSndIndex == 9 || (nWalkSndIndex == 8 && !isInPos))
             {
                 unsigned int dwCol = 0xFFFF8866;
                 if (nWalkSndIndex == 9)
@@ -2471,13 +2470,13 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
                 {
                 case 2:
                     nFootType = 195;
-                    if (m_fScale > 1.3)
+                    if (m_fScale > 1.3f)
                         nScale = 3;
                     break;
                 case 3:
                     nFootType = 196;
                     nScale = 3;
-                    dwCol = -21880;
+                    dwCol = 0xFFFFAA88;
                     break;
                 case 4:
                     nFootType = 197;
@@ -2489,7 +2488,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
                     break;
                 }
 
-                if (nFootType == 194 && m_fScale > 1.5)
+                if (nFootType == 194 && m_fScale > 1.5f)
                     nScale = 3;
                 if (m_nSkinMeshType == 39)
                     nScale = 4;
@@ -2500,10 +2499,12 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
                     pFootMark->m_nFade = 1;
                     pFootMark->m_bFI = 0;
                     pFootMark->m_dwLifeTime = 3000;
-                    pFootMark->m_fAngle = m_fAngle - 1.5707964f;
+                    pFootMark->m_fAngle = m_fAngle - D3DXToRadian(90);
+                    pFootMark->SetColor(dwCol);
                     pFootMark->SetPosition(m_vecPosition);
 
                     g_pCurrentScene->m_pShadeContainer->AddChild(pFootMark);
+                    m_dwFootMastTime = dwServerTime;
                 }
             }
         }
@@ -3437,7 +3438,7 @@ int TMHuman::OnPacketEvent(unsigned int dwCode, char* buf)
         return OnPacketUpdateScore((MSG_STANDARD*)buf);
         break;
     case 0x181:
-        return OnPacketSetHpMp((MSG_STANDARD*)buf);
+        return OnPacketSetHpMp(reinterpret_cast<MSG_SetHpMp*>(buf));
         break;
     case 0x18A:
         return OnPacketSetHpDam((MSG_STANDARD*)buf);
@@ -4614,10 +4615,10 @@ int TMHuman::OnPacketUpdateScore(MSG_STANDARD* pStd)
             pFScene->UpdateScoreUI(0);
     }
 
-    if (m_cMount)
+    if (m_cMount && oldShaow != m_cShadow)
     {
         D3DXVECTOR3 m_vOldAngle{ m_pMount->m_vAngle };
-        
+
         if (m_cShadow == 1)
         {
             memset(&m_stMountSanc, 0, sizeof(m_stMountSanc));
@@ -5165,7 +5166,7 @@ int TMHuman::OnPacketTrade(MSG_Trade* pStd)
         SGridControl* pGridOp[15];
         for (int i = 0; i < 15; ++i)
         {
-            pGridOp[i] = (SGridControl*)pScene->m_pControlContainer->FindControl(i + 8182);
+            pGridOp[i] = (SGridControl*)pScene->m_pControlContainer->FindControl(i + 8192);
             auto pPickedItem = pGridOp[i]->PickupItem(0, 0);
             if (pPickedItem && memcmp(pPickedItem->m_pItem, &pStd->Item[i], sizeof(STRUCT_ITEM)))
                 bChanged = 1;
@@ -5951,9 +5952,9 @@ void TMHuman::SetAnimation(ECHAR_MOTION eMotion, int nLoop)
                     dwSpeedTemp = g_MobAniTableEx[nClass][m_nSkinMeshType].dwSpeed[(int)eMotion];
                 }
                               
-                m_pSkinMesh->m_dwFPS = (unsigned int)(float)((float)dwSpeedTemp * 1.0f);
+                m_pSkinMesh->m_dwFPS = (unsigned int)((float)dwSpeedTemp * 1.0f);
                 if (m_cMount == 1 && m_pMount)                   
-                    m_pMount->m_dwFPS = (unsigned int)(float)((float)g_MobAniTable[m_nMountSkinMeshType].dwSpeed[(int)eMotion] * 1.0f);
+                    m_pMount->m_dwFPS = (unsigned int)((float)g_MobAniTable[m_nMountSkinMeshType].dwSpeed[(int)eMotion] * 1.0f);
             }
 
             if ((int)eMotion >= 4 && (int)eMotion <= 9)
@@ -7866,12 +7867,12 @@ void TMHuman::Attack(ECHAR_MOTION eMotion, TMHuman* pTarget, short cSkillIndex)
     if (eMotion != m_eMotion)
     {
         if (g_pCurrentScene->m_pMyHuman == this)
-            TMHuman::SetAnimation(eMotion, 0);
+            SetAnimation(eMotion, 0);
         else if (m_nClass == 66 && 
             m_eMotion != ECHAR_MOTION::ECMOTION_ATTACK04 && m_eMotion != ECHAR_MOTION::ECMOTION_ATTACK05 && m_eMotion != ECHAR_MOTION::ECMOTION_ATTACK06 ||
             m_nClass != 66)
         {
-            TMHuman::SetAnimation(eMotion, 0);
+            SetAnimation(eMotion, 0);
         }
         m_nSkillIndex = -1;
     }
@@ -11935,4 +11936,9 @@ void TMHuman::RenderEffect_Skull()
 bool _locationCheck(float posx, float posy, int mapX, int mapY)
 {
     return (int)(posx * 0.0078125f) == mapX && (int)(posy * 0.0078125f) == mapY;
+}
+
+bool _locationCheck(TMVector2 vec2, int mapX, int mapY)
+{
+    return (int)(vec2.x * 0.0078125f) == mapX && (int)(vec2.y * 0.0078125f) == mapY;
 }

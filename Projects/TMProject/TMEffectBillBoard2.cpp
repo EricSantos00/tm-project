@@ -4,6 +4,7 @@
 #include "TMObject.h"
 
 TMEffectBillBoard2::TMEffectBillBoard2(int nTextureIndex, unsigned int dwLifeTime, float fScaleX, float fScaleY, float fScaleZ, float fVelocity, unsigned int dwVel) :
+	TMEffect(),
 	m_vecScale{}
 {
 	m_fAxisAngle = 0.0f;
@@ -57,7 +58,7 @@ int TMEffectBillBoard2::Render()
 		if (!strlen(g_pTextureManager->m_stEffectTextureList[m_nTextureIndex].szFileName))
 			return 0;
 
-		g_pDevice->m_pd3dDevice->SetTransform((D3DTRANSFORMSTATETYPE)256, &m_matEffect);
+		g_pDevice->m_pd3dDevice->SetTransform(D3DTS_WORLD, &m_matEffect);
 		g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
 
 		if (m_efAlphaType == EEFFECT_ALPHATYPE::EF_BRIGHT)
@@ -103,7 +104,7 @@ void TMEffectBillBoard2::SetColor(unsigned int dwColor)
 		m_vertex[i].diffuse = dwColor;
 
 	m_dwA = (dwColor & 0xFF000000) >> 24;
-	m_dwR = (dwColor & 0xFF0000) >> 16;
+	m_dwR = ((unsigned int)0xFF0000 & dwColor) >> 16;
 	m_dwG = (dwColor & 0xFF00) >> 8;
 	m_dwB = static_cast<unsigned char>(dwColor);
 }
@@ -153,14 +154,14 @@ int TMEffectBillBoard2::FrameMove(unsigned int dwServerTime)
 	{
 	case 1:
 	{
-		DWORD dwA = (unsigned int)((float)m_dwA * fabsf(sinf(m_fProgress * 3.1415927f)));
-		DWORD dwR = (unsigned int)((float)m_dwR * fabsf(sinf(m_fProgress * 3.1415927f)));
-		DWORD dwG = (unsigned int)((float)m_dwG * fabsf(sinf(m_fProgress * 3.1415927f)));
-		DWORD dwB = (unsigned int)((float)m_dwB * fabsf(sinf(m_fProgress * 3.1415927f)));
+		DWORD dwA = (unsigned int)((float)m_dwA * fabsf(sinf(m_fProgress * D3DXToRadian(180))));
+		DWORD dwR = (unsigned int)((float)m_dwR * fabsf(sinf(m_fProgress * D3DXToRadian(180))));
+		DWORD dwG = (unsigned int)((float)m_dwG * fabsf(sinf(m_fProgress * D3DXToRadian(180))));
+		DWORD dwB = (unsigned int)((float)m_dwB * fabsf(sinf(m_fProgress * D3DXToRadian(180))));
 
 		for (int i = 0; i < 4; ++i)
 		{
-			m_vertex[i].diffuse = dwB | (dwG << 8) | (dwR << 16) | (dwA << 24);
+			m_vertex[i].diffuse = (unsigned int)(dwB | (dwG << 8) | (dwR << 16) | (dwA << 24));
 		}
 	}
 	break;
@@ -168,14 +169,14 @@ int TMEffectBillBoard2::FrameMove(unsigned int dwServerTime)
 	{
 		float fVel = (float)((dwServerTime + 200 * ((unsigned int)this % 100)) % 5000) / 5000.0f;
 
-		DWORD dwA = (unsigned int)(((0.2f * fabsf(sinf((fVel * 3.1415927f) * 2.0f))) + 0.80000001f) * (float)m_dwA);
-		DWORD dwR = (unsigned int)(((0.2f * fabsf(sinf((fVel * 3.1415927f) * 2.0f))) + 0.80000001f) * (float)m_dwR);
-		DWORD dwG = (unsigned int)(((0.2f * fabsf(sinf((fVel * 3.1415927f) * 2.0f))) + 0.80000001f) * (float)m_dwG);
-		DWORD dwB = (unsigned int)(((0.2f * fabsf(sinf((fVel * 3.1415927f) * 2.0f))) + 0.80000001f) * (float)m_dwB);
+		DWORD dwA = (unsigned int)(((0.2f * fabsf(sinf((fVel * D3DXToRadian(180)) * 2.0f))) + 0.80000001f) * (float)m_dwA);
+		DWORD dwR = (unsigned int)(((0.2f * fabsf(sinf((fVel * D3DXToRadian(180)) * 2.0f))) + 0.80000001f) * (float)m_dwR);
+		DWORD dwG = (unsigned int)(((0.2f * fabsf(sinf((fVel * D3DXToRadian(180)) * 2.0f))) + 0.80000001f) * (float)m_dwG);
+		DWORD dwB = (unsigned int)(((0.2f * fabsf(sinf((fVel * D3DXToRadian(180)) * 2.0f))) + 0.80000001f) * (float)m_dwB);
 
 		for (int j = 0; j < 4; ++j)
 		{
-			m_vertex[j].diffuse = dwB | (dwG << 8) | (dwR << 16) | (dwA << 24);
+			m_vertex[j].diffuse = (unsigned int)(dwB | (dwG << 8) | (dwR << 16) | (dwA << 24));
 		}
 	}
 	break;
@@ -184,14 +185,14 @@ int TMEffectBillBoard2::FrameMove(unsigned int dwServerTime)
 	{
 		float fVel = (float)((dwServerTime + 200 * ((unsigned int)this % 100)) % 5000) / 5000.0f;
 
-		DWORD dwA = (unsigned int)(((0.80000001f * fabsf(sinf((fVel * 3.1415927f) * 2.0f))) + 0.2f) * (float)m_dwA);
-		DWORD dwR = (unsigned int)(((0.80000001f * fabsf(sinf((fVel * 3.1415927f) * 2.0f))) + 0.2f) * (float)m_dwR);
-		DWORD dwG = (unsigned int)(((0.80000001f * fabsf(sinf((fVel * 3.1415927f) * 2.0f))) + 0.2f) * (float)m_dwG);
-		DWORD dwB = (unsigned int)(((0.80000001f * fabsf(sinf((fVel * 3.1415927f) * 2.0f))) + 0.2f) * (float)m_dwB);
+		DWORD dwA = (unsigned int)(((0.80000001f * fabsf(sinf((fVel * D3DXToRadian(180)) * 2.0f))) + 0.2f) * (float)m_dwA);
+		DWORD dwR = (unsigned int)(((0.80000001f * fabsf(sinf((fVel * D3DXToRadian(180)) * 2.0f))) + 0.2f) * (float)m_dwR);
+		DWORD dwG = (unsigned int)(((0.80000001f * fabsf(sinf((fVel * D3DXToRadian(180)) * 2.0f))) + 0.2f) * (float)m_dwG);
+		DWORD dwB = (unsigned int)(((0.80000001f * fabsf(sinf((fVel * D3DXToRadian(180)) * 2.0f))) + 0.2f) * (float)m_dwB);
 
 		for (int k = 0; k < 4; ++k)
 		{
-			m_vertex[k].diffuse = dwB | (dwG << 8) | (dwR << 16) | (dwA << 24);
+			m_vertex[k].diffuse = (unsigned int)(dwB | (dwG << 8) | (dwR << 16) | (dwA << 24));
 		}
 	}
 	break;
@@ -199,7 +200,7 @@ int TMEffectBillBoard2::FrameMove(unsigned int dwServerTime)
 
 	if (m_dwRotVel)
 	{
-		m_fAxisAngle = ((float)(dwServerTime % m_dwRotVel) / (float)m_dwRotVel) * 6.2831855f;
+		m_fAxisAngle = ((float)(dwServerTime % m_dwRotVel) / (float)m_dwRotVel) * D3DXToRadian(360);
 	}
 
 	if (IsVisible() == 1)

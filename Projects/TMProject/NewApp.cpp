@@ -1341,8 +1341,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
+#if !defined(_DEBUG)
 	if (FindWindow(0, ClassName))
 		return 0;
+#endif
 
 	char* szArgument = GetCommandLine();
 	if (CheckOS())

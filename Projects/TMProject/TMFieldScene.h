@@ -166,35 +166,35 @@ public:
 	int OnPacketMessageChat(MSG_MessageChat* pStd);
 	int OnPacketMessageChat_Index(MSG_MessageChat* pStd);
 	int OnPacketMessageChat_Param(MSG_STANDARD* pStd);
-	int OnPacketMessageWhisper(MSG_STANDARD* pStd);
-	int OnPacketLongMessagePanel(MSG_STANDARD* pStd);
-	int OnPacketReqSummon(MSG_STANDARD* pStd);
+	int OnPacketMessageWhisper(MSG_MessageWhisper* pMsg);
+	int OnPacketLongMessagePanel(MSG_LongMessagePanel* pMsg);
+	int OnPacketReqSummon(MSG_ReqSummon* pStd);
 	int OnPacketCancelSummon(MSG_STANDARD* pStd);
 	int OnPacketAction(MSG_STANDARD* pStd);
-	int OnPacketSoundEffect(MSG_STANDARD* pStd);
+	int OnPacketSoundEffect(MSG_STANDARDPARM* pStd);
 	int OnPacketCreateMob(MSG_STANDARD* pStd);
 	int OnPacketCNFCharacterLogout(MSG_STANDARD* pStd);
-	int OnPacketCNFRemoveServer(MSG_STANDARD* pStd);
-	int OnPacketCNFAccountLogin(MSG_STANDARD* pStd);
-	int OnPacketCNFCharacterLogin(MSG_STANDARD* pStd);
+	int OnPacketCNFRemoveServer(MSG_CNFRemoveServer* pStd);
+	int OnPacketCNFAccountLogin(MSG_CNFRemoveServerLogin* pStd);
+	int OnPacketCNFCharacterLogin(MSG_CNFCharacterLogin* pStd);
 	int OnPacketItemSold(MSG_STANDARDPARM2* pStd);
 	int OnPacketUpdateCargoCoin(MSG_STANDARDPARM* pStd);
 	int OnPacketWeather(MSG_STANDARDPARM* pStd);
-	int OnPacketCreateItem(MSG_STANDARD* pStd);
-	int OnPacketCNFDropItem(MSG_STANDARD* pStd);
-	int OnPacketCNFGetItem(MSG_STANDARD* pStd);
-	int OnPacketUpdateItem(MSG_STANDARD* pStd);
+	int OnPacketCreateItem(MSG_CreateItem* pMsg);
+	int OnPacketCNFDropItem(MSG_CNFDropItem* pMsg);
+	int OnPacketCNFGetItem(MSG_CNFGetItem* pMsg);
+	int OnPacketUpdateItem(MSG_UpdateItem* pMsg);
 	int OnPacketRemoveItem(MSG_STANDARDPARM* pStd);
 	int OnPacketAutoTrade(MSG_STANDARD* pStd);
 	int OnPacketSwapItem(MSG_STANDARD* pStd);
 	int OnPacketShopList(MSG_STANDARD* pStd);
-	int OnPacketRMBShopList(MSG_STANDARD* pStd);
+	int OnPacketRMBShopList(MSG_RMBShopList* pMsg);
 	int OnPacketBuy(MSG_STANDARD* pStd);
 	int OnPacketSell(MSG_STANDARD* pStd);
 	int OnPacketCNFMobKill(MSG_CNFMobKill* pStd);
-	int OnPacketREQParty(MSG_STANDARD* pStd);
-	int OnPacketAddParty(MSG_STANDARD* pStd);
-	int OnPacketRemoveParty(MSG_STANDARD* pStd);
+	int OnPacketREQParty(MSG_REQParty* pStd);
+	int OnPacketAddParty(MSG_AddParty* pStd);
+	int OnPacketRemoveParty(MSG_STANDARDPARM* pStd);
 	int OnPacketSetHpMode(MSG_SetHpMode* pStd);
 	int OnPacketDeposit(MSG_STANDARD* pStd);
 	int OnPacketWithdraw(MSG_STANDARD* pStd);
@@ -203,25 +203,25 @@ public:
 	int OnPacketSetShortSkill(MSG_SetShortSkill* pStd);
 	int OnPacketClearMenu(MSG_STANDARD* pStd);
 	int OnPacketCombineComplete(MSG_STANDARD* pStd);
-	int OnPacketCastleState(MSG_STANDARD* pStd);
-	int OnPacketStartTime(MSG_STANDARD* pStd);
-	int OnPacketRemainCount(MSG_STANDARD* pStd);
-	int OnPacketWarInfo(MSG_STANDARD* pStd);
+	int OnPacketCastleState(MSG_STANDARDPARM* pStd);
+	int OnPacketStartTime(MSG_STANDARDPARM* pStd);
+	int OnPacketRemainCount(MSG_STANDARDPARM* pStd);
+	int OnPacketWarInfo(MSG_STANDARDPARM3* pStd);
 	int OnPacketGuildDisable(MSG_STANDARDPARM* pStd);
 	int OnPacketEnvEffect(MSG_STANDARD* pStd);
-	int OnPacketRemainNPCCount(MSG_STANDARD* pStd);
+	int OnPacketRemainNPCCount(MSG_STANDARDPARM* pStd);
 	int OnPacketRESULTGAMBLE(MSG_STANDARD* pStd);
 	int OnPacketREQArray(MSG_STANDARD* pStd);
 	int OnPacketAttack(MSG_STANDARD* pStd);
 	int OnPacketNuke(MSG_STANDARD* pStd);
-	int OnPacketRandomQuiz(MSG_STANDARD* pStd);
+	int OnPacketRandomQuiz(MSG_RandomQuiz* pStd);
 	int OnPacketAutoKick(MSG_STANDARD* pStd);
 	int OnPacketItemPrice(MSG_STANDARDPARM2* pStd);
-	int OnPacketCapsuleInfo(MSG_STANDARD* pStd);
-	int OnPacketRunQuest12Start(MSG_STANDARD* pStd);
-	int OnPacketRunQuest12Count(MSG_STANDARD* pStd);
+	int OnPacketCapsuleInfo(MSG_CAPSULEINFO* pStd);
+	int OnPacketRunQuest12Start(MSG_STANDARDPARM* pStd);
+	int OnPacketRunQuest12Count(MSG_STANDARDPARM2* pStd);
 	int OnPacketDelayQuit(MSG_STANDARDPARM* pStd);
-	int OnPacketUndoSellItem(MSG_STANDARD* pStd);
+	int OnPacketUndoSellItem(MSG_RepurchaseItems* pMsg);
 	int Guildmark_Create(stGuildMarkInfo* pMark);
 	void Guildmark_MakeFileName(char* szStr, int nGuild, int nChief, int nChannel);
 	int Guildmark_Find_ArrayIndex(int nGuild);
@@ -778,3 +778,78 @@ public:
 
 static RECT rectTownInCastle = { 1036, 1700, 1088, 1774 };
 static RECT g_rectField[2] = { { 2048, 1792, 2688, 2304 }, { 1920, 1408, 2688, 2048 } };
+
+const static STRUCT_AIRMOVELIST g_pAirMoveRoute[5][10] =
+{
+  {
+	{ 2112, 2051 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 }
+  },
+  {
+	{ 2372, 2099 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 }
+  },
+  {
+	{ 2485, 2097 },
+	{ 2485, 1712 },
+	{ 2220, 1714 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 }
+  },
+  {
+	{ 2356, 2112 },
+	{ 2365, 2279 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 }
+  },
+  {
+	{ 2485, 2097 },
+	{ 2485, 1712 },
+	{ 2220, 1712 },
+	{ 2220, 1593 },
+	{ 1982, 1593 },
+	{ 1982, 1734 },
+	{ 1826, 1771 },
+	{ 0, 0 },
+	{ 0, 0 },
+	{ 0, 0 }
+  }
+};
+
+const static STRUCT_AIRMOVELIST g_pAirMoveList[5] =
+{
+  { 2112, 2051 },
+  { 2372, 2099 },
+  { 2220, 1714 },
+  { 2365, 2279 },
+  { 1826, 1771 }
+};
+
+DWORD WINAPI Guildmark_Download(void* pArg);

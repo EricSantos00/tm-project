@@ -50,6 +50,10 @@
 #include "TMItem.h"
 #include "TMCannon.h"
 #include "TMEffectCharge.h"
+#include "TMSkillExplosion2.h"
+#include "TMEffectDust.h"
+#include "TMGate.h"
+#include <WinInet.h>
 
 RECT TMFieldScene::m_rectWarning[7] =
 {
@@ -1555,105 +1559,105 @@ int TMFieldScene::InitializeScene()
 
 	if (pMobData->Equip[1].sIndex > 40 && nClass != 21)
 	{
-		STRUCT_ITEM* pItemHelm = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemHelm = new STRUCT_ITEM;
 		memcpy(pItemHelm, &pMobData->Equip[1], 8);
 				
 		m_pGridHelm->AddItem(new SGridControlItem(nullptr, pItemHelm, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[2].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemCoat = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemCoat = new STRUCT_ITEM;
 		memcpy(pItemCoat, &pMobData->Equip[2], 8);
 
 		m_pGridCoat->AddItem(new SGridControlItem(nullptr, pItemCoat, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[3].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemPants = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemPants = new STRUCT_ITEM;
 		memcpy(pItemPants, &pMobData->Equip[3], 8);
 
 		m_pGridPants->AddItem(new SGridControlItem(nullptr, pItemPants, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[4].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemGloves = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemGloves = new STRUCT_ITEM;
 		memcpy(pItemGloves, &pMobData->Equip[4], 8);
 
 		m_pGridGloves->AddItem(new SGridControlItem(nullptr, pItemGloves, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[5].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemBoots = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemBoots = new STRUCT_ITEM;
 		memcpy(pItemBoots, &pMobData->Equip[5], 8);
 
 		m_pGridBoots->AddItem(new SGridControlItem(nullptr, pItemBoots, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[7].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemRight = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemRight = new STRUCT_ITEM;
 		memcpy(pItemRight, &pMobData->Equip[7], 8);
 
 		m_pGridRight->AddItem(new SGridControlItem(nullptr, pItemRight, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[6].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemLeft = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemLeft = new STRUCT_ITEM;
 		memcpy(pItemLeft, &pMobData->Equip[6], 8);
 
 		m_pGridLeft->AddItem(new SGridControlItem(nullptr, pItemLeft, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[12].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemGuild = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemGuild = new STRUCT_ITEM;
 		memcpy(pItemGuild, &pMobData->Equip[12], 8);
 
 		m_pGridGuild->AddItem(new SGridControlItem(nullptr, pItemGuild, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[13].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemEvent = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemEvent = new STRUCT_ITEM;
 		memcpy(pItemEvent, &pMobData->Equip[13], 8);
 
 		m_pGridEvent->AddItem(new SGridControlItem(nullptr, pItemEvent, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[14].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemDRing = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemDRing = new STRUCT_ITEM;
 		memcpy(pItemDRing, &pMobData->Equip[14], 8);
 
 		m_pGridDRing->AddItem(new SGridControlItem(nullptr, pItemDRing, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[15].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemMantua = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemMantua = new STRUCT_ITEM;
 		memcpy(pItemMantua, &pMobData->Equip[15], 8);
 
 		m_pGridMantua->AddItem(new SGridControlItem(nullptr, pItemMantua, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[8].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemRing = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemRing = new STRUCT_ITEM;
 		memcpy(pItemRing, &pMobData->Equip[8], 8);
 
 		m_pGridRing->AddItem(new SGridControlItem(nullptr, pItemRing, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[9].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemNecklace = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemNecklace = new STRUCT_ITEM;
 		memcpy(pItemNecklace, &pMobData->Equip[9], 8);
 
 		m_pGridNecklace->AddItem(new SGridControlItem(nullptr, pItemNecklace, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[10].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemOrb = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemOrb = new STRUCT_ITEM;
 		memcpy(pItemOrb, &pMobData->Equip[10], 8);
 
 		m_pGridOrb->AddItem(new SGridControlItem(nullptr, pItemOrb, 0.0f, 0.0f), 0, 0);
 	}
 	if (pMobData->Equip[11].sIndex > 40)
 	{
-		STRUCT_ITEM* pItemCabuncle = new STRUCT_ITEM();
+		STRUCT_ITEM* pItemCabuncle = new STRUCT_ITEM;
 		memcpy(pItemCabuncle, &pMobData->Equip[11], 8);
 
 		m_pGridCabuncle->AddItem(new SGridControlItem(nullptr, pItemCabuncle, 0.0f, 0.0f), 0, 0);
@@ -1663,7 +1667,7 @@ int TMFieldScene::InitializeScene()
 	{
 		if (pMobData->Carry[nCarryIndex].sIndex > 40)
 		{
-			STRUCT_ITEM* pItemCarry = new STRUCT_ITEM();
+			STRUCT_ITEM* pItemCarry = new STRUCT_ITEM;
 			memcpy(pItemCarry, &pMobData->Carry[nCarryIndex], 8);
 			
 			int Page = nCarryIndex / 15;
@@ -1672,7 +1676,9 @@ int TMFieldScene::InitializeScene()
 				m_pGridInvList[Page]->AddItem(new SGridControlItem(0, pItemCarry, 0.0f, 0.0f),
 					nCarryIndex % 15 % 5,
 					nCarryIndex % 15 / 5);
-			}				
+			}
+			else
+				delete pItemCarry;
 		}
 	}
 
@@ -1681,7 +1687,7 @@ int TMFieldScene::InitializeScene()
 	{
 		if (g_pObjectManager->m_stItemCargo[nCargoIndex].sIndex)
 		{
-			STRUCT_ITEM* pItemCargo = new STRUCT_ITEM();
+			STRUCT_ITEM* pItemCargo = new STRUCT_ITEM;
 			memcpy(pItemCargo, &pCargo[nCargoIndex], 8);
 			
 			int Page = nCargoIndex / 40;
@@ -1690,7 +1696,9 @@ int TMFieldScene::InitializeScene()
 				m_pCargoGridList[Page]->AddItem(new SGridControlItem(0, pItemCargo, 0.0f, 0.0f),
 					nCargoIndex % 40 % 5,
 					nCargoIndex % 40 / 5);
-			}			
+			}
+			else
+				delete pItemCargo;
 		}
 	}
 
@@ -3000,7 +3008,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 							if (!pCargoItem)
 								return 1;
 
-							auto pItem = new STRUCT_ITEM();
+							auto pItem = new STRUCT_ITEM;
 
 							memcpy(pItem, pCargoItem->m_pItem, sizeof(STRUCT_ITEM));
 
@@ -4250,9 +4258,9 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 	}
 	if (idwControlID == B_QUESTLOG)
 	{
-		int nIsVisible = m_pQuestPanel->IsVisible() == 0;
-		m_pQuestPanel->SetVisible(nIsVisible);
-		m_pQuestBtn->SetSelected(nIsVisible);
+		int nIsVisible = m_pQuestPanel->IsVisible();
+		m_pQuestPanel->SetVisible(nIsVisible == 0);
+		m_pQuestBtn->SetSelected(nIsVisible == 0);
 
 		if (!nIsVisible)
 		{
@@ -4278,8 +4286,9 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 				pMobData->Equip[0].sIndex % 10);
 		}
 
-		GetSoundAndPlay(51, 0, 0);		
-
+		// Open the mortal quests list as default
+		OnControlEvent(B_QUEST_BUTTON, 0);
+		GetSoundAndPlay(51, 0, 0);
 		return 0;
 	}
 	if (idwControlID == 1054260)
@@ -4579,6 +4588,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 	}
 	if (idwControlID == 65881)
 	{
+		m_dwLastLogout = g_pTimerManager->GetServerTime();
 		MSG_STANDARDPARM stParm{};
 		stParm.Header.ID = m_pMyHuman->m_dwID;
 		stParm.Header.Type = MSG_SysQuit_Opcode;
@@ -6162,25 +6172,25 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case 0x106:
 		return OnPacketMessageChat_Param(pStd);
 	case 0x334:
-		return OnPacketMessageWhisper(pStd);
+		return OnPacketMessageWhisper(reinterpret_cast<MSG_MessageWhisper*>(pStd));
 	case 0x7B1:
-		return OnPacketLongMessagePanel(pStd);
+		return OnPacketLongMessagePanel(reinterpret_cast<MSG_LongMessagePanel*>(pStd));
 	case 0x3B2:
-		return OnPacketReqSummon(pStd);
+		return OnPacketReqSummon(reinterpret_cast<MSG_ReqSummon*>(pStd));
 	case 0x3B3:
 		return OnPacketCancelSummon(pStd);
 	case 0x3A3:
-		return OnPacketSoundEffect(pStd);
+		return OnPacketSoundEffect(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 	case 0x116:
 		return OnPacketCNFCharacterLogout(pStd);
 	case 0x52A:
-		return OnPacketCNFRemoveServer(pStd);
+		return OnPacketCNFRemoveServer(reinterpret_cast<MSG_CNFRemoveServer*>(pStd));
 	case 0x10A:
-		return OnPacketCNFAccountLogin(pStd);
+		return OnPacketCNFAccountLogin(reinterpret_cast<MSG_CNFRemoveServerLogin*>(pStd));
 	case 0x114:
-		return OnPacketCNFCharacterLogin(pStd);
+		return OnPacketCNFCharacterLogin(reinterpret_cast<MSG_CNFCharacterLogin*>(pStd));
 	case 0x3E8:
-		return OnPacketUndoSellItem(pStd);
+		return OnPacketUndoSellItem(reinterpret_cast<MSG_RepurchaseItems*>(pStd));
 	case 0x39B:
 		return OnPacketItemSold(reinterpret_cast<MSG_STANDARDPARM2*>(pStd));
 	case 0x339:
@@ -6188,13 +6198,13 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 	case 0x18B:
 		return OnPacketWeather(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 	case 0x26E:
-		return OnPacketCreateItem(pStd);
+		return OnPacketCreateItem(reinterpret_cast<MSG_CreateItem*>(pStd));
 	case 0x175:
-		return OnPacketCNFDropItem(pStd);
+		return OnPacketCNFDropItem(reinterpret_cast<MSG_CNFDropItem*>(pStd));
 	case 0x171:
-		return OnPacketCNFGetItem(pStd);
+		return OnPacketCNFGetItem(reinterpret_cast<MSG_CNFGetItem*>(pStd));
 	case 0x374:
-		return OnPacketUpdateItem(pStd);
+		return OnPacketUpdateItem(reinterpret_cast<MSG_UpdateItem*>(pStd));
 	case 0x16F:
 		return OnPacketRemoveItem(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 	case 0x1D0:
@@ -6208,13 +6218,13 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketCNFMobKill(reinterpret_cast<MSG_CNFMobKill*>(pStd));
 		break;
 	case 0x37F:
-		return OnPacketREQParty(pStd);
+		return OnPacketREQParty(reinterpret_cast<MSG_REQParty*>(pStd));
 		break;
 	case 0x37D:
-		return OnPacketAddParty(pStd);
+		return OnPacketAddParty(reinterpret_cast<MSG_AddParty*>(pStd));
 		break;
 	case 0x37E:
-		return OnPacketRemoveParty(pStd);
+		return OnPacketRemoveParty(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x292:
 		return OnPacketSetHpMode(reinterpret_cast<MSG_SetHpMode*>(pStd));
@@ -6232,16 +6242,16 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketCombineComplete(pStd);
 		break;
 	case 0x3AC:
-		return OnPacketCastleState(pStd);
+		return OnPacketCastleState(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x3A1:
-		return OnPacketStartTime(pStd);
+		return OnPacketStartTime(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x3B0:
-		return OnPacketRemainCount(pStd);
+		return OnPacketRemainCount(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x3A8:
-		return OnPacketWarInfo(pStd);
+		return OnPacketWarInfo(reinterpret_cast<MSG_STANDARDPARM3*>(pStd));
 		break;
 	case 0x3A4:
 		return OnPacketGuildDisable(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
@@ -6250,7 +6260,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketEnvEffect(pStd);
 		break;
 	case 0x3BB:
-		return OnPacketRemainNPCCount(pStd);
+		return OnPacketRemainNPCCount(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x1BF:
 		return OnPacketRESULTGAMBLE(pStd);
@@ -6277,7 +6287,7 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketNuke(pStd);
 		break;
 	case 0x1C6:
-		return OnPacketRandomQuiz(pStd);
+		return OnPacketRandomQuiz(reinterpret_cast<MSG_RandomQuiz*>(pStd));
 		break;
 	case 0x2C8:
 		return OnPacketAutoKick(pStd);
@@ -6286,13 +6296,13 @@ int TMFieldScene::OnPacketEvent(unsigned int dwCode, char* buf)
 		return OnPacketItemPrice(reinterpret_cast<MSG_STANDARDPARM2*>(pStd));
 		break;
 	case 0xDC3:
-		return OnPacketCapsuleInfo(pStd);
+		return OnPacketCapsuleInfo(reinterpret_cast<MSG_CAPSULEINFO*>(pStd));
 		break;
 	case 0x3CF:
-		return OnPacketRunQuest12Start(pStd);
+		return OnPacketRunQuest12Start(reinterpret_cast<MSG_STANDARDPARM*>(pStd));
 		break;
 	case 0x3D0:
-		return OnPacketRunQuest12Count(pStd);
+		return OnPacketRunQuest12Count(reinterpret_cast<MSG_STANDARDPARM2*>(pStd));
 		break;
 	case 0x3AE:
 		return OnPacketDelayQuit((MSG_STANDARDPARM*)pStd);
@@ -7701,61 +7711,61 @@ int TMFieldScene::FrameMove(unsigned int dwServerTime)
 							m_nLastPotal = nPosIndex;
 							return 1;
 						}
-
-						if ((int)m_pMyHuman->m_vecPosition.x > 1963 && (int)m_pMyHuman->m_vecPosition.x < 1970 && 
-							(int)m_pMyHuman->m_vecPosition.y > 1770 && (int)m_pMyHuman->m_vecPosition.y < 1777)
+					}
+					if ((int)m_pMyHuman->m_vecPosition.x > 1963 && (int)m_pMyHuman->m_vecPosition.x < 1970 &&
+						(int)m_pMyHuman->m_vecPosition.y > 1770 && (int)m_pMyHuman->m_vecPosition.y < 1777)
+					{
+						m_pMessagePanel->SetMessage(g_pMessageStringTable[160], 3000);
+						m_pMessagePanel->SetVisible(1, 1);
+					}
+					else
+					{
+						if ((int)m_pMyHuman->m_vecPosition.x >= 2370 && (int)m_pMyHuman->m_vecPosition.x <= 2411 &&
+							(int)m_pMyHuman->m_vecPosition.y >= 1728 && (int)m_pMyHuman->m_vecPosition.y <= 1759)
 						{
-							m_pMessagePanel->SetMessage(g_pMessageStringTable[160], 3000);
+							m_pMessagePanel->SetMessage(g_pMessageStringTable[258], 3000);
 							m_pMessagePanel->SetVisible(1, 1);
+							return 1;
 						}
-						else
+						if (!m_pMessageBox->IsVisible())
 						{
-							if ((int)m_pMyHuman->m_vecPosition.x >= 2370 && (int)m_pMyHuman->m_vecPosition.x <= 2411 &&
-								(int)m_pMyHuman->m_vecPosition.y >= 1728 && (int)m_pMyHuman->m_vecPosition.y <= 1759)
+							if (m_bAirMove == 1)
+								return 1;
+
+							if (m_pMyHuman->m_vecPosition.x > 1366.5f && m_pMyHuman->m_vecPosition.x < 3366.5f &&
+								m_pMyHuman->m_vecPosition.y > 2926.5f && m_pMyHuman->m_vecPosition.y < 4926.5f
+								&& m_dwKhepraID)
 							{
-								m_pMessagePanel->SetMessage(g_pMessageStringTable[258], 3000);
-								m_pMessagePanel->SetVisible(1, 1);
 								return 1;
 							}
-							if (!m_pMessageBox->IsVisible())
+
+							m_nLastPotal = nPosIndex;
+							if (nPosIndex >= 0)
 							{
-								if (m_bAirMove == 1)
-									return 1;
+								char szGoto[256]{};
+								sprintf(szGoto, g_pMessageStringTable[208], g_TeleportTable[nPosIndex].szTarget);
+								int nShowPrice = 0;
+								if (!m_cWarClan && m_pMyHuman->m_cMantua && m_pMyHuman->m_cMantua != 3)
+									nShowPrice = 1;
+								if (m_cWarClan == 7 && m_pMyHuman->m_cMantua != 1)
+									nShowPrice = 1;
+								if (m_cWarClan == 8 && m_pMyHuman->m_cMantua != 2)
+									nShowPrice = 1;
+								if (m_cWarClan == -1)
+									nShowPrice = 1;
 
-								if (m_pMyHuman->m_vecPosition.x > 1366.5f && m_pMyHuman->m_vecPosition.x < 3366.5f && 
-									m_pMyHuman->m_vecPosition.y > 2926.5f && m_pMyHuman->m_vecPosition.y < 4926.5f
-									&& m_dwKhepraID)
+								if (g_TeleportTable[nPosIndex].nPrice > 0 && nShowPrice == 1)
 								{
-									return 1;
+									char szPrice[256]{};
+									sprintf(szPrice, g_pMessageStringTable[207], g_TeleportTable[nPosIndex].nPrice);
+									m_pMessageBox->SetMessage(szGoto, 16, szPrice);
 								}
-
-								m_nLastPotal = nPosIndex;
-								if (nPosIndex >= 0)
+								else
 								{
-									char szGoto[256]{}; 
-									sprintf(szGoto, g_pMessageStringTable[208], g_TeleportTable[nPosIndex].szTarget);
-									int nShowPrice = 0;
-									if (!m_cWarClan	&& m_pMyHuman->m_cMantua && m_pMyHuman->m_cMantua != 3)
-										nShowPrice = 1;
-									if (m_cWarClan == 7 && m_pMyHuman->m_cMantua != 1)
-										nShowPrice = 1;
-									if (m_cWarClan == 8 && m_pMyHuman->m_cMantua != 2)
-										nShowPrice = 1;
-									if (m_cWarClan == -1)
-										nShowPrice = 1;
-
-									if (g_TeleportTable[nPosIndex].nPrice > 0 && nShowPrice == 1)
-									{
-										char szPrice[256]{};
-										sprintf(szPrice, g_pMessageStringTable[207], g_TeleportTable[nPosIndex].nPrice);
-										m_pMessageBox->SetMessage(szGoto, 16, szPrice);
-									}
-									else
-									{
-										m_pMessageBox->SetMessage(szGoto, 16, 0);
-									}
+									m_pMessageBox->SetMessage(szGoto, 16, 0);
 								}
 							}
+							m_pMessageBox->SetVisible(1);
 						}
 					}
 				}
@@ -9160,7 +9170,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 	if ((m_pMyHuman->IsInTown() == 1 || pOver->IsInTown() == 1) && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
 		return 1;
 
-	if ((pOver->m_dwID > 0 && pOver->m_dwID < 100 || pOver->m_bParty == 1)
+	if ((pOver->m_dwID > 0 && pOver->m_dwID < 1000 || pOver->m_bParty == 1)
 		&& g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1
 		&& !pOver->IsInPKZone())
 	{
@@ -9576,7 +9586,1101 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 
 int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServerTime, int bMoving, TMHuman* pTarget)
 {
-	return 0;
+	if (m_pMyHuman->m_cHide == 1)
+		return 0;
+	if (m_pPotalPanel->m_bVisible == 1)
+		return 0;
+	if (g_pEventTranslator->m_bAlt == 1)
+		return 0;
+	if (pTarget->IsMerchant())
+		return 0;
+	if (pTarget->m_cSummons == 1)
+		return 0;
+	if (pTarget->m_cDie == 1)
+		return 0;
+	if (m_pMyHuman->IsInTown() == 1)
+		return 0;
+	if (m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_WALK && m_pMyHuman->m_eMotion == ECHAR_MOTION::ECMOTION_RUN)
+		return 0;
+	if (m_pMyHuman->m_cCantAttk)
+		return 0;
+	if (pTarget->m_nClass == 44 && pTarget->m_sHeadIndex == 219)
+		return 0;
+	if (m_pMyHuman->m_bSkillBlack == 1)
+		return 0;
+
+	dwServerTime = g_pApp->m_pTimerManager->GetServerTime();
+	m_pTargetItem = 0;
+	
+	int nSpecForce = 0;
+	auto pMobData = &g_pObjectManager->m_stMobData;
+	if (pMobData && pMobData->LearnedSkill[0] & 0x20000000)
+		nSpecForce = 1;
+
+	auto pOver = pTarget;
+	if (!pTarget)
+		return 0;
+	if (pOver->m_cShadow == 1 && pOver->m_nClass == 66 && !m_pMyHuman->m_JewelGlasses)
+		return 0;
+
+	char cSkillIndex = g_pObjectManager->m_cShortSkill[g_pObjectManager->m_cSelectShortSkill];
+	if ((unsigned char)cSkillIndex > 104)
+		cSkillIndex += 95;
+	if (cSkillIndex == 86)
+	{
+		if (pTarget->m_dwID > 0 && pTarget->m_dwID < 1000)
+			return 0;
+	}
+	if (cSkillIndex == 6 && pOver->m_nClass == 66)
+		return 0;
+
+	if (pTarget->m_dwID > 0 && pTarget->m_dwID < 1000 == 1 && cSkillIndex != 27 && cSkillIndex != 29 && cSkillIndex != 44)
+		return 0;
+	if (m_pMyHuman->m_sCostume >= 4150 && m_pMyHuman->m_sCostume < 4200 && (cSkillIndex == 64 || cSkillIndex == 66 || cSkillIndex == 68 || cSkillIndex == 70 || cSkillIndex == 71))
+		return 0;
+	if (!IsValidClassSkill((unsigned char)cSkillIndex))
+		return 0;
+
+	int Delay = g_pSpell[(unsigned char)cSkillIndex].Delay;
+	if (m_nMySanc >= 9 && Delay >= 2)
+		--Delay;
+	if (m_pMyHuman->m_DilpunchJewel == 1)
+		--Delay;
+	if (Delay < 1)
+		Delay = 1;
+
+	if (dwServerTime < m_dwOldAttackTime + 1000)
+		return 0;
+	if (dwServerTime < m_dwSkillLastTime[(unsigned char)cSkillIndex] + 1000 * Delay)
+		return 0;
+
+	int TarType = g_pSpell[(unsigned __int8)cSkillIndex].TargetType;
+	if ((int)m_pMyHuman->m_vecPosition.x >= 2362 && (int)m_pMyHuman->m_vecPosition.x <= 2370 && 
+		(int)m_pMyHuman->m_vecPosition.y >= 3927 && (int)m_pMyHuman->m_vecPosition.y <= 3935)
+		return 0;
+
+	if (cSkillIndex == 79 && BASE_GetItemAbility(&pMobData->Equip[6], 21) != 101)
+		return 0;
+
+	if (!TarType || TarType == 3 || TarType == 4 || TarType == 5 || TarType == 6)
+	{
+		int nSpecial = m_pMyHuman->m_stScore.Level;
+		if ((unsigned char)cSkillIndex < 96)
+			nSpecial = g_pObjectManager->m_stMobData.CurrentScore.Special[((unsigned char)cSkillIndex - 24 * (unsigned char)g_pObjectManager->m_stMobData.Class) / 8 + 1];
+
+		if (BASE_GetManaSpent((unsigned char)cSkillIndex, (unsigned char)g_pObjectManager->m_stMobData.SaveMana, nSpecial) > g_pObjectManager->m_stMobData.CurrentScore.Mp)
+		{
+			auto pChatList = m_pChatList;
+
+			pChatList->AddItem(new SListBoxItem(g_pMessageStringTable[30],
+				0xFFFFAAAA,
+				0.0f,
+				0.0f,
+				300.0f,
+				16.0f,
+				0,
+				0x77777777,
+				1,
+				0));
+
+			GetSoundAndPlay(33, 0, 0);
+			return 0;
+		}
+
+		MSG_Attack stAttack{};
+		stAttack.Header.Type = 871;
+		stAttack.Header.ID = m_pMyHuman->m_dwID;
+		stAttack.AttackerID = m_pMyHuman->m_dwID;
+		stAttack.PosX = (int)m_pMyHuman->m_vecPosition.x;
+		stAttack.PosY = (int)m_pMyHuman->m_vecPosition.y;
+		stAttack.TargetX = (int)m_pMyHuman->m_vecPosition.x;
+		stAttack.TargetY = (int)m_pMyHuman->m_vecPosition.y;
+		if (m_stMoveStop.NextX)
+		{
+			stAttack.PosX = m_stMoveStop.NextX;
+			stAttack.TargetX = stAttack.PosX;
+			stAttack.PosY = m_stMoveStop.NextY;
+			stAttack.TargetY = stAttack.PosY;
+		}
+		stAttack.CurrentMp = -1;
+		stAttack.SkillIndex = (unsigned char)cSkillIndex;
+		stAttack.SkillParm = 0;
+		stAttack.Motion = -1;
+
+		if (g_pSpell[(unsigned char)cSkillIndex].TargetType == 5)
+		{
+			stAttack.FlagLocal = 0;
+			int nTargetIndex = 0;
+			int nCritical = (unsigned char)g_pObjectManager->m_stMobData.Critical;
+
+			auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+			if (!pNode)
+				return 0;
+
+			float fMyAngle = atan2f(vec.x - m_pMyHuman->m_vecPosition.x,
+				vec.z - m_pMyHuman->m_vecPosition.y);
+
+			int nMastery = m_pMyHuman->m_stScore.Special[3] / 75;
+			if (nMastery > 3)
+				nMastery = 3;
+
+			int nMX = (int)m_pMyHuman->m_vecPosition.x;
+			int nMY = (int)m_pMyHuman->m_vecPosition.y;
+			int nMobCount = 0;
+
+			while (pNode && nMobCount <= 1000)
+			{
+				++nMobCount;
+
+				if (pNode == m_pMyHuman)
+				{
+					pNode = static_cast<TMHuman*>(m_pNextLink);
+					continue;
+				}
+
+				int nDX = (int)pNode->m_vecPosition.x;
+				int nDY = (int)pNode->m_vecPosition.y;
+				int x1 = (int)m_pMyHuman->m_vecPosition.x;
+				int y1 = (int)m_pMyHuman->m_vecPosition.y;
+				if (m_stMoveStop.NextX)
+				{
+					x1 = m_stMoveStop.NextX;
+					y1 = m_stMoveStop.NextY;
+				}
+
+				int nDistanceFromMe = BASE_GetDistance(x1, y1, nDX, nDY);
+				if (pNode->m_nClass == 56 && !pNode->m_stLookInfo.FaceMesh)
+				{
+					nDistanceFromMe -= 12;
+					if (nDistanceFromMe < 0)
+						nDistanceFromMe = 0;
+				}
+
+				if (nDistanceFromMe <= nMastery + 3)
+				{
+					float fNodeAngle = atan2f(pNode->m_vecPosition.x - m_pMyHuman->m_vecPosition.x,
+						pNode->m_vecPosition.y - m_pMyHuman->m_vecPosition.y);
+				
+					if (fabsf(fNodeAngle - fMyAngle) >= 0.78539819f)
+					{
+						int nDTX = nDX;
+						int nDTY = nDY;
+						BASE_GetHitPosition(x1, y1, &nDTX, &nDTY, (char*)m_HeightMapData, 8);
+						if (pNode->m_nClass == 56 && !pNode->m_stLookInfo.FaceMesh)
+						{
+							nDTX = nDX;
+							nDTY = nDY;
+						}
+
+						if (nDTX != nDX || nDTY != nDY)
+						{
+							pNode = static_cast<TMHuman*>(m_pNextLink);
+							continue;
+						}
+						if (pNode->m_cDie == 1)
+						{
+							pNode = static_cast<TMHuman*>(m_pNextLink);
+							continue;
+						}
+
+						if (!TMFieldScene::m_bPK && pNode->m_dwID > 0 && pNode->m_dwID < 1000)
+						{
+							pNode = static_cast<TMHuman*>(m_pNextLink);
+							continue;
+						}
+
+						stAttack.Dam[nTargetIndex].TargetID = pNode->m_dwID;
+						stAttack.Dam[nTargetIndex++].Damage = -1;
+						stAttack.TargetX = nDX;
+						stAttack.TargetY = nDY;
+					}
+				}
+
+				pNode = static_cast<TMHuman*>(m_pNextLink);
+				if (g_pSpell[(unsigned char)cSkillIndex].MaxTarget <= nTargetIndex || nTargetIndex >= 13)
+					break;
+			}
+		}
+		else if (g_pSpell[(unsigned char)cSkillIndex].TargetType == 3 || g_pSpell[(unsigned char)cSkillIndex].TargetType == 4 || g_pSpell[(unsigned char)cSkillIndex].TargetType == 6)
+		{
+			stAttack.FlagLocal = 0;
+			int nTargetIndex = 0;
+			int nCritical = (unsigned char)g_pObjectManager->m_stMobData.Critical;
+
+			auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+			if (!pNode)
+				return 0;
+
+			int nSX = (int)vec.x;
+			int nSY = (int)vec.z;
+			if (!(int)vec.x && !nSY && pOver)
+			{
+				nSX = (int)pOver->m_vecPosition.x;
+				nSY = (int)pOver->m_vecPosition.y;
+			}
+
+			int nMobCount = 0;
+			while (pNode && nMobCount <= 1000)
+			{
+				++nMobCount;
+
+				int x2 = (int)pNode->m_vecPosition.x;
+				int y2 = (int)pNode->m_vecPosition.y;
+
+				if (cSkillIndex == 0|| cSkillIndex == 16 || cSkillIndex == 7 || cSkillIndex == 17 || cSkillIndex == 23 || 
+					cSkillIndex == 35 || cSkillIndex == 39 || cSkillIndex == 51	|| cSkillIndex == 55)
+				{
+					if (!pOver)
+						return 0;
+
+					int nSX = (int)pOver->m_vecPosition.x;
+					int nSY = (int)pOver->m_vecPosition.y;
+					if (pOver->m_nClass == 56 && !pOver->m_stLookInfo.FaceMesh)
+					{
+						int nDTX = (int)m_pMyHuman->m_vecPosition.x;
+						int nDTY = (int)m_pMyHuman->m_vecPosition.y;
+						if (m_stMoveStop.NextX)
+						{
+							nDTX = m_stMoveStop.NextX;
+							nDTY = m_stMoveStop.NextY;
+						}
+						int nDistanceFromMe = BASE_GetDistance(
+							nDTX,
+							nDTY,
+							(int)pOver->m_vecPosition.x,
+							(int)pOver->m_vecPosition.y)
+							- 12;
+						if (nDistanceFromMe < 1)
+						{
+							nSX = (int)pOver->m_vecPosition.x;
+							nSY = (int)pOver->m_vecPosition.y;
+						}
+					}
+				}
+
+				if (cSkillIndex == 79 && pNode != pOver)
+				{
+					if (!pOver)
+						return 0;
+
+					pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+					nSX = (int)pOver->m_vecPosition.x;
+					nSY = (int)pOver->m_vecPosition.y;
+					continue;
+				}
+
+				if (pNode && pNode->m_usGuild && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1 && 
+					(m_pMyHuman->m_usGuild == pNode->m_usGuild || g_pObjectManager->m_usAllyGuild == pNode->m_usGuild))
+				{
+					pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+					continue;
+				}
+
+				int x1 = (int)m_pMyHuman->m_vecPosition.x;
+				int y1 = (int)m_pMyHuman->m_vecPosition.y;
+				if (m_stMoveStop.NextX)
+				{
+					x1 = m_stMoveStop.NextX;
+					y1 = m_stMoveStop.NextY;
+				}
+
+				int nDistanceFromMe = BASE_GetDistance(x1, y1, nSX, nSY);
+
+				if (!cSkillIndex && nDistanceFromMe == 2 && (nSX == (int)m_pMyHuman->m_vecPosition.x || nSY == (int)m_pMyHuman->m_vecPosition.y))
+					nDistanceFromMe = 1;
+				if (pOver)
+				{
+					if (pOver->m_nClass == 56 && !pOver->m_stLookInfo.FaceMesh)
+					{
+						nDistanceFromMe -= 12;
+						if (nDistanceFromMe < 0)
+							nDistanceFromMe = 0;
+					}
+				}
+				if (cSkillIndex == 0 || cSkillIndex == 35 || cSkillIndex == 16 || cSkillIndex == 7 || cSkillIndex == 17 || 
+					cSkillIndex == 23 || cSkillIndex == 39 || cSkillIndex == 51 || cSkillIndex == 55 || cSkillIndex == 95)
+				{
+					if (nDistanceFromMe > nSpecForce + g_pSpell[(unsigned char)cSkillIndex].Range && g_pSpell[(unsigned char)cSkillIndex].Range != -1)
+						return 0;
+					if (g_pSpell[(unsigned char)cSkillIndex].Range == -1)
+					{
+						if (nDistanceFromMe > nSpecForce + BASE_GetMobAbility(&g_pObjectManager->m_stMobData, 27))
+							return 0;
+					}
+
+					int sx = (int)m_pMyHuman->m_vecPosition.x;
+					int sy = (int)m_pMyHuman->m_vecPosition.y;
+					int tx = nSX;
+					int ty = nSY;
+					BASE_GetHitPosition(sx, sy, &tx, &ty, (char*)m_HeightMapData, 8);
+					if (pOver && pOver->m_nClass == 56 && !pOver->m_stLookInfo.FaceMesh)
+					{
+						tx = nSX;
+						ty = nSY;
+					}
+					if (tx != nSX || ty != nSY)
+						return 0;
+				}
+				else
+				{
+					nSX = (int)m_pMyHuman->m_vecPosition.x;
+					nSY = (int)m_pMyHuman->m_vecPosition.y;
+					if (m_stMoveStop.NextX)
+					{
+						nSX = m_stMoveStop.NextX;
+						nSY = m_stMoveStop.NextY;
+					}
+				}
+
+				int nDistance = BASE_GetDistance(nSX, nSY, x2, y2);
+				int nTX = x2;
+				int nTY = y2;
+				BASE_GetHitPosition2(nSX, nSY, &nTX, &nTY, (char*)m_HeightMapData, 8);
+				int nGridDistance = -1;
+				switch (g_pSpell[(unsigned char)cSkillIndex].TargetType)
+				{
+				case 3:
+					nGridDistance = 1;
+					break;
+				case 4:
+					nGridDistance = 2;
+					break;
+				case 6:
+					nGridDistance = 3;
+					break;
+				}
+
+				if (pNode->IsInPKZone() && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+				{
+					if (pNode->m_bParty == 1)
+					{
+						pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+						continue;
+					}
+
+					if (!TMFieldScene::m_bPK)
+					{
+						if (pNode->m_dwID > 0 && pNode->m_dwID < 1000)
+						{
+							if (g_pObjectManager->m_usWarGuild != pNode->m_usGuild)
+							{
+								if (!g_bCastleWar)
+								{
+									pNode = (TMHuman*)pNode->m_pNextLink;
+									continue;
+								}
+								if (m_pMyHuman->m_cMantua > 0 && pNode->m_cMantua == m_pMyHuman->m_cMantua)
+								{
+									pNode = (TMHuman*)pNode->m_pNextLink;
+									continue;
+								}
+							}
+							if (g_pObjectManager->m_usWarGuild != pNode->m_usGuild && !pNode->m_cMantua && !g_bCastleWar)
+							{
+								pNode = (TMHuman*)pNode->m_pNextLink;
+								continue;
+							}
+						}
+
+						if (pNode->m_cSummons == 1)
+						{							
+							if (g_pObjectManager->m_usWarGuild != pNode->m_usGuild && pNode->m_usGuild)
+							{
+								if (!g_bCastleWar)
+								{
+									pNode = (TMHuman*)pNode->m_pNextLink;
+									continue;
+								} 
+								if (m_pMyHuman->m_cMantua > 0 && pNode->m_cMantua == m_pMyHuman->m_cMantua && !pNode->IsInCastleZone())
+								{
+									pNode = (TMHuman*)pNode->m_pNextLink;
+									continue;
+								}
+							}
+							if (!pNode->m_usGuild)
+							{
+								if (!g_bCastleWar)
+								{
+									pNode = (TMHuman*)pNode->m_pNextLink;
+									continue;
+								}
+
+								if (m_pMyHuman->m_cMantua > 0 && pNode->m_cMantua == m_pMyHuman->m_cMantua && !pNode->IsInCastleZone())
+								{
+									pNode = (TMHuman*)pNode->m_pNextLink;
+									continue;
+								}
+							}
+						}
+						if (g_bCastleWar > 0 && !pNode->IsInCastleZone() && pNode->m_dwID > 0 && pNode->m_dwID < 1000)
+						{
+							pNode = (TMHuman*)pNode->m_pNextLink;
+							continue;
+						}
+
+						if (g_bCastleWar > 0 && m_pMyHuman->m_cMantua == 3)
+						{
+							if ((pNode->m_dwID > 0 && pNode->m_dwID < 1000) || 
+								(pNode->m_cMantua > 0 && pNode->m_cMantua != 4))
+							{
+								pNode = (TMHuman*)pNode->m_pNextLink;
+								continue;
+							}
+						}
+					}
+
+					if (m_pMyHuman->m_cMantua > 0 && pNode->m_cMantua > 0 && m_pMyHuman->m_cMantua == pNode->m_cMantua && !TMFieldScene::m_bPK)
+					{
+						if (!g_bCastleWar)
+						{
+							pNode = (TMHuman*)pNode->m_pNextLink;
+							continue;
+						}
+
+						if (pNode->m_dwID <= 0 || pNode->m_dwID >= 1000)
+						{
+							pNode = (TMHuman*)pNode->m_pNextLink;
+							continue;
+						}
+					}
+				}
+				if (pNode->m_dwID <= 0 || pNode->m_dwID >= 1000 && !pNode->m_bParty && !pNode->m_cSummons && pNode->IsMerchant())
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+				if (pNode->m_cDie == 1)
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+				if (pNode->IsInPKZone() == 1 && !m_pMyHuman->IsInPKZone() && !g_pSpell[(unsigned char)cSkillIndex].Aggressive)
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+
+				if (nDistance <= nGridDistance
+					&& nTX == x2
+					&& nTY == y2
+					&& pNode != m_pMyHuman
+					&& (!pNode->IsInTown() || !g_pSpell[(unsigned char)cSkillIndex].Aggressive))
+				{
+					if ((pNode->m_dwID <= 0 || pNode->m_dwID >= 1000 && !pNode->m_bParty && !pNode->m_cSummons) ||
+						(pNode->m_dwID > 0 && pNode->m_dwID < 1000 && (!g_pSpell[(unsigned char)cSkillIndex].Aggressive || pNode->IsInPKZone())))
+					{
+						if (g_pSpell[(unsigned char)cSkillIndex].Range == -1 && !nTargetIndex)
+						{
+							stAttack.Dam[0].TargetID = pNode->m_dwID;
+							stAttack.Dam[0].Damage = -2;
+							stAttack.Progress = TMFieldScene::m_usProgress;
+							nTargetIndex = 1;
+						}
+
+						stAttack.Dam[nTargetIndex].TargetID = pNode->m_dwID;
+						stAttack.Dam[nTargetIndex].Damage = -1;
+						if (pOver
+							&& pOver == pNode
+							&& nTargetIndex
+							&& (g_pSpell[(unsigned char)cSkillIndex].TargetType == 3
+								|| g_pSpell[(unsigned char)cSkillIndex].TargetType == 4
+								|| g_pSpell[(unsigned char)cSkillIndex].TargetType == 6))
+						{
+							unsigned int dwID = stAttack.Dam[0].TargetID;
+							int nDamage = stAttack.Dam[0].Damage;
+							stAttack.Dam[0].TargetID = stAttack.Dam[nTargetIndex].TargetID;
+							stAttack.Dam[0].Damage = stAttack.Dam[nTargetIndex].Damage;
+							stAttack.Dam[nTargetIndex].TargetID = dwID;
+							stAttack.Dam[nTargetIndex].Damage = nDamage;
+						}
+
+						++nTargetIndex;
+					}
+				}
+
+				pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
+				if (g_pSpell[(unsigned char)cSkillIndex].TargetType == 3 && nTargetIndex > 7
+					|| g_pSpell[(unsigned char)cSkillIndex].MaxTarget <= nTargetIndex
+					|| nTargetIndex >= 13)
+				{
+					break;
+				}
+			}
+
+			stAttack.TargetX = nSX;
+			stAttack.TargetY = nSY;
+		}
+
+		if ((int)stAttack.Dam[0].TargetID > 0 || cSkillIndex == 97 || cSkillIndex == 35 || cSkillIndex == 51)
+		{
+			for (int i = g_pSpell[(unsigned char)cSkillIndex].MaxTarget; i < 13; ++i)
+			{
+				stAttack.Dam[i].TargetID = 0;
+				stAttack.Dam[i].Damage = 0;
+			}
+
+			int nSize = sizeof(MSG_Attack);
+			if (g_pSpell[(unsigned char)cSkillIndex].MaxTarget == 1)
+			{
+				stAttack.Header.Type = MSG_Attack_One_Opcode;
+				nSize = sizeof(MSG_AttackOne);
+			}
+			if (g_pSpell[(unsigned char)cSkillIndex].MaxTarget == 2)
+			{
+				stAttack.Header.Type = MSG_Attack_Two_Opcode;
+				nSize = sizeof(MSG_AttackTwo);
+			}
+
+			SendOneMessage((char*)&stAttack, nSize);
+			IncSkillSel();
+
+			MSG_Attack stAttackLocal{};
+			memcpy(&stAttackLocal, &stAttack, nSize);
+			stAttackLocal.Header.ID = m_dwID;
+			stAttackLocal.FlagLocal = 1;
+			if (nSpecForce)
+				stAttackLocal.DoubleCritical |= 8;
+
+			OnPacketEvent(stAttack.Header.Type, (char*)&stAttackLocal);
+			m_dwOldAttackTime = dwServerTime;
+			m_dwSkillLastTime[(unsigned char)cSkillIndex] = dwServerTime;
+			return 1;
+		}
+		if (cSkillIndex == 29)
+		{
+			if (m_pMyHuman->m_bParty == 1)
+			{
+				int nIndex = 0;
+				int nIndexCount = 0;
+
+				stIDDis stPartys[12]{};
+
+				auto pPartyList = m_pPartyList;
+				for (int k = 0; k < pPartyList->m_nNumItem; ++k)
+				{
+					auto pPartyItem = (SListBoxPartyItem*)pPartyList->m_pItemList[k];
+					auto pHuman = (TMHuman*)g_pObjectManager->GetHumanByID(pPartyItem->m_dwCharID);
+
+					if (pHuman && (m_pMyHuman->IsInPKZone() || pHuman->IsInPKZone() != 1))
+					{
+						int nMX = (signed int)m_pMyHuman->m_vecPosition.x;
+						int nMY = (signed int)m_pMyHuman->m_vecPosition.y;
+						if (m_stMoveStop.NextX)
+						{
+							nMX = m_stMoveStop.NextX;
+							nMY = m_stMoveStop.NextY;
+						}
+
+						int nDistanceFromMe = BASE_GetDistance(nMX, nMY, (int)pHuman->m_vecPosition.x, (int)pHuman->m_vecPosition.y);
+						if (nDistanceFromMe < nSpecForce + g_pSpell[(unsigned char)cSkillIndex].Range)
+						{
+							stPartys[nIndex].dwID = pPartyItem->m_dwCharID;
+							stPartys[nIndex++].nLen = nDistanceFromMe;
+						}
+					}
+
+					nIndexCount = nIndex;
+					if (nIndex >= 12)
+						nIndexCount = 12;
+
+					int nMaxIndex = 0;
+
+					for (int nIndex = 0; nIndex < nIndexCount; ++nIndex)
+					{
+						nMaxIndex = nIndex;
+
+						stIDDis stMax{};
+						stMax.dwID = stPartys[nIndex].dwID;
+						stMax.nLen = stPartys[nIndex].nLen;
+						for (int j = nIndex + 1; j < nIndexCount; ++j)
+						{
+							if (stMax.nLen > stPartys[j].nLen)
+							{
+								stMax.dwID = stPartys[j].dwID;
+								stMax.nLen = stPartys[j].nLen;
+								nMaxIndex = j;
+							}
+						}
+
+						stPartys[nMaxIndex].dwID = stPartys[nIndex].dwID;
+						stPartys[nMaxIndex].nLen = stPartys[nIndex].nLen;
+						stPartys[nIndex].dwID = stMax.dwID;
+						stPartys[nIndex].nLen = stMax.nLen;
+					}
+					int nTargetI = 0;
+					for (nIndex = 0; nIndex < nIndexCount && g_pSpell[(unsigned char)cSkillIndex].MaxTarget > nTargetI && nTargetI < 13; ++nIndex)
+					{
+						stAttack.Dam[nTargetI].TargetID = stPartys[nIndex].dwID;
+						stAttack.Dam[nTargetI++].Damage = -1;
+					}
+				}
+			}
+			else
+			{
+				stAttack.Dam[0].TargetID = m_pMyHuman->m_dwID;
+				stAttack.Dam[0].Damage = -1;
+			}
+
+			SendOneMessage((char*)&stAttack, sizeof(stAttack));
+
+			MSG_Attack stAttackLocal{};
+			memcpy(&stAttackLocal, &stAttack, sizeof(MSG_Attack));
+			stAttackLocal.Header.ID = m_dwID;
+			stAttackLocal.FlagLocal = 1;
+			if (nSpecForce)
+				stAttackLocal.DoubleCritical |= 8;
+
+			OnPacketEvent(stAttack.Header.Type, (char*)&stAttackLocal);
+			m_dwOldAttackTime = dwServerTime;
+			m_dwSkillLastTime[(unsigned char)cSkillIndex] = dwServerTime;
+			return 1;
+		}
+		if (cSkillIndex == 27)
+		{
+			int nMX = (int)m_pMyHuman->m_vecPosition.x;
+			int nMY = (int)m_pMyHuman->m_vecPosition.y;
+			if (m_stMoveStop.NextX)
+			{
+				nMX = m_stMoveStop.NextX;
+				nMY = m_stMoveStop.NextY;
+			}
+
+			int nTX = (int)pOver->m_vecPosition.x;
+			int nTY = (int)pOver->m_vecPosition.y;
+			int nDistance = BASE_GetDistance(nMX, nMY, nTX, nTY);
+			int nMobRange = nSpecForce + g_pSpell[(unsigned char)cSkillIndex].Range;
+			int nDX = nTX;
+			int nDY = nTY;
+
+			BASE_GetHitPosition(nMX, nMY, &nDX, &nDY, (char*)m_HeightMapData, 8);
+			if (nDistance > nMobRange || nDX != nTX || nDY != nTY)
+				return 1;
+
+			int bMyValue = g_pAttribute[nMY / 4][nMX / 4];
+			int bNodeValue = g_pAttribute[nTY / 4][nTX / 4];
+			if (!(bMyValue & 0x40) && bNodeValue & 0x40)
+				return 1;
+
+			MSG_Attack Msg{};
+			Msg.Header.Type = MSG_Attack_Multi_Opcode;
+			Msg.Header.ID = m_pMyHuman->m_dwID;
+			Msg.AttackerID = m_pMyHuman->m_dwID;
+			Msg.PosX = (int)m_pMyHuman->m_vecPosition.x;
+			Msg.PosY = (int)m_pMyHuman->m_vecPosition.y;
+			Msg.CurrentMp = -1;
+			Msg.SkillIndex = (unsigned char)cSkillIndex;
+			Msg.SkillParm = 0;
+			Msg.Motion = -1;
+			Msg.Dam[0].TargetID = pOver->m_dwID;
+			Msg.Dam[0].Damage = -1;
+			Msg.TargetX = (int)m_pMyHuman->m_vecPosition.x;
+			Msg.TargetY = (int)m_pMyHuman->m_vecPosition.y;
+			if (m_stMoveStop.NextX)
+			{
+				Msg.PosX = m_stMoveStop.NextX;
+				Msg.TargetX = Msg.PosX;
+				Msg.PosY = m_stMoveStop.NextY;
+				Msg.TargetY = Msg.PosY;
+			}
+
+			SendOneMessage((char*)&Msg, sizeof(Msg));
+
+			MSG_Attack stAttackLocal{};
+			memcpy(&stAttackLocal, &stAttack, sizeof(MSG_Attack));
+			stAttackLocal.Header.ID = m_dwID;
+			stAttackLocal.FlagLocal = 1;
+			if (nSpecForce)
+				stAttackLocal.DoubleCritical |= 8;
+
+			OnPacketEvent(stAttack.Header.Type, (char*)&stAttackLocal);
+			m_dwOldAttackTime = dwServerTime;
+			m_dwSkillLastTime[(unsigned char)cSkillIndex] = dwServerTime;
+			return 1;
+		}
+		if (cSkillIndex != 85)
+			return 0;
+	}
+
+	if (!pOver || pOver->m_bMouseOver != 1 && !pTarget)
+	{
+		m_pMouseOverHuman = 0;
+		GetItemFromGround(dwServerTime);
+		return 0;
+	}
+
+	if (m_pMyHuman->m_cHide == 1)
+		return 0;
+	if (m_stAutoTrade.TargetID == m_pMyHuman->m_dwID)
+		return 0;
+
+	int Special = m_pMyHuman->m_stScore.Level;
+	if ((unsigned char)cSkillIndex < 96)
+		Special = g_pObjectManager->m_stMobData.CurrentScore.Special[((unsigned char)cSkillIndex - 24 * (unsigned char)g_pObjectManager->m_stMobData.Class) / 8 + 1];
+
+	if (BASE_GetManaSpent((unsigned char)cSkillIndex, (unsigned char)g_pObjectManager->m_stMobData.SaveMana, Special) > g_pObjectManager->m_stMobData.CurrentScore.Mp)
+	{
+		auto ipNewItem = new SListBoxItem(g_pMessageStringTable[30],
+			0xFFFFAAAA,
+			0.0f,
+			0.0f,
+			300.0f,
+			16.0f,
+			0,
+			0x77777777,
+			1u,
+			0);
+
+		m_pChatList->AddItem(ipNewItem);
+
+		GetSoundAndPlay(33, 0, 0);
+		return 1;
+	}
+
+	if (g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+	{
+		if ((m_pMyHuman->IsInTown() == 1 || pOver->IsInTown() == 1))
+			return 0;
+
+		if ((pOver->m_dwID > 0 && pOver->m_dwID < 1000 || pOver->m_bParty == 1))
+		{
+			if (!pOver->IsInPKZone())
+				return 0;
+
+			if (!m_pMyHuman->IsInPKZone())
+				return 0;
+		}
+	}
+
+	if (pOver->IsInPKZone() == 1
+		&& !m_pMyHuman->IsInPKZone()
+		&& !g_pSpell[(unsigned char)cSkillIndex].Aggressive)
+	{
+		return 0;
+	}
+	if (!pOver->IsInPKZone()
+		&& g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1
+		&& (pOver->m_cSummons == 1 || pOver->m_bParty == 1))
+	{
+		return 0;
+	}
+
+	if (!TMFieldScene::m_bPK)
+	{
+		if (pOver->m_usGuild)
+		{
+			if (g_pObjectManager->m_usWarGuild != pOver->m_usGuild && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+			{
+				if (pOver->m_dwID > 0 && pOver->m_dwID < 1000 && pOver->IsInPKZone() == 1)
+				{
+					if (!g_bCastleWar)
+						return 0;
+					if (m_pMyHuman->m_cMantua > 0 && m_pMyHuman->m_cMantua == pOver->m_cMantua)
+						return 0;
+				}
+			}
+		}
+		if (pOver->m_cSummons == 1)
+		{
+			if (g_pObjectManager->m_usWarGuild != pOver->m_usGuild && pOver->m_usGuild)
+			{
+				if (!g_bCastleWar)
+					return 0;
+				if (m_pMyHuman->m_cMantua > 0
+					&& m_pMyHuman->m_cMantua == pOver->m_cMantua
+					&& !pOver->IsInCastleZone())
+				{
+					return 0;
+				}
+			}
+			if (!pOver->m_usGuild)
+			{
+				if (!g_bCastleWar)
+					return 0;
+				if (m_pMyHuman->m_cMantua > 0 && m_pMyHuman->m_cMantua == pOver->m_cMantua)
+					return 0;
+			}
+		}
+		if (g_bCastleWar > 0 && m_pMyHuman->m_cMantua == 3)
+		{
+			if ((pOver->m_dwID > 0 && pOver->m_dwID < 1000 || pOver->m_cMantua > 0 && pOver->m_cMantua != 4)
+				&& g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+			{
+				return 0;
+			}
+		}
+	}
+
+	if (!g_pSpell[(unsigned char)cSkillIndex].Aggressive)
+	{
+		if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && !pOver->m_bParty && !pOver->m_cSummons)
+			return 0;
+	}
+
+	if (pOver
+		&& pOver->m_usGuild
+		&& g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1
+		&& (m_pMyHuman->m_usGuild == pOver->m_usGuild
+			|| g_pObjectManager->m_usAllyGuild == pOver->m_usGuild))
+	{
+		return 0;
+	}
+
+	if (pOver->m_dwID <= 0 && pOver->m_dwID >= 1000 && !pOver->m_bParty && !pOver->m_cSummons && pOver->IsMerchant())
+		return 0;
+	if (pOver->m_TradeDesc[0])
+		return 0;
+	if ((pOver->m_stScore.Reserved & 0xF) == 15 && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+	{
+		if (!m_pMyHuman->m_cMantua)
+			return 0;
+		if (pOver->m_cMantua > 0
+			&& m_pMyHuman->m_cMantua > 0
+			&& pOver->m_cMantua == m_pMyHuman->m_cMantua)
+		{
+			return 0;
+		}
+	}
+
+
+	int nTX = (int)pOver->m_vecPosition.x;
+	int nTY = (int)pOver->m_vecPosition.y;
+	int nSX = (int)m_pMyHuman->m_vecPosition.x;
+	int nSY = (int)m_pMyHuman->m_vecPosition.y;
+	if (m_stMoveStop.NextX)
+	{
+		nSX = m_stMoveStop.NextX;
+		nSY = m_stMoveStop.NextY;
+	}
+
+	int nDistance = BASE_GetDistance(nSX, nSY, nTX, nTY);
+	int nMobAttackRange = nSpecForce + g_pSpell[(unsigned char)cSkillIndex].Range;
+	int nDX = nTX;
+	int nDY = nTY;
+	BASE_GetHitPosition(nSX, nSY, &nDX, &nDY, (char*)m_HeightMapData, 8);
+	if (nMobAttackRange == -1)
+		nMobAttackRange = 1;
+
+	if (pOver && pOver->m_nClass == 56 && !pOver->m_stLookInfo.FaceMesh)
+	{
+		nDistance -= 12;
+		if (nDistance < 0)
+			nDistance = 0;
+		nDX = (signed int)pOver->m_vecPosition.x;
+		nDY = (signed int)pOver->m_vecPosition.y;
+	}
+	if (BASE_GetItemAbility(&pMobData->Equip[6], 21) < 100)
+	{
+		if (nSpecForce + BASE_GetMobAbility(pMobData, 27) > nMobAttackRange)
+			nMobAttackRange = nSpecForce + BASE_GetMobAbility(pMobData, 27);
+	}
+
+	if (nDistance > nMobAttackRange || nDX != nTX || nDY != nTY)
+	{
+		GetItemFromGround(dwServerTime);
+		return 0;
+	}
+
+	if (g_pSpell[(unsigned char)cSkillIndex].Range == -1)
+	{
+		if (nDistance > nSpecForce + BASE_GetMobAbility(&g_pObjectManager->m_stMobData, 27))
+			return 0;
+	}
+
+	if (!TMFieldScene::m_bPK && !m_pMyHuman->m_cMantua)
+	{
+		if (pOver->m_dwID > 0 && pOver->m_dwID < 1000
+			&& pOver->IsInPKZone() == 1
+			&& g_pObjectManager->m_usWarGuild != pOver->m_usGuild
+			&& g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+		{
+			return 0;
+		}
+	}
+
+	if (!TMFieldScene::m_bPK
+		&& g_bCastleWar > 0
+		&& m_pMyHuman->m_cMantua > 0
+		&& pOver->m_cMantua > 0
+		&& m_pMyHuman->m_cMantua == pOver->m_cMantua
+		&& g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1)
+	{
+		return 0;
+	}
+
+	if (!TMFieldScene::m_bPK && g_pObjectManager->m_usWarGuild != pOver->m_usGuild &&
+		pOver->m_dwID > 0 && pOver->m_dwID < 1000 && g_pSpell[(unsigned char)cSkillIndex].Aggressive)
+	{
+		if (!g_bCastleWar)
+			return 0;
+		if (m_pMyHuman->m_cMantua == pOver->m_cMantua)
+			return 0;
+	}
+
+	if (!TMFieldScene::m_bPK && g_bCastleWar > 0 && !pOver->IsInCastleZone())
+	{
+		int isInPos = ((int)m_pMyHuman->m_vecPosition.x >> 7 == 8 || (int)m_pMyHuman->m_vecPosition.x >> 7 == 9) &&
+			((int)m_pMyHuman->m_vecPosition.y >> 7 == 15 || (int)m_pMyHuman->m_vecPosition.y >> 7 == 16);
+		if ((pOver->m_dwID > 0 && pOver->m_dwID < 1000 || pOver->m_cSummons == 1) && g_pSpell[(unsigned char)cSkillIndex].Aggressive == 1 && !isInPos)
+		{
+			return 0;
+		}
+	}
+
+	MSG_Attack stAttack{};
+
+	stAttack.Header.Type = MSG_Attack_Multi_Opcode;
+	stAttack.Header.ID = m_pMyHuman->m_dwID;
+	stAttack.AttackerID = m_pMyHuman->m_dwID;
+	stAttack.PosX = m_stMoveStop.NextX;
+	stAttack.PosY = m_stMoveStop.NextY;
+	stAttack.TargetX = (int)m_pMyHuman->m_vecPosition.x;
+	stAttack.TargetY = (int)m_pMyHuman->m_vecPosition.y;
+	stAttack.CurrentMp = -1;
+	stAttack.SkillIndex = (unsigned char)cSkillIndex;
+	stAttack.SkillParm = 0;
+	stAttack.Motion = -1;
+	stAttack.FlagLocal = 0;
+	stAttack.Dam[0].TargetID = pOver->m_dwID;
+
+	pTarget = (TMHuman*)g_pObjectManager->GetHumanByID(stAttack.Dam[0].TargetID);
+	if (!pTarget)
+		return 0;
+
+	int nTargetIndex = 0;
+	if (g_pSpell[(unsigned char)cSkillIndex].Range == -1)
+	{
+		stAttack.Dam[nTargetIndex].TargetID = pTarget->m_dwID;
+		stAttack.Dam[nTargetIndex].Damage = -2;
+		stAttack.Progress = TMFieldScene::m_usProgress;
+		++nTargetIndex;
+	}
+	stAttack.Dam[nTargetIndex].TargetID = pTarget->m_dwID;
+	stAttack.Dam[nTargetIndex++].Damage = -1;
+	if (cSkillIndex == 16 || cSkillIndex == 12 || cSkillIndex == 28)
+	{
+		nDX = (int)pTarget->m_vecPosition.x - (int)m_pMyHuman->m_vecPosition.x;
+		nDY = (int)pTarget->m_vecPosition.y - (int)m_pMyHuman->m_vecPosition.y;
+		if (nDX > 0)
+			nDX = 1;
+		else if (nDX < 0)
+			nDX = -1;
+		if (nDY > 0)
+			nDY = 1;
+		else if (nDY < 0)
+			nDY = -1;
+
+		int TX = nDX + (int)pTarget->m_vecPosition.x;
+		int TY = nDY + (int)pTarget->m_vecPosition.y;
+		TMHuman* pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+
+		while (pNode->m_pNextLink)
+		{
+			if (pNode == m_pMyHuman || pNode == pTarget
+				|| (int)pNode->m_vecPosition.x != TX
+				|| (int)pNode->m_vecPosition.y != TY)
+			{
+				pNode = (TMHuman*)pNode->m_pDown;
+				continue;
+			}
+
+			if (pNode->m_dwID > 0 && pNode->m_dwID < 1000)
+			{
+				if (!pNode->IsInPKZone() || !TMFieldScene::m_bPK || pNode->m_bParty == 1)
+				{
+					pNode = (TMHuman*)pNode->m_pDown;
+					continue;
+				}
+				if (!TMFieldScene::m_bPK && g_pObjectManager->m_usWarGuild != pNode->m_usGuild && !g_bCastleWar)
+				{
+					pNode = (TMHuman*)pNode->m_pDown;
+					continue;
+				}
+				if (!TMFieldScene::m_bPK
+					&& m_pMyHuman->m_cMantua > 0
+					&& m_pMyHuman->m_cMantua == pNode->m_cMantua
+					&& g_bCastleWar > 0)
+				{
+					pNode = (TMHuman*)pNode->m_pDown;
+					continue;
+				}
+				if (!TMFieldScene::m_bPK
+					&& g_bCastleWar > 0
+					&& m_pMyHuman->m_cMantua == 3
+					&& (pNode->m_dwID > 0 && pNode->m_dwID < 1000 || (pNode->m_cMantua > 0 && pNode->m_cMantua != 4)))
+				{
+					pNode = (TMHuman*)pNode->m_pDown;
+					continue;
+				}
+				if (!TMFieldScene::m_bPK && g_bCastleWar > 0 && !pNode->IsInCastleZone())
+				{
+					pNode = (TMHuman*)pNode->m_pDown;
+					continue;
+				}
+			}
+			else if (!TMFieldScene::m_bPK
+				&& pNode->m_cSummons == 1
+				&& (g_pObjectManager->m_usWarGuild != pNode->m_usGuild && pNode->m_usGuild || !pNode->m_usGuild))
+			{
+				if (!pNode->IsInCastleZone() && g_bCastleWar > 0 || !g_bCastleWar)
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+			}
+			else if (pOver && !TMFieldScene::m_bPK && pNode->m_cSummons == 1 && pNode->m_usGuild)
+			{
+				if (!pNode->IsInCastleZone() && g_bCastleWar > 0 || !g_bCastleWar)
+				{
+					pNode = (TMHuman*)pNode->m_pDown;
+					continue;
+				}
+			}
+
+			stAttack.Dam[nTargetIndex].TargetID = pNode->m_dwID;
+			stAttack.Dam[nTargetIndex++].Damage = -1;
+			break;
+		}
+	}
+
+	stAttack.TargetX = (int)pOver->m_vecPosition.x;
+	stAttack.TargetY = (int)pOver->m_vecPosition.y;
+	if (cSkillIndex)
+	{
+		stAttack.PosX = m_stMoveStop.NextX;
+		stAttack.PosY = m_stMoveStop.NextY;
+		stAttack.TargetX = m_stMoveStop.NextX;
+		stAttack.TargetY = m_stMoveStop.NextY;
+	}
+
+	int Size = sizeof(MSG_Attack);
+	if (g_pSpell[(unsigned char)cSkillIndex].MaxTarget == 1)
+	{
+		stAttack.Header.Type = MSG_Attack_One_Opcode;
+		Size = sizeof(MSG_AttackOne);
+	}
+	if (g_pSpell[(unsigned char)cSkillIndex].MaxTarget == 2)
+	{
+		stAttack.Header.Type = MSG_Attack_Two_Opcode;
+		Size = sizeof(MSG_AttackTwo);
+	}
+	SendOneMessage((char*)&stAttack, Size);
+	IncSkillSel();
+
+	MSG_Attack stLocalAttack{};
+	memcpy(&stLocalAttack, &stAttack, sizeof(stLocalAttack));
+
+	stLocalAttack.Header.ID = m_dwID;
+	stLocalAttack.FlagLocal = 1;
+
+	if (nSpecForce)
+		stLocalAttack.DoubleCritical |= 8u;
+
+	OnPacketEvent(stAttack.Header.Type, (char*)&stLocalAttack);
+	m_dwOldAttackTime = dwServerTime;
+	m_dwSkillLastTime[(unsigned char)cSkillIndex] = dwServerTime;
+	m_pMyHuman->m_pMoveSkillTargetHuman = 0;
+
+	return 1;
 }
 
 int TMFieldScene::MouseClick_NPC(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServerTime)
@@ -10425,6 +11529,38 @@ int TMFieldScene::MobMove2(TMVector2 vec, unsigned int dwServerTime)
 
 void TMFieldScene::DropItem(unsigned int dwServerTime)
 {
+	auto pAttachItem = g_pCursor->m_pAttachedItem;
+	if (!pAttachItem)
+		return;
+
+	static int dwLastDropTime = 0;
+	if (dwServerTime - dwLastDropTime <= 1000)
+		return;
+
+	int nAX = pAttachItem->m_nCellIndexX;
+	int nAY = pAttachItem->m_nCellIndexY;
+
+	MSG_DropItem stDrop{};
+	stDrop.Header.ID = m_pMyHuman->m_dwID;
+	stDrop.Header.Type = MSG_DropItem_Opcode;
+	stDrop.Rotate = 0;
+	stDrop.SourType = pAttachItem->m_pGridControl->CheckType(pAttachItem->m_pGridControl->m_eItemType,
+		pAttachItem->m_pGridControl->m_eGridType);
+
+	if (stDrop.SourType)
+	{
+		if (stDrop.SourType == 1)
+			stDrop.SourPos = nAX + 5 * nAY;
+		else if (stDrop.SourType == 2)
+			stDrop.SourPos = nAX + 5 * nAY;
+		else
+			stDrop.SourPos = pAttachItem->m_pGridControl->CheckPos(pAttachItem->m_pGridControl->m_eItemType);
+
+		stDrop.GridX = (int)m_pMyHuman->m_vecPosition.x;
+		stDrop.GridY = (int)m_pMyHuman->m_vecPosition.y;
+		SendOneMessage((char*)&stDrop, sizeof(stDrop));
+		dwLastDropTime = dwServerTime;
+	}
 }
 
 int TMFieldScene::TimeDelay(unsigned int dwServerTime)
@@ -10700,11 +11836,60 @@ int TMFieldScene::TimeDelay(unsigned int dwServerTime)
 
 int TMFieldScene::GetItem(TMItem* pItem)
 {
+	IVector2 vecGrid{};
+	for (int i = 0; i < 4; ++i)
+	{
+		auto pGrid = m_pGridInvList[i];
+		int nGridIndex = BASE_GetItemAbility(&pItem->m_stItem, 33);
+		vecGrid = pGrid->CanAddItemInEmpty(g_pItemGridXY[nGridIndex][0], g_pItemGridXY[nGridIndex][1]);
+		if (vecGrid.x > -1 && vecGrid.y > -1 || BASE_GetItemAbility(&pItem->m_stItem, 38) == 2)
+		{
+			m_pMyHuman->MoveGet(pItem);
+			return 1;
+		}
+	}
+
+	auto pListBox = m_pChatList;
+	auto pBoxItem = new SListBoxItem(g_pMessageStringTable[1], 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0);
+
+	pListBox->AddItem(pBoxItem);
+
+	GetSoundAndPlay(33, 0, 0);
+	m_dwGetItemTime = g_pTimerManager->GetServerTime();
 	return 0;
 }
 
 void TMFieldScene::FrameMove_KhepraDieEffect(unsigned int dwServerTime)
 {
+	if (m_nKhepraDieFlag < 1 || m_dwKhepraDieTime + 300 >= dwServerTime)
+		return;
+
+	int RndX = rand() % 9;
+	int RndZ = rand() % 9;
+	float X = (float)RndX + 2362.0f;
+	float Y = -6.8000002f;
+	float Z = (float)RndZ + 3927.0f;
+
+	auto pThunder1 = new TMSkillThunderBolt(TMVector3(X, Y, Z), 3);
+	m_pEffectContainer->AddChild(pThunder1);
+	auto pDust1 = new TMEffectDust(TMVector3(X, Y, Z), 50.0f, 0);
+	m_pEffectContainer->AddChild(pDust1);
+	auto pDust2 = new TMEffectDust(TMVector3(X - 0.3f, Y, Z - 0.3f), 50.0f, 0);
+	m_pEffectContainer->AddChild(pDust2);
+	auto pDust3 = new TMEffectDust(TMVector3(X + 0.3f, Y, Z + 0.3f), 50.0f, 0);
+	m_pEffectContainer->AddChild(pDust3);
+
+	m_dwKhepraDieTime += 100 * (rand() % 10 + 1) + 300;
+	m_nKhepraDieFlag++;
+
+	if (m_nKhepraDieFlag >= 10)
+	{
+		auto pPoison = new TMSkillPoison(TMVector3(2365.0f, -9.8000002f, 3930.0f), 0xFFCC6666, 25, 1, 0);
+		m_pEffectContainer->AddChild(pPoison);
+
+		m_nKhepraDieFlag = 0; 
+		m_dwKhepraDieTime = 0;
+	}
 }
 
 void TMFieldScene::SetVisibleInventory()
@@ -11098,38 +12283,418 @@ void TMFieldScene::SetVisibleTrade(int bShow)
 
 void TMFieldScene::ClearCombine()
 {
+	for (int i = 0; i < 3; ++i)
+	{
+		auto pGridInv = m_pGridInvList[i];
+		for (int nY = 0; nY < 3; ++nY)
+		{
+			for (int nX = 0; nX < 5; ++nX)
+			{
+				auto pItem = pGridInv->GetItem(nX, nY);
+				if (pItem)
+				{
+					if (pItem->m_GCObj.dwColor == 0xFFFF0000)
+						pItem->m_GCObj.dwColor = 0xFFFFFFFF;
+				}
+			}
+		}
+	}
+
+	memset(&g_pObjectManager->m_stCombineItem, 0, sizeof(g_pObjectManager->m_stCombineItem));
+	g_pObjectManager->m_stCombineItem.Header.ID = m_pMyHuman->m_dwID;
+	g_pObjectManager->m_stCombineItem.Header.Type = MSG_CombineItem_Opcode;
+	for (int i = 0; i < 8; ++i)
+		g_pObjectManager->m_stCombineItem.CarryPos[i] = -1;
+
+	SGridControl* pGridMix[8]{};
+	for (int i = 0; i < 8; ++i)
+	{
+		SGridControlItem* pPickedItem = nullptr;
+		pGridMix[i] = (SGridControl*)m_pControlContainer->FindControl(i + 65861);
+		if (pGridMix[i])
+			pPickedItem = pGridMix[i]->PickupItem(0, 0);
+
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+			g_pCursor->m_pAttachedItem = 0;
+		
+		SAFE_DELETE(pPickedItem);
+	}
+
+	m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	SetEquipGridState(1);
 }
 
 void TMFieldScene::ClearCombine4()
 {
+	for (int i = 0; i < 3; ++i)
+	{
+		auto pGridInv = m_pGridInvList[i];
+		for (int nY = 0; nY < 3; ++nY)
+		{
+			for (int nX = 0; nX < 5; ++nX)
+			{
+				auto pItem = pGridInv->GetItem(nX, nY);
+				if (pItem)
+				{
+					if (pItem->m_GCObj.dwColor == 0xFFFF0000)
+						pItem->m_GCObj.dwColor = 0xFFFFFFFF;
+				}
+			}
+		}
+	}
+
+	memset(&g_pObjectManager->m_stCombineItem4, 0, sizeof(g_pObjectManager->m_stCombineItem4));
+	g_pObjectManager->m_stCombineItem4.Header.ID = m_pMyHuman->m_dwID;
+	g_pObjectManager->m_stCombineItem4.Header.Type = MSG_CombineItemTiny_Opcode;
+	for (int i = 0; i < 8; ++i)
+		g_pObjectManager->m_stCombineItem4.CarryPos[i] = -1;
+
+	SGridControl* pGridMix[8]{};
+	for (int i = 0; i < 3; ++i)
+	{
+		SGridControlItem* pPickedItem = nullptr;
+		if (m_pGridItemMix4[i])
+			pPickedItem = m_pGridItemMix4[i]->PickupItem(0, 0);
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+			g_pCursor->m_pAttachedItem = 0;
+
+		SAFE_DELETE(pPickedItem);
+	}
+
+	m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	SetEquipGridState(1);
 }
 
 void TMFieldScene::DoCombine()
 {
+	if (g_nCombineMode == 1)
+	{
+		for (int i = 0; i < 6; ++i)
+		{
+			if (!g_pObjectManager->m_stCombineItem.Item[i].sIndex)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[274], 2000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return;
+			}
+		}
+	}
+
+	bool bFind = false;
+	for (int i = 0; i < 8; ++i)
+	{
+		if (g_pObjectManager->m_stCombineItem.CarryPos[i] != -1)
+		{
+			bFind = true;
+			break;
+		}
+	}
+
+	if (bFind)
+		SendOneMessage((char*)&g_pObjectManager->m_stCombineItem, sizeof(g_pObjectManager->m_stCombineItem));
 }
 
 void TMFieldScene::DoCombine4()
 {
+	if (g_pObjectManager->m_stCombineItem4.Item[0].sIndex && g_pObjectManager->m_stCombineItem4.Item[1].sIndex)
+	{
+		bool bFind = false;
+		for (int i = 0; i < 8; ++i)
+		{
+			if (g_pObjectManager->m_stCombineItem4.CarryPos[i] != -1)
+			{
+				bFind = true;
+				break;
+			}
+		}
+		if (bFind)
+			SendOneMessage((char*)&g_pObjectManager->m_stCombineItem4, sizeof(g_pObjectManager->m_stCombineItem4));
+	}
+	else
+	{
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[274], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+	}
 }
 
 void TMFieldScene::SetVisibleMixItem(int bShow)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	if (m_pInputGoldPanel->IsVisible() == 1)
+		SetInVisibleInputCoin();
+	if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+		SetVisibleSkill();
+	if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+		SetVisibleCharInfo();
+	if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+		SetVisibleAutoTrade(0, 0);
+
+	if (bShow == 1)
+	{
+		if (m_pInvenPanel)
+		{
+			if (!m_pInvenPanel->m_bVisible)
+				SetVisibleInventory();
+		}
+
+		m_pItemMixPanel->SetVisible(1);
+		g_pDevice->m_nWidthShift = 0;
+		g_pCursor->DetachItem();
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		TMFieldScene::SetEquipGridState(0);
+	}
+	else
+	{
+		if (m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+
+		g_pDevice->m_nWidthShift = 0;
+		m_pItemMixPanel->SetVisible(0);
+		ClearCombine();
+	}
 }
 
 void TMFieldScene::SetVisibleMixItemTiini(int bShow)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+
+	if (m_pInputGoldPanel->IsVisible() == 1)
+		SetInVisibleInputCoin();
+	if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+		SetVisibleSkill();
+	if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+		SetVisibleCharInfo();
+	if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+		SetVisibleAutoTrade(0, 0);
+
+	if (bShow == 1)
+	{
+		if (m_pInvenPanel)
+		{
+			if (!m_pInvenPanel->m_bVisible)
+				SetVisibleInventory();
+		}
+		m_pItemMixPanel4->SetVisible(1);
+		g_pDevice->m_nWidthShift = 0;
+		g_pCursor->DetachItem();
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV6;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV6;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV6;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV6;
+		SetEquipGridState(0);
+	}
+	else
+	{
+		if (m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+
+		g_pDevice->m_nWidthShift = 0;
+		m_pItemMixPanel4->SetVisible(0);
+		ClearCombine4();
+	}
 }
 
 void TMFieldScene::SetVisibleHellGateStore(int bShow)
 {
+	if (m_pInputGoldPanel->IsVisible() == 1)
+		SetInVisibleInputCoin();
+	if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+		SetVisibleSkill();
+	if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+		SetVisibleCharInfo();
+	if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+		SetVisibleAutoTrade(0, 0);
+	if (bShow == 1)
+	{
+		if (m_pInvenPanel && !m_pInvenPanel->m_bVisible)
+			SetVisibleInventory();
+		if (m_pHellStoreDesc)
+			LoadMsgText2(m_pHellStoreDesc, (char*)"UI\\hellStoredesc.txt", 0, 20);
+
+		m_pHellgateStore->SetVisible(1);
+		g_pDevice->m_nWidthShift = 0;
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_SELL;
+		SetEquipGridState(0);
+	}
+	else
+	{
+		if (m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+
+		g_pDevice->m_nWidthShift = 0;
+		m_pHellgateStore->SetVisible(0);
+		m_dwHellStoreID = 0;
+		m_nHellStoreValue = 0;
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+		SetEquipGridState(1);
+	}
+	if (!bShow)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			auto pBtnHellStore = (SButton*)m_pControlContainer->FindControl(i + 6193);
+			if (pBtnHellStore)
+				pBtnHellStore->SetSelected(0);
+		}
+	}
 }
 
 void TMFieldScene::SetVisibleGamble(int bShow, char cType)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+	if (bShow || m_pGambleStore->m_bVisible != 1 || !m_pReelPanel2->m_dwStopTime && m_pReelPanel2->m_bRoling != 1)
+	{
+		if (m_pInputGoldPanel->IsVisible() == 1)
+			SetInVisibleInputCoin();
+		if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+			SetVisibleSkill();
+		if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+			SetVisibleCharInfo();
+		if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+			SetVisibleCargo(0);
+		if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+			SetVisibleCargo(0);
+		if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+			SetVisibleAutoTrade(0, 0);
+		if (bShow == 1 && m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+		if (bShow == 1 && m_pShopPanel && m_pShopPanel->m_bVisible == 1)
+			SetVisibleShop(0);
+		auto pGambleStore = m_pGambleStore;
+		if (bShow == 1)
+		{
+			if (pGambleStore)
+			{
+				pGambleStore->SetVisible(1);
+				if (cType == 1)
+				{
+					m_pReelPanel->SetVisible(1);
+					m_pReelPanel2->SetVisible(0);
+				}
+				else if (cType == 2)
+				{
+					m_pReelPanel->SetVisible(0);
+					m_pReelPanel2->SetVisible(1);
+				}
+			}
+
+			m_pGridHelm->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+			SetEquipGridState(0);
+		}
+		else
+		{
+			if (pGambleStore)
+				pGambleStore->SetVisible(0);
+			g_pDevice->m_nWidthShift = 0;
+		}
+	}
 }
 
 void TMFieldScene::SetVisiblePotal(int bShow, int nPos)
 {
+	if (m_bAirmove_ShowUI == 1)
+		AirMove_ShowUI(0);
+
+	auto pPotalPanel = m_pPotalPanel;
+	if (!pPotalPanel)
+		return;
+
+	char strTmp1[32]{};
+	strcpy(strTmp1, g_pMessageStringTable[382]);
+	char strTmp2[32]{};
+	strcpy(strTmp2, g_pMessageStringTable[383]);
+	char strTmp3[32]{};
+	strcpy(strTmp3, g_pMessageStringTable[384]);
+	if (m_pPotalText1)
+		m_pPotalText1->SetText(strTmp1, 0);
+	if (m_pPotalText2)
+		m_pPotalText2->SetText(strTmp2, 0);
+	if (m_pPotalText3)
+		m_pPotalText3->SetText(strTmp3, 0);
+
+	pPotalPanel->SetVisible(bShow);
+	char szPotalPos[64]{};
+	sprintf(szPotalPos, "UI\\PotalPos.txt");
+	if (bShow == 1)
+		LoadMsgText2(m_pPotalList, szPotalPos, 10 * nPos, 10 * (nPos + 1) - 1);
+	if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+		SetVisibleSkill();
+	if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+		SetVisibleCharInfo();
+	if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+		SetVisibleCargo(0);
+	if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+		SetVisibleCargo(0);
+	if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+		SetVisibleAutoTrade(0, 0);
+	if (bShow == 1 && m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+		SetVisibleInventory();
+	if (bShow == 1 && m_pShopPanel && m_pShopPanel->m_bVisible == 1)
+		SetVisibleShop(0);
+	if (bShow)
+	{
+		m_pSkillPanel->m_bVisible = 0;
+
+		char szStr[128]{};
+		sprintf(szStr, "%s", g_pMessageStringTable[310]);
+		TMScene::LoadMsgText2(m_pPotalList, szPotalPos, 10 * nPos, 10 * (nPos + 1) - 1);
+		switch (nPos)
+		{
+		case 0:
+			sprintf(szStr, "%s", g_pMessageStringTable[310]);
+			break;
+		case 1:
+			sprintf(szStr, "%s", g_pMessageStringTable[311]);
+			break;
+		case 2:
+			sprintf(szStr, "%s", g_pMessageStringTable[312]);
+			break;
+		case 3:
+			sprintf(szStr, "%s", g_pMessageStringTable[313]);
+			break;
+		case 4:
+			sprintf(szStr, "%s", g_pMessageStringTable[314]);
+			break;
+		case 5:
+			sprintf(szStr, "%s", g_pMessageStringTable[315]);
+			break;
+		}
+
+		m_pPotalText->SetText(szStr, 0);
+		m_pPotalText->SetTextColor(0xFFFFFFFF);
+	}
+	else
+	{
+		memset(&m_stPotalItem, 0, sizeof(m_stPotalItem));
+	}
 }
 
 void TMFieldScene::SetVisibleMiniMap()
@@ -11374,10 +12939,26 @@ void TMFieldScene::SetVisibleSkill()
 
 void TMFieldScene::SetVisibleServerWar()
 {
+	auto pInputGoldPanel = (SControl*)m_pInputGoldPanel;
+	auto pEdit = (SEditableText*)m_pControlContainer->FindControl(65889);
+	auto pText = (SText*)m_pControlContainer->FindControl(65888);
+
+	m_nCoinMsgType = 9;
+	pText->SetText(g_pMessageStringTable[374], 0);
+	m_pControlContainer->SetFocusedControl(pEdit);
+	pInputGoldPanel->SetVisible(1);
 }
 
 void TMFieldScene::SetVisibleRefuseServerWar()
 {
+	auto pInputGoldPanel = (SControl*)m_pInputGoldPanel;
+	auto pEdit = (SEditableText*)m_pControlContainer->FindControl(65889);
+	auto pText = (SText*)m_pControlContainer->FindControl(65888);
+
+	m_nCoinMsgType = 10;
+	pText->SetText(g_pMessageStringTable[375], 0);
+	m_pControlContainer->SetFocusedControl(pEdit);
+	pInputGoldPanel->SetVisible(1);
 }
 
 void TMFieldScene::SetInVisibleInputCoin()
@@ -13138,11 +14719,164 @@ void TMFieldScene::SetSanc()
 
 void TMFieldScene::CreateGate(int nZoneIndex, int bInit)
 {
+	auto pOldItem = (TMItem*)g_pObjectManager->GetItemByID(nZoneIndex + 15001);
+	if (pOldItem)
+		return;
+
+	int a = nZoneIndex == 53 ? 0 : 0;
+	
+	MSG_CreateItem stCreateItem{};
+	stCreateItem.ItemID = nZoneIndex + 15001;
+	stCreateItem.Item.sIndex = g_pInitItem[nZoneIndex].sIndex;
+	stCreateItem.GridX = g_pInitItem[nZoneIndex].PosX;
+	stCreateItem.GridY = g_pInitItem[nZoneIndex].PosY;
+	stCreateItem.Rotate = g_pInitItem[nZoneIndex].Rotate;
+	stCreateItem.Height = 16;
+	stCreateItem.State = 2;
+	auto pCreateItem = &stCreateItem;
+
+	if (BASE_GetItemAbility(&stCreateItem.Item, 34) > 0)
+	{
+		TMGate* pItem = nullptr;
+		if (stCreateItem.Item.sIndex >= 0 && stCreateItem.Item.sIndex <= 6500)
+		{
+			auto pItem = new TMGate();
+
+			pItem->InitItem(pCreateItem->Item);
+			pItem->InitGate(pCreateItem->Item);
+
+			pItem->m_dwID = pCreateItem->ItemID;
+			pItem->m_nMaskIndex = 0;
+			pItem->InitObject();
+			pItem->InitAngle(0.0f, ((float)pCreateItem->Rotate * D3DXToRadian(180)) / 2.0f, 0.0f);
+
+			float fX = (float)pCreateItem->GridX + 0.5f;
+			float fY = (float)pCreateItem->GridY + 0.5f;
+
+			float fHeight = m_pGround->GetHeight(TMVector2(fX, fY));
+
+			if (fHeight < -500.0f)
+			{
+				auto pOtherGround = m_pGroundList[(m_nCurrentGroundIndex + 1) % 2];
+				if (pOtherGround)
+					fHeight = pOtherGround->GetHeight(TMVector2(fX, fY));
+				else
+				{
+					TMScene::FrameMove(0);
+					pOtherGround = m_pGroundList[(m_nCurrentGroundIndex + 1) % 2];
+					if (pOtherGround)
+						fHeight = pOtherGround->GetHeight(TMVector2(fX, fY));
+				}
+			}
+
+			pItem->InitPosition(fX, fHeight, fY);
+			int nMaskIndex = BASE_GetItemAbility(&pCreateItem->Item, 34);
+			BASE_UpdateItem2(nMaskIndex, 1, (unsigned char)pCreateItem->State, pCreateItem->GridX, pCreateItem->GridY, (char*)m_HeightMapData, 
+				(int)(pItem->m_fAngle / D3DXToRadian(90)), pCreateItem->Height);
+
+			pItem->SetState((EGATE_STATE)pCreateItem->State);
+			if (!pOldItem)
+				m_pItemContainer->AddChild(pItem);
+		}
+
+		return;
+	}
+
+	TMItem* pItem = nullptr;
+	if (pOldItem)
+		pItem = pOldItem;
+	else if (g_pItemList[pCreateItem->Item.sIndex].nIndexMesh == 1607)
+	{
+		pItem = new TMCannon();
+		pItem->m_dwObjType = 1607;
+	}
+	else
+	{
+		pItem = new TMItem();
+	}
+
+	if (!pItem)
+		return;
+
+	pItem->InitItem(pCreateItem->Item);
+	pItem->m_dwID = pCreateItem->ItemID;
+	pItem->m_nMaskIndex = 0;
+	pItem->InitObject();
+	pItem->InitAngle(0.0f, ((float)pCreateItem->Rotate * D3DXToRadian(180)) / 2.0f, 0.0f);
+
+	float fX = (float)pCreateItem->GridX + 0.5f;
+	float fY = (float)pCreateItem->GridY + 0.5f;
+
+	float fHeight = GroundGetMask(TMVector2(fX, fY)) * 0.1f;
+	pItem->InitPosition(fX, fHeight + 0.1f, fY);
+
+	if (!pOldItem)
+		m_pItemContainer->AddChild(pItem);
+
+	if (pCreateItem->Create == 1)
+	{
+		if (BASE_GetItemAbility(&pCreateItem->Item, 38) == 2)
+			GetSoundAndPlay(44, 0, 0);
+		else if (pCreateItem->Item.sIndex == 412 || pCreateItem->Item.sIndex == 413 || pCreateItem->Item.sIndex == 4141 || 
+			pCreateItem->Item.sIndex == 419 || pCreateItem->Item.sIndex == 420)
+		{
+			GetSoundAndPlay(48, 0, 0);
+		}
+		else
+			GetSoundAndPlay(45, 0, 0);
+	}
 }
 
 int TMFieldScene::GetItemFromGround(unsigned int dwServerTime)
 {
-	return 0;
+	if (g_pObjectManager->m_cShortSkill[g_pObjectManager->m_cSelectShortSkill] == 31)
+		return 0;
+
+	auto pOverItem = m_pMouseOverItem;
+	if (!pOverItem)
+		return 0;
+	if (dwServerTime <= m_dwGetItemTime + 1000)
+		return 0;
+	if (!pOverItem->m_bMouseOver)
+		return 0;
+	if (pOverItem->m_stItem.sIndex >= 1733 && pOverItem->m_stItem.sIndex <= 1736)
+		return 1;
+	if (pOverItem->m_stItem.sIndex >= 3145 && pOverItem->m_stItem.sIndex <= 3149)
+		return 1;
+
+	if (BASE_GetItemAbility(&pOverItem->m_stItem, 34) <= 0)
+	{
+		GetItem(pOverItem);
+		return 1;
+	}
+
+	if (BASE_GetItemAbility(&pOverItem->m_stItem, 34) == 10 && pOverItem->m_stItem.sIndex >= 4100 && pOverItem->m_stItem.sIndex < 4200)
+	{
+		if (m_pGambleStore->m_bVisible == 1)
+			return 1;
+
+		if (pOverItem->m_stItem.sIndex == 4102)
+		{
+			SetVisibleGamble(1, 2);
+			return 1;
+		}
+		if (pOverItem->m_stItem.sIndex == 4103)
+		{
+			SetVisibleGamble(1, 1);
+			return 1;
+		}
+	}
+
+	MSG_UpdateItem stUpdateItem{};
+	stUpdateItem.Header.ID = m_pMyHuman->m_dwID;
+	stUpdateItem.ItemID = pOverItem->m_dwID;
+	stUpdateItem.Header.Type = MSG_UpdateItem_Opcode;
+	stUpdateItem.State = 1;
+	SendOneMessage((char*)&stUpdateItem, sizeof(stUpdateItem));
+
+	m_dwGetItemTime = g_pTimerManager->GetServerTime();
+
+	return 1;
 }
 
 int TMFieldScene::GetWeaponDamage()
@@ -13241,6 +14975,21 @@ void TMFieldScene::SetWeather(int nWeather)
 
 void TMFieldScene::SetVisibleKhepraPortal(bool bVisible)
 {
+	if (m_pKhepraPortal && m_pKhepraPortalEff1 && m_pKhepraPortalEff2)
+	{
+		if (bVisible == 1)
+		{
+			m_pKhepraPortal->m_fHeight = -8.3000002f;
+			m_pKhepraPortalEff1->m_vecPosition.y = -4.73f;
+			m_pKhepraPortalEff2->m_vecPosition.y = -7.8000002f;
+		}
+		else
+		{
+			m_pKhepraPortal->m_fHeight = -20.0f;
+			m_pKhepraPortalEff1->m_vecPosition.y = -20.0f;
+			m_pKhepraPortalEff2->m_vecPosition.y = -20.0f;
+		}
+	}
 }
 
 void TMFieldScene::InitBoard()
@@ -13494,7 +15243,10 @@ int TMFieldScene::LoadMsgText(SListBox* pListBox, char* szFileName)
 			szRet[0] = 0;
 
 		if (szTemp[6] == ' ')
+		{
+			sprintf(szText, "%s", &szTemp[6]);
 			pListBox->AddItem(new SListBoxItem(szText, dwCol | 0xFF000000, 0.0f, 0.0f, 400.0f, 16.0f, 0, 0x77777777, 1u, 0));
+		}
 	}
 	if (pListBox->m_pScrollBar)
 		pListBox->m_pScrollBar->SetCurrentPos(0);
@@ -13850,27 +15602,318 @@ void TMFieldScene::SetRunMode()
 
 void TMFieldScene::UseTicket(int nCellX, int nCellY)
 {
+	auto pGrid = (SGridControl*)m_pControlContainer->FindControl(65554);
+	auto pItem = pGrid->GetItem(nCellX, nCellY);
+	if (!pItem)
+		return;
+
+	if (BASE_GetItemAbility(pItem->m_pItem, 38) != 14)
+		return;
+
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+	if (m_dwUseItemTime && dwServerTime - m_dwUseItemTime < 200)
+		return;
+
+	int SourPos = pGrid->CheckPos(pItem->m_pGridControl->m_eItemType);
+	if (SourPos == -1)
+		SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+	MSG_UseItem stUseItem{};
+	stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+	stUseItem.Header.Type = MSG_UseItem_Opcode;
+	stUseItem.SourType = 1;
+	stUseItem.SourPos = SourPos;
+	stUseItem.ItemID = 0;
+	stUseItem.GridX = (int)m_pMyHuman->m_vecPosition.x;
+	stUseItem.GridY = (int)m_pMyHuman->m_vecPosition.y;
+	SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+
+	m_dwUseItemTime = dwServerTime;
+	g_pEventTranslator->m_bRBtn = 1;
+
+	int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+	if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
+		nAmount = 0;
+
+	if (nAmount > 1)
+	{
+		BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+		sprintf(pItem->m_GCText.strString, "%2d", nAmount - 1);
+		pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+	}
+	else
+	{
+		auto pPickedItem = pGrid->PickupItem(nCellX, nCellY);
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+			g_pCursor->m_pAttachedItem = 0;
+		
+		SAFE_DELETE(pPickedItem);
+	}
+
+	GetSoundAndPlay(47, 0, 0);
+
+	UpdateScoreUI(0);
+	if (nAmount <= 1)
+		memset(&g_pObjectManager->m_stMobData.Carry[SourPos], 0, sizeof(STRUCT_ITEM));
 }
 
 char TMFieldScene::UseQuickSloat(char key)
 {
-	return 0;
+	SGridControlItem* pItemFind = nullptr;
+	SGridControl* pGridSloat = nullptr;
+	if (key == 'Q' || key == 'q')
+	{
+		pItemFind = m_pQuick_Sloat[0]->GetAtItem(0, 0);
+		pGridSloat = m_pQuick_Sloat[0];
+	}
+	else if (key == 'W' || key == 'w')
+	{
+		pItemFind = m_pQuick_Sloat[1]->GetAtItem(0, 0);
+		pGridSloat = m_pQuick_Sloat[1];
+	}
+	else if (key == 'E' || key == 'e')
+	{
+		pItemFind = m_pQuick_Sloat[2]->GetAtItem(0, 0);
+		pGridSloat = m_pQuick_Sloat[2];
+	}
+	else if (key == 'R' || key == 'r')
+	{
+		pItemFind = m_pQuick_Sloat[3]->GetAtItem(0, 0);
+		pGridSloat = m_pQuick_Sloat[3];
+	}
+	else if(key == 'T' || key == 't')
+	{
+		pItemFind = m_pQuick_Sloat[4]->GetAtItem(0, 0);
+		pGridSloat = m_pQuick_Sloat[4];
+	}
+
+	if (!pItemFind)
+		return 0;
+
+	int page = 0;
+
+	SGridControlItem* pItem = nullptr;
+	SGridControl* pGridInv = nullptr;
+	bool bFind = false;
+	for (int i = 0; i < 4; ++i)
+	{
+		pGridInv = m_pGridInvList[i];
+		for (int j = 0; j < 3; ++j)
+		{
+			for (int k = 0; k < 5; ++k)
+			{
+				pItem = pGridInv->GetItem(k, j);
+				if (pItem && pItem->m_pItem->sIndex == pItemFind->m_pItem->sIndex)
+				{
+					bFind = true;
+					page = 15 * i;
+					break;
+				}
+			}
+			if (bFind == true)
+				break;
+		}
+		if (bFind == true)
+			break;
+	}
+	if (bFind != true || !pItem)
+		return 0;
+
+	int nType = BASE_GetItemAbility(pItem->m_pItem, 38);
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+	if (m_dwUseItemTime && dwServerTime - m_dwUseItemTime < 200)
+		return 0;
+
+	int SourType = pGridInv->CheckType(pItem->m_pGridControl->m_eItemType, pItem->m_pGridControl->m_eGridType);
+	int SourPos = pGridInv->CheckPos(pItem->m_pGridControl->m_eItemType);
+	if (SourPos == -1)
+		SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+	SourPos = page + SourPos;
+
+	MSG_UseItem stUseItem{};
+	stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+	stUseItem.Header.Type = MSG_UseItem_Opcode;
+	stUseItem.SourType = SourType;
+	stUseItem.SourPos = SourPos;
+	stUseItem.ItemID = 0;
+	stUseItem.GridX = (int)m_pMyHuman->m_vecPosition.x;
+	stUseItem.GridY = (int)m_pMyHuman->m_vecPosition.y;
+
+	if (nType == 15)
+	{
+		stUseItem.DestType = 0;
+		stUseItem.DestPos = 14;
+	}
+
+	SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+
+	m_dwUseItemTime = dwServerTime;
+	int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+
+	if (nAmount > 1)
+	{
+		BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+		sprintf(pItem->m_GCText.strString, "%2d", nAmount - 1);
+		pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+		sprintf(pItemFind->m_GCText.strString, "%2d", nAmount - 1);
+		pItemFind->m_GCText.pFont->SetText(pItemFind->m_GCText.strString, pItemFind->m_GCText.dwColor, 0);
+	}
+	else
+	{
+		auto pPickedItem = m_pGridInvList[stUseItem.SourPos / 15]->PickupItem(stUseItem.SourPos % 15 % 5, stUseItem.SourPos % 15 / 5);
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+			g_pCursor->m_pAttachedItem = 0;
+		
+		SAFE_DELETE(pPickedItem);
+
+		g_pCursor->DetachItem();
+		bool bFind = false;
+		for (int i = 0; i < 4; ++i)
+		{
+			auto pGridInv = m_pGridInvList[i];
+			for (int l = 0; l < 3; ++l)
+			{
+				for (int m = 0; m < 5; ++m)
+				{
+					auto pItem = pGridInv->GetItem(m, l);
+					if (pItem && pItem->m_pItem->sIndex == pItemFind->m_pItem->sIndex)
+					{
+						bFind = true;
+						break;
+					}
+				}
+				if (bFind == true)
+					break;
+			}
+			if (bFind == true)
+				break;
+		}
+		if (!bFind)
+		{
+			auto pReturnItem = pGridSloat->PickupItem(0, 0);
+			SAFE_DELETE(pReturnItem);
+		}
+	}
+	if (nAmount <= 1)
+		memset(&g_pObjectManager->m_stMobData.Carry[SourPos], 0, sizeof(STRUCT_ITEM));
+
+	GetSoundAndPlay(41, 0, 0);
+	UpdateScoreUI(16);
+
+	return 1;
 }
 
 void TMFieldScene::UpdateFireWorkButton(int nIndex)
 {
+	if (nIndex >= 0 && nIndex <= 99 && m_pFireWorkPanel)
+	{
+		if (m_pFireWorkButton[nIndex])
+		{
+			m_pFireWorkButton[nIndex]->m_bSelected = m_pFireWorkButton[nIndex]->m_bSelected == 0;
+			m_pFireWorkButton[nIndex]->Update();
+		}
+	}
 }
 
 void TMFieldScene::ClearFireWork()
 {
+	if (m_pFireWorkPanel)
+	{
+		for (int i = 0; i < 100; ++i)
+		{
+			m_pFireWorkButton[i]->m_bSelected = 0;
+			m_pFireWorkButton[i]->Update();
+		}
+	}
 }
 
 void TMFieldScene::UseFireWork()
 {
+	if (!m_pFireWorkPanel)
+		return;
+
+	if (m_nFireWorkCellX < 0 || m_nFireWorkCellY < 0)
+		return;
+
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (m_dwUseItemTime && dwServerTime - m_dwUseItemTime < 200)
+		return;
+
+	if (!m_pGridInv)
+		return;
+
+	auto pItem = m_pGridInv->GetItem(m_nFireWorkCellX, m_nFireWorkCellY);
+	if (!pItem)
+		return;
+
+	int nItemSIndex = pItem->m_pItem->sIndex;
+	auto pMyHuman = m_pMyHuman;
+
+	int SourPos = m_pGridInv->CheckPos(pItem->m_pGridControl->m_eItemType);
+	if (SourPos == -1)
+		SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+	int nType = BASE_GetItemAbility(pItem->m_pItem, 38);
+
+	MSG_UseItem2 stUseItem{};
+	stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
+	stUseItem.Header.Type = MSG_UseItem2_Opcode;
+	stUseItem.SourType = 1;
+	stUseItem.SourPos = SourPos;
+
+	if (nType == 15)
+	{
+		stUseItem.DestType = 0;
+		stUseItem.DestPos = 14;
+	}
+
+	stUseItem.ItemID = 0;
+	stUseItem.GridX = (int)pMyHuman->m_vecPosition.x;
+	stUseItem.GridY = (int)pMyHuman->m_vecPosition.y;
+	for (int i = 0; i < 100; ++i)
+	{
+		if (m_pFireWorkButton[i]->m_bSelected)
+			BASE_SetBit(stUseItem.Parm, i);
+	}
+
+	SendOneMessage((char*)&stUseItem, sizeof(stUseItem));
+	m_nFireWorkCellX = -1;
+	m_nFireWorkCellY = -1;
+	m_dwUseItemTime = dwServerTime;
+
+	int nAmount = BASE_GetItemAmount(pItem->m_pItem);
+	if (nAmount > 1)
+	{
+		BASE_SetItemAmount(pItem->m_pItem, nAmount - 1);
+		sprintf(pItem->m_GCText.strString, "%2d", nAmount - 1);
+		pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+	}
+	else
+	{
+		auto pPickedItem = m_pGridInv->PickupItem(pItem->m_nCellIndexX, pItem->m_nCellIndexY);
+		if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+			g_pCursor->m_pAttachedItem = 0;
+
+		SAFE_DELETE(pPickedItem);
+	}
+
+	int nSoundIndex = 41;
+	if (nType >= 11 && nType <= 13)
+		nSoundIndex = 54;
+
+	if (nType != 19)
+		GetSoundAndPlay(nSoundIndex, 0, 0);
+
+	UpdateScoreUI(0);
+
+	if (nAmount <= 1)
+		memset(&g_pObjectManager->m_stMobData.Carry[SourPos], 0, sizeof(STRUCT_ITEM));
 }
 
 void TMFieldScene::DrawCustomFireWork(int nIndex)
 {
+	// This func is funny haha xD
 }
 
 void TMFieldScene::TotoSelect()
@@ -13998,14 +16041,88 @@ void TMFieldScene::VisibleInputTradeName()
 
 void TMFieldScene::VisibleInputPass()
 {
+	auto pInputGoldPanel = (SControl*)m_pInputGoldPanel;
+	auto pText = (SText*)m_pControlContainer->FindControl(65888);
+	auto pEdit = (SEditableText*)m_pControlContainer->FindControl(65889);
+	if (pText && pEdit)
+	{
+		m_nCoinMsgType = 11;
+		pText->SetText(g_pMessageStringTable[405], 0);
+		m_pControlContainer->SetFocusedControl(pEdit);
+		pInputGoldPanel->SetVisible(1);
+
+		auto pInputBG2 = (SPanel*)m_pControlContainer->FindControl(574);
+		if (pInputBG2)
+			pInputBG2->SetVisible(1);
+
+		pEdit->m_nMaxStringLen = 12;
+	}
 }
 
 void TMFieldScene::VisibleInputGuildName()
 {
+	auto pInputGoldPanel = (SControl*)m_pInputGoldPanel;
+	auto pText = (SText*)m_pControlContainer->FindControl(65888);
+	auto pEdit = (SEditableText*)m_pControlContainer->FindControl(65889);
+	if (pText && pEdit)
+	{
+		m_nCoinMsgType = 8;
+		pText->SetText(g_pMessageStringTable[363], 0);
+		m_pControlContainer->SetFocusedControl(pEdit);
+		pInputGoldPanel->SetVisible(1);
+
+		auto pInputBG2 = (SPanel*)m_pControlContainer->FindControl(574);
+		if (pInputBG2)
+			pInputBG2->SetVisible(1);
+
+		pEdit->m_nMaxStringLen = 20;
+	}
 }
 
 void TMFieldScene::VisibleInputCharName(SGridControlItem* pItem, int nCellX, int nCellY)
 {
+	if (pItem == nullptr || m_pGridInv == nullptr)
+		return;
+
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (!m_dwUseItemTime || (dwServerTime - m_dwUseItemTime) >= 200)
+	{
+		short SourPos = m_pGridInv->CheckPos(pItem->m_pGridControl->m_eItemType);
+		if (SourPos == -1)
+			SourPos = pItem->m_nCellIndexX + 5 * pItem->m_nCellIndexY;
+
+		int SourPage = 15 * (pItem->m_pGridControl->m_dwControlID - 67072);
+		if (SourPage < 0 || SourPage > 45)
+			SourPage = 0;
+
+		memset(&m_stCapsuleItem, 0, sizeof(m_stCapsuleItem));
+		m_stCapsuleItem.Header.ID = g_pObjectManager->m_dwCharID;
+		m_stCapsuleItem.Header.Type = 972;
+		m_stCapsuleItem.SourType = 1;
+		m_stCapsuleItem.SourPos = SourPage + SourPos;
+		m_stCapsuleItem.ItemID = 0;
+		m_stCapsuleItem.GridX = nCellX;
+		m_stCapsuleItem.GridY = nCellY;
+
+		auto pText = static_cast<SText*>(m_pControlContainer->FindControl(T_INPUT_GOLD));
+		auto pEdit = static_cast<SEditableText*>(m_pControlContainer->FindControl(E_INPUT_GOLD));
+
+		if (pText && pEdit)
+		{
+			m_nCoinMsgType = 6;
+			pText->SetText(g_pMessageStringTable[349], 0);
+			m_pControlContainer->SetFocusedControl(pEdit);
+			m_pInputGoldPanel->SetVisible(1);
+
+			auto pInputBG2 = static_cast<SPanel*>(m_pControlContainer->FindControl(TMP_INPUT_BG2));
+
+			if (pInputBG2)
+				pInputBG2->SetVisible(1);
+
+			pEdit->m_nMaxStringLen = 16;
+		}
+	}
 }
 
 void TMFieldScene::UseItem(SGridControlItem* pItem, int nType, int nItemSIndex, int nCellX, int nCellY)
@@ -14095,23 +16212,586 @@ void TMFieldScene::UseItem(SGridControlItem* pItem, int nType, int nItemSIndex, 
 
 void TMFieldScene::SendCapsuleItem()
 {
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+	auto pEditID = (SEditableText*)m_pControlContainer->FindControl(65889);
+
+	int len = strlen(pEditID->GetText());
+	if (len >= 4)
+	{
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[15], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+		return;
+	}
+	if (len > 12)
+	{
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[16], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+		return;
+	}
+	if (!BASE_CheckValidString(pEditID->GetText()))
+	{
+		m_pMessagePanel->SetMessage(g_pMessageStringTable[17], 2000);
+		m_pMessagePanel->SetVisible(1, 1);
+		return;
+	}
+
+	char* szName = BASE_TransCurse(pEditID->GetText());
+
+	for (int i = 0; i < len - 1; ++i)
+	{
+		if (szName[i] == -95 && szName[i + 1] == -95)
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[17], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+			return;
+		}
+	}
+
+	int nCellX = m_stCapsuleItem.GridX;
+	int nCellY = m_stCapsuleItem.GridY;
+	auto vec = m_pMyHuman->m_vecPosition;
+
+	m_stCapsuleItem.GridX = (int)vec.x;
+	m_stCapsuleItem.GridY = (int)vec.y;
+
+	sprintf(m_stCapsuleItem.NewMobname, pEditID->GetText());
+	SendOneMessage((char*)&m_stCapsuleItem, sizeof(m_stCapsuleItem));
+
+	m_dwUseItemTime = dwServerTime;
+	g_pEventTranslator->m_bRBtn = 1;
+	
+	auto pPickedItem = m_pGridInv->PickupItem(nCellX, nCellY);
+	if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+		g_pCursor->m_pAttachedItem = nullptr;
+
+	SAFE_DELETE(pPickedItem);
+
+	UpdateScoreUI(0);
+	memset(&g_pObjectManager->m_stMobData.Carry[m_stCapsuleItem.SourPos], 0, sizeof(STRUCT_ITEM));
 }
 
 void TMFieldScene::SetQuestStatus(bool bStart)
 {
+	if (bStart == 1)
+		m_dwQuestStartTime = timeGetTime();
+	else
+		m_dwQuestStartTime = 0;
+
+	m_pQuestRemainTime->SetVisible(bStart);
 }
 
 void TMFieldScene::UpdateQuestTime()
 {
+	if (m_dwQuestStartTime)
+	{
+		int nLeftSecond = 900 - (timeGetTime() - m_dwQuestStartTime) / 1000;
+
+		char strText[128]{};
+		sprintf(strText, "[%02d:%02d]", nLeftSecond / 60, nLeftSecond % 60);
+
+		m_pQuestRemainTime->SetText(strText, 0);
+		if (!m_pQuestRemainTime->IsVisible())
+			m_pQuestRemainTime->SetVisible(1);
+	}
 }
 
 void TMFieldScene::SetButtonTextXY(SButton* pButton)
 {
+	if (m_pSystemPanel && pButton)
+	{
+		TMVector2 vecXY{};
+		auto vec = pButton->GetPos();
+
+		int nLen = strlen(pButton->m_GCPanel.pFont->m_szString);
+		if (RenderDevice::m_fWidthRatio == 0.80000001f)
+		{
+			vecXY.x = 43.0f - ((float)(nLen - 1) * 3.0f);
+			vecXY.y = 2.0f;
+		}
+		else if (RenderDevice::m_fWidthRatio == 1.28f)
+		{
+			vecXY.x = 66.0f - ((float)(nLen - 1) * 4.0f);
+			vecXY.y = 5.0f;
+		}
+		else if (RenderDevice::m_fWidthRatio == 1.6f)
+		{
+			vecXY.x = 75.0f - ((float)(nLen - 1) * 5.0f);
+			vecXY.y = 5.0f;
+		}
+		else if (RenderDevice::m_fWidthRatio == 2.0f)
+		{
+			vecXY.x = 90.0f - ((float)(nLen - 1) * 5.0f);
+			vecXY.y = 5.0f;
+		}
+
+		pButton->m_GCPanel.pFont->m_nPosX = (int)((m_pSystemPanel->m_nPosX + vec.x) + vecXY.x);
+		pButton->m_GCPanel.pFont->m_nPosY = (int)((m_pSystemPanel->m_nPosY + vec.y) + vecXY.y);
+	}
 }
 
 int TMFieldScene::OnMsgBoxEvent(unsigned int idwControlID, unsigned int idwEvent, unsigned int dwServerTime)
 {
-	return 0;
+	switch (m_pMessageBox->m_dwMessage)
+	{
+	case 601:
+	{
+		g_pObjectManager->m_stTrade.OpponentID = m_pMessageBox->m_dwArg;
+
+		MSG_Trade stTrade{};
+		memcpy(&stTrade, &g_pObjectManager->m_stTrade, sizeof(stTrade));
+		stTrade.Header.ID = m_pMyHuman->m_dwID;
+		stTrade.Header.Type = MSG_Trade_Opcode;
+		SendOneMessage((char*)&stTrade, sizeof(stTrade));
+		if (m_pTradePanel && !m_pTradePanel->IsVisible())
+		{
+			auto pNode = g_pObjectManager->GetHumanByID(m_pMessageBox->m_dwArg);
+			if (!pNode)
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[37], 2000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+
+			auto pTextMyName = static_cast<SText*>(m_pControlContainer->FindControl(TMT_TRADE_MYNAME));
+			auto pTextOPName = static_cast<SText*>(m_pControlContainer->FindControl(TMT_TRADE_OPNAME));
+
+			char szMyName[128]{};
+			char szOPName[128]{};
+			sprintf_s(szMyName, "[%s]:%d", m_pMyHuman->m_szName, strlen(m_pMyHuman->m_szName));
+			sprintf_s(szOPName, "[%s]:%d", pNode->m_szName, strlen(pNode->m_szName));
+			pTextMyName->SetText(szMyName, 1);
+			pTextOPName->SetText(szOPName, 1);
+			SetVisibleTrade(1);
+		}
+	}
+	break;
+	case 11:
+	{
+		m_dwLastTown = g_pTimerManager->GetServerTime();
+		m_cLastTown = 1;
+		m_pMyHuman->m_bCNFMobKill = 0;
+
+		MSG_STANDARDPARM stDelayStart{};
+		stDelayStart.Header.ID = m_pMyHuman->m_dwID;
+		stDelayStart.Header.Type = 942;
+		stDelayStart.Parm = 2;
+		SendOneMessage((char*)&stDelayStart, sizeof(stDelayStart));
+	}
+	break;
+	case 4:
+	{
+		MSG_ApplyBonus stApplyBonus{};
+
+		stApplyBonus.Header.ID = m_pMyHuman->m_dwID;
+		stApplyBonus.Header.Type = MSG_ApplyBonus_Opcode;
+		stApplyBonus.BonusType = 2;
+		stApplyBonus.Detail = m_pMessageBox->m_dwArg >> 16;
+		stApplyBonus.TargetID = m_pMessageBox->m_dwArg;
+		SendOneMessage((char*)&stApplyBonus, sizeof(stApplyBonus));
+	}
+	break;
+	case 6193:
+	case 6194:
+	case 6195:
+	case 6196:
+	{
+		char Value = 0;
+		int GridX = 0;
+		int GridY = 0;
+		if (m_pMessageBox->m_dwMessage == 6193 || m_pMessageBox->m_dwMessage == 6196)
+		{
+			GridX = 2;
+			GridY = 4;
+			if (m_pMessageBox->m_dwMessage == 6193)
+				Value = 1;
+			else
+				Value = 4;
+		}
+		else if (m_pMessageBox->m_dwMessage == 6194)
+		{
+			GridX = 2;
+			GridY = 3;
+			Value = 2;
+		}
+		if (m_pMessageBox->m_dwMessage == 6195)
+		{
+			GridX = 1;
+			GridY = 1;
+			Value = 3;
+		}
+
+		for (int i = 0; i < 4; ++i)
+		{
+			SGridControl* pMyGrid = static_cast<TMFieldScene*>(g_pCurrentScene)->m_pGridInvList[i];
+
+			IVector2 vecGrid = pMyGrid->CanAddItemInEmpty(GridX, GridY);
+
+			if (vecGrid.x > -1 && vecGrid.y > -1)
+			{
+				MSG_HellBuy stHellBuy{};
+				
+				stHellBuy.Header.ID = m_pMyHuman->m_dwID;
+				stHellBuy.Header.Type = 701;
+				stHellBuy.TargetID = m_pMessageBox->m_dwArg;
+				stHellBuy.TargetCarryPos = static_cast<unsigned char>(Value);
+				stHellBuy.MyCarryPos = vecGrid.x + 5 * vecGrid.y;
+
+				SendOneMessage((char*)&stHellBuy, sizeof(stHellBuy));
+
+				if (g_pSoundManager)
+				{
+					auto pSoundData = g_pSoundManager->GetSoundData(336);
+
+					if (pSoundData)
+						pSoundData->Play(0, 0);
+				}
+				return 1;
+			}
+		}
+	
+		auto pItem = new SListBoxItem(g_pMessageStringTable[1], 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+
+		if (pItem)
+			m_pChatList->AddItem(pItem);
+
+		if (g_pSoundManager)
+		{
+			auto pSoundData = g_pSoundManager->GetSoundData(33);
+
+			if (pSoundData)
+				pSoundData->Play(0, 0);
+		}
+	}
+	break;
+	case 816:
+	{
+		MSG_STANDARDPARM stGuildDep{};
+		stGuildDep.Header.ID = m_pMyHuman->m_dwID;
+		stGuildDep.Header.Type = 652;
+		stGuildDep.Parm = m_pMessageBox->m_dwArg;
+		SendOneMessage((char*)&stGuildDep, sizeof(stGuildDep));
+		m_pPGTPanel->SetVisible(0);
+	}
+	break;
+	case 817:
+	{
+		MSG_STANDARDPARM2 stParam{};
+
+		stParam.Header.ID = m_pMyHuman->m_dwID;
+		stParam.Header.Type = 3598;
+		stParam.Parm1 = m_pMyHuman->m_usGuild;
+		stParam.Parm2 = m_pMessageBox->m_dwArg;
+		SendOneMessage((char*)&stParam, sizeof(stParam));
+		m_pPGTPanel->SetVisible(0);
+	}
+	break;
+	case 862:
+	{
+		MSG_STANDARDPARM2 stParam{};
+
+		stParam.Header.ID = m_pMyHuman->m_dwID;
+		stParam.Header.Type = 3602;
+		stParam.Parm1 = m_pMyHuman->m_usGuild;
+		stParam.Parm2 = m_pMessageBox->m_dwArg;
+		SendOneMessage((char*)&stParam, sizeof(stParam));
+		m_pPGTPanel->SetVisible(0);
+	}
+	break;
+	case 818:
+		m_pPGTPanel->SetVisible(0);
+		break;
+	case 16:
+	{
+		m_dwGetItemTime = g_pTimerManager->GetServerTime();
+		int nX = (int)m_pMyHuman->m_vecPosition.x;
+		int nY = (int)m_pMyHuman->m_vecPosition.y;
+		char bAttr = BASE_GetAttr(nX, nY);
+		if (bAttr & 0x10)
+		{
+			MSG_STANDARDPARM stParam{};
+			stParam.Header.ID = g_pObjectManager->m_dwCharID;
+			stParam.Header.Type = 656;
+			stParam.Parm = 0;
+			SendOneMessage((char*)&stParam, sizeof(stParam));
+		}
+		else
+		{
+			m_pMessagePanel->SetMessage(g_pMessageStringTable[38], 2000);
+			m_pMessagePanel->SetVisible(1, 1);
+		}
+
+		if (g_nKeyType == 1)
+			m_pControlContainer->SetFocusedControl(m_pEditChat);
+
+		m_pMessageBox->SetVisible(0);
+		return 1;
+	}
+	break;
+	case 927:
+	{
+		MSG_STANDARDPARM2 stQuest{};
+
+		stQuest.Header.Type = 927;
+		stQuest.Header.ID = m_pMyHuman->m_dwID;
+		stQuest.Parm1 = m_pMessageBox->m_dwArg;
+		stQuest.Parm2 = 4;
+		SendOneMessage((char*)&stQuest, sizeof(stQuest));
+		m_pPGTOver = nullptr;
+	}
+	break;
+	case 883:
+	{
+		int nCellX = m_pMessageBox->m_dwArg >> 16;
+		int nCellY = m_pMessageBox->m_dwArg & 0xFFFF;
+
+		SGridControlItem* pItem = m_pGridInv->GetItem(nCellX, nCellY);
+
+		if (pItem)
+		{
+			int nType = BASE_GetItemAbility(pItem->m_pItem, EF_VOLATILE);
+
+			UseItem(pItem, nType, pItem->m_pItem->sIndex, nCellX, nCellY);
+		}
+	}
+	break;
+	case 13:
+	{
+		MSG_STANDARDPARM2 stParam{};
+
+		stParam.Header.Type = MSG_Quest_Opcode;
+		stParam.Header.ID = m_pMyHuman->m_dwID;
+		stParam.Parm1 = m_pMessageBox->m_dwArg;
+		stParam.Parm2 = 0;
+
+		SendOneMessage((char*)&stParam, sizeof(stParam));
+	}
+	break;
+	case 15:
+	case 10:
+	case 1742:
+	case 233:
+	case 58:
+	{
+		MSG_STANDARDPARM2 stParam{};
+
+		stParam.Header.Type = MSG_Quest_Opcode;
+		stParam.Header.ID = m_pMyHuman->m_dwID;
+		stParam.Parm1 = m_pMessageBox->m_dwArg;
+		stParam.Parm2 = 1;
+
+		SendOneMessage((char*)&stParam, sizeof(stParam));
+	}
+	break;
+	case 646:
+		SendReqBuy(m_pMessageBox->m_dwArg);
+		break;
+	case 38:
+	{
+		int nCellX = (m_pMessageBox->m_dwArg & 0xFFFF0000) >> 16;
+		int nCellY = m_pMessageBox->m_dwArg & 0xFFFF;
+		UseTicket(nCellX, nCellY);
+	}
+	break;
+	case 99:
+		m_cResurrect = 1;
+		m_dwLastResurrect = g_pTimerManager->GetServerTime();
+		return 1;
+	case 228:
+		m_cLastRelo = 1;
+		m_dwLastRelo = g_pTimerManager->GetServerTime();
+		break;
+	case 50001:
+	{
+		MSG_STANDARDPARM stRemoveParty{};
+
+		stRemoveParty.Header.Type = 894;
+		stRemoveParty.Header.ID = m_pMyHuman->m_dwID;
+		stRemoveParty.Parm = m_pMessageBox->m_dwArg;
+		SendOneMessage((char*)&stRemoveParty, sizeof(stRemoveParty));
+		break;
+	}
+	case 60:
+	{
+		MSG_STANDARDPARM2 stParam{};
+
+		stParam.Header.ID = g_pObjectManager->m_dwCharID;
+		stParam.Header.Type = 655;
+		stParam.Parm1 = m_dwTID;
+		stParam.Parm2 = 0;
+		SendOneMessage((char*)&stParam, sizeof(stParam));
+	}
+	break;
+	case 65859:
+		DoCombine();
+		break;
+	case 6434:
+		DoCombine4();
+		break;
+	case 81923:
+		m_ItemMixClass.DoCombine(m_pMessagePanel, m_pGridInvList, m_Coin);
+		break;
+	case 86019:
+		m_MissionClass.DoCombine(m_pMessagePanel, m_pGridInvList, m_pMyHuman->Is2stClass(), m_Level, m_Coin);
+		SetVisibleMissionPanel(0);
+		break;
+	case 51:
+	{
+		MSG_STANDARDPARM2 stQuest{};
+
+		stQuest.Header.Type = MSG_Quest_Opcode;
+		stQuest.Header.ID = m_pMyHuman->m_dwID;
+		stQuest.Parm1 = m_pMessageBox->m_dwArg;
+		stQuest.Parm2 = 0;
+		SendOneMessage((char*)&stQuest, sizeof(stQuest));
+		m_dwNPCClickTime = dwServerTime;
+	}
+	break;
+	case 740:
+	{
+		SGridControlItem* pSellItem = SGridControl::m_pSellItem;
+
+		short sDestType = m_pGridInv->CheckType(
+			pSellItem->m_pGridControl->m_eItemType,
+			pSellItem->m_pGridControl->m_eGridType);
+
+		if (sDestType != 1)
+			return 1;
+
+		short sDestPos = pSellItem->m_nCellIndexX + 5 * pSellItem->m_nCellIndexY;
+
+		// TODO:
+		// Check if this is correct
+		pSellItem->m_pGridControl->PickupAtItem(pSellItem->m_nCellIndexX, pSellItem->m_nCellIndexY);
+
+		int DestPage = 15 * (pSellItem->m_pGridControl->m_dwControlID - 67072);
+		if (DestPage < 0 || DestPage > 45)
+			DestPage = 0;
+
+		MSG_STANDARDPARM2 stDeleteItem{};
+
+		stDeleteItem.Header.ID = m_pMyHuman->m_dwID;
+		stDeleteItem.Header.Type = MSG_DeleteItem_Opcode;
+		stDeleteItem.Parm1 = DestPage + sDestPos;
+		stDeleteItem.Parm2 = pSellItem->m_pItem->sIndex;
+		SendOneMessage((char*)&stDeleteItem, sizeof(stDeleteItem));
+		SGridControl::m_pSellItem = nullptr;
+	}
+	break;
+	case 890:
+	{
+		if (m_pGridInv == nullptr || m_pGridShop == nullptr)
+			return 1;
+
+		SGridControlItem* pSellItem = SGridControl::m_pSellItem;
+
+		if (pSellItem)
+		{
+			short sDestType = m_pGridInv->CheckType(
+				pSellItem->m_pGridControl->m_eItemType,
+				pSellItem->m_pGridControl->m_eGridType);
+
+			short sDestPos = m_pGridInv->CheckPos(pSellItem->m_pGridControl->m_eItemType);
+			if (sDestPos == -1)
+				sDestPos = pSellItem->m_nCellIndexX + 5 * pSellItem->m_nCellIndexY;
+
+			int DestPage = 15 * (pSellItem->m_pGridControl->m_dwControlID - 67072);
+			if (DestPage < 0 || DestPage > 45)
+				DestPage = 0;
+
+			MSG_Sell stSell{};
+
+			stSell.Header.ID = m_pMyHuman->m_dwID;
+			stSell.Header.Type = MSG_Sell_Opcode;
+			stSell.TargetID = m_pGridShop->m_dwMerchantID;
+			stSell.MyType = sDestType;
+			stSell.MyPos = DestPage + sDestPos;
+
+			SendOneMessage((char*)&stSell, sizeof(stSell));
+		}
+		SGridControl::m_pSellItem = nullptr;
+	}
+	break;
+	case 271:
+	case 88:
+	{
+		MSG_STANDARDPARM2 stQuest{};
+
+		stQuest.Header.Type = MSG_Quest_Opcode;
+		stQuest.Header.ID = m_pMyHuman->m_dwID;
+		stQuest.Parm1 = m_pMessageBox->m_dwArg;
+		stQuest.Parm2 = 0;
+
+		SendOneMessage((char*)&stQuest, sizeof(stQuest));
+	}
+	break;
+	case 84:
+	{
+		unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+		if ((dwServerTime - m_dwOldAttackTime) < 1000)
+			return 1;
+
+		int nSkill = 83 - 24 * g_pObjectManager->m_stMobData.Class;
+
+		if (BASE_GetManaSpent(
+			83,
+			(unsigned char)g_pObjectManager->m_stMobData.SaveMana,
+			g_pObjectManager->m_stMobData.CurrentScore.Special[nSkill / 8 + 1]) <= g_pObjectManager->m_stMobData.CurrentScore.Mp)
+		{
+			MSG_AttackOne stAttack{};
+			
+			stAttack.Header.Type = MSG_Attack_One_Opcode;
+			stAttack.Header.ID = m_pMyHuman->m_dwID;
+			stAttack.AttackerID = m_pMyHuman->m_dwID;
+			stAttack.PosX = m_stMoveStop.NextX;
+			stAttack.TargetX = stAttack.PosX;
+			stAttack.PosY = m_stMoveStop.NextY;
+			stAttack.TargetY = stAttack.PosY;
+			stAttack.CurrentMp = -1;
+			stAttack.SkillIndex = 83;
+			stAttack.SkillParm = 0;
+			stAttack.Motion = -1;
+			SendOneMessage((char*)&stAttack, sizeof(stAttack));
+			m_dwOldAttackTime = dwServerTime;
+			m_dwSkillLastTime[83] = dwServerTime;
+
+			MSG_Sell stSell{};
+
+			stSell.Header.ID = m_pMyHuman->m_dwID;
+			stSell.Header.Type = 724;
+			stSell.MyType = m_sDestType;
+			stSell.MyPos = m_sDestPos;
+
+			SendOneMessage((char*)&stSell, sizeof(stSell));
+
+			m_sDestType = -1;
+			m_sDestPos = -1;
+
+			if (m_pMyHuman->m_pSkinMesh->m_pSwingEffect[0])
+				m_pMyHuman->m_pSkinMesh->m_pSwingEffect[0]->m_cGoldPiece = 1;
+			if (m_pMyHuman->m_pSkinMesh->m_pSwingEffect[1])
+				m_pMyHuman->m_pSkinMesh->m_pSwingEffect[1]->m_cGoldPiece = 1;
+			break;
+		}
+
+		auto pItem = new SListBoxItem(g_pMessageStringTable[30], 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777u, 1u, 0);
+
+		if (pItem)
+			m_pChatList->AddItem(pItem);
+
+		if (g_pSoundManager)
+		{
+			auto pSoundData = g_pSoundManager->GetSoundData(33);
+			if (pSoundData)
+				pSoundData->Play(0, 0);
+		}
+	}
+	break;
+	default:
+		break;
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyDebug(char iCharCode, int lParam)
@@ -14122,7 +16802,83 @@ int TMFieldScene::OnKeyDebug(char iCharCode, int lParam)
 
 int TMFieldScene::OnKeySkill(char iCharCode, int lParam)
 {
-	return 0;
+	if (!m_pSkillPanel->IsVisible())
+		return 0;
+
+	int nBase = 0;
+	float fWRatio = RenderDevice::m_fWidthRatio;
+	float fHRatio = RenderDevice::m_fHeightRatio;
+	if (m_pGridSkillBelt3->IsVisible() == 1)
+		nBase = 10;
+
+	int CodeIndex = -1;
+	switch (iCharCode)
+	{
+	case '!':
+		CodeIndex = 0;
+		break;
+	case '@':
+		CodeIndex = 1;
+		break;
+	case '#':
+		CodeIndex = 2;
+		break;
+	case '$':
+		CodeIndex = 3;
+		break;
+	case '%':
+		CodeIndex = 4;
+		break;
+	case '^':
+		CodeIndex = 5;
+		break;
+	case '&':
+		CodeIndex = 6;
+		break;
+	case '*':
+		CodeIndex = 7;
+		break;
+	case '(':
+		CodeIndex = 8;
+		break;
+	case ')':
+		CodeIndex = 9;
+		break;
+	}
+	if (CodeIndex == -1)
+		return 0;
+
+	for (int i = 0; i < 24; ++i)
+	{
+		auto pGrid = m_pSkillSecGrid[i];
+		if (PointInRect((int)g_pCursor->m_nPosX, (int)g_pCursor->m_nPosY, pGrid->m_GCPanel.nPosX, pGrid->m_GCPanel.nPosY, pGrid->m_GCPanel.nWidth * fWRatio, pGrid->m_GCPanel.nHeight * fHRatio) == 1)
+		{
+			auto pGridItem = pGrid->GetItem(0, 0);
+			SetShortSkill(CodeIndex + nBase, pGridItem);
+			break;
+		}
+	}
+	for (int i = 0; i < 12; ++i)
+	{
+		auto pGrid = m_pSkillSecGrid2[i];
+		if (PointInRect((int)g_pCursor->m_nPosX, (int)g_pCursor->m_nPosY, pGrid->m_GCPanel.nPosX, pGrid->m_GCPanel.nPosY, pGrid->m_GCPanel.nWidth * fWRatio, pGrid->m_GCPanel.nHeight * fHRatio) == 1)
+		{
+			auto pGridItem = pGrid->GetItem(0, 0);
+			SetShortSkill(CodeIndex + nBase, pGridItem);
+			break;
+		}
+	}
+	if (PointInRect((int)g_pCursor->m_nPosX, (int)g_pCursor->m_nPosY, m_pGridSkillBelt->m_GCPanel.nPosX, m_pGridSkillBelt->m_GCPanel.nPosY, 
+		m_pGridSkillBelt->m_GCPanel.nWidth * fWRatio, m_pGridSkillBelt->m_GCPanel.nHeight * fHRatio) == 1)
+	{
+		auto pItem = m_pGridSkillBelt->GetAtItem((int)((8 * (int)(g_pCursor->m_nPosX - m_pGridSkillBelt->m_GCPanel.nPosX)) / (m_pGridSkillBelt->m_GCPanel.nWidth * fWRatio)),
+			(int)((int)(g_pCursor->m_nPosY - m_pGridSkillBelt->m_GCPanel.nPosY)	/ (m_pGridSkillBelt->m_GCPanel.nHeight * fHRatio)));
+
+		if (pItem)
+			SetShortSkill(nBase, pItem);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnKeyDash(char iCharCode, int lParam)
@@ -14808,24 +17564,180 @@ int TMFieldScene::OnPacketMessageChat_Param(MSG_STANDARD* pStd)
 	return 0;
 }
 
-int TMFieldScene::OnPacketMessageWhisper(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketMessageWhisper(MSG_MessageWhisper* pMsg)
 {
-	return 0;
+	if (g_pObjectManager->GetHumanByID(pMsg->Header.ID))
+		return 0;
+
+	auto pChatList = m_pChatList;
+	pMsg->MobName[15] = 0;
+	pMsg->String[127] = 0;
+	pMsg->String[126] = 0;
+
+	int nIndex = 0;
+	unsigned int dwColor = 0xFFFFFF00;
+	bool bDrawText = true;
+	
+	char szMsg[128]{};
+	if (pMsg->String[0] == '-' && pMsg->Color == 3)
+	{
+		if (m_pChatGuild && !m_pChatGuild->m_bSelected)
+			bDrawText = false;
+
+		dwColor = 0xFFAAFFFF;
+		nIndex = 1;
+		if (pMsg->String[1] == '-')
+		{
+			dwColor = 0xFF00FFFF;
+			nIndex = 2;
+		}
+
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, &pMsg->String[nIndex]);	
+	}
+	else if (pMsg->Color == 7)
+	{
+		dwColor = 0xFFBBBBBB;
+		nIndex = 0;
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, pMsg->String);		
+	}
+	else if (pMsg->String[0] == '=')
+	{
+		if (m_pPartyList->m_nNumItem > 1)
+		{
+			dwColor = 0xFFFF99FF;
+			nIndex = 1;
+		}
+
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, &pMsg->String[nIndex]);		
+	}
+	else if (pMsg->String[0] == '@')
+	{
+		if (m_pChatParty && !m_pChatParty->m_bSelected)
+			bDrawText = false;
+
+		if (pMsg->String[1] == '@')
+		{
+			dwColor = 0xF0F60AFF;
+			nIndex = 2;
+		}
+		else
+		{
+			dwColor = 0xFF00AAFF;
+			nIndex = 1;
+		}
+
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, &pMsg->String[nIndex]);
+	}
+	else if (pMsg->String[0] != '!')
+	{
+		SYSTEMTIME sysTime{};
+		GetLocalTime(&sysTime);
+
+		m_pHelpList[3]->AddItem(new SListBoxItem((char*)" ", 0xFFFFFFFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+		sprintf(szMsg, g_pMessageStringTable[226], pMsg->MobName);
+		char szTime[128]{};
+		sprintf(szTime, "%s [%02d:%02d:%02d]", szMsg, sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
+		m_pHelpList[3]->AddItem(new SListBoxItem(szTime, 0xFFFFFFFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+		sprintf(szMsg, "%s", &pMsg->String[1]);
+		m_pHelpList[3]->AddItem(new SListBoxItem(szMsg, 0xFFFFFFCC, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+		if (m_pHelpMemo)
+			m_pHelpMemo->SetVisible(1);
+
+		return 1;
+	}
+
+	if (!bDrawText)
+		return 1;
+
+	if (strlen(pMsg->MobName) + strlen(pMsg->String) <= 43)
+	{
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, &pMsg->String[nIndex]);
+
+		if(pChatList)
+			pChatList->AddItem(new SListBoxItem(szMsg, dwColor, 0.0, 0.0, 280.0f, 16.0f, 0, 0x77777777, 1, 0));
+	}
+	else
+	{
+		char szMsg2[128]{};
+		char szMsg3[128]{};
+
+		if (IsClearString(pMsg->String, 42))
+		{
+			strncpy(szMsg3, pMsg->String, 43);
+			sprintf(szMsg2, "%s", &pMsg->String[43]);
+		}
+		else
+		{
+			strncpy(szMsg3, pMsg->String, 42);
+			sprintf(szMsg2, "%s", &pMsg->String[42]);
+		}
+
+		sprintf(szMsg, "[%s]> %s", pMsg->MobName, &szMsg3[nIndex]);
+
+		if(pChatList)
+			pChatList->AddItem(new SListBoxItem(szMsg, dwColor, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+		if (strlen(pMsg->String) > 43 && pChatList)
+			pChatList->AddItem(new SListBoxItem(szMsg2, dwColor, 0.0f, 0.0f, 280.0f, 16.0f, 0, 0x77777777, 1, 0));
+	}
+
+	m_dwChatTime = g_pTimerManager->GetServerTime();
+	return 1;
 }
 
-int TMFieldScene::OnPacketLongMessagePanel(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketLongMessagePanel(MSG_LongMessagePanel* pMsg)
 {
-	return 0;
+	pMsg->Line[0][127] = 0;
+	pMsg->Line[1][127] = 0;
+	pMsg->Line[2][127] = 0;
+	pMsg->Line[3][127] = 0;
+
+	if (pMsg->Parm1 == 10)
+	{
+		for (int i = 0; i < 4; ++i)
+			strcpy(m_szEventTextTemp[i], pMsg->Line[i]);
+		m_dwEventStartTime = 0;
+
+		return 1;
+	}
+	if (m_pQuizPanel)
+	{
+		if (!pMsg->Parm1 && m_pQuizCaption)
+			m_pQuizCaption->SetText(g_pMessageStringTable[260], 0);
+		else if (pMsg->Parm1 == 1 && m_pQuizCaption)
+			m_pQuizCaption->SetText(g_pMessageStringTable[259], 0);
+
+		for (int j = 0; j < 4; ++j)
+		{
+			m_pChatListnotice->AddItem(new SListBoxItem(pMsg->Line[j], 0xFFCCAAFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+			m_pQuizText[j]->SetText(pMsg->Line[j], 0);
+		}
+
+		m_dwQuizStart = g_pTimerManager->GetServerTime();
+		m_pQuizPanel->SetVisible(1);
+		
+		GetSoundAndPlay(33, 0, 0);
+	}
+	return 1;
 }
 
-int TMFieldScene::OnPacketReqSummon(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketReqSummon(MSG_ReqSummon* pStd)
 {
-	return 0;
+	pStd->Name[15] = 0;
+
+	m_pHelpSummon->SetVisible(1);
+
+	sprintf(m_szSummoner, pStd->Name);
+	return 1;
 }
 
 int TMFieldScene::OnPacketCancelSummon(MSG_STANDARD* pStd)
 {
-	return 0;
+	m_pHelpSummon->SetVisible(0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketAction(MSG_STANDARD* pStd)
@@ -14842,9 +17754,12 @@ int TMFieldScene::OnPacketAction(MSG_STANDARD* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketSoundEffect(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketSoundEffect(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	int nSoundIndex = pStd->Parm;
+
+	GetSoundAndPlayIfNot(nSoundIndex, 0, 0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
@@ -15371,31 +18286,27 @@ int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
 				GroundGetMask(pHuman->m_vecPosition) * 0.1f + 0.05000000f,
 				(float)pCreateMob->PosY + 0.5f);
 
-			if (pHuman->m_nSkinMeshType && pHuman->m_nSkinMeshType != 1)
-			{
-				if ((pCreateMob->CreateType & 0x7FFF) != 3 && pHuman->m_nSkinMeshType != 35 && pHuman->m_nSkinMeshType != 36)
-				{
-					auto pChild = new TMEffectStart(vecEffectPos, 1, nullptr);
-
-					if (pChild && m_pEffectContainer)
-						m_pEffectContainer->AddChild(pChild);
-
-					auto pSoundManager = g_pSoundManager;
-					if (pSoundManager && m_pMyHuman == pHuman)
-					{
-						auto pSoundData = pSoundManager->GetSoundData(151);
-						pSoundData->Play();
-					}
-				}
-			}
-			else
+			if (!pHuman->m_nSkinMeshType || pHuman->m_nSkinMeshType == 1)
 			{
 				auto pEffect = new TMEffectStart(vecEffectPos, 0, nullptr);
 
 				if (pEffect && m_pEffectContainer)
 					m_pEffectContainer->AddChild(pEffect);
 			}
+			else if ((pCreateMob->CreateType & 0x7FFF) != 3 && pHuman->m_nSkinMeshType != 35 && pHuman->m_nSkinMeshType != 36)
+			{
+				auto pChild = new TMEffectStart(vecEffectPos, 1, nullptr);
 
+				if (pChild && m_pEffectContainer)
+					m_pEffectContainer->AddChild(pChild);
+
+				auto pSoundManager = g_pSoundManager;
+				if (pSoundManager && m_pMyHuman == pHuman)
+				{
+					auto pSoundData = pSoundManager->GetSoundData(151);
+					pSoundData->Play();
+				}
+			}
 			if ((pCreateMob->CreateType & 0x7FFF) == 3)
 			{
 				if (pHuman->m_nClass == 62 && pHuman->m_stLookInfo.FaceMesh == 2)
@@ -15552,19 +18463,122 @@ int TMFieldScene::OnPacketCNFCharacterLogout(MSG_STANDARD* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketCNFRemoveServer(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCNFRemoveServer(MSG_CNFRemoveServer* pStd)
 {
-	return 0;
+	if (pStd->Header.ID != g_pObjectManager->m_dwCharID || g_pSocketManager->Sock)
+	{
+		if (pStd->Header.ID == g_pObjectManager->m_dwCharID && g_pSocketManager->Sock)
+		{
+			memcpy(&m_stRemoveServer, pStd, sizeof(m_stRemoveServer));
+			m_bMsgRemoveServer = 1;
+		}
+		return 1;
+	}
+
+	m_pMessagePanel->SetMessage(g_pMessageStringTable[7], 0);
+	m_pMessagePanel->SetVisible(1, 0);
+
+	g_bMoveServer = 0;
+	int nServer = 0;
+
+	sscanf(pStd->TID, "*%d", &nServer);
+	g_pObjectManager->m_nServerIndex = nServer;
+	CheckPKNonePK(g_pObjectManager->m_nServerIndex);
+	sprintf(g_pApp->m_szServerIP, "%s", g_pServerList[g_pObjectManager->m_nServerGroupIndex][nServer]);
+
+	if (g_pSocketManager->ConnectServer(g_pApp->m_szServerIP, TM_CONNECTION_PORT, 0, 1124))
+	{
+		MSG_AccountLogin stAccountLogin{};
+		stAccountLogin.Header.ID = 0;
+		stAccountLogin.Header.Type = MSG_AccountLogin_Opcode;
+		stAccountLogin.Version = 1758;
+		stAccountLogin.Force = 1;
+
+		ULONG dwSize = 0;
+		IP_ADAPTER_INFO stInfo{};
+		GetAdaptersInfo(&stInfo, &dwSize);
+		if (dwSize)
+		{
+			PIP_ADAPTER_INFO pInfo = (PIP_ADAPTER_INFO)malloc(dwSize);
+			GetAdaptersInfo(pInfo, &dwSize);
+
+			char* sour = pInfo->AdapterName;
+			int tpos = 0;
+			int grid = 0;
+			char temp[256]{};
+			for (int i = 0; i < strlen(pInfo->AdapterName); ++i)
+			{
+				if (sour[i] != '{' && sour[i] != '}' && sour[i] != '-')
+				{
+					temp[tpos++] = sour[i];
+					if (!(++grid % 8))
+						temp[tpos++] = 32;
+				}
+			}
+
+			temp[tpos] = 0;
+			sscanf(temp, "%x %x %x %x",	stAccountLogin.Mac,	&stAccountLogin.Mac[1],	&stAccountLogin.Mac[2],	&stAccountLogin.Mac[3]);
+			free(pInfo);
+		}
+
+		strncpy(stAccountLogin.AccountName, pStd->AccountName, sizeof(pStd->AccountName));
+		strncpy(stAccountLogin.TID, pStd->TID, sizeof(pStd->TID));
+		sprintf(stAccountLogin.AccountPass, "");
+		SendOneMessage((char*)&stAccountLogin, sizeof(stAccountLogin));
+		return 1;
+	}
+
+	m_pMessagePanel->SetMessage(g_pMessageStringTable[8], 4000);
+	m_pMessagePanel->SetVisible(1, 1);
+	if (m_eSceneType != ESCENE_TYPE::ESCENE_LOGIN)
+		g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_SELECTSERVER_STATE);
+	return 1;
 }
 
-int TMFieldScene::OnPacketCNFAccountLogin(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCNFAccountLogin(MSG_CNFRemoveServerLogin* pStd)
 {
-	return 0;
+	memcpy(&g_pObjectManager->m_stSelCharData, &pStd->SelChar, sizeof(pStd->SelChar));
+	memcpy(g_pObjectManager->m_stItemCargo, pStd->Cargo, sizeof(pStd->Cargo));
+	g_pObjectManager->m_nCargoCoin = pStd->Coin;
+	memset(g_pObjectManager->m_stMemo, 0, sizeof(g_pObjectManager->m_stMemo));
+
+	/*for (int i = 0; i < 16; ++i)
+		g_pSocketManager->SendQueue[i] = *((unsigned char*)&pStd->Tick + i + 4);*/
+
+	g_pSocketManager->SendCount = 0;
+	g_pSocketManager->RecvCount = 0;
+	return 1;
 }
 
-int TMFieldScene::OnPacketCNFCharacterLogin(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCNFCharacterLogin(MSG_CNFCharacterLogin* pStd)
 {
-	return 0;
+	m_pMessagePanel->SetVisible(0, 1);
+	g_pTimerManager->SetServerTime(pStd->Header.Tick);
+	g_pObjectManager->m_dwCharID = pStd->ClientID;
+	memcpy(&g_pObjectManager->m_stMobData, &pStd->MOB, sizeof(pStd->MOB));
+	g_pObjectManager->m_nFakeExp = pStd->Ext1.Data[0];
+	g_pObjectManager->m_stMobData.HomeTownX = pStd->PosX;
+	g_pObjectManager->m_stMobData.HomeTownY = pStd->PosY;
+	memcpy(g_pObjectManager->m_cShortSkill, g_pObjectManager->m_stMobData.ShortSkill, sizeof(g_pObjectManager->m_stMobData.ShortSkill));
+
+	memcpy(&g_pObjectManager->m_cShortSkill[4], pStd->ShortSkill, sizeof(pStd->ShortSkill));
+	for (int i = 0; i < 20; ++i)
+	{
+		if ((unsigned char)g_pObjectManager->m_cShortSkill[i] < 24)
+			g_pObjectManager->m_cShortSkill[i] += 24 * g_pObjectManager->m_stMobData.Class;
+	}
+
+	g_nWeather = pStd->Weather;
+
+	m_pHPBar->ResetBar();
+	m_pMPBar->ResetBar();
+	if (m_pMHPBar)
+		m_pMHPBar->ResetBar();
+	if (m_pMHPBarT)
+		m_pMHPBarT->ResetBar();
+
+	g_pObjectManager->SetCurrentState(ObjectManager::TM_GAME_STATE::TM_FIELD2_STATE);
+	return 1;
 }
 
 int TMFieldScene::OnPacketItemSold(MSG_STANDARDPARM2* pStd)
@@ -15595,24 +18609,224 @@ int TMFieldScene::OnPacketWeather(MSG_STANDARDPARM* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketCreateItem(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCreateItem(MSG_CreateItem* pMsg)
 {
-	return 0;
+	auto pOldItem = (TMItem*)g_pObjectManager->GetItemByID(pMsg->ItemID);
+	
+	if (BASE_GetItemAbility(&pMsg->Item, 34) > 0)
+	{
+		TMGate* pItem = nullptr;
+
+		if (pOldItem)
+			pItem = static_cast<TMGate*>(pOldItem);
+		else
+		{
+			pItem = new TMGate();
+		}
+
+		if (!pItem)
+			return 1;
+
+		pItem->InitItem(pMsg->Item);
+		pItem->InitGate(pMsg->Item);
+
+		pItem->m_dwID = pMsg->ItemID;
+		pItem->m_nMaskIndex = 0;
+		pItem->InitObject();
+		pItem->InitAngle(0.0f, ((float)pMsg->Rotate * D3DXToRadian(180)) / 2.0f, 0.0f);
+
+		float fX = (float)pMsg->GridX + 0.5f;
+		float fY = (float)pMsg->GridY + 0.5f;
+
+		float fHeight = m_pGround->GetHeight(TMVector2(fX, fY));
+
+		if (fHeight < -500.0f)
+		{
+			auto pOtherGround = m_pGroundList[(m_nCurrentGroundIndex + 1) % 2];
+			if (pOtherGround)
+				fHeight = pOtherGround->GetHeight(TMVector2(fX, fY));
+			else
+			{
+				TMScene::FrameMove(0);
+				pOtherGround = m_pGroundList[(m_nCurrentGroundIndex + 1) % 2];
+				if (pOtherGround)
+					fHeight = pOtherGround->GetHeight(TMVector2(fX, fY));
+			}
+		}
+
+		pItem->InitPosition(fX, fHeight, fY);
+		pItem->m_sAuth = 1;
+
+		int nMaskIndex = BASE_GetItemAbility(&pMsg->Item, 34);
+		BASE_UpdateItem2(nMaskIndex, 1, (unsigned char)pMsg->State, pMsg->GridX, pMsg->GridY, (char*)m_HeightMapData,
+			(int)(pItem->m_fAngle / D3DXToRadian(90)), pMsg->Height);
+
+		pItem->SetState((EGATE_STATE)pMsg->State);
+		if (!pOldItem)
+			m_pItemContainer->AddChild(pItem);
+
+		return 1;
+	}
+
+	TMItem* pItem = nullptr;
+	if (pOldItem)
+		pItem = pOldItem;
+	else if (g_pItemList[pMsg->Item.sIndex].nIndexMesh == 1607)
+	{
+		pItem = new TMCannon();
+		pItem->m_dwObjType = 1607;
+		pMsg->Rotate = 1;
+	}
+	else
+	{
+		pItem = new TMItem();
+	}
+
+	if (!pItem)
+		return 1;
+
+	pItem->InitItem(pMsg->Item);
+	pItem->m_dwID = pMsg->ItemID;
+	pItem->m_nMaskIndex = 0;
+	pItem->InitObject();
+	pItem->InitAngle(0.0f, ((float)pMsg->Rotate * D3DXToRadian(180)) / 2.0f, 0.0f);
+
+	float fX = (float)pMsg->GridX + 0.5f;
+	float fY = (float)pMsg->GridY + 0.5f;
+
+	float fHeight = GroundGetMask(TMVector2(fX, fY)) * 0.1f;
+	pItem->InitPosition(fX, fHeight + 0.1f, fY);
+
+	if (!pOldItem)
+		m_pItemContainer->AddChild(pItem);
+
+	if (pMsg->Create == 1)
+	{
+		if (BASE_GetItemAbility(&pMsg->Item, 38) == 2)
+			GetSoundAndPlay(44, 0, 0);
+		else if (pMsg->Item.sIndex == 412 || pMsg->Item.sIndex == 413 || pMsg->Item.sIndex == 4141 ||
+			pMsg->Item.sIndex == 419 || pMsg->Item.sIndex == 420)
+		{
+			GetSoundAndPlay(48, 0, 0);
+		}
+		else if (pMsg->Item.sIndex == 747)
+		{
+			GetSoundAndPlay(306, 0, 0);
+		}
+		else
+			GetSoundAndPlay(45, 0, 0);
+	}
+
+	return 1;
 }
 
-int TMFieldScene::OnPacketCNFDropItem(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCNFDropItem(MSG_CNFDropItem* pMsg)
 {
-	return 0;
+	SGridControlItem* pGridItem = nullptr;
+	if (pMsg->SourType == 0)
+	{
+		SGridControl* pGridList[16]{};
+		pGridList[0] = nullptr;
+		pGridList[1] = m_pGridHelm;
+		pGridList[2] = m_pGridCoat;
+		pGridList[3] = m_pGridPants;
+		pGridList[4] = m_pGridGloves;
+		pGridList[5] = m_pGridBoots;
+		pGridList[6] = m_pGridLeft;
+		pGridList[7] = m_pGridRight;
+		pGridList[8] = m_pGridRing;
+		pGridList[9] = m_pGridNecklace;
+		pGridList[10] = m_pGridOrb;
+		pGridList[11] = m_pGridCabuncle;
+		pGridList[12] = m_pGridGuild;
+		pGridList[13] = m_pGridEvent;
+		pGridList[14] = m_pGridDRing;
+		pGridList[15] = m_pGridMantua;
+
+		if (pGridList[pMsg->SourPos])
+			pGridItem = pGridList[pMsg->SourPos]->PickupItem(0, 0);
+
+		memset(&g_pObjectManager->m_stMobData.Equip[pMsg->SourPos], 0, sizeof(STRUCT_ITEM));
+	}
+	else if (pMsg->SourType == 1)
+	{
+		auto pGridItem = m_pGridInv->PickupAtItem(pMsg->SourPos % 5, pMsg->SourPos / 5);
+		memset(&g_pObjectManager->m_stMobData.Carry[pMsg->SourPos], 0, sizeof(STRUCT_ITEM));
+	}
+	else if (pMsg->SourType == 2)
+	{
+		pGridItem = static_cast<SGridControl*>(m_pControlContainer->FindControl(65690))->PickupAtItem(pMsg->SourPos % 5, pMsg->SourPos / 5);
+		memset(&g_pObjectManager->m_stItemCargo[pMsg->SourPos], 0, sizeof(STRUCT_ITEM));
+	}
+
+	g_pCursor->DetachItem();
+	SAFE_DELETE(pGridItem);
+
+	m_pMyHuman->m_sFamiliar = g_pObjectManager->m_stMobData.Equip[13].sIndex;
+	GetSoundAndPlay(45, 0, 0);
+
+	UpdateScoreUI(0);
+	UpdateMyHuman();
+	return 1;
 }
 
-int TMFieldScene::OnPacketCNFGetItem(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCNFGetItem(MSG_CNFGetItem* pMsg)
 {
-	return 0;
+	auto pGrid = m_pGridInv;
+	auto pStructItem = new STRUCT_ITEM;
+
+	memcpy(pStructItem, &pMsg->Item, sizeof(pMsg->Item));
+	if (BASE_GetItemAbility((STRUCT_ITEM*)pStructItem, 38) == 2)
+	{
+		int coin = (unsigned char)BASE_GetItemAbility(pStructItem, 36) << 8;
+		int tempb = BASE_GetItemAbility(pStructItem, 37);
+
+		g_pObjectManager->m_stMobData.Coin += coin + tempb;
+
+		char szMoney[64]{};
+		sprintf(szMoney, "%10d", g_pObjectManager->m_stMobData.Coin);
+		m_pMoney1->m_cComma = 2;
+		m_pMoney1->SetText(szMoney, 0);
+		m_pMoney2->m_cComma = 2;
+		m_pMoney2->SetText(szMoney, 0);
+
+		sprintf(szMoney, "%10d", g_pObjectManager->m_stMobData.Coin - m_nBet);
+		m_pMoney3->m_cComma = 2;
+		m_pMoney3->SetText(szMoney, 0);
+	}
+	else
+	{
+		pGrid->AddItem(new SGridControlItem(0, pStructItem, 0.0f, 0.0f), pMsg->DestPos % 5, pMsg->DestPos / 5);
+		memcpy(&g_pObjectManager->m_stMobData.Carry[pMsg->DestPos], pStructItem, sizeof(STRUCT_ITEM));
+	}
+
+	GetSoundAndPlay(45, 0, 0);
+	UpdateScoreUI(0);
+	return 1;
 }
 
-int TMFieldScene::OnPacketUpdateItem(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketUpdateItem(MSG_UpdateItem* pMsg)
 {
-	return 0;
+	auto pItem = (TMGate*)g_pObjectManager->GetItemByID(pMsg->ItemID);
+	if (pItem && BASE_GetItemAbility(&pItem->m_stItem, 34) > 0)
+	{
+		STRUCT_ITEM stItem{};
+		stItem.sIndex = pItem->m_stItem.sIndex;
+		
+		int nMaskIndex = BASE_GetItemAbility(&stItem, 34);
+		int nState = static_cast<int>(pItem->m_eState);
+		if (nState > static_cast<int>(EGATE_STATE::EGATE_LOCKED))
+			nState -= static_cast<int>(EGATE_STATE::EGATE_LOCKED);
+
+		pItem->m_sAuth = 1;
+		BASE_UpdateItem2(nMaskIndex, nState, pMsg->State, (int)pItem->m_vecPosition.x, (int)pItem->m_vecPosition.y,	(char*)m_HeightMapData,
+			(int)(pItem->m_fAngle / D3DXToRadian(90)), pMsg->Height);
+
+		pItem->SetState((EGATE_STATE)(pMsg->State + static_cast<int>(EGATE_STATE::EGATE_LOCKED)));
+	}
+
+	UpdateScoreUI(0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketRemoveItem(MSG_STANDARDPARM* pStd)
@@ -15937,38 +19151,30 @@ int TMFieldScene::OnPacketShopList(MSG_STANDARD* pStd)
 
 		for (int i = 0; i < 27; ++i)
 		{
-			auto pItemList = new STRUCT_ITEM();
+			auto pItemList = new STRUCT_ITEM;
+			memcpy(pItemList, &pShopList->List[i], sizeof(STRUCT_ITEM));
 
-			if (pItemList)
+			if (pShopList->List[i].sIndex <= 0)
 			{
-				memcpy(pItemList, &pShopList->List[i], sizeof(STRUCT_ITEM));
+				delete pItemList;
+				continue;
+			}
 
-				if (pShopList->List[i].sIndex > 0)
-				{
-					auto pItem = new SGridControlItem(0, pItemList, 0.0f, 0.0f);
+			auto pItem = new SGridControlItem(0, pItemList, 0.0f, 0.0f);
+			m_pGridShop->AddItem(pItem, i % 5, i / 5);
 
-					if (pItem)
-					{
-						m_pGridShop->AddItem(pItem, i % 5, i / 5);
+			int nAmount = BASE_GetItemAmount(pItemList);
+			if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
+				nAmount = 0;
+			if (nAmount > 0)
+			{
+				sprintf_s(pItem->m_GCText.strString, "%2d", nAmount);
 
-						int nAmount = BASE_GetItemAmount(pItemList);
-
-						if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
-							nAmount = 0;
-
-						if (nAmount > 0)
-						{
-							sprintf_s(pItem->m_GCText.strString, "%2d", nAmount);
-
-							pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
-						}
-					}
-				}
+				pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
 			}
 		}
 
-		auto pREQItem = new STRUCT_ITEM();
-
+		auto pREQItem = new STRUCT_ITEM;
 		if (pREQItem)
 		{
 			pREQItem->sIndex = 4998;
@@ -16015,37 +19221,26 @@ int TMFieldScene::OnPacketShopList(MSG_STANDARD* pStd)
 		{
 			if (pShopList->List[j].sIndex == 5027)
 			{
-				STRUCT_ITEM temp = pShopList->List[j];
-
-				pShopList->List[j] = pShopList->List[j + 1];
-
-				pShopList->List[j + 1] = temp;
-
-				STRUCT_ITEM temp2 = pShopList->List[j + 1];
-
-				pShopList->List[j + 1] = pShopList->List[j + 2];
-
-				pShopList->List[j + 2] = temp2;
+				std::swap(pShopList->List[j], pShopList->List[j + 1]);
+				std::swap(pShopList->List[j + 1], pShopList->List[j + 2]);
 				break;
 			}
 		}
 
 		for (int k = 0; k < 27; ++k)
 		{
-			auto dst = new STRUCT_ITEM();
+			auto dst = new STRUCT_ITEM;
+			memcpy(dst, &pShopList->List[k], sizeof(STRUCT_ITEM));
 
-			if (dst)
+			if (pShopList->List[k].sIndex <= 0)
 			{
-				memcpy(dst, &pShopList->List[k], sizeof(STRUCT_ITEM));
-
-				if (pShopList->List[k].sIndex > 0)
-				{
-					auto pItem = new SGridControlItem(0, dst, 0.0f, 0.0f);
-
-					if (pItem)
-						m_pGridSkillMaster->AddItem(pItem, k % 9 % 4, k / 9 + (k - k / 9) / 4);
-				}
+				delete dst;
+				continue;
 			}
+
+			auto pItem = new SGridControlItem(0, dst, 0.0f, 0.0f);
+			if (pItem)
+				m_pGridSkillMaster->AddItem(pItem, k % 9 % 4, k / 9 + (k - k / 9) / 4);
 		}
 
 		if (!m_pSkillMPanel->IsVisible())
@@ -16055,13 +19250,117 @@ int TMFieldScene::OnPacketShopList(MSG_STANDARD* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketRMBShopList(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRMBShopList(MSG_RMBShopList* pMsg)
 {
-	return 0;
+	if (pMsg->ShopType == 1)
+	{
+		if (m_bEventCouponClick == 1)
+		{
+			m_bEventCouponClick = 0;
+			m_bEventCouponOpen = 1;
+		}
+
+		auto pGrid = m_pGridShop;
+		pGrid->Empty();
+
+		for (int i = 0; i < 39; ++i)
+		{
+			auto pItemList = new STRUCT_ITEM;			
+			memcpy(pItemList, &pMsg->List[i], sizeof(STRUCT_ITEM));
+
+			if (pMsg->List[i].sIndex <= 0)
+			{
+				delete pItemList;
+				continue;
+			}
+
+			auto pItem = new SGridControlItem(0, pItemList, 0.0f, 0.0f);
+
+			pGrid->AddItem(pItem, i % 5, i / 5);
+			int nAmount = BASE_GetItemAmount(pItemList);
+			if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
+				nAmount = 0;
+			if (nAmount > 0)
+			{
+				sprintf(pItem->m_GCText.strString, "%2d", nAmount);
+				pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+			}
+		}
+
+		auto pREQItem = new STRUCT_ITEM;
+		memset(pREQItem, 0, sizeof(STRUCT_ITEM));
+		pREQItem->sIndex = 4998;
+
+		auto pItem = new SGridControlItem(0, pREQItem, 0.0f, 0.0f);
+		pItem->m_GCObj.nTextureIndex = 8;
+		pGrid->AddItem(pItem, 4, 7);
+
+		g_pObjectManager->m_nTax = pMsg->Tax;
+		SetVisibleShop(1);
+	}
+	else if (pMsg->ShopType == 3)
+	{		
+		switch ((pMsg->List[0].sIndex - 5000) / 24)
+		{
+		case 0:
+			m_pSkillMSec1->SetText(g_pMessageStringTable[107], 0);
+			m_pSkillMSec2->SetText(g_pMessageStringTable[108], 0);
+			m_pSkillMSec3->SetText(g_pMessageStringTable[109], 0);
+			break;
+		case 1:
+			m_pSkillMSec1->SetText(g_pMessageStringTable[110], 0);
+			m_pSkillMSec2->SetText(g_pMessageStringTable[111], 0);
+			m_pSkillMSec3->SetText(g_pMessageStringTable[112], 0);
+			break;
+		case 2:
+			m_pSkillMSec1->SetText(g_pMessageStringTable[113], 0);
+			m_pSkillMSec2->SetText(g_pMessageStringTable[114], 0);
+			m_pSkillMSec3->SetText(g_pMessageStringTable[115], 0);
+			break;
+		case 3:
+			m_pSkillMSec1->SetText(g_pMessageStringTable[133], 0);
+			m_pSkillMSec2->SetText(g_pMessageStringTable[134], 0);
+			m_pSkillMSec3->SetText(g_pMessageStringTable[135], 0);
+			break;
+		}
+
+		for (int j = 0; j < 27; ++j)
+		{
+			if (pMsg->List[j].sIndex == 5027)
+			{
+				std::swap(pMsg->List[j], pMsg->List[j + 1]);
+				std::swap(pMsg->List[j + 1], pMsg->List[j + 2]);
+				break;
+			}
+		}
+
+		auto pGridSkillMaster = m_pGridSkillMaster;
+		pGridSkillMaster->Empty();
+		for (int k = 0; k < 27; ++k)
+		{
+			auto pNewItem = new STRUCT_ITEM;
+			memcpy(pNewItem, &pMsg->List[k], sizeof(STRUCT_ITEM));
+
+			if (pMsg->List[k].sIndex <= 0)
+			{
+				delete pNewItem;
+				continue;
+			}
+
+			auto pItem = new SGridControlItem(0, pNewItem, 0.0f, 0.0f);
+			pGridSkillMaster->AddItem(pItem, k % 9 % 4, k / 9 + (k - k / 9) / 4);
+		}
+
+		if (!m_pSkillMPanel->IsVisible())
+			SetVisibleSkillMaster();
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketBuy(MSG_STANDARD* pStd)
 {
+	// Just that
 	return 1;
 }
 
@@ -16232,19 +19531,203 @@ int TMFieldScene::OnPacketCNFMobKill(MSG_CNFMobKill* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketREQParty(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketREQParty(MSG_REQParty* pStd)
 {
-	return 0;
+	auto pPartyList = m_pPartyList;
+	pStd->Leader.Name[15] = 0;
+
+	auto pPartyItem = new SListBoxPartyItem(pStd->Leader.Name,
+		0xFFFFFFFF,
+		0.0f,
+		0.0f,
+		104.0f,
+		20.0f,
+		pStd->Leader.ID,
+		pStd->Leader.Class,
+		pStd->Leader.Level,
+		pStd->Leader.Hp,
+		pStd->Leader.MaxHp);
+
+	if (!pStd->Leader.PartyIndex)
+		pPartyItem->m_nState = 1;
+	if (pPartyList->m_nNumItem > 0)
+		pPartyList->Empty();
+
+	pPartyList->AddItem(pPartyItem);
+
+	if (m_pPartyPanel)
+		m_pPartyPanel->SetVisible(1);
+	if (m_pPartyBtn)
+		m_pPartyBtn->m_bSelected = 0;
+
+	auto pNode = (TMHuman*)g_pObjectManager->GetHumanByID(pStd->Leader.ID);
+	if (pNode)
+		pNode->SetInMiniMap(0xAAFFFF00);
+	if (!m_pPartyPanel->IsVisible())
+		SetVisibleParty();
+
+	auto pChatList = m_pChatList;
+
+	char szMsg[128]{};
+	sprintf(szMsg, g_pMessageStringTable[62], pStd->Leader.Name);
+
+	pChatList->AddItem(new SListBoxItem(szMsg, 0xFFCCAAFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+
+	if (!m_bAutoParty)
+	{
+		sprintf(szMsg, g_pMessageStringTable[63], pStd->Leader.Name);
+
+		pChatList->AddItem(new SListBoxItem(szMsg, 0xFFCCAAFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+		m_pPartyAutoButton->SetVisible(0);
+		m_pPartyAutoText->SetVisible(0);
+
+		auto partyback = (SPanel*)m_pControlContainer->FindControl(7602196);
+		if (partyback)
+			partyback->SetVisible(0);
+	}
+	else
+	{
+		MSG_CNFParty2 stCnfParty{};
+
+		stCnfParty.Header.ID = m_pMyHuman->m_dwID;
+		stCnfParty.Header.Type = MSG_CNFParty2_Opcode;
+		stCnfParty.LeaderID = pStd->Leader.ID;
+		sprintf(stCnfParty.LeaderName, pStd->Leader.Name);
+		
+		if (pNode)
+			pNode->m_bParty = 1;
+
+		SendOneMessage((char*)&stCnfParty, sizeof(stCnfParty));
+	}
+
+	m_dwChatTime = g_pTimerManager->GetServerTime();
+
+	GetSoundAndPlay(33, 0, 0);
+
+	return 1;
 }
 
-int TMFieldScene::OnPacketAddParty(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketAddParty(MSG_AddParty* pStd)
 {
-	return 0;
+	auto pPartyList = m_pPartyList;
+	pStd->Party.Name[15] = 0;
+	for (int i = 0; i < pPartyList->m_nNumItem; ++i)
+	{
+		auto pPartyItem = (SListBoxPartyItem*)pPartyList->m_pItemList[i];
+		if (pPartyItem->m_dwCharID == pStd->Party.ID)
+		{
+			m_pPartyList->DeleteItem(pPartyItem);
+			break;
+		}
+	}
+
+	unsigned int dwColor = 0xFFFFFFFF;
+	if (!pStd->Party.PartyIndex)
+		dwColor = 0xFFAAAAFF;
+
+	auto pPartyItem = new SListBoxPartyItem(pStd->Party.Name,
+		dwColor,
+		0.0f,
+		0.0f,
+		114.0f,
+		20.0f,
+		pStd->Party.ID,
+		pStd->Party.Class,
+		pStd->Party.Level,
+		pStd->Party.Hp,
+		pStd->Party.MaxHp);
+
+	if (!pStd->Party.PartyIndex)
+		pPartyItem->m_nState = 2;
+
+	pPartyList->AddItem(pPartyItem);
+
+	auto pNode = (TMHuman*)g_pObjectManager->GetHumanByID(pStd->Party.ID);
+	if (pNode)
+	{
+		pNode->m_bParty = 1;
+		pNode->SetInMiniMap(0xAAFFFF00);
+	}
+	if (!m_pPartyPanel->IsVisible())
+	{
+		if (pStd->Party.ID > 0 && pStd->Party.ID < 1000)
+			SetVisibleParty();
+	}
+
+	return 1;
 }
 
-int TMFieldScene::OnPacketRemoveParty(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRemoveParty(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	if (!m_pPartyList)
+		return 0;
+
+	auto pPartyList = m_pPartyList;
+
+	if (!pStd->Parm)
+	{
+		m_pMyHuman->m_bParty = 0;
+
+		for (int i = 0; i < pPartyList->m_nNumItem; ++i)
+		{			
+			auto pNode = (TMHuman*)g_pObjectManager->GetHumanByID(static_cast<SListBoxPartyItem*>(pPartyList->m_pItemList[i])->m_dwCharID);
+			if (pNode)
+			{
+				pNode->m_bParty = 0;
+				if (pNode)
+				{
+					if (_locationCheck(pNode->m_vecFromPos, 8, 15) || _locationCheck(pNode->m_vecFromPos, 8, 16) || 
+						_locationCheck(pNode->m_vecFromPos, 9, 15) || _locationCheck(pNode->m_vecFromPos, 9, 16))
+					{
+						if (pNode->m_cMantua == 1)
+							pNode->SetInMiniMap(0xAA0000FF);
+						if (pNode->m_cMantua == 2)
+							pNode->SetInMiniMap(0xAAFF0000);
+					}
+					else if (pNode->m_pInMiniMap)
+						SAFE_DELETE(pNode->m_pInMiniMap);
+				}
+			}
+		}
+
+		pPartyList->Empty();
+	}
+	else
+	{
+		for (int inItemIndex = 0; inItemIndex < pPartyList->m_nNumItem; ++inItemIndex)
+		{
+			auto pPartyItem = (SListBoxPartyItem*)pPartyList->m_pItemList[inItemIndex];
+			if (pPartyItem->m_dwCharID == pStd->Parm)
+			{
+				auto pNode = (TMHuman*)g_pObjectManager->GetHumanByID(pPartyItem->m_dwCharID);
+				if (pNode)
+				{
+					pNode->m_bParty = 0;
+					if (_locationCheck(pNode->m_vecFromPos, 8, 15) || _locationCheck(pNode->m_vecFromPos, 8, 16) ||
+						_locationCheck(pNode->m_vecFromPos, 9, 15) || _locationCheck(pNode->m_vecFromPos, 9, 16))
+					{
+						if (pNode->m_cMantua == 1)
+							pNode->SetInMiniMap(0xAA0000FF);
+						if (pNode->m_cMantua == 2)
+							pNode->SetInMiniMap(0xAAFF0000);
+					}
+					else if (pNode->m_pInMiniMap)
+						SAFE_DELETE(pNode->m_pInMiniMap);
+				}
+
+				pPartyList->DeleteItem(inItemIndex);
+				break;
+			}
+		}
+	}
+
+	if (pPartyList->m_nNumItem == 1)
+	{
+		pPartyList->Empty();
+		m_pMyHuman->m_bParty = 0;
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketSetHpMode(MSG_SetHpMode* pStd)
@@ -16298,7 +19781,13 @@ int TMFieldScene::OnPacketWithdraw(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketReqChallange(MSG_STANDARD* pStd)
 {
-	return 0;
+	if (!m_pMessageBox->IsVisible())
+	{
+		m_pMessageBox->SetMessage(g_pMessageStringTable[407], 60, 0);
+		m_pMessageBox->SetVisible(1);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketCloseShop(MSG_STANDARD* pStd)
@@ -16335,27 +19824,74 @@ int TMFieldScene::OnPacketClearMenu(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketCombineComplete(MSG_STANDARD* pStd)
 {
-	return 0;
+	SetVisibleMixItem(0);
+	SetVisibleMixItemTiini(0);
+	SetVisibleMixPanel(0);
+	return 1;
 }
 
-int TMFieldScene::OnPacketCastleState(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCastleState(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	g_bCastleWar2 = pStd->Parm;
+
+	DS_SOUND_MANAGER::m_nCastleIndex = -1;
+	if (!g_bCastleWar2)
+	{
+		DS_SOUND_MANAGER::m_nMusicIndex = -1;
+		DS_SOUND_MANAGER::m_nCastleIndex = -1;
+	}
+
+	return 1;
 }
 
-int TMFieldScene::OnPacketStartTime(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketStartTime(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	m_nLastTime = pStd->Parm;
+
+	m_dwStartRankTime = g_pTimerManager->GetServerTime();
+
+	char szTimer[128]{};
+	sprintf(szTimer, "%d", m_dwStartRankTime);
+	m_pRankTimeText->SetText(szTimer, 0);
+	m_bRankTimeOn = 1;
+	return 1;
 }
 
-int TMFieldScene::OnPacketRemainCount(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRemainCount(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	char szText[128]{};
+	sprintf(szText, "%s %d", g_pMessageStringTable[230], pStd->Parm);
+	m_dwRemainTime = g_pTimerManager->GetServerTime();
+	m_pRemainText->SetText(szText, 0);
+	m_pRemainText->SetVisible(1);
+	return 1;
 }
 
-int TMFieldScene::OnPacketWarInfo(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketWarInfo(MSG_STANDARDPARM3* pStd)
 {
-	return 0;
+	switch (pStd->Header.Size)
+	{
+	case sizeof(MSG_STANDARDPARM):
+		g_pObjectManager->m_usWarGuild = pStd->Parm1;
+		if (!pStd->Parm1)
+			g_pObjectManager->m_usWarGuild = -1;
+		break;
+	case sizeof(MSG_STANDARDPARM2):
+		g_pObjectManager->m_usWarGuild = pStd->Parm1;
+		if (!pStd->Parm1)
+			g_pObjectManager->m_usWarGuild = -1;
+		m_cWarClan = pStd->Parm2;
+		break;
+	case sizeof(MSG_STANDARDPARM3):
+		g_pObjectManager->m_usWarGuild = pStd->Parm1;
+		if (!pStd->Parm1)
+			g_pObjectManager->m_usWarGuild = -1;
+		m_cWarClan = pStd->Parm2;
+		g_pObjectManager->m_usAllyGuild = pStd->Parm3;
+		break;
+	}
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketGuildDisable(MSG_STANDARDPARM* pStd)
@@ -16368,12 +19904,38 @@ int TMFieldScene::OnPacketGuildDisable(MSG_STANDARDPARM* pStd)
 
 int TMFieldScene::OnPacketEnvEffect(MSG_STANDARD* pStd)
 {
-	return 0;
+	auto pEnvEffect = reinterpret_cast<MSG_EnvEffect*>(pStd);
+	if (pEnvEffect->x1 > pEnvEffect->x2 || pEnvEffect->y1 > pEnvEffect->y2)
+		return 1;
+
+	for (int nY = pEnvEffect->y1; nY < pEnvEffect->y2; nY += 3)
+	{
+		for (int nX = pEnvEffect->x1 + 1; nX < pEnvEffect->x2; nX += 4)
+		{
+			unsigned int dwColor = 0x44444444;
+
+			TMVector2 vec{ (float)nX, (float)nY + 1.0f };
+			float fHeight = (float)GroundGetMask(vec) * 0.1f;
+			if (pEnvEffect->Effect == 32)
+			{		
+				auto pExplosion = new TMSkillExplosion2(TMVector3(vec.x, fHeight, vec.y), 0, 1.5f, 210, dwColor);
+				m_pEffectContainer->AddChild(pExplosion);
+			}
+		}
+	}
+
+	return 1;
 }
 
-int TMFieldScene::OnPacketRemainNPCCount(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRemainNPCCount(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	char szText[128]{};
+	sprintf(szText, "%d / %d", pStd->Parm & 0xFF, pStd->Parm >> 16);
+
+	m_dwRemainTime = g_pTimerManager->GetServerTime();
+	m_pRemainText->SetText(szText, 0);
+	m_pRemainText->SetVisible(1);
+	return 1;
 }
 
 int TMFieldScene::OnPacketRESULTGAMBLE(MSG_STANDARD* pStd)
@@ -18660,12 +22222,32 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 
 int TMFieldScene::OnPacketNuke(MSG_STANDARD* pStd)
 {
-	return 0;
+	// just that
+	return 1;
 }
 
-int TMFieldScene::OnPacketRandomQuiz(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRandomQuiz(MSG_RandomQuiz* pStd)
 {
-	return 0;
+	pStd->Question[127] = 0;
+	pStd->Answer[0][31] = 0;
+	pStd->Answer[1][31] = 0;
+	pStd->Answer[2][31] = 0;
+	pStd->Answer[3][31] = 0;
+
+	if (m_pQuizQuestion)
+		m_pQuizQuestion->SetText(pStd->Question, 0);
+	if (m_pQuizButton[0])
+		m_pQuizButton[0]->SetText(pStd->Answer[0]);
+	if (m_pQuizButton[1])
+		m_pQuizButton[1]->SetText(pStd->Answer[1]);
+	if (m_pQuizButton[2])
+		m_pQuizButton[2]->SetText(pStd->Answer[2]);
+	if (m_pQuizButton[3])
+		m_pQuizButton[3]->SetText(pStd->Answer[3]);
+	if (m_pQuizBG)
+		m_pQuizBG->SetVisible(1);
+
+	return 1;
 }
 
 int TMFieldScene::OnPacketAutoKick(MSG_STANDARD* pStd)
@@ -18680,19 +22262,68 @@ int TMFieldScene::OnPacketItemPrice(MSG_STANDARDPARM2* pStd)
 	return 1;
 }
 
-int TMFieldScene::OnPacketCapsuleInfo(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketCapsuleInfo(MSG_CAPSULEINFO* pStd)
 {
-	return 0;
+	bool bFind = false;
+	for (int i = 0; i < 12; ++i)
+	{
+		if (g_pObjectManager->m_stCapsuleInfo[i].CIndex == pStd->CIndex)
+		{
+			g_pObjectManager->m_stCapsuleInfo[i] = *pStd;
+			bFind = true;
+			break;
+		}
+	}
+	if (!bFind)
+	{
+		for (int i = 0; i < 12; ++i)
+		{
+			if (!g_pObjectManager->m_stCapsuleInfo[i].CIndex)
+			{
+				g_pObjectManager->m_stCapsuleInfo[i] = *pStd;
+				bFind = true;
+				break;
+			}
+		}
+	}
+
+	if (!bFind)
+		g_pObjectManager->m_stCapsuleInfo[0] = *pStd;
+
+	SGridControl::m_bNeedUpdate = 1;
+	return 1;
 }
 
-int TMFieldScene::OnPacketRunQuest12Start(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRunQuest12Start(MSG_STANDARDPARM* pStd)
 {
-	return 0;
+	if (pStd->Parm)
+	{
+		m_nQuest12MaxMobs = pStd->Parm;
+
+		char szText[128]{};
+		sprintf(szText, "0 / %d", m_nQuest12MaxMobs);
+		m_pRemainText->SetPos((float)g_pDevice->m_dwScreenWidth - 130.0f,
+			30.0f * RenderDevice::m_fHeightRatio);
+
+		m_pRemainText->SetText(szText, 0);
+		m_pRemainText->SetVisible(1);
+	}
+	else
+		m_pRemainText->SetVisible(0);
+
+	return 1;
 }
 
-int TMFieldScene::OnPacketRunQuest12Count(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketRunQuest12Count(MSG_STANDARDPARM2* pStd)
 {
-	return 0;
+	char szText[128]{};
+	sprintf(szText, "%d / %d", pStd->Parm1, pStd->Parm2);
+
+	m_pRemainText->SetPos((float)g_pDevice->m_dwScreenWidth - 130.0f,
+		30.0f * RenderDevice::m_fHeightRatio);
+
+	m_pRemainText->SetText(szText, 0);
+	return 1;
 }
 
 int TMFieldScene::OnPacketDelayQuit(MSG_STANDARDPARM* pStd)
@@ -18701,50 +22332,242 @@ int TMFieldScene::OnPacketDelayQuit(MSG_STANDARDPARM* pStd)
 	return 0;
 }
 
-int TMFieldScene::OnPacketUndoSellItem(MSG_STANDARD* pStd)
+int TMFieldScene::OnPacketUndoSellItem(MSG_RepurchaseItems* pMsg)
 {
-	return 0;
+	m_bIsUndoShoplist = 1;
+	memset(m_stRepurcharse, 0, sizeof(m_stRepurcharse));
+
+	auto pGrid = m_pGridShop;
+	pGrid->Empty();
+
+	for (int i = 0; i < 10; ++i)
+	{
+		auto pItemList = new STRUCT_ITEM;
+		memcpy(pItemList, &pMsg->Repurcharse[i].stItem, sizeof(STRUCT_ITEM));
+
+		if (pMsg->Repurcharse[i].stItem.sIndex <= 0)
+		{
+			delete pItemList;
+			continue;
+		}
+
+		auto pItem = new SGridControlItem(0, pItemList, 0.0f, 0.0f);
+		memcpy(&m_stRepurcharse[i], &pMsg->Repurcharse[i], sizeof(pMsg->Repurcharse[i]));
+
+		pGrid->AddItem(pItem, i % 5, i / 5);
+		int nAmount = BASE_GetItemAmount(pItemList);
+
+		if (pItem->m_pItem->sIndex >= 2330 && pItem->m_pItem->sIndex < 2390)
+			nAmount = 0;
+		if (nAmount > 0)
+		{
+			sprintf(pItem->m_GCText.strString, "%2d", nAmount);
+			pItem->m_GCText.pFont->SetText(pItem->m_GCText.strString, pItem->m_GCText.dwColor, 0);
+		}
+	}
+
+	auto pREQItem = new STRUCT_ITEM;
+	memset(pREQItem, 0, sizeof(STRUCT_ITEM));
+	pREQItem->sIndex = 4999;
+
+	auto pItem = new SGridControlItem(0, pREQItem, 0.0f, 0.0f);
+	pItem->m_GCObj.nTextureIndex = 9;
+
+	pGrid->AddItem(pItem, 4, 7);
+
+
+	SetVisibleShop(1);
+	return 1;
 }
 
 int TMFieldScene::Guildmark_Create(stGuildMarkInfo* pMark)
 {
-	return 0;
+	if (!pMark || !pMark->pGuildMark)
+		return 0;
+
+	int nFindMarkIndex = Guildmark_Find_ArrayIndex(pMark->nGuild + (pMark->nGuildChannel << 16));
+
+	pMark->bLoadedGuildmark = 1;
+	if (nFindMarkIndex != -1)
+	{
+		Guildmark_Link(pMark->pGuildMark, nFindMarkIndex, pMark->sGuildIndex);
+		return 1;
+	}
+
+	pMark->nMarkIndex = Guildmark_Find_EmptyArrayIndex();
+	if (pMark->nMarkIndex == -1)
+		pMark->nMarkIndex = Guildmark_DeleteIdleGuildmark();
+
+	if (pMark->nMarkIndex != -1)
+	{
+		char strFileName[64]{};
+
+		int nChief = 0;
+		if (pMark->sGuildIndex == 526 || pMark->sGuildIndex == 529 || pMark->sGuildIndex == 532 || pMark->sGuildIndex == 535)
+			nChief = 1;
+		if (pMark->sGuildIndex == 527 || pMark->sGuildIndex == 530 || pMark->sGuildIndex == 533 || pMark->sGuildIndex == 536)
+			nChief = 2;
+		if (pMark->sGuildIndex == 528 || pMark->sGuildIndex == 531 || pMark->sGuildIndex == 534 || pMark->sGuildIndex == 537)
+			nChief = 3;
+
+
+		Guildmark_MakeFileName(strFileName, pMark->nGuild, nChief, pMark->nGuildChannel);
+		strcpy(pMark->strMarkFileName, strFileName);
+		g_pTextureManager->m_stGuildMark[pMark->nMarkIndex].nGuild = pMark->nGuild + (pMark->nGuildChannel << 16);
+		
+		CreateThread(NULL, 0, Guildmark_Download, &pMark, 0, NULL);
+		return 1;
+	}
+
+	return 1;
 }
 
 void TMFieldScene::Guildmark_MakeFileName(char* szStr, int nGuild, int nChief, int nChannel)
 {
+	if (szStr)
+		sprintf(szStr, "%c%02d%02d%04d.bmp", 'c', g_pObjectManager->m_nServerGroupIndex, nChannel, nGuild);
 }
 
 int TMFieldScene::Guildmark_Find_ArrayIndex(int nGuild)
 {
-	return 0;
+	for (int i = 0; i < 64; ++i)
+	{
+		if (g_pTextureManager->m_stGuildMark[i].nGuild == nGuild)
+			return i;
+	}
+
+	return -1;
 }
 
 int TMFieldScene::Guildmark_Find_EmptyArrayIndex()
 {
-	return 0;
+	for (int i = 0; i < 64; ++i)
+	{
+		if (g_pTextureManager->m_stGuildMark[i].nGuild == -1)
+			return i;
+	}
+
+	return -1;
 }
 
 int TMFieldScene::Guildmark_DeleteIdleGuildmark()
 {
-	return 0;
+	int nMostOld = 0;
+	unsigned int dwMostOldTime = 0;
+	for (int i = 0; i < 64; ++i)
+	{
+		if (!g_pTextureManager->m_stGuildMark[i].nGuild)
+			continue;
+
+		if (!g_pTextureManager->m_stGuildMark[i].dwLastRenderTime)
+		{
+			nMostOld = i;
+			break;
+		}
+		if (!dwMostOldTime)
+		{
+			nMostOld = i;
+			dwMostOldTime = g_pTextureManager->m_stGuildMark[i].dwLastRenderTime;
+		}
+		else if (g_pTextureManager->m_stGuildMark[i].dwLastRenderTime < dwMostOldTime)
+		{
+			nMostOld = i;
+			dwMostOldTime = g_pTextureManager->m_stGuildMark[i].dwLastRenderTime;
+		}
+	}
+
+	g_pTextureManager->m_stGuildMark[nMostOld].nGuild = -1;
+
+	SAFE_RELEASE(g_pTextureManager->m_stGuildMark[nMostOld].pTexture);
+
+	g_pTextureManager->m_stGuildMark[nMostOld].dwLastRenderTime = 0;
+	--m_nGuildMarkCount;
+	return nMostOld;
 }
 
 int TMFieldScene::Guildmark_IsCorrectBMP(char* szMarkBuffer)
 {
+	if (!szMarkBuffer)
+		return 0;
+
+	BITMAPFILEHEADER header;
+	memcpy(&header, szMarkBuffer, sizeof(BITMAPFILEHEADER));
+
+	if (header.bfType != 19778)
+		return 0;
+	if (header.bfSize != 630 && header.bfSize != 632)
+		return 0;
+
+	BITMAPINFO info;
+	memcpy(&info, &szMarkBuffer[14], header.bfOffBits - 14);
+	if (info.bmiHeader.biWidth == 16 && info.bmiHeader.biHeight == 12)
+		return info.bmiHeader.biBitCount == 24;
+	
 	return 0;
 }
 
 void TMFieldScene::Guildmark_Link(SPanel* pPanel, int nMarkIndex, int nGuildIndex)
 {
+	if (pPanel)
+	{
+		pPanel->m_GCPanel.nMarkIndex = nMarkIndex;
+		if (nGuildIndex == 509 || nGuildIndex == 9)
+			pPanel->m_GCPanel.nMarkLayout = 1;
+		else if ((nGuildIndex < 526 || nGuildIndex > 531) && (nGuildIndex < 3 || nGuildIndex > 8))
+			pPanel->m_GCPanel.nMarkLayout = 3;
+		else
+			pPanel->m_GCPanel.nMarkLayout = 2;
+	}
 }
 
 void TMFieldScene::SysMsgChat(char* str)
 {
+	auto pEdit = m_pEditChat;
+	auto pChatList = m_pChatListnotice;
+
+	pChatList->AddItem(new SListBoxItem(str, 0xFFFFAAAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
+	pEdit->SetText((char*)"");
+
+	m_pControlContainer->SetFocusedControl(nullptr);
+	if (g_pObjectManager->m_bTvControl != 1)
+		pEdit->SetText((char*)"");
 }
 
 void TMFieldScene::GetTimeString(char* szVal, int sTime, int nTime, int i)
 {
+	if (nTime >= 1000000)
+	{
+		int add = m_pMyHuman->m_stAffect[i].Time / 1000000;
+		int Year = m_pMyHuman->m_stAffect[i].Time % 1000000 / 10000;
+		int nYearDay = 365;
+		if (!(Year % 4))
+			nYearDay = 366;
+
+		int nDafaultDay = 0;
+		switch (add)
+		{
+		case 4:
+			nDafaultDay = 7;
+			break;
+		case 5:
+			nDafaultDay = 15;
+			break;
+		case 6:
+			nDafaultDay = 30;
+			break;
+		}
+
+		if (add)
+			sprintf(szVal, g_pMessageStringTable[291], nDafaultDay - nYearDay * (m_nYear - Year) - (m_nDays - m_pMyHuman->m_stAffect[i].Time % 10000));
+	}
+	else if (sTime > 86400)
+		sprintf(szVal, g_pMessageStringTable[291], sTime / 86400);
+	else if (sTime > 3600)
+		sprintf(szVal, g_pMessageStringTable[292], sTime / 3600);
+	else if (sTime <= 600)
+		sprintf(szVal, "%5d", sTime);
+	else
+		sprintf(szVal, g_pMessageStringTable[293], sTime / 60);
 }
 
 void TMFieldScene::Bag_View()
@@ -18855,24 +22678,686 @@ void TMFieldScene::Bag_View()
 
 void TMFieldScene::AirMove_Main(unsigned int dwServerTime)
 {
+	// TODO: change the state to enum
+	if (m_nAirMove_State && m_pMyHuman)
+	{
+		if (m_bAirMove)
+			m_pMyHuman->m_cHide = 0;
+
+		switch (m_nAirMove_State)
+		{
+		case 1:
+		{
+			AirMove_Start(0);
+		}
+		break;
+		case 2:
+		{
+			if (dwServerTime > m_dwAirMove_TickTime + 2800)
+			{
+				m_nAirMove_State = 3;
+				m_dwAirMove_TickTime = dwServerTime;
+				return;
+			}
+
+			float fVal = sinf((D3DXToRadian(180) * ((float)(dwServerTime - m_dwAirMove_TickTime) / 15000.0f)) / 6.0f);
+			if (fVal >= 0.3f)
+				fVal = 0.3f;
+			if (fVal < 0.0f)
+				fVal = 0.0f;
+
+			if (m_pMyHuman->m_pMount)
+				m_pMyHuman->m_pMount->m_dwFPS = 15;
+			m_pMyHuman->m_fHeight = m_pMyHuman->m_fHeight + fVal;
+		}
+		break;
+		case 3:
+		{
+			int nRnd = rand() % 300;
+			if (dwServerTime >= m_dwAirMove_TickTime + nRnd + 1000)
+			{
+				m_dwAirMove_TickTime = dwServerTime;
+				m_bAirMove_Wing = m_bAirMove_Wing == 0;
+			}
+
+			float fVal = sinf((D3DXToRadian(180) * ((float)(dwServerTime - m_dwAirMove_TickTime) / 10000.0f)) / 6.0f) + ((float)nRnd / 8000.0f);
+			if (m_bAirMove_Wing || m_pMyHuman->m_fHeight >= 14.0)
+			{
+				if (m_pMyHuman->m_fHeight > 8.0)
+					m_pMyHuman->m_fHeight = m_pMyHuman->m_fHeight - fVal;
+			}
+			else
+				m_pMyHuman->m_fHeight = m_pMyHuman->m_fHeight + fVal;
+
+			float AddY = 0.0f;
+			float AddX = 0.0f;
+			float MyX = m_pMyHuman->m_vecPosition.x;
+			float MyY = m_pMyHuman->m_vecPosition.y;
+			if (MyX >= (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nX)
+				AddX = -m_fAirMove_Speed;
+			else if ((float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nX >= MyX)
+				AddX = +m_fAirMove_Speed;
+			if (MyY >= (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY)
+				AddY = -m_fAirMove_Speed;
+			else if ((float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY >= MyY)
+				AddY = +m_fAirMove_Speed;
+
+			float DiffX = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nX - (float)(MyX + AddX);
+			float DiffY = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY - (float)(MyY + AddY);
+			if (DiffX <= 0.5f && DiffX >= -0.5f)
+				AddX = 0.0f;
+			if (DiffY <= 0.5f && DiffY >= -0.5f)
+				AddY = 0.0f;
+
+			if (fabsf(AddX) == m_fAirMove_Speed && fabsf(AddY) == m_fAirMove_Speed)
+			{
+				AddX = AddX / 2.0f;
+				AddY = AddY / 2.0f;
+			}
+			if (AddX != 0.0f || AddY != 0.0f)
+			{
+				m_pMyHuman->m_vecAirMove.x = m_pMyHuman->m_vecAirMove.x + AddX;
+				m_pMyHuman->m_vecAirMove.y = m_pMyHuman->m_vecAirMove.y + AddY;
+
+				float dPosX = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nX - m_pMyHuman->m_vecPosition.x;
+				float dPosY = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY - m_pMyHuman->m_vecPosition.y;
+
+				int nRouteIndex = m_nAirMove_RouteIndex;
+				if (nRouteIndex > 9)
+					nRouteIndex = 9;
+
+				if (fabsf(dPosX) + fabsf(dPosY) < 70.0f
+					&& (nRouteIndex == 9 || g_pAirMoveRoute[m_nAirMove_Index][nRouteIndex + 1].nX == 0 && g_pAirMoveRoute[m_nAirMove_Index][nRouteIndex + 1].nY == 0))
+				{
+					if (m_fAirMove_Speed >= 0.2f)
+						m_fAirMove_Speed = m_fAirMove_Speed - sinf((m_fAirMove_Speed * 0.0023f) * D3DXToRadian(180));
+				}
+				else if (m_fAirMove_Speed <= 0.69999999f)
+					m_fAirMove_Speed = sinf((m_fAirMove_Speed * 0.0049999999f) * D3DXToRadian(180)) + m_fAirMove_Speed;
+
+				if (m_pMyHuman->m_pMount)
+					m_pMyHuman->m_pMount->m_dwFPS = 15 - (int)(m_fAirMove_Speed * 2.0f);
+
+				m_pMyHuman->m_fWantAngle = atan2f(dPosX, dPosY) + D3DXToRadian(90);
+			}
+			else if (g_pAirMoveRoute[m_nAirMove_Index][++m_nAirMove_RouteIndex].nX || g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY)
+			{
+				m_vecAirMove_Dest.x = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nX;
+				m_vecAirMove_Dest.y = (float)g_pAirMoveRoute[m_nAirMove_Index][m_nAirMove_RouteIndex].nY;
+				m_dwAirMove_TickTime = dwServerTime;
+			}
+			else
+			{
+				m_nAirMove_State = 4;
+				m_dwAirMove_TickTime = dwServerTime;
+			}
+		}
+		break;
+		case 4:
+		{
+			float fHeight = m_pMyHuman->m_fWantHeight;
+			float fDiff = m_pMyHuman->m_fHeight - fHeight;
+			if (dwServerTime > m_dwAirMove_TickTime + 2800)
+			{
+				m_pMyHuman->m_fHeight = fHeight;
+				m_nAirMove_State = 5;
+				m_dwAirMove_TickTime = dwServerTime;
+				return;
+			}
+
+			float fVal = sinf((D3DXToRadian(180) * ((float)(dwServerTime - m_dwAirMove_TickTime) / 15000.0f)) / 6.0f);
+			if (m_pMyHuman->m_pMount)
+				m_pMyHuman->m_pMount->m_dwFPS = 15;
+			if ((float)(m_pMyHuman->m_fHeight - fVal) > 0.0f)
+				m_pMyHuman->m_fHeight = m_pMyHuman->m_fHeight - fVal;
+		}
+		break;
+		case 5:
+		{
+			AirMove_End();
+		}
+		break;
+		}
+	}
 }
 
 void TMFieldScene::AirMove_Start(int nIndex)
 {
+	m_nAirMove_State = 2;
+	m_bAirMove = 1;
+	m_eOldMotion = m_pMyHuman->m_eMotion;
+	m_nOldMountSkinMeshType = m_pMyHuman->m_nMountSkinMeshType;
+
+	m_pMyHuman->UpdateMount();
+	m_pMyHuman->m_bIgnoreHeight = 1;
+	m_dwAirMove_TickTime = g_pTimerManager->GetServerTime();
+	m_pMyHuman->m_vecAirMove.x = 0.0f;
+	m_pMyHuman->m_vecAirMove.y = 0.0f;
+
+	auto pParticle = new TMEffectParticle(TMVector3(m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_fHeight + 1.0f, m_pMyHuman->m_vecPosition.y), 
+		1, 10, 3.0f, 0, 1, 56, 1.0f, 1, TMVector3(0.0f, 0.0f, 0.0f), 1000);
+
+	m_pEffectContainer->AddChild(pParticle);
+
+	m_vecAirMove_Dest.x = (float)g_pAirMoveRoute[nIndex][0].nX;
+	m_vecAirMove_Dest.y = (float)g_pAirMoveRoute[nIndex][0].nY;
+
+	MSG_STANDARDPARM2 stAirmoveStart{};
+	stAirmoveStart.Header.Type = MSG_AirMove_Start_Opcode;
+	stAirmoveStart.Header.ID = m_pMyHuman->m_dwID;
+	stAirmoveStart.Parm1 = nIndex;
+	stAirmoveStart.Parm2 = 1;
+	SendOneMessage((char*)&stAirmoveStart, sizeof(stAirmoveStart));
+	m_nAirMove_Index = nIndex;
+	m_nAirMove_RouteIndex = 0;
+	m_fAirMove_Speed = 0.2f;
 }
 
 void TMFieldScene::AirMove_End()
 {
+	if (this->m_pMyHuman)
+	{
+		m_pMyHuman->m_vecPosition.x = m_pMyHuman->m_vecPosition.x + m_pMyHuman->m_vecAirMove.x;
+		m_pMyHuman->m_vecPosition.y = m_pMyHuman->m_vecPosition.y + m_pMyHuman->m_vecAirMove.y;
+		m_nAirMove_State = -1;
+		m_bAirMove = 0;
+
+		if (m_nOldMountSkinMeshType <= 0)
+		{
+			SAFE_DELETE(m_pMyHuman->m_pMount);
+			m_pMyHuman->m_cMount = 0;
+			m_pMyHuman->m_nMountSkinMeshType = 0;
+		}
+		else
+		{
+			m_pMyHuman->m_nSkinMeshType = m_nOldMountSkinMeshType;
+			m_nOldMountSkinMeshType = -1;
+			m_pMyHuman->UpdateMount();
+		}
+
+		UpdateMyHuman();
+		m_pMyHuman->m_bIgnoreHeight = 0;
+		m_dwAirMove_TickTime = 0;
+		m_pMyHuman->SetAnimation(m_eOldMotion, 1);
+
+		auto pParticle = new TMEffectParticle(TMVector3(m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_fHeight + 1.0f, m_pMyHuman->m_vecPosition.y),
+			1, 10, 3.0f, 0, 1, 56, 1.0f, 1, TMVector3(0.0f, 0.0f, 0.0f), 1000);
+		m_pEffectContainer->AddChild(pParticle);
+
+		if (m_nAirMove_Index < 0 || m_nAirMove_Index > 10)
+			m_nAirMove_Index = 0;
+
+
+		MSG_STANDARDPARM2 stAirmoveStart{};
+		stAirmoveStart.Header.Type = MSG_AirMove_Start_Opcode;
+		stAirmoveStart.Header.ID = m_pMyHuman->m_dwID;
+		stAirmoveStart.Parm1 = m_nAirMove_Index;
+		stAirmoveStart.Parm2 = 2;
+		SendOneMessage((char*)&stAirmoveStart, sizeof(stAirmoveStart));
+	}
 }
 
 int TMFieldScene::AirMove_ShowUI(bool bShow)
 {
-	return 0;
+	auto pPotalPanel = m_pPotalPanel;
+	if (!pPotalPanel)
+		return 0;
+	if (!m_pPotalList)
+		return 0;
+
+	pPotalPanel->SetVisible(bShow);
+	if (bShow == 1)
+	{
+		if (m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+			SetVisibleSkill();
+		if (m_pCPanel && m_pCPanel->m_bVisible == 1)
+			SetVisibleCharInfo();
+		if (m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+			SetVisibleCargo(0);
+		if (m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+			SetVisibleCargo(0);
+		if (m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+			SetVisibleAutoTrade(0, 0);
+		if (m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+		if (m_pShopPanel && m_pShopPanel->m_bVisible == 1)
+			SetVisibleShop(0);
+
+		char szStr[128]{};
+		sprintf(szStr, "%s", g_pMessageStringTable[378]);
+		m_pPotalText->SetText(szStr, 0);
+		m_pPotalText->SetTextColor(0xFFFFFFFF);
+		if (m_pPotalText1)
+			m_pPotalText1->SetText(g_pMessageStringTable[380], 0);
+		if (m_pPotalText2)
+			m_pPotalText2->SetText(g_pMessageStringTable[379], 0);
+		if (m_pPotalText3)
+			m_pPotalText3->SetText(g_pMessageStringTable[381], 0);
+
+		LoadMsgText3(m_pQuestList[0], (char*)"UI\\QuestSubjects.txt", 400, 0);
+		LoadMsgText3(m_pQuestList[1], (char*)"UI\\QuestSubjects2.txt", 400, 0);
+		LoadMsgText3(m_pQuestList[2], (char*)"UI\\QuestSubjects3.txt", 400, 0);
+		LoadMsgText3(m_pQuestList[3], (char*)"UI\\QuestSubjects4.txt", 400, 0);
+
+		char strAirMoveList[10][256]{};
+		if (!m_pQuestList[0] || !m_pQuestList[1])
+			return 0;
+
+		int i = 0;
+		char strAirMovePlaceName[10][64]{};
+		strncpy(strAirMovePlaceName[0], m_pQuestList[0]->m_pItemList[0]->GetText() + 1, 18);
+		strncpy(strAirMovePlaceName[1], m_pQuestList[0]->m_pItemList[1]->GetText() + 1, 18);
+		strncpy(strAirMovePlaceName[2], m_pQuestList[0]->m_pItemList[6]->GetText() + 1, 18);
+		sprintf(strAirMovePlaceName[3], g_pMessageStringTable[212]);
+		sprintf(strAirMovePlaceName[4], g_pMessageStringTable[218]);
+
+		for (int i = 0; i < 5; ++i)
+		{
+			while (1)
+			{
+				if (strlen(strAirMovePlaceName[i]) >= 18)
+					break;
+
+				strcat(strAirMovePlaceName[i], " ");
+			}
+		}
+
+		for (i = 0; i < 5; ++i)
+			sprintf(strAirMoveList[i], "FFFFFF    %04d %04d  %s               %d", g_pAirMoveList[i].nX, g_pAirMoveList[i].nY, strAirMovePlaceName[i], 0);
+
+		int nCount = 0;
+		m_pPotalList->Empty();
+		for (int j = 0; j < 5; ++j)
+		{
+			char szTemp[256]{};
+			sprintf(szTemp, "%s", strAirMoveList[j]);
+
+			char szCol[7]{};
+			strncpy(szCol, szTemp, 6u);
+
+			unsigned int dwCol = 0;
+			sscanf(szCol, "%x", &dwCol);
+			
+			auto szRet = strstr(szTemp, "\n");
+			if (szRet)
+				szRet[0] = 0;
+
+			char szText[256]{};
+			sprintf(szText, "%s", &szTemp[6]);
+	
+			auto pItem = new SListBoxItem(
+				szText,
+				dwCol | 0xFF000000,
+				0.0f,
+				0.0f,
+				m_pPotalList->m_nWidth,
+				16.0f,
+				0,
+				0x77777777,
+				1,
+				0);
+
+			m_pPotalList->AddItem(pItem);
+			if (++nCount > 100)
+				break;
+		}
+
+		if (m_pPotalList->m_pScrollBar)
+			m_pPotalList->m_pScrollBar->SetCurrentPos(0);
+	}
+
+	m_bAirmove_ShowUI = bShow;
+	if (!bShow)
+	{
+		auto pCharPanel = m_pCPanel;
+		auto pInvPanel = m_pInvenPanel;
+		auto pSkillPanel = m_pSkillPanel;
+		auto pPartyPanel = m_pPartyPanel;
+		auto pTradePanel = m_pTradePanel;
+		auto pAutoTradePanel = m_pAutoTrade;
+		auto pShopPanel = m_pShopPanel;
+		auto pCargoPanel = m_pCargoPanel;
+		auto pCargoPanel1 = m_pCargoPanel1;
+		auto pMinimapPanel = m_pMiniMapPanel;
+		auto pInputGoldPanel = m_pInputGoldPanel;
+		auto pPGTPanel = m_pPGTPanel;
+		auto pSystemPanel = m_pSystemPanel;
+		auto pGambleStore = m_pGambleStore;
+		auto pServerPanel = m_pServerPanel;
+		auto pPotalPanel = m_pPotalPanel;
+		if (g_bActiveWB == 1)
+		{
+			g_pApp->SwitchWebBrowserState(0);
+			return 0;
+		}
+
+		if (pAutoTradePanel && pAutoTradePanel->IsVisible() == 1)
+			SetVisibleAutoTrade(0, 0);
+		else if (pPGTPanel->IsVisible() == 1)
+			pPGTPanel->SetVisible(0);
+		else if (m_pQuestPanel->IsVisible() == 1)
+		{
+			m_pQuestPanel->SetVisible(0);
+			m_pQuestBtn->SetSelected(0);
+			GetSoundAndPlay(51, 0, 0);
+		}
+		else if (m_pFireWorkPanel && m_pFireWorkPanel->IsVisible() == 1)
+			m_pFireWorkPanel->SetVisible(0);
+		else if (m_pTotoPanel && m_pTotoPanel->IsVisible() == 1)
+			m_pTotoPanel->SetVisible(0);
+		else if (pInvPanel->IsVisible() == 1)
+			OnControlEvent(65562, 0);
+		else if (pSkillPanel->IsVisible() == 1)
+			OnControlEvent(65568, 0);
+		else if (pCharPanel->IsVisible() == 1)
+			OnControlEvent(65769, 0);
+		else if (pTradePanel->IsVisible() == 1)
+			SetVisibleTrade(0);
+		else if (pPartyPanel->IsVisible() == 1)
+			SetVisibleParty();
+		else if (pShopPanel->IsVisible()== 1)
+			SetVisibleShop(0);
+		else if (pCargoPanel->IsVisible() == 1)
+			SetVisibleCargo(0);
+		else if (pCargoPanel1->IsVisible() == 1)
+			SetVisibleCargo(0);
+		else if (pGambleStore->IsVisible() == 1)
+			SetVisibleGamble(0, 0);
+		else if (pInputGoldPanel->IsVisible() == 1)
+			pInputGoldPanel->SetVisible(0);
+		else if (m_pMsgPanel && m_pMsgPanel->IsVisible() == 1)
+		{
+			m_pMsgPanel->SetVisible(0);
+			m_pControlContainer->SetFocusedControl(0);
+		}
+		else if (m_pHelpPanel && m_pHelpPanel->IsVisible() == 1)
+		{
+			m_pHelpPanel->SetVisible(0);
+			m_pHelpBtn->SetSelected(0);
+			GetSoundAndPlay(51, 0, 0);
+		}
+		else if (pServerPanel && pServerPanel->IsVisible() == 1)
+			pServerPanel->SetVisible(0);
+		else if (pPotalPanel && pPotalPanel->IsVisible() == 1)
+			pPotalPanel->SetVisible(0);
+		else if (m_pMessageBox && m_pMessageBox->IsVisible() == 1)
+			m_pMessageBox->SetVisible(0);
+	}
+
+	return 1;
 }
 
 int TMFieldScene::Affect_Main(unsigned int dwServerTime)
 {
-	return 0;
+	if (!m_pMyHuman || !m_pMiniPanel)
+		return 0;
+
+	int i = 0;
+	int nAvailCount = 0;
+	m_pAffectDesc->SetVisible(0);
+	m_pAffectDesc->SetText((char*)"", 0);
+	bool bomb = false;
+	for (int i = 0; i < 32; ++i)
+	{
+		if ((unsigned char)m_pMyHuman->m_stAffect[i].Type <= 50)
+		{
+			if (!m_pAffectIcon[i]->IsVisible())
+				m_pAffect[i]->SetVisible(0);
+
+			int sTime = 8 * m_pMyHuman->m_stAffect[i].Time - (dwServerTime - m_dwStartAffectTime[i]) / 1000;
+
+			char szVal[128]{};
+			GetTimeString(szVal, sTime, m_pMyHuman->m_stAffect[i].Time, i);
+			int nTime = m_pMyHuman->m_stAffect[i].Time;
+
+			if (m_pAffectIcon[i] && i && (unsigned char)m_pMyHuman->m_stAffect[i].Type > 0 || !i && nTime > 0)
+			{
+				m_pAffectIcon[i]->m_nPosX = BASE_ScreenResize(30.0f);
+				m_pAffectIcon[i]->m_nPosX = ((float)(BASE_ScreenResize(1.0f) + m_pAffectIcon[i]->m_nWidth) * (float)(nAvailCount + 1))
+					+ m_pAffectIcon[i]->m_nPosX;
+				m_pAffectIcon[i]->m_nPosY = BASE_ScreenResize(80.0f);
+
+				if (m_pAffectIcon[i]->m_bOver == 1)
+				{
+					if (m_pAffectL[i])
+					{
+						m_pAffect[i]->SetVisible(0);
+						m_pAffectL[i]->SetVisible(0);
+					}
+
+					char strAffectString[128]{};
+					if (m_pMyHuman->m_stAffect[i].Type == 8)
+					{
+						auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+						int efvalue = m_pMyHuman->m_stAffect[i].Value;
+						int CheckBit = 0;
+						int Cnt = 0;
+						for (int k = 0; k < 10; ++k)
+						{
+							CheckBit = 1 << k;
+							if ((1 << k) & efvalue)
+							{
+								sprintf(strAffectString, "%s %s", strAffectString, g_pAffectSubTable[k]);
+								++Cnt;
+							}
+						}
+
+						int slen = strlen(strAffectString) + 4;
+						sprintf(strAffectString, "%s : %s", strAffectString, szVal);
+						m_pAffectDesc->SetText(strAffectString, 0);
+						m_pAffectDesc->m_nPosX = m_pAffectIcon[i]->m_nPosX;
+						if ((float)(m_pAffectDesc->m_nWidth + 60.0f) + m_pAffectDesc->m_nPosX > (float)g_pDevice->m_dwScreenWidth)
+							m_pAffectDesc->m_nPosX = (float)g_pDevice->m_dwScreenWidth - (float)(m_pAffectDesc->m_nWidth + 60.0f);
+
+						m_pAffectDesc->m_nPosY = m_pAffectIcon[i]->m_nPosY + 40.0f;
+						m_pAffectDesc->SetVisible(1);
+					}
+					else
+					{
+						sprintf(strAffectString, "%s : %s", g_pAffectTable[(unsigned char)m_pMyHuman->m_stAffect[i].Type], szVal);
+						m_pAffectDesc->SetText(strAffectString, 0);
+						m_pAffectDesc->m_nPosX = m_pAffectIcon[i]->m_nPosX;
+						if ((float)(m_pAffectDesc->m_nWidth + 60.0f) + m_pAffectDesc->m_nPosX > (float)g_pDevice->m_dwScreenWidth)
+							m_pAffectDesc->m_nPosX = (float)g_pDevice->m_dwScreenWidth - (float)(m_pAffectDesc->m_nWidth + 60.0f);
+						m_pAffectDesc->m_nPosY = m_pAffectIcon[i]->m_nPosY + 40.0f;
+						m_pAffectDesc->SetVisible(1);					
+					}
+				}
+				else
+				{
+					int len = strlen(m_pAffect[i]->m_Font.m_szString);
+					int test = 1;
+					for (int l = 0; l < len; ++l)
+					{
+						if (!isdigit(m_pAffect[i]->m_Font.m_szString[l]) && m_pAffect[i]->m_Font.m_szString[l] != ' ')
+							test = 0;
+					}
+
+					m_pAffect[i]->m_nPosX = m_pAffectIcon[i]->m_nPosX + (test ? -8.0f : 3.0f);
+					if ((float)(m_pAffect[i]->m_nWidth + 60.0f) + m_pAffect[i]->m_nPosX > (float)g_pDevice->m_dwScreenWidth)
+						m_pAffect[i]->m_nPosX = (float)g_pDevice->m_dwScreenWidth - (float)(m_pAffect[i]->m_nWidth + 60.0f);
+
+					m_pAffect[i]->m_nPosY = m_pAffectIcon[i]->m_nPosY + 24.0f;
+					m_pAffect[i]->SetVisible(1);
+				}
+
+				++nAvailCount;
+				if (!m_dwAffectBlinkTime[i] && sTime <= 10 && sTime > 1)
+					m_dwAffectBlinkTime[i] = dwServerTime;
+				else if (!m_dwAffectBlinkTime[i] || sTime >= 10)
+					m_pAffectIcon[i]->SetVisible(1);
+				else
+				{
+					unsigned int dwDelay = 3 * nTime * nTime + 200;
+					if (dwServerTime - m_dwAffectBlinkTime[i] >= dwDelay)
+					{
+						m_pAffectIcon[i]->SetVisible(m_pAffectIcon[i]->m_bVisible == 0);
+						m_dwAffectBlinkTime[i] = dwServerTime;
+					}
+				}
+				if (nTime >= 10)
+				{
+					m_pAffectIcon[i]->SetVisible(1);
+					m_dwAffectBlinkTime[i] = 0;
+				}
+			}
+		}
+	}
+
+	nAvailCount = 0;
+	int YnAvailCount = 0;
+	int index = 0;
+
+	if (m_pMyHuman->m_pTitleProgressBar)
+	{
+		for (int i = 0; i < 32; ++i)
+		{
+			m_pTargetAffectIcon[i]->m_GCPanel.nTextureIndex = -1;
+			index = (int)m_TargetAffect[i] >> 8;
+			if (index == 0)
+			{
+				m_pTargetAffectIcon[i]->m_GCPanel.nTextureIndex = -1;
+			}
+			else
+			{
+				m_pTargetAffectIcon[i]->m_GCPanel.nTextureIndex = g_AffectSkillType[index];
+				++nAvailCount;
+
+				auto vecTitleProgressBar = m_pMyHuman->m_pTitleProgressBar->GetPos();
+				m_pTargetAffectIcon[i]->m_nPosX = vecTitleProgressBar.x
+					- (float)(m_pTargetAffectIcon[i]->m_nWidth * 2.0f);
+				m_pTargetAffectIcon[i]->m_nPosX = ((float)(BASE_ScreenResize(1.0f) + m_pTargetAffectIcon[i]->m_nWidth) * (float)(nAvailCount + 1))
+					+ m_pTargetAffectIcon[i]->m_nPosX;				
+				m_pTargetAffectIcon[i]->m_nPosY = ((float)(m_pMyHuman->m_pTitleProgressBar->m_nHeight * 2.0f) / 3.0f) + vecTitleProgressBar.y;
+
+				if (nAvailCount > 9)
+				{
+					m_pTargetAffectIcon[i]->m_nPosY = m_pTargetAffectIcon[i]->m_nPosY + m_pTargetAffectIcon[i]->m_nHeight;					
+					m_pTargetAffectIcon[i]->m_nPosX = vecTitleProgressBar.x - (float)(m_pTargetAffectIcon[i]->m_nWidth * 2.0f);
+					m_pTargetAffectIcon[i]->m_nPosX = ((float)(BASE_ScreenResize(1.0f)
+						+ m_pTargetAffectIcon[i]->m_nWidth)
+						* (float)(++YnAvailCount + 1))
+						+ m_pTargetAffectIcon[i]->m_nPosX;
+				}
+			}
+
+			m_pTargetAffectIcon[i]->m_GCPanel.nLayer = 29;
+		}
+	}
+
+	int j = 0;
+	index = 0;
+	m_pPartyAffectText->SetVisible(0);
+	auto PartyExit = (SButton*)m_pControlContainer->FindControl(475139);
+	if (PartyExit)
+	{
+		PartyExit->SetVisible(1);
+		float size = (((float)(m_pPartyList->m_nNumItem - m_pPartyList->m_nStartItemIndex)
+			* m_pPartyList->m_nHeight)
+			/ (float)m_pPartyList->m_nVisibleCount)
+			+ 30.0f;
+
+		
+		auto vecPartyExitPos = PartyExit->GetPos();
+		PartyExit->SetPos(vecPartyExitPos.x, size);
+
+		m_pPartyAutoButton->SetVisible(0);
+		m_pPartyAutoText->SetVisible(0);
+
+		auto partyback = (SPanel*)m_pControlContainer->FindControl(7602196);
+		if (partyback)
+			partyback->SetVisible(0);
+		if (m_pPartyList->m_nNumItem >= 1)
+		{
+			m_pPartyPanel->SetSize(m_pPartyPanel->m_nWidth,	(float)m_pPartyList->m_nNumItem * 20.0f);
+		}
+		else
+		{
+			PartyExit->SetVisible(0);
+			m_pPartyAutoButton->SetVisible(1);
+			m_pPartyAutoText->SetVisible(1);
+			if (partyback)
+				partyback->SetVisible(1);
+			if (m_bAutoParty)
+				m_pPartyAutoButton->m_GCPanel.bVisible = 1;
+			else
+				m_pPartyAutoButton->m_GCPanel.bVisible = 0;
+
+			m_pPartyPanel->SetSize(m_pPartyPanel->m_nWidth, 50.0f);
+		}
+	}
+	for (i = 0; i < 13; ++i)
+	{
+		for (j = 0; j < 32; ++j)
+		{
+			m_pPartyAffectIcon[i][j]->m_GCPanel.nTextureIndex = -1;
+			m_pPartyAffectIcon[i][j]->m_GCPanel.nLayer = 29;
+		}
+	}
+
+	for (i = 0; i < m_pPartyList->m_nNumItem; ++i)
+	{
+		auto pPartyItem = (SListBoxPartyItem*)m_pPartyList->m_pItemList[i];
+		auto pHuman = (TMHuman*)g_pObjectManager->GetHumanByID(pPartyItem->m_dwCharID);
+		nAvailCount = 0;
+		YnAvailCount = 0;
+
+		for (j = 0; j < 32; ++j)
+		{
+			if (pHuman)
+			{
+				index = (signed int)pHuman->m_usAffect[j] >> 8;
+
+				if (!index)
+				{
+					m_pPartyAffectIcon[i][j]->m_GCPanel.nTextureIndex = -1;
+				}
+				else
+				{
+					m_pPartyAffectIcon[i][j]->m_GCPanel.nTextureIndex = g_AffectSkillType[index];
+					++nAvailCount;
+
+					auto vecPartyListPos = m_pPartyList->GetPos();
+					m_pPartyAffectIcon[i][j]->m_nPosX = (float)(vecPartyListPos.x + m_pPartyList->m_nWidth)
+						- 20.0f;
+					m_pPartyAffectIcon[i][j]->m_nPosX = ((BASE_ScreenResize(1.0f) + m_pPartyAffectIcon[i][j]->m_nWidth)
+						* (float)(nAvailCount + 1))
+						+ m_pPartyAffectIcon[i][j]->m_nPosX;
+
+					m_pPartyAffectIcon[i][j]->m_nPosY = (float)((float)((float)(i
+						- m_pPartyList->m_nStartItemIndex)
+						* m_pPartyList->m_nHeight)
+						/ (float)m_pPartyList->m_nVisibleCount)
+						+ 12.0f;
+
+					if (nAvailCount > 10)
+					{
+						m_pPartyAffectIcon[i][j]->m_nPosX = (float)(vecPartyListPos.x + m_pPartyList->m_nWidth)
+							- 20.0f;
+						m_pPartyAffectIcon[i][j]->m_nPosX = ((BASE_ScreenResize(1.0f)
+							+ m_pPartyAffectIcon[i][j]->m_nWidth)
+							* (float)(++YnAvailCount + 1))
+							+ m_pPartyAffectIcon[i][j]->m_nPosX;
+						m_pPartyAffectIcon[i][j]->m_nPosY = (((float)(i
+							- m_pPartyList->m_nStartItemIndex)
+							* m_pPartyList->m_nHeight)
+							/ (float)m_pPartyList->m_nVisibleCount)
+							+ 22.0f;
+					}
+					if (m_pPartyAffectIcon[i][j]->IsOver() == 1)
+					{
+						m_pPartyAffectText->SetRealPos(m_pPartyAffectIcon[i][j]->m_nPosX - m_pPartyAffectIcon[i][j]->m_nWidth,
+							m_pPartyAffectIcon[i][j]->m_nPosY - (float)(m_pPartyAffectIcon[i][j]->m_nHeight * 1.5f));
+
+						m_pPartyAffectText->SetText(g_pAffectTable[index], 0);
+						m_pPartyAffectText->SetVisible(1);
+					}
+				}
+			}
+		}
+	}
+
+	return 1;
 }
 
 int TMFieldScene::StrByteCheck(char* szString)
@@ -18897,26 +23382,625 @@ int TMFieldScene::StrByteCheck(char* szString)
 
 void TMFieldScene::SetVisibleMixPanel(int bShow)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+	if (m_pInputGoldPanel->IsVisible() == 1)
+		SetInVisibleInputCoin();
+	if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+		SetVisibleSkill();
+	if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+		SetVisibleCharInfo();
+	if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+		SetVisibleAutoTrade(0, 0);
+
+	if (bShow == 1)
+	{
+		if (m_pInvenPanel)
+		{
+			if (!m_pInvenPanel->m_bVisible)
+				SetVisibleInventory();
+		}
+
+		m_ItemMixClass.m_pMixPanel->SetVisible(1);
+		m_pInvenPanel->SetPos(RenderDevice::m_fWidthRatio * 514.0f,
+			RenderDevice::m_fHeightRatio * 35.0f);
+
+		g_pDevice->m_nWidthShift = 0;
+		g_pCursor->DetachItem();
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV8;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV8;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV8;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV8;
+		SetEquipGridState(0);
+	}
+	else
+	{
+		if (m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+
+		g_pDevice->m_nWidthShift = 0;
+		m_ItemMixClass.m_pMixPanel->SetVisible(0);
+		ClearMixPannel();
+	}
 }
 
 void TMFieldScene::ClearMixPannel()
 {
+	for (int i = 0; i < 4; ++i)
+	{
+		auto pGridInv = m_pGridInvList[i];
+		for (int nY = 0; nY < 3; ++nY)
+		{
+			for (int nX = 0; nX < 5; ++nX)
+			{
+				auto pItem = pGridInv->GetItem(nX, nY);
+				if (pItem)
+				{
+					if (pItem->m_GCObj.dwColor == 0xFFFF0000)
+						pItem->m_GCObj.dwColor = 0xFFFFFFFF;
+				}
+			}
+		}
+	}
+
+	m_ItemMixClass.ClearGridList();
+	m_ItemMixClass.m_stCombineItem.Header.ID = m_pMyHuman->m_dwID;
+	m_ItemMixClass.m_stCombineItem.Header.Type = MSG_CombineItemTiny_Opcode;
+
+	m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	SetEquipGridState(1);
 }
 
 void TMFieldScene::SetVisibleMissionPanel(int bShow)
 {
+	SGridControl::m_sLastMouseOverIndex = -1;
+	if (m_pInputGoldPanel->IsVisible() == 1)
+		SetInVisibleInputCoin();
+	if (bShow == 1 && m_pSkillPanel && m_pSkillPanel->m_bVisible == 1)
+		SetVisibleSkill();
+	if (bShow == 1 && m_pCPanel && m_pCPanel->m_bVisible == 1)
+		SetVisibleCharInfo();
+	if (bShow == 1 && m_pCargoPanel && m_pCargoPanel->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pCargoPanel1 && m_pCargoPanel1->m_bVisible == 1)
+		SetVisibleCargo(1);
+	if (bShow == 1 && m_pAutoTrade && m_pAutoTrade->m_bVisible == 1)
+		SetVisibleAutoTrade(0, 0);
+
+	if (bShow == 1)
+	{
+		if (m_pInvenPanel)
+		{
+			if (!m_pInvenPanel->m_bVisible)
+				SetVisibleInventory();
+		}
+
+		m_MissionClass.m_pMissionPanel->SetVisible(1);
+		m_pInvenPanel->SetPos(RenderDevice::m_fWidthRatio * 514.0f,
+			RenderDevice::m_fHeightRatio * 35.0f);
+
+		g_pDevice->m_nWidthShift = 0;
+		g_pCursor->DetachItem();
+		m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_TRADEINV3;
+		SetEquipGridState(0);
+	}
+	else
+	{
+		if (m_pInvenPanel && m_pInvenPanel->m_bVisible == 1)
+			SetVisibleInventory();
+
+		g_pDevice->m_nWidthShift = 0;
+		m_MissionClass.m_pMissionPanel->SetVisible(0);
+		ClearMissionPannel();
+	}
 }
 
 void TMFieldScene::ClearMissionPannel()
 {
+	for (int i = 0; i < 4; ++i)
+	{
+		auto pGridInv = m_pGridInvList[i];
+		for (int nY = 0; nY < 3; ++nY)
+		{
+			for (int nX = 0; nX < 5; ++nX)
+			{
+				auto pItem = pGridInv->GetItem(nX, nY);
+				if (pItem)
+				{
+					if (pItem->m_GCObj.dwColor == 0xFFFF0000)
+						pItem->m_GCObj.dwColor = 0xFFFFFFFF;
+				}
+			}
+		}
+	}
+
+	m_MissionClass.ClearGridList();
+	m_MissionClass.m_stCombineItem.Header.ID = m_pMyHuman->m_dwID;
+	m_MissionClass.m_stCombineItem.Header.Type = MSG_CombineItemTiny_Opcode;
+	m_pGridInvList[0]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[1]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[2]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	m_pGridInvList[3]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+	SetEquipGridState(1);
 }
 
 void TMFieldScene::GameAuto()
 {
+	if (!g_GameAuto)
+		return;
+
+	if (g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_FIELD)
+	{
+		g_GameAuto = 0;
+		return;
+	}
+
+	if (m_pMyHuman->m_cHide == 1)
+		return;
+
+	unsigned int dwServerTime = g_pApp->m_pTimerManager->GetServerTime();
+	if (m_dwAttackDelay)
+	{
+		if (dwServerTime - m_dwAttackDelay > 2000)
+			m_dwAttackDelay = 0;
+		m_pAutoTarget = nullptr;
+		return;
+	}
+	if (m_dwLastLogout || m_dwLastTown || m_dwLastTeleport || m_pMyHuman->m_dwDelayDel)
+	{
+		m_dwAttackDelay = dwServerTime;
+		m_pAutoTarget = nullptr;
+		return;
+	}
+
+	int CharHp = g_pObjectManager->m_stMobData.CurrentScore.Hp;
+	if (m_pMyHuman->m_cDie)
+	{
+		m_pAutoTarget = nullptr;
+		return;
+	}
+
+	int nSX = (int)m_pMyHuman->m_vecPosition.x;
+	int nSY = (int)m_pMyHuman->m_vecPosition.y;
+	int CharMaxHp = g_pObjectManager->m_stMobData.CurrentScore.MaxHp;
+	int CharMp = g_pObjectManager->m_stMobData.CurrentScore.Mp;
+	int CharMaxMp = g_pObjectManager->m_stMobData.CurrentScore.MaxMp;
+	int nMountHP = BASE_GetItemAbility(&g_pObjectManager->m_stMobData.Equip[14], 80);
+	int nMountFeed = BASE_GetItemAbility(&g_pObjectManager->m_stMobData.Equip[14], 82);
+	int sIndex = g_pObjectManager->m_stMobData.Equip[14].sIndex - 2045;
+	int _nEquipIdx = g_pObjectManager->m_stMobData.Equip[14].sIndex;
+	if (_nEquipIdx >= 2387 && _nEquipIdx <= 2388)
+		sIndex = 336;
+	else if (_nEquipIdx >= 3980 && _nEquipIdx <= 3982)
+		sIndex = _nEquipIdx - 3638;
+	else if (_nEquipIdx >= 3983 && _nEquipIdx <= 3985)
+		sIndex = _nEquipIdx - 3641;
+	else if (_nEquipIdx >= 3986 && _nEquipIdx <= 3988)
+		sIndex = _nEquipIdx - 3644;
+
+	int nMountMaxHPIndex = sIndex - 315;
+	if (sIndex - 315 < 0)
+		nMountMaxHPIndex = 0;
+
+	switch (g_pObjectManager->m_stMobData.Equip[14].sIndex - 2378)
+	{
+	case 0:
+		nMountMaxHPIndex = 18;
+		break;
+	case 1:
+		nMountMaxHPIndex = 19;
+		break;
+	case 2:
+		nMountMaxHPIndex = 21;
+		break;
+	case 3:
+		nMountMaxHPIndex = 20;
+		break;
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+	case 8:
+		break;
+	case 9:
+		nMountMaxHPIndex = 20;
+		break;
+	case 10:
+		nMountMaxHPIndex = 21;
+		break;
+	case 11:
+		nMountMaxHPIndex = 22;
+		break;
+	}
+
+	int nMountMaxHp = g_nMountHPTable[nMountMaxHPIndex];
+	int CheckMountHp = 0;
+
+	if (g_GameAuto_mountValue)
+		CheckMountHp = g_GameAuto_mountValue * nMountMaxHp / 100;
+	else
+		CheckMountHp = 0;
+
+	CharMaxHp = g_GameAuto_hpValue * CharMaxHp / 100;
+	CharMaxMp = g_GameAuto_hpValue * CharMaxMp / 100;
+
+	if (!(dwServerTime % 3))
+	{
+		if (nMountHP > 0 && nMountHP < CheckMountHp && FeedMount())
+			return;
+
+		if (CharHp < CharMaxHp && UseHPotion())
+			return;
+
+		if (m_AutoHpMp != 3 && CharMp < CharMaxMp && UseMPotion())
+			return;
+
+		if (nMountFeed > 0 && nMountFeed < 6 && FeedMount())
+			return;
+	}
+
+	if ((int)m_pMyHuman->m_eMotion > 1)
+		return;
+
+	if (m_bSkillBeltSwitch && m_bSkillBeltSwitch != 1)
+		m_bSkillBeltSwitch = 0;
+
+	for (int i = 10 * m_bSkillBeltSwitch; i < 10 * m_bSkillBeltSwitch + 10; ++i)
+	{
+		int idxSkill = (unsigned char)g_pObjectManager->m_cShortSkill[i];
+		if (idxSkill == -1)
+			continue;
+
+		int useSkill = 1;
+		if (idxSkill == 3 || idxSkill == 5 || idxSkill == 53 || idxSkill == 54 || idxSkill == 9 || idxSkill == 11 || idxSkill == 37 ||
+			idxSkill == 41 || idxSkill == 43 || idxSkill == 44 || idxSkill == 45 || idxSkill == 46 || idxSkill == 64 || idxSkill == 66 ||
+			idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 87 || idxSkill == 75 || idxSkill == 76 || idxSkill == 77 ||
+			idxSkill == 81 || idxSkill == 85 || idxSkill == 89 || idxSkill == 92)
+		{
+			useSkill = 0;
+		}
+
+		for (int j = 0; j < 32; ++j)
+		{
+			if ((unsigned char)m_pMyHuman->m_stAffect[j].Type <= 0)
+				continue;
+
+			if (idxSkill == 64 || idxSkill == 66 || idxSkill == 68 || idxSkill == 70 || idxSkill == 71)
+			{
+				if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == 71 && m_pMyHuman->m_stAffect[j].Time > 3)
+				{
+					useSkill = 0;
+					break;
+				}
+			}
+			else if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == idxSkill && m_pMyHuman->m_stAffect[j].Time > 3)
+			{
+				useSkill = 0;
+				break;
+			}
+		}
+
+		if (!useSkill)
+		{
+			if ((idxSkill == 56 || idxSkill == 57 || idxSkill == 58 || idxSkill == 59 || idxSkill == 60 || idxSkill == 61 || idxSkill == 62 || idxSkill == 63) &&
+				m_dwSkillLastTime[idxSkill] + 80000 <= dwServerTime)
+			{
+				g_pObjectManager->m_cSelectShortSkill = i;
+				SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0);
+				return;
+			}
+			continue;
+		}
+
+		int DelayTime = 0;
+		if (idxSkill == 3 || idxSkill == 5 || idxSkill == 53 || idxSkill == 54 || idxSkill == 74 || idxSkill == 76 || idxSkill == 77)
+			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[1];
+		else if (idxSkill == 9 || idxSkill == 11 || idxSkill == 13 || idxSkill == 15 || idxSkill == 37 || idxSkill == 86 || idxSkill == 87)
+			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[2];
+		else if (idxSkill == 41 || idxSkill == 43 || idxSkill == 44 || idxSkill == 45 || idxSkill == 46 || idxSkill == 64 || idxSkill == 66 ||
+			idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 89 || idxSkill == 90)
+		{
+			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[3];
+		}
+
+		if (DelayTime + m_dwSkillLastTime[idxSkill] <= dwServerTime)
+		{
+			g_pObjectManager->m_cSelectShortSkill = i;
+			if (SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0) == 1)
+				return;
+		}
+	}
+
+	if (g_GameAuto == 3)
+		return;
+
+	if ((int)m_pMyHuman->m_vecPosition.x >= 2362 && (int)m_pMyHuman->m_vecPosition.x <= 2370 &&
+		(int)m_pMyHuman->m_vecPosition.y >= 3927 && (int)m_pMyHuman->m_vecPosition.y <= 3935)
+		return;
+
+	if (m_AutoPostionUse == 1 && !m_pAutoTarget)
+	{
+		if ((nSX != m_AutoStartPointX || nSY != m_AutoStartPointY) && BASE_GetDistance(nSX, nSY, m_AutoStartPointX, m_AutoStartPointY) <= 10)
+		{
+			if (dwServerTime - m_pMyHuman->m_dwOldMovePacketTime > 1000 && !m_pMyHuman->m_cDie)
+			{
+				m_pMyHuman->m_LastSendTargetPos = m_vecMyNext;
+
+				MSG_Action stAction{};
+				stAction.Header.ID = m_pMyHuman->m_dwID;
+				stAction.PosX = m_pMyHuman->m_LastSendTargetPos.x;
+				stAction.PosY = m_pMyHuman->m_LastSendTargetPos.y;
+				stAction.Effect = 0;
+				stAction.Header.Type = MSG_Action_Opcode;
+				stAction.Speed = g_nMyHumanSpeed;
+				stAction.TargetX = m_AutoStartPointX;
+				stAction.TargetY = m_AutoStartPointY;
+
+				for (int k = 0; k < 23; ++k)
+					stAction.Route[k] = 0;
+
+				g_bLastStop = stAction.Header.Type;
+				m_stMoveStop.LastX = stAction.PosX;
+				m_stMoveStop.LastY = stAction.PosY;
+				m_stMoveStop.NextX = stAction.TargetX;
+				m_stMoveStop.NextY = stAction.TargetY;
+				SendOneMessage((char*)&stAction, sizeof(stAction));
+				m_pMyHuman->OnPacketEvent(MSG_Action_Opcode, (char*)&stAction);
+				m_pMyHuman->m_dwOldMovePacketTime = g_pTimerManager->GetServerTime();
+				return;
+			}
+		}
+	}
+
+	if (m_pMyHuman->IsInTown() == 1)
+		return;
+
+	if (g_GameAuto == 1)
+	{
+		if (!m_pAutoTarget)
+		{
+			m_pAutoTarget = nullptr;
+
+			auto pTarget = (TMHuman*)m_pHumanContainer->m_pDown;
+			while (pTarget && pTarget->m_pNextLink)
+			{
+				if (pTarget == m_pMyHuman)
+					pTarget = (TMHuman*)pTarget->m_pNextLink;
+				else
+				{
+					if (m_pMyHuman->MAutoAttack(pTarget, 0) == 1)
+					{
+						m_pAutoTarget = pTarget;
+						return;
+					}
+
+					pTarget = (TMHuman*)pTarget->m_pNextLink;
+				}
+			}
+
+			if (m_pAutoTarget || m_AutoPostionUse == 2)
+				return;
+
+			auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+			while (pNode && pNode->m_pNextLink)
+			{
+				if (pNode == m_pMyHuman)
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+
+				int nTX = (int)pNode->m_vecPosition.x;
+				int nTY = (int)pNode->m_vecPosition.y;
+
+				if (BASE_GetDistance(nSX, nSY, nTX, nTY) > 8)
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+
+				int nSpecForce = 0;
+				if (g_pObjectManager->m_stMobData.LearnedSkill[0] & 0x20000000)
+					nSpecForce = 1;
+
+				int nMobAttackRange = nSpecForce + BASE_GetMobAbility(&g_pObjectManager->m_stMobData, 27);
+				BASE_GetHitPosition(nSX, nSY, &nTX, &nTY, (char*)g_pCurrentScene->m_HeightMapData, 8);
+
+				if (nTX != (int)pNode->m_vecPosition.x || nTY != (int)pNode->m_vecPosition.y)
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+
+				int attack = 0;
+				if (pNode)
+					attack = m_pMyHuman->MAutoAttack(pNode, 1);
+				if (attack == 1)
+				{
+					m_pAutoTarget = pNode;
+					return;
+				}
+				if (attack == 2)
+					return;
+
+				pNode = (TMHuman*)pNode->m_pNextLink;
+			}
+
+			return;
+		}
+
+		int rnt = 0;
+		auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+		while (pNode && pNode->m_pNextLink)
+		{
+			if (pNode == m_pMyHuman)
+			{
+				pNode = (TMHuman*)pNode->m_pNextLink;
+				continue;
+			}
+
+			if (pNode == m_pAutoTarget)
+			{
+				rnt = m_pMyHuman->MAutoAttack(m_pAutoTarget, m_AutoPostionUse == 2 ? 0 : 1);
+				if (m_pAutoTarget->m_cShadow == 1 && m_pAutoTarget->m_nClass == 66)
+					m_pAutoTarget = nullptr;
+			}
+
+			pNode = (TMHuman*)pNode->m_pNextLink;
+			if (!rnt)
+				m_pAutoTarget = nullptr;
+		}
+
+		return;
+	}
+
+	if (g_GameAuto == 2)
+	{
+		if (m_pMyHuman->m_bSkillBlack == 1)
+			return;
+
+		if (!m_pAutoTarget)
+		{
+			m_pAutoTarget = nullptr;
+
+			auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+			while (pNode && pNode->m_pNextLink)
+			{
+				if (pNode == m_pMyHuman)
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+
+				int nX = (int)pNode->m_vecPosition.x;
+				int nY = (int)pNode->m_vecPosition.y;
+
+				if (AutoSkillUse(nX, nY, D3DXVECTOR3(pNode->m_vecPosition.x, pNode->m_fHeight, pNode->m_vecPosition.y), 0, 0, pNode) == 1)
+				{
+					m_pAutoTarget = pNode;
+					return;
+				}
+
+				pNode = (TMHuman*)pNode->m_pNextLink;
+			}
+
+			return;
+		}
+
+		int CheckAtt = 0;
+		auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+		while (pNode && pNode->m_pNextLink)
+		{
+			if (pNode == m_pMyHuman)
+			{
+				pNode = (TMHuman*)pNode->m_pNextLink;
+				continue;
+			}
+
+			if (pNode == m_pAutoTarget)
+			{
+				int itx = (int)m_pAutoTarget->m_vecPosition.x;
+				int ity = (int)m_pAutoTarget->m_vecPosition.y;
+
+				if (!AutoSkillUse(itx, ity, D3DXVECTOR3(m_pAutoTarget->m_vecPosition.x, m_pAutoTarget->m_fHeight, m_pAutoTarget->m_vecPosition.y), 0, 0, m_pAutoTarget))
+				{
+					m_pAutoTarget = 0;
+					CheckAtt = 1;
+					break;
+				}
+			}
+
+			pNode = (TMHuman*)pNode->m_pNextLink;
+		}
+
+		if (!CheckAtt)
+			m_pAutoTarget = 0;
+	}
 }
 
 int TMFieldScene::MouseClick_MixNPC(TMHuman* pOver)
 {
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 67 && 
+		m_pGround->m_vecOffsetIndex.x == 13 && m_pGround->m_vecOffsetIndex.y == 13)
+	{
+		m_ItemMixClass.ResultItemListSet(67, 13, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 67 && 
+		m_pGround->m_vecOffsetIndex.x == 28 && m_pGround->m_vecOffsetIndex.y == 24 && pOver->m_dwID != 1033)
+	{
+		m_ItemMixClass.ResultItemListSet(67, 28, 24);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 54 && 
+		m_pGround->m_vecOffsetIndex.x == 19 && m_pGround->m_vecOffsetIndex.y == 13)
+	{
+		m_ItemMixClass.ResultItemListSet(54, 19, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 54 && 
+		m_pGround->m_vecOffsetIndex.x == 25 && m_pGround->m_vecOffsetIndex.y == 13)
+	{
+		g_nCombineMode = 1;
+		if (m_pItemMixPanel)
+			SetVisibleMixItem(m_pItemMixPanel->m_bVisible == 0);
+
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 55)
+	{
+		m_ItemMixClass.ResultItemListSet(55, 19, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 56)
+	{
+		m_ItemMixClass.ResultItemListSet(56, 19, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 66 && 
+		m_pGround->m_vecOffsetIndex.x == 25 && m_pGround->m_vecOffsetIndex.y == 13)
+	{
+		m_ItemMixClass.ResultItemListSet(66, 25, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 68 && 
+		m_pGround->m_vecOffsetIndex.x == 19 && m_pGround->m_vecOffsetIndex.y == 15)
+	{
+		g_nCombineMode = 1;
+		m_ItemMixClass.ResultItemListSet(68, 19, 15);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 68)
+	{		
+		SetVisibleMixItemTiini(m_pItemMixPanel4->m_bVisible == 0);
+		return 1;
+	}
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 67 && 
+		(pOver->m_stScore.Reserved & 0xF) == 8 && 
+		m_pGround->m_vecOffsetIndex.x == 25 && m_pGround->m_vecOffsetIndex.y == 13)
+	{
+		m_ItemMixClass.ResultItemListSet(67, 25, 13);
+		SetVisibleMixPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+
 	return 0;
 }
 
@@ -18962,11 +24046,134 @@ int TMFieldScene::MouseClick_SkillMasterNPC(unsigned int dwServerTime, TMHuman* 
 
 int TMFieldScene::MouseClick_QuestNPC(unsigned int dwServerTime, TMHuman* pOver)
 {
-	return 0;
+	if ((pOver->m_stScore.Reserved & 0xF) == 15 && !m_pMyHuman->IsInTown())
+	{
+		if (pOver->m_cMantua > 0 && m_pMyHuman->m_cMantua > 0 && pOver->m_cMantua != m_pMyHuman->m_cMantua && m_pMyHuman->m_cMantua != 3)
+			return 1;
+
+		if (m_pMyHuman->m_pMantua && 
+			((int)m_pMyHuman->m_pMantua->m_Look.Skin0 < 2 || (int)m_pMyHuman->m_pMantua->m_Look.Skin0 >= 8	&& (int)m_pMyHuman->m_pMantua->m_Look.Skin0 <= 14))
+		{
+			if (g_pObjectManager->m_stMobData.Equip[10].sIndex == 1742 && (g_pObjectManager->m_stMobData.Equip[11].sIndex < 1760 || 
+				g_pObjectManager->m_stMobData.Equip[11].sIndex > 1763))
+			{
+				m_pMessagePanel->SetMessage(g_pMessageStringTable[241], 4000);
+				m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+			if (g_pObjectManager->m_stMobData.Equip[10].sIndex != 1742 || g_pObjectManager->m_stMobData.Equip[11].sIndex < 1760	|| 
+				g_pObjectManager->m_stMobData.Equip[11].sIndex > 1763)
+			{
+				return 1;
+			}
+		}
+	}
+	if ((pOver->m_stScore.Reserved & 0xF) == 13)
+	{
+		if (!m_pMessageBox->IsVisible())
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[131], 13, 0);
+			m_pMessageBox->m_dwArg = pOver->m_dwID;
+			m_pMessageBox->SetVisible(1);
+		}
+
+		return 1;
+	}
+	if ((pOver->m_stScore.Reserved & 0xF) == 14)
+	{
+		char cLifeStone = 0;
+		char cSapha = 0;
+		for (int i = 0; i < 63; ++i)
+		{
+			if (g_pObjectManager->m_stMobData.Carry[i].sIndex == 1740 && g_pObjectManager->m_stMobData.Carry[i + 1].sIndex == 1741)
+				cLifeStone = 1;
+			if (g_pObjectManager->m_stMobData.Carry[i].sIndex == 697)
+				++cSapha;
+			if (cLifeStone == 1 && cSapha >= 20 && m_pMyHuman->m_stScore.Level >= 299)
+			{
+				if (!m_pMessageBox->IsVisible())
+				{
+					m_pMessageBox->SetMessage(g_pMessageStringTable[233], 233, 0);
+					m_pMessageBox->m_dwArg = pOver->m_dwID;
+					m_pMessageBox->SetVisible(1);
+				}
+				return 1;
+			}
+		}
+	}
+	if ((pOver->m_stScore.Reserved & 0xF) == 15 || (pOver->m_stScore.Reserved & 0xF) == 10)
+	{
+		if (!m_pMessageBox->IsVisible())
+		{
+			if (pOver->m_sHeadIndex == 51 && _locationCheck(pOver->m_vecPosition, 16, 16))
+				m_pMessageBox->SetMessage(g_pMessageStringTable[404], pOver->m_stScore.Reserved & 0xF, 0);
+			else
+				m_pMessageBox->SetMessage(g_pMessageStringTable[152], pOver->m_stScore.Reserved & 0xF, 0);
+
+			m_pMessageBox->m_dwArg = pOver->m_dwID;
+			m_pMessageBox->SetVisible(1);
+		}
+
+		return 1;
+	}
+	if ((pOver->m_stScore.Reserved & 0xF) == 4 && pOver->m_sHeadIndex == 271)
+	{
+		if (!m_pMessageBox->IsVisible())
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[348], 271, 0);
+			m_pMessageBox->m_dwArg = pOver->m_dwID;
+			m_pMessageBox->SetVisible(1);
+		}
+		return 1;
+	}
+
+	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && (pOver->m_stScore.Reserved & 0xF) == 9 && pOver->m_sHeadIndex == 51)
+	{
+		m_pInputGoldPanel->SetVisible(1);
+		auto pText = (SText*)m_pControlContainer->FindControl(65888);
+		if (pText)
+		{
+			m_nCoinMsgType = 7;
+			pText->SetText(g_pMessageStringTable[136], 0);
+			auto pEdit = (SEditableText*)g_pCurrentScene->m_pControlContainer->FindControl(65889);
+			m_pControlContainer->SetFocusedControl((SControl*)pEdit);
+		}
+	}
+	else if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 58 && (pOver->m_stScore.Reserved & 0xF) == 11)
+	{
+		if (!m_pMessageBox->IsVisible())
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[152], pOver->m_sHeadIndex, 0);
+			m_pMessageBox->m_dwArg = pOver->m_dwID;
+			m_pMessageBox->SetVisible(1);
+		}
+		return 1;
+	}
+	else if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 58 && pOver->m_stScore.Reserved == 76)
+	{
+		if (!m_pMessageBox->IsVisible())
+		{
+			m_pMessageBox->SetMessage(g_pMessageStringTable[152], pOver->m_sHeadIndex, 0);
+			m_pMessageBox->m_dwArg = pOver->m_dwID;
+			m_pMessageBox->SetVisible(1);
+		}
+		return 1;
+	}
+
+	MSG_STANDARDPARM2 stQuest{};
+	stQuest.Header.Type = MSG_Quest_Opcode;
+	stQuest.Header.ID = m_pMyHuman->m_dwID;
+	stQuest.Parm1 = pOver->m_dwID;
+	stQuest.Parm2 = 0;
+	SendOneMessage((char*)&stQuest, sizeof(stQuest));
+	m_dwNPCClickTime = dwServerTime;
+
+	return 1;
 }
 
 void TMFieldScene::NewCCMode()
 {
+	;
 }
 
 void TMFieldScene::InsertInChatList(SListBox* pChatList, STRUCT_MOB *pMobData, SEditableText* pEditChat, unsigned int dwColor, int colorId, unsigned int startId)
@@ -19021,4 +24228,63 @@ void TMFieldScene::InsertInChatList(SListBox* pChatList, STRUCT_MOB *pMobData, S
 		if (strlen(stMsgWhisper.String) > maxLen && ipNewItem && pChatList)
 			pChatList->AddItem(ipNewItem);
 	}
+}
+
+DWORD WINAPI Guildmark_Download(void* pArg)
+{
+	// TODO: we have to find a better way to download the guildmark
+	// currently we have a great treat of data race...
+	auto pMark = (stGuildMarkInfo*)pArg;
+	auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+	if (!g_pCurrentScene || !pMark || !pMark->strMarkFileName[0] || !pMark->pGuildMark)
+	{
+		g_pTextureManager->m_stGuildMark[pMark->nMarkIndex].nGuild = -1;
+		return 0;
+	}
+
+	pFScene->m_dwLastGetGuildmarkTime = timeGetTime();
+
+	char strMarkBuffer[632]{};
+	char strURL[64]{};
+
+	strcpy(strURL, g_pMessageStringTable[377]);
+	strcat(strURL, pMark->strMarkFileName);
+
+	if (!pFScene->m_hInternetSession)
+	{
+		pFScene->m_hInternetSession = InternetOpen("MS", 0, 0, 0, 0);
+		if (!pFScene->m_hInternetSession)
+			return 0;
+	}
+
+	auto m_hHttpFile = InternetOpenUrl(pFScene->m_hInternetSession, strURL, 0, 0, 0x4000000, 0);
+	
+	DWORD dwBytesRead = 0;
+	if (m_hHttpFile)
+	{
+		char szData[1024]{};
+		InternetReadFile(m_hHttpFile, szData, 632, &dwBytesRead);
+		memcpy(strMarkBuffer, szData, dwBytesRead);
+		InternetCloseHandle(m_hHttpFile);
+
+		int bIsCorrectBMP = pFScene->Guildmark_IsCorrectBMP(strMarkBuffer);
+		if (bIsCorrectBMP == 1 && g_pTextureManager->LoadGuildTexture(pMark->nMarkIndex, strMarkBuffer) == 1)
+		{
+			++pFScene->m_nGuildMarkCount;
+			g_pTextureManager->m_stGuildMark[pMark->nMarkIndex].nGuild = pMark->nGuild + (pMark->nGuildChannel << 16);
+			pMark->pGuildMark->m_GCPanel.nMarkIndex = pMark->nMarkIndex;
+			if (pMark->sGuildIndex == 509)
+				pMark->pGuildMark->m_GCPanel.nMarkLayout = 1;
+			else if (pMark->sGuildIndex >= 526 && pMark->sGuildIndex <= 531)
+				pMark->pGuildMark->m_GCPanel.nMarkLayout = 2;
+			else
+				pMark->pGuildMark->m_GCPanel.nMarkLayout = 3;
+		}		
+	}
+
+	if(m_hHttpFile != nullptr)
+		InternetCloseHandle(m_hHttpFile);
+
+	return 1;
 }

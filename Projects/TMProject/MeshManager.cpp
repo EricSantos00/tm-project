@@ -258,12 +258,12 @@ int MeshManager::InitBoneAnimation()
 					for (int i = 4; i < 5; ++i)
 						MeshManager::m_sAnimationArray[nCount][nWeapon][i] = MeshManager::m_sAnimationArray[nCount][nWeapon][nAnimation];
 				}
-				if (nAnimation == 307)
+				if (nArrayIndex == 307)
 				{
 					for (int nAniMotionNum = 0; nAniMotionNum < MAX_ANI_MOTION; ++nAniMotionNum)
 						MeshManager::m_sAnimationArray[nCount][3][nAniMotionNum] = MeshManager::m_sAnimationArray[nCount][2][nAniMotionNum];
 				}
-				if (nAnimation == 107)
+				if (nArrayIndex == 107)
 				{
 					for (int nAniTypeNum = 1; nAniTypeNum < MAX_ANI_TYPE; ++nAniTypeNum)
 					{

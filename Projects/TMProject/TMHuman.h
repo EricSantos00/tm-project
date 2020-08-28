@@ -522,3 +522,4 @@ static float fMantuaList[4][20] =
 };
 
 bool _locationCheck(float posx, float posy, int mapX, int mapY);
+bool _locationCheck(TMVector2 vec2, int mapX, int mapY);
