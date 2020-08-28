@@ -3634,10 +3634,12 @@ int TMHuman::OnPacketChaosCube(MSG_Action* pAction)
             pScene->m_stMoveStop.NextX = pAction->TargetX;
             pScene->m_stMoveStop.NextY = pAction->TargetY;
         }
-        this->m_LastSendTargetPos.x = pAction->TargetX;
-        this->m_LastSendTargetPos.y = pAction->TargetY;
+
+        m_LastSendTargetPos.x = pAction->TargetX;
+        m_LastSendTargetPos.y = pAction->TargetY;
     }
-    this->m_dwStartMoveTime = g_pTimerManager->__vftable->GetServerTime(g_pTimerManager);
+
+    m_dwStartMoveTime = g_pTimerManager->GetServerTime();
     return 1;
 
 }
@@ -7692,6 +7694,84 @@ void TMHuman::MoveAttack(TMHuman* pTarget)
 
 void TMHuman::MoveGet(TMItem* pTarget)
 {
+    if (m_dwDelayDel)
+        return;
+
+    if (!pTarget)
+        return;
+
+    if (g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_FIELD)
+        return;
+
+    auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+    unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+    pScene->m_pTargetItem = pTarget;
+
+    if (dwServerTime <= pScene->m_dwGetItemTime + 1000)
+        return;
+
+    int nSX = (int)m_vecPosition.x;
+    int nSY = (int)m_vecPosition.y;
+
+    if (pScene->m_stMoveStop.NextX)
+    {
+        nSX = pScene->m_stMoveStop.NextX;
+        nSY = pScene->m_stMoveStop.NextY;
+    }
+
+    int nTX = (int)pTarget->m_vecPosition.x;
+    int nTY = (int)pTarget->m_vecPosition.y;
+    int nDistance = BASE_GetDistance(nSX, nSY, nTX, nTY);
+    BASE_GetHitPosition(nSX, nSY, &nTX, &nTY, (char*)pScene->m_HeightMapData, 8);
+
+    if ((pTarget->m_stItem.sIndex == 1727 && m_stScore.Level < 1000) || pTarget->m_stItem.sIndex == 359 || (pTarget->m_stItem.sIndex >= 1733 && pTarget->m_stItem.sIndex <= 1736))
+        return;
+
+    if (nDistance > 1 ||
+        nTX != (int)pTarget->m_vecPosition.x || nTY != (int)pTarget->m_vecPosition.y || m_LastSendTargetPos.x != (int)m_vecPosition.x || m_LastSendTargetPos.y != (int)m_vecPosition.y)
+    {
+        if (m_eMotion == ECHAR_MOTION::ECMOTION_STAND01 || m_eMotion == ECHAR_MOTION::ECMOTION_STAND02)
+        {
+            short sVal = GetKeyState(16);
+            if ((sVal >> 8) <= 0)
+            {
+                pScene->m_vecMyNext.x = (int)pTarget->m_vecPosition.x;
+                pScene->m_vecMyNext.y = (int)pTarget->m_vecPosition.y;
+                GetRoute(pScene->m_vecMyNext, 0, 0);
+            }
+        }
+
+        return;
+    }
+
+    auto pGrid = pScene->m_pGridInv;
+    int nGridIndex = BASE_GetItemAbility(&pTarget->m_stItem, 33);
+    if (nGridIndex > 7 || nGridIndex < 0)
+        nGridIndex = 0;
+
+    auto vecGrid = pGrid->CanAddItemInEmpty(g_pItemGridXY[nGridIndex][0],
+        g_pItemGridXY[nGridIndex][1]);
+
+    if (vecGrid.x <= -1 || vecGrid.y <= -1 && BASE_GetItemAbility(&pTarget->m_stItem, 38) != 2)
+        return;
+
+    if (pTarget->m_stItem.sIndex == 773 || pTarget->m_stItem.sIndex == 746)
+        return;
+
+    MSG_GetItem stGetItem{};
+    stGetItem.Header.ID = m_dwID;
+    stGetItem.Header.Type = MSG_GetItem_Opcode;
+    stGetItem.ItemID = pTarget->m_dwID;
+    stGetItem.DestType = 1;
+    stGetItem.DestPos = vecGrid.x + 5 * vecGrid.y;
+    stGetItem.GridX = (int)pTarget->m_vecPosition.x;
+    stGetItem.GridY = (int)pTarget->m_vecPosition.y;
+    SendOneMessage((char*)&stGetItem, sizeof(stGetItem));
+
+    pScene->m_pTargetItem = 0;
+    pScene->m_dwOldAttackTime = dwServerTime;
+    pScene->m_dwGetItemTime = dwServerTime;
 }
 
 void TMHuman::Attack(ECHAR_MOTION eMotion, TMVector2 vecTarget, char cSkillIndex)

@@ -1302,6 +1302,17 @@ struct MSG_Carry
 	int Coin;
 };
 
+constexpr auto MSG_GetItem_Opcode = 0x270;
+struct MSG_GetItem
+{
+	MSG_STANDARD Header;
+	int DestType;
+	int DestPos;
+	unsigned short ItemID;
+	unsigned short GridX;
+	unsigned short GridY;
+};
+
 const static int g_pDistanceTable[7][7] =
 {
   { 0, 1, 2, 3, 4, 5, 6 },
