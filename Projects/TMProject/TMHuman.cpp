@@ -2411,7 +2411,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
         }
         else if (nDust && (!g_pDevice->m_bSavage && !g_pDevice->m_bIntel && m_eMotion == ECHAR_MOTION::ECMOTION_RUN && !m_cHide
                 || (m_nClass == 22 || m_nClass == 20) && m_eMotion == ECHAR_MOTION::ECMOTION_WALK) && 
-            dwServerTime - m_dwLastDustTime > (unsigned int)(float)(1000.0f / m_fMaxSpeed))
+            dwServerTime - m_dwLastDustTime > (unsigned int)(1000.0f / m_fMaxSpeed))
         {
             int nTextureIndex = 0;
             if (nWalkSndIndex == 8)

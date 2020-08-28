@@ -23535,6 +23535,396 @@ void TMFieldScene::ClearMissionPannel()
 
 void TMFieldScene::GameAuto()
 {
+	if (!g_GameAuto)
+		return;
+
+	if (g_pCurrentScene->m_eSceneType != ESCENE_TYPE::ESCENE_FIELD)
+	{
+		g_GameAuto = 0;
+		return;
+	}
+
+	if (m_pMyHuman->m_cHide == 1)
+		return;
+
+	unsigned int dwServerTime = g_pApp->m_pTimerManager->GetServerTime();
+	if (m_dwAttackDelay)
+	{
+		if (dwServerTime - m_dwAttackDelay > 2000)
+			m_dwAttackDelay = 0;
+		m_pAutoTarget = nullptr;
+		return;
+	}
+	if (m_dwLastLogout || m_dwLastTown || m_dwLastTeleport || m_pMyHuman->m_dwDelayDel)
+	{
+		m_dwAttackDelay = dwServerTime;
+		m_pAutoTarget = nullptr;
+		return;
+	}
+
+	int CharHp = g_pObjectManager->m_stMobData.CurrentScore.Hp;
+	if (m_pMyHuman->m_cDie)
+	{
+		m_pAutoTarget = nullptr;
+		return;
+	}
+
+	int nSX = (int)m_pMyHuman->m_vecPosition.x;
+	int nSY = (int)m_pMyHuman->m_vecPosition.y;
+	int CharMaxHp = g_pObjectManager->m_stMobData.CurrentScore.MaxHp;
+	int CharMp = g_pObjectManager->m_stMobData.CurrentScore.Mp;
+	int CharMaxMp = g_pObjectManager->m_stMobData.CurrentScore.MaxMp;
+	int nMountHP = BASE_GetItemAbility(&g_pObjectManager->m_stMobData.Equip[14], 80);
+	int nMountFeed = BASE_GetItemAbility(&g_pObjectManager->m_stMobData.Equip[14], 82);
+	int sIndex = g_pObjectManager->m_stMobData.Equip[14].sIndex - 2045;
+	int _nEquipIdx = g_pObjectManager->m_stMobData.Equip[14].sIndex;
+	if (_nEquipIdx >= 2387 && _nEquipIdx <= 2388)
+		sIndex = 336;
+	else if (_nEquipIdx >= 3980 && _nEquipIdx <= 3982)
+		sIndex = _nEquipIdx - 3638;
+	else if (_nEquipIdx >= 3983 && _nEquipIdx <= 3985)
+		sIndex = _nEquipIdx - 3641;
+	else if (_nEquipIdx >= 3986 && _nEquipIdx <= 3988)
+		sIndex = _nEquipIdx - 3644;
+
+	int nMountMaxHPIndex = sIndex - 315;
+	if (sIndex - 315 < 0)
+		nMountMaxHPIndex = 0;
+
+	switch (g_pObjectManager->m_stMobData.Equip[14].sIndex - 2378)
+	{
+	case 0:
+		nMountMaxHPIndex = 18;
+		break;
+	case 1:
+		nMountMaxHPIndex = 19;
+		break;
+	case 2:
+		nMountMaxHPIndex = 21;
+		break;
+	case 3:
+		nMountMaxHPIndex = 20;
+		break;
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+	case 8:
+		break;
+	case 9:
+		nMountMaxHPIndex = 20;
+		break;
+	case 10:
+		nMountMaxHPIndex = 21;
+		break;
+	case 11:
+		nMountMaxHPIndex = 22;
+		break;
+	}
+
+	int nMountMaxHp = g_nMountHPTable[nMountMaxHPIndex];
+	int CheckMountHp = 0;
+
+	if (g_GameAuto_mountValue)
+		CheckMountHp = g_GameAuto_mountValue * nMountMaxHp / 100;
+	else
+		CheckMountHp = 0;
+
+	CharMaxHp = g_GameAuto_hpValue * CharMaxHp / 100;
+	CharMaxMp = g_GameAuto_hpValue * CharMaxMp / 100;
+
+	if (!(dwServerTime % 3))
+	{
+		if (nMountHP > 0 && nMountHP < CheckMountHp && FeedMount())
+			return;
+
+		if (CharHp < CharMaxHp && UseHPotion())
+			return;
+
+		if (m_AutoHpMp != 3 && CharMp < CharMaxMp && UseMPotion())
+			return;
+
+		if (nMountFeed > 0 && nMountFeed < 6 && FeedMount())
+			return;
+	}
+
+	if ((int)m_pMyHuman->m_eMotion > 1)
+		return;
+
+	if (m_bSkillBeltSwitch && m_bSkillBeltSwitch != 1)
+		m_bSkillBeltSwitch = 0;
+
+	for (int i = 10 * m_bSkillBeltSwitch; i < 10 * m_bSkillBeltSwitch + 10; ++i)
+	{
+		int idxSkill = (unsigned char)g_pObjectManager->m_cShortSkill[i];
+		if (idxSkill == -1)
+			continue;
+
+		int useSkill = 1;
+		if (idxSkill == 3 || idxSkill == 5 || idxSkill == 53 || idxSkill == 54 || idxSkill == 9 || idxSkill == 11 || idxSkill == 37 ||
+			idxSkill == 41 || idxSkill == 43 || idxSkill == 44 || idxSkill == 45 || idxSkill == 46 || idxSkill == 64 || idxSkill == 66 ||
+			idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 87 || idxSkill == 75 || idxSkill == 76 || idxSkill == 77 ||
+			idxSkill == 81 || idxSkill == 85 || idxSkill == 89 || idxSkill == 92)
+		{
+			useSkill = 0;
+		}
+
+		for (int j = 0; j < 32; ++j)
+		{
+			if ((unsigned char)m_pMyHuman->m_stAffect[j].Type <= 0)
+				continue;
+
+			if (idxSkill == 64 || idxSkill == 66 || idxSkill == 68 || idxSkill == 70 || idxSkill == 71)
+			{
+				if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == 71 && m_pMyHuman->m_stAffect[j].Time > 3)
+				{
+					useSkill = 0;
+					break;
+				}
+			}
+			else if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == idxSkill && m_pMyHuman->m_stAffect[j].Time > 3)
+			{
+				useSkill = 0;
+				break;
+			}
+		}
+
+		if (!useSkill)
+		{
+			if ((idxSkill == 56 || idxSkill == 57 || idxSkill == 58 || idxSkill == 59 || idxSkill == 60 || idxSkill == 61 || idxSkill == 62 || idxSkill == 63) &&
+				m_dwSkillLastTime[idxSkill] + 80000 <= dwServerTime)
+			{
+				g_pObjectManager->m_cSelectShortSkill = i;
+				SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0);
+				return;
+			}
+			continue;
+		}
+
+		int DelayTime = 0;
+		if (idxSkill == 3 || idxSkill == 5 || idxSkill == 53 || idxSkill == 54 || idxSkill == 74 || idxSkill == 76 || idxSkill == 77)
+			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[1];
+		else if (idxSkill == 9 || idxSkill == 11 || idxSkill == 13 || idxSkill == 15 || idxSkill == 37 || idxSkill == 86 || idxSkill == 87)
+			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[2];
+		else if (idxSkill == 41 || idxSkill == 43 || idxSkill == 44 || idxSkill == 45 || idxSkill == 46 || idxSkill == 64 || idxSkill == 66 ||
+			idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 89 || idxSkill == 90)
+		{
+			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[3];
+		}
+
+		if (DelayTime + m_dwSkillLastTime[idxSkill] <= dwServerTime)
+		{
+			g_pObjectManager->m_cSelectShortSkill = i;
+			if (SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0) == 1)
+				return;
+		}
+	}
+
+	if (g_GameAuto == 3)
+		return;
+
+	if ((int)m_pMyHuman->m_vecPosition.x >= 2362 && (int)m_pMyHuman->m_vecPosition.x <= 2370 &&
+		(int)m_pMyHuman->m_vecPosition.y >= 3927 && (int)m_pMyHuman->m_vecPosition.y <= 3935)
+		return;
+
+	if (m_AutoPostionUse == 1 && !m_pAutoTarget)
+	{
+		if ((nSX != m_AutoStartPointX || nSY != m_AutoStartPointY) && BASE_GetDistance(nSX, nSY, m_AutoStartPointX, m_AutoStartPointY) <= 10)
+		{
+			if (dwServerTime - m_pMyHuman->m_dwOldMovePacketTime > 1000 && !m_pMyHuman->m_cDie)
+			{
+				m_pMyHuman->m_LastSendTargetPos = m_vecMyNext;
+
+				MSG_Action stAction{};
+				stAction.Header.ID = m_pMyHuman->m_dwID;
+				stAction.PosX = m_pMyHuman->m_LastSendTargetPos.x;
+				stAction.PosY = m_pMyHuman->m_LastSendTargetPos.y;
+				stAction.Effect = 0;
+				stAction.Header.Type = MSG_Action_Opcode;
+				stAction.Speed = g_nMyHumanSpeed;
+				stAction.TargetX = m_AutoStartPointX;
+				stAction.TargetY = m_AutoStartPointY;
+
+				for (int k = 0; k < 23; ++k)
+					stAction.Route[k] = 0;
+
+				g_bLastStop = stAction.Header.Type;
+				m_stMoveStop.LastX = stAction.PosX;
+				m_stMoveStop.LastY = stAction.PosY;
+				m_stMoveStop.NextX = stAction.TargetX;
+				m_stMoveStop.NextY = stAction.TargetY;
+				SendOneMessage((char*)&stAction, sizeof(stAction));
+				m_pMyHuman->OnPacketEvent(MSG_Action_Opcode, (char*)&stAction);
+				m_pMyHuman->m_dwOldMovePacketTime = g_pTimerManager->GetServerTime();
+				return;
+			}
+		}
+	}
+
+	if (m_pMyHuman->IsInTown() == 1)
+		return;
+
+	if (g_GameAuto == 1)
+	{
+		if (!m_pAutoTarget)
+		{
+			m_pAutoTarget = nullptr;
+
+			auto pTarget = (TMHuman*)m_pHumanContainer->m_pDown;
+			while (pTarget && pTarget->m_pNextLink)
+			{
+				if (pTarget == m_pMyHuman)
+					pTarget = (TMHuman*)pTarget->m_pNextLink;
+				else
+				{
+					if (m_pMyHuman->MAutoAttack(pTarget, 0) == 1)
+					{
+						m_pAutoTarget = pTarget;
+						return;
+					}
+
+					pTarget = (TMHuman*)pTarget->m_pNextLink;
+				}
+			}
+
+			if (m_pAutoTarget || m_AutoPostionUse == 2)
+				return;
+
+			auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+			while (pNode && pNode->m_pNextLink)
+			{
+				if (pNode == m_pMyHuman)
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+
+				int nTX = (int)pNode->m_vecPosition.x;
+				int nTY = (int)pNode->m_vecPosition.y;
+
+				if (BASE_GetDistance(nSX, nSY, nTX, nTY) > 8)
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+
+				int nSpecForce = 0;
+				if (g_pObjectManager->m_stMobData.LearnedSkill[0] & 0x20000000)
+					nSpecForce = 1;
+
+				int nMobAttackRange = nSpecForce + BASE_GetMobAbility(&g_pObjectManager->m_stMobData, 27);
+				BASE_GetHitPosition(nSX, nSY, &nTX, &nTY, (char*)g_pCurrentScene->m_HeightMapData, 8);
+
+				if (nTX != (int)pNode->m_vecPosition.x || nTY != (int)pNode->m_vecPosition.y)
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+
+				int attack = 0;
+				if (pNode)
+					attack = m_pMyHuman->MAutoAttack(pNode, 1);
+				if (attack == 1)
+				{
+					m_pAutoTarget = pNode;
+					return;
+				}
+				if (attack == 2)
+					return;
+
+				pNode = (TMHuman*)pNode->m_pNextLink;
+			}
+
+			return;
+		}
+
+		int rnt = 0;
+		auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+		while (pNode && pNode->m_pNextLink)
+		{
+			if (pNode == m_pMyHuman)
+			{
+				pNode = (TMHuman*)pNode->m_pNextLink;
+				continue;
+			}
+
+			if (pNode == m_pAutoTarget)
+			{
+				rnt = m_pMyHuman->MAutoAttack(m_pAutoTarget, m_AutoPostionUse == 2 ? 0 : 1);
+				if (m_pAutoTarget->m_cShadow == 1 && m_pAutoTarget->m_nClass == 66)
+					m_pAutoTarget = nullptr;
+			}
+
+			pNode = (TMHuman*)pNode->m_pNextLink;
+			if (!rnt)
+				m_pAutoTarget = nullptr;
+		}
+
+		return;
+	}
+
+	if (g_GameAuto == 2)
+	{
+		if (m_pMyHuman->m_bSkillBlack == 1)
+			return;
+
+		if (!m_pAutoTarget)
+		{
+			m_pAutoTarget = nullptr;
+
+			auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+			while (pNode && pNode->m_pNextLink)
+			{
+				if (pNode == m_pMyHuman)
+				{
+					pNode = (TMHuman*)pNode->m_pNextLink;
+					continue;
+				}
+
+				int nX = (int)pNode->m_vecPosition.x;
+				int nY = (int)pNode->m_vecPosition.y;
+
+				if (AutoSkillUse(nX, nY, D3DXVECTOR3(pNode->m_vecPosition.x, pNode->m_fHeight, pNode->m_vecPosition.y), 0, 0, pNode) == 1)
+				{
+					m_pAutoTarget = pNode;
+					return;
+				}
+
+				pNode = (TMHuman*)pNode->m_pNextLink;
+			}
+
+			return;
+		}
+
+		int CheckAtt = 0;
+		auto pNode = (TMHuman*)m_pHumanContainer->m_pDown;
+		while (pNode && pNode->m_pNextLink)
+		{
+			if (pNode == m_pMyHuman)
+			{
+				pNode = (TMHuman*)pNode->m_pNextLink;
+				continue;
+			}
+
+			if (pNode == m_pAutoTarget)
+			{
+				int itx = (int)m_pAutoTarget->m_vecPosition.x;
+				int ity = (int)m_pAutoTarget->m_vecPosition.y;
+
+				if (!AutoSkillUse(itx, ity, D3DXVECTOR3(m_pAutoTarget->m_vecPosition.x, m_pAutoTarget->m_fHeight, m_pAutoTarget->m_vecPosition.y), 0, 0, m_pAutoTarget))
+				{
+					m_pAutoTarget = 0;
+					CheckAtt = 1;
+					break;
+				}
+			}
+
+			pNode = (TMHuman*)pNode->m_pNextLink;
+		}
+
+		if (!CheckAtt)
+			m_pAutoTarget = 0;
+	}
 }
 
 int TMFieldScene::MouseClick_MixNPC(TMHuman* pOver)
