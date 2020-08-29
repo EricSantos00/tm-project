@@ -13025,6 +13025,21 @@ void TMHuman::RenderEffect_EmeraldDragon(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_BoneDragon(unsigned int dwServerTime)
 {
+    if ((dwServerTime - m_dwGolemDustTime) > 300)
+    {
+        for (int i = 1; i < 8; ++i)
+        {
+            auto pEffect = new TMEffectBillBoard(0, 2500, 1.5f * m_fScale, 1.5f * m_fScale, 1.5f * m_fScale, 0.001f, 1, 80);
+            if (pEffect != nullptr)
+            {
+                pEffect->m_vecPosition = TMVector3{ ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[i].x, m_vecTempPos[i].y, ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[i].z };
+                pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                pEffect->SetColor(0xFF00AA66);
+                g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+            }
+        }
+        m_dwGolemDustTime = dwServerTime;
+    }
 }
 
 void TMHuman::RenderEffect_Golem(unsigned int dwServerTime)
