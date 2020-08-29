@@ -14,6 +14,8 @@ class CSound;
 class CStreamingSound;
 class CWaveFile;
 
+constexpr auto MAX_SOUNDLIST = 512;
+
 //----------------------------------------------------------------------------- 
 // Typing macros  
 //----------------------------------------------------------------------------- 
@@ -84,7 +86,7 @@ public:
 	CSound(LPDIRECTSOUNDBUFFER* apDSBuffer, DWORD dwDSBufferSize, DWORD dwNumBuffers, CWaveFile* pWaveFile);
 	virtual ~CSound();
 
-	unsigned int __thiscall GetBufferCount();
+	unsigned int GetBufferCount();
 	HRESULT Get3DBufferInterface(DWORD dwIndex, LPDIRECTSOUND3DBUFFER* ppDS3DBuffer);
 	HRESULT FillBufferWithSound(LPDIRECTSOUNDBUFFER pDSB, BOOL bRepeatWavIfBufferLarger);
 	LPDIRECTSOUNDBUFFER GetFreeBuffer();

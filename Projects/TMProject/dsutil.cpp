@@ -361,20 +361,44 @@ HRESULT CSound::RestoreBuffer(LPDIRECTSOUNDBUFFER pDSB, BOOL* pbWasRestored)
 
 CSound::CSound(LPDIRECTSOUNDBUFFER* apDSBuffer, DWORD dwDSBufferSize, DWORD dwNumBuffers, CWaveFile* pWaveFile)
 {
+	m_apDSBuffer = new IDirectSoundBuffer*[4 * dwNumBuffers];
+
+	for (int i = 0; i < dwNumBuffers; ++i)
+		m_apDSBuffer[i] = apDSBuffer[i];
+
+	m_dwDSBufferSize = dwDSBufferSize;
+	m_dwNumBuffers = dwNumBuffers;
+	m_pWaveFile = pWaveFile;
+
+	FillBufferWithSound(m_apDSBuffer[0], false);
+
+	for (int ia = 0; ia < dwNumBuffers; ++ia)
+		m_apDSBuffer[ia]->SetCurrentPosition(0);
 }
 
 CSound::~CSound()
 {
+	for (int i = 0; i < m_dwNumBuffers; ++i)
+		SAFE_RELEASE(m_apDSBuffer[i]);
+
+	SAFE_DELETE(m_apDSBuffer);
+	SAFE_DELETE(m_pWaveFile);
 }
 
 unsigned int __thiscall CSound::GetBufferCount()
 {
-	return 0;
+	return m_dwNumBuffers;
 }
 
 HRESULT CSound::Get3DBufferInterface(DWORD dwIndex, LPDIRECTSOUND3DBUFFER* ppDS3DBuffer)
 {
-	return E_NOTIMPL;
+	if (!m_apDSBuffer)
+		return CO_E_NOTINITIALIZED;
+
+	if (dwIndex >= m_dwNumBuffers)
+		return E_INVALIDARG;
+
+	return m_apDSBuffer[dwIndex]->QueryInterface(IID_IDirectSound3DBuffer, (void**)ppDS3DBuffer);
 }
 
 HRESULT CSound::FillBufferWithSound(LPDIRECTSOUNDBUFFER pDSB, BOOL bRepeatWavIfBufferLarger)
