@@ -12944,6 +12944,30 @@ void TMHuman::RenderEffect_DungeonBear(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_Hydra(unsigned int dwServerTime)
 {
+    unsigned int dwTermTemp = 100;
+
+    if (g_pDevice->m_fFPS < 10.0f)
+        dwTermTemp = 1000;
+    else if (g_pDevice->m_fFPS < 20.0f)
+        dwTermTemp = 600;
+    else if (g_pDevice->m_fFPS < 30.0f)
+        dwTermTemp = 300;
+
+    if ((dwServerTime - m_dwGolemDustTime) > dwTermTemp)
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            auto pEffect = new TMEffectBillBoard(0, 400 * i + 1500, 0.1f, 0.1f, 0.1f, 0.001f, 1, 80);
+            if (pEffect != nullptr)
+            {
+                pEffect->m_vecPosition = TMVector3{ ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[i].x, m_vecTempPos[i].y, ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[i].z };
+                pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                pEffect->SetColor(0xFF33FF66);
+                g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+            }
+        }
+        m_dwGolemDustTime = dwServerTime;
+    }
 }
 
 void TMHuman::RenderEffect_DarkNightZombieTroll(unsigned int dwServerTime)
