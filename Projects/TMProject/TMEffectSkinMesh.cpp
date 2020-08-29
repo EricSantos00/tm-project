@@ -271,8 +271,18 @@ void TMEffectSkinMesh::RestoreDeviceObjects()
 
 void TMEffectSkinMesh::InvalidateDeviceObjects()
 {
+	if (m_pSkinMesh)
+		m_pSkinMesh->InvalidateDeviceObjects();
+
+	if (m_pSkinMesh2)
+		m_pSkinMesh2->InvalidateDeviceObjects();
 }
 
 void TMEffectSkinMesh::InitPosition(float fX, float fY, float fZ)
 {
+	m_vecStartPos.x = fX;
+	m_vecStartPos.z = fZ;
+	m_vecStartPos.y = fY;
+
+	TMObject::InitPosition(fX, fY, fZ);
 }
