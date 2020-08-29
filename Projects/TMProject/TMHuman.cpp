@@ -8114,6 +8114,236 @@ void TMHuman::HideLabel()
 
 void TMHuman::RenderEffect()
 {
+    if (m_dwDelayDel)
+        return;
+
+    unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+    if (m_pEyeFire[0] && (m_nClass == 36 || m_nClass == 37 || m_cCoinArmor == 1))
+    {
+        RenderEffect_Skull();
+    }
+    else if (m_nClass == 32)
+    {
+        RenderEffect_Golem(dwServerTime);
+    }
+    else if (m_nClass == 34 || m_nClass == 23 || m_nClass == 21 && m_stLookInfo.FaceMesh == 10)
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            if (m_pEyeFire[i])
+            {
+                m_pEyeFire[i]->m_vecPosition = m_vecTempPos[i];
+                m_pEyeFire[i]->FrameMove(0);
+            }
+        }
+    }
+    else if (m_nClass == 16 && m_stLookInfo.FaceMesh == 6)
+    {
+        RenderEffect_BoneDragon(dwServerTime);
+    }
+    else if (m_nClass == 16 && !m_stLookInfo.FaceMesh && m_stLookInfo.FaceSkin == 1)
+    {
+        RenderEffect_EmeraldDragon(dwServerTime);
+    }
+    else if (m_nClass == 30 && (!m_stLookInfo.FaceMesh || m_stLookInfo.FaceMesh == 1 || m_stLookInfo.FaceMesh == 2))
+    {
+        RenderEffect_Minotauros(dwServerTime);
+    }
+    else if (m_nClass == 30 && m_stLookInfo.FaceMesh == 4 || m_nClass == 38 && m_stLookInfo.CoatMesh == 14 && !m_cMantua)
+    {
+        RenderEffect_DarkElf(dwServerTime);
+    }
+    else if (m_nClass == 25 && m_stLookInfo.FaceMesh == 3 && m_stLookInfo.FaceSkin == 8 || m_nClass == 25 && m_stLookInfo.FaceMesh == 12)
+    {
+        RenderEffect_DarkNightZombieTroll(dwServerTime);
+    }
+    else if (m_nClass == 23)
+    {
+        RenderEffect_Hydra(dwServerTime);
+    }
+    else if (m_nClass == 28 && m_stLookInfo.FaceMesh == 2)
+    {
+        RenderEffect_DungeonBear(dwServerTime);
+    }
+    else if (m_nClass == 22 || m_nClass == 27)
+    {
+        RenderEffect_Pig_Wolf(dwServerTime);
+    }
+    else if (m_nClass == 18 && m_eMotion == ECHAR_MOTION::ECMOTION_ATTACK02)
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            auto pEffect = new TMEffectBillBoard(0, 400 * i + 1500, 0.1f, 0.1f, 0.1f, 0.001f, 1, 80);
+
+            if (pEffect != nullptr)
+            {
+                pEffect->m_vecPosition = TMVector3{
+                    ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[i].x,
+                    m_vecTempPos[i].y,
+                    ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[i].z };
+
+                pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                pEffect->SetColor(0xFFFF6666);
+                g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+            }
+        }
+    }
+    else if (m_nClass == 25 && m_stLookInfo.FaceMesh == 3 && m_fScale > 1.1751f || m_nClass == 30)
+    {
+        unsigned int dwColor = 0xFFFF6666;
+
+        if (m_nClass == 30)
+            dwColor = 0xFF66FF66;
+
+        if ((dwServerTime - m_dwGolemDustTime) > 100)
+        {
+            for (int i = 0; i < 2; ++i)
+            {
+                auto pEffect = new TMEffectBillBoard(0, 400 * i + 1500, 0.1f, 0.1f, 0.1f, 0.001f, 1, 80);
+
+                if (pEffect != nullptr)
+                {
+                    pEffect->m_vecPosition = TMVector3{
+                        ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[i + 1].x,
+                        m_vecTempPos[i + 1].y,
+                        ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[i + 1].z };
+
+                    pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                    pEffect->SetColor(dwColor);
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+                }
+            }
+            m_dwGolemDustTime = dwServerTime;
+        }
+    }
+    else if (m_nClass == 21 && m_stLookInfo.FaceMesh == 4)
+    {
+        if ((dwServerTime - m_dwGolemDustTime) > 100)
+        {
+            for (int i = 0; i < 2; ++i)
+            {
+                for (int j = 0; j < 2; ++j)
+                {
+                    auto pEffect = new TMEffectBillBoard(0, 400 * i + 1500, 0.1f, 0.1f, 0.1f, 0.001f, 1, 80);
+
+                    if (pEffect != nullptr)
+                    {
+                        pEffect->m_vecPosition = TMVector3{
+                            ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[j + 1].x,
+                            m_vecTempPos[j + 1].y,
+                            ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[j + 1].z };
+                        pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                        pEffect->SetColor(0xFFFFAA66);
+                        g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+                    }
+                }
+            }
+            m_dwGolemDustTime = dwServerTime;
+        }
+    }
+    else if (m_nClass == 29 && m_stLookInfo.FaceMesh == 1)
+    {
+        if (m_pEyeFire[0])
+        {
+            m_pEyeFire[0]->m_vecPosition = m_vecTempPos[0];
+            m_pEyeFire[0]->FrameMove(0);
+        }
+    }
+    else if (m_nClass == 38 && m_cMantua > 0)
+    {
+        for (int i = 1; i < 7; ++i)
+        {
+            if (m_pEyeFire[i])
+            {
+                m_pEyeFire[i]->m_vecPosition = m_vecTempPos[i];
+                m_pEyeFire[i]->FrameMove(0);
+            }
+        }
+    }
+    else if (m_nClass == 33 && m_stLookInfo.FaceMesh == 1 && RenderDevice::m_bDungeon == 2)
+    {
+        for (int i = 0; i < 7; ++i)
+        {
+            if (m_pEyeFire[i])
+            {
+                m_pEyeFire[i]->SetColor(0xFFFF5500);
+                m_pEyeFire[i]->m_vecPosition = m_vecTempPos[i];
+                m_pEyeFire[i]->m_vecPosition.y += (0.30000001f * m_fScale);
+                m_pEyeFire[i]->FrameMove(0);
+            }
+        }
+    }
+    else if (m_nClass == 16 && m_stLookInfo.FaceMesh == 7)
+    {
+        if ((dwServerTime - m_dwGolemDustTime) > 100)
+        {
+            for (int i = 0; i < 2; ++i)
+            {
+                auto pEffect = new TMEffectBillBoard(0, 400 * i + 1500, 0.1f, 0.1f, 0.1f, 0.001f, 1, 80);
+
+                if (pEffect != nullptr)
+                {
+                    pEffect->m_vecPosition = TMVector3{
+                        ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecPosition.x,
+                        m_fHeight + 0.2f,
+                        ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecPosition.y };
+
+                    pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                    pEffect->SetColor(0xFFFF8800);
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+                }
+            }
+            m_dwGolemDustTime = dwServerTime;
+        }
+    }
+    else if (m_nClass == 39)
+    {
+        static const int nIndex[4]{ 6, 7, 2, 3 };
+
+        for (int i = 0; i < 4; ++i)
+        {
+            if (m_pEyeFire[i])
+            {
+                m_pEyeFire[i]->m_vecPosition = m_vecTempPos[nIndex[i]];
+                m_pEyeFire[i]->FrameMove(0);
+            }
+        }
+    }
+    else if (m_nClass == 56 && !m_stLookInfo.FaceMesh)
+    {
+        RenderEffect_Khepra(dwServerTime);
+    }
+    else if (m_nClass == 66 && !m_cShadow)
+    {
+        RenderEffect_LegendBeriel(dwServerTime);
+    }
+    else if (m_nClass == 67)
+    {
+        RenderEffect_LegendBerielKeeper(dwServerTime);
+    }
+    else if (m_sCostume == 4161 || m_sCostume == 4162)
+    {
+        RenderEffect_RudolphCostume(dwServerTime);
+    }
+    else if (m_pMount && m_pMount->m_nBoneAniIndex == 31 && m_pMount->m_Look.Mesh0 == 8)
+    {
+        m_pMount->m_bRenderEffect = 1;
+    }
+
+    if (m_cEnchant)
+    {
+        if (m_pSkinMesh->m_pSwingEffect[0] != nullptr && m_pSkinMesh->m_pSwingEffect[0]->m_pEnchant)
+        {
+            m_pSkinMesh->m_pSwingEffect[0]->m_pEnchant->m_vecPosition = m_vecTempPos[6];
+            m_pSkinMesh->m_pSwingEffect[0]->m_pEnchant->FrameMove(0);
+        }
+        if (m_pSkinMesh->m_pSwingEffect[1] != nullptr && m_pSkinMesh->m_pSwingEffect[1]->m_pEnchant)
+        {
+            m_pSkinMesh->m_pSwingEffect[1]->m_pEnchant->m_vecPosition = m_vecTempPos[7];
+            m_pSkinMesh->m_pSwingEffect[1]->m_pEnchant->FrameMove(0);
+        }
+    }
 }
 
 void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
