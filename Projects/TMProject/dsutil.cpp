@@ -100,12 +100,70 @@ HRESULT CSoundManager::Initialize(HWND hWnd, DWORD dwCoopLevel, DWORD dwPrimaryC
 
 HRESULT CSoundManager::SetPrimaryBufferFormat(DWORD dwPrimaryChannels, DWORD dwPrimaryFreq, DWORD dwPrimaryBitRate)
 {
-	return E_NOTIMPL;
+	IDirectSoundBuffer* pDSBPrimary = nullptr;
+	if (!m_pDS)
+		return CO_E_NOTINITIALIZED;
+
+	_DSBUFFERDESC dsbd{};
+	memset(&dsbd, 0, sizeof dsbd);
+
+	dsbd.dwSize = 36;
+	dsbd.dwFlags = 1;
+	dsbd.dwBufferBytes = 0;
+	dsbd.lpwfxFormat = 0;
+
+	HRESULT hr = m_pDS->CreateSoundBuffer(&dsbd, &pDSBPrimary, 0);
+	if (FAILED(hr))
+		return hr;
+
+	tWAVEFORMATEX wfx{};
+	memset(&wfx, 0, sizeof wfx);
+	wfx.wFormatTag = 1;
+	wfx.nChannels = dwPrimaryChannels;
+	wfx.nSamplesPerSec = dwPrimaryFreq;
+	wfx.wBitsPerSample = dwPrimaryBitRate;
+	wfx.nBlockAlign = dwPrimaryChannels * (signed int)(dwPrimaryBitRate >> 3);
+	wfx.nAvgBytesPerSec = dwPrimaryFreq * wfx.nBlockAlign;
+
+	HRESULT hra = pDSBPrimary->SetFormat(&wfx);
+	if (FAILED(hra))
+		return hra;
+
+	SAFE_RELEASE(pDSBPrimary);
+	return S_OK;
 }
 
 HRESULT CSoundManager::Get3DListenerInterface(LPDIRECTSOUND3DLISTENER* ppDSListener)
 {
-	return E_NOTIMPL;
+	IDirectSoundBuffer* pDSBPrimary = nullptr;
+
+	if (!ppDSListener)
+		return E_INVALIDARG;
+
+	if (!m_pDS)
+		return CO_E_NOTINITIALIZED;
+
+	*ppDSListener = nullptr;
+	_DSBUFFERDESC dsbdesc{};
+
+	memset(&dsbdesc, 0, sizeof _DSBUFFERDESC);
+	dsbdesc.dwSize = 36;
+	dsbdesc.dwFlags = DSBCAPS_CTRL3D | DSBCAPS_PRIMARYBUFFER;
+	
+	HRESULT hr = m_pDS->CreateSoundBuffer(&dsbdesc, &pDSBPrimary, nullptr);
+	if (FAILED(hr))
+		return hr;
+
+	HRESULT hra = pDSBPrimary->QueryInterface(IID_IDirectSound3DListener, (void**)ppDSListener);
+	if (SUCCEEDED(hra))
+	{
+		SAFE_RELEASE(pDSBPrimary);
+
+		return S_OK;
+	}
+
+	SAFE_RELEASE(pDSBPrimary);
+	return hra;
 }
 
 HRESULT CSoundManager::Create(CSound** ppSound, LPTSTR strWaveFileName, DWORD dwCreationFlags, GUID guid3DAlgorithm, DWORD dwNumBuffers)
