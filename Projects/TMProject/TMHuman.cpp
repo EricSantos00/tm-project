@@ -12974,6 +12974,29 @@ void TMHuman::RenderEffect_Minotauros(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_EmeraldDragon(unsigned int dwServerTime)
 {
+    if ((dwServerTime - m_dwGolemDustTime) > 300)
+    {
+        auto pEffect = new TMEffectBillBoard(0, 2500, 0.1f * m_fScale, 0.1f * m_fScale, 0.1f * m_fScale, 0.001f, 1, 80);
+        
+        if (pEffect != nullptr)
+        {
+            pEffect->m_vecPosition = TMVector3{ ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[0].x, m_vecTempPos[0].y, ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[0].z };
+            pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pEffect->SetColor(0xFFAAAAAA);
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+        }
+
+        m_dwGolemDustTime = dwServerTime;
+    }
+
+    for (int i = 1; i <= 2; ++i)
+    {
+        if (m_pEyeFire2[i] != nullptr)
+        {
+            m_pEyeFire2[i]->m_vecPosition = m_vecTempPos[i + 7];
+            m_pEyeFire2[i]->FrameMove(0);
+        }
+    }
 }
 
 void TMHuman::RenderEffect_BoneDragon(unsigned int dwServerTime)
