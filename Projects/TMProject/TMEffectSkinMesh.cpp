@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "TMEffectSkinMesh.h"
+#include "DXUtil.h"
+#include "TMGlobal.h"
+#include "TMSkillFire.h"
 
 TMEffectSkinMesh::TMEffectSkinMesh(int nSkinMeshType, TMVector3 vecStart, TMVector3 vecTarget, int nLevel, TMObject* pOwner)
 {
@@ -50,6 +53,40 @@ TMEffectSkinMesh::TMEffectSkinMesh(int nSkinMeshType, TMVector3 vecStart, TMVect
 
 TMEffectSkinMesh::~TMEffectSkinMesh()
 {
+	SAFE_DELETE(m_pSkinMesh2);
+
+	if (m_nLevel || m_nMotionType != 2)
+	{
+		TMEffectSkinMesh* pEffect = nullptr;
+		if (m_nLevel == 1)
+			pEffect = new TMEffectSkinMesh(20, m_vecTargetPos, {}, 0, m_pOwner);
+
+		if (pEffect)
+		{
+			pEffect->m_stLookInfo = m_stLookInfo;
+			pEffect->InitObject(0);
+			pEffect->m_dwLifeTime = 3000;
+			pEffect->m_pSkinMesh->m_vScale.x = 0.2f;
+			pEffect->m_pSkinMesh->m_vScale.y = 0.2f;
+			pEffect->m_pSkinMesh->m_vScale.z = 0.2f;
+			pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+			pEffect->m_StartColor.r = 1.0f;
+			pEffect->m_StartColor.g = 1.0f;
+			pEffect->m_StartColor.b = 1.0f;
+			pEffect->m_nFade = 0;
+			pEffect->m_fStartAngle = m_fAngle;
+			pEffect->m_nMotionType = 3;
+
+			g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+		}
+	}
+	else
+	{
+		TMSkillFire* pFire = new TMSkillFire(m_vecTargetPos, 0, nullptr, 0xFFFFFFFF, 0x22331100);
+
+		if (pFire)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pFire);
+	}
 }
 
 int TMEffectSkinMesh::InitObject(int bExpand)
