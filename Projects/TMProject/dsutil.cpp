@@ -1,22 +1,101 @@
 #include "pch.h"
 #include "dsutil.h"
+#include "TMGlobal.h"
+#include "TMLog.h"
 
 CSoundManager::CSoundManager()
 {
+	m_pDS = nullptr;
+	m_nSoundVolume = 0;
+
+	g_pSoundManager = this;
+	m_bMute = 0;
+	m_pDSListener = nullptr;
+
+	for (int i = 0; i < 512; ++i)
+	{
+		memset(m_stSoundDataList[i].szFileName, 0, sizeof m_stSoundDataList[i].szFileName);
+		m_stSoundDataList[i].pSoundData = nullptr;
+		m_stSoundDataList[i].nChannel = 1;
+	}
 }
 
 CSoundManager::~CSoundManager()
 {
+	SAFE_RELEASE(m_pDSListener);
+
+	for (int i = 0; i < 512; ++i)
+	{
+		if (m_stSoundDataList[i].pSoundData)
+		{
+			delete m_stSoundDataList[i].pSoundData;
+			m_stSoundDataList[i].pSoundData = nullptr;
+		}
+	}
+
+	SAFE_RELEASE(m_pDS);
 }
 
 int CSoundManager::LoadSoundData()
 {
-	return 0;
+	return 1;
 }
 
 HRESULT CSoundManager::Initialize(HWND hWnd, DWORD dwCoopLevel, DWORD dwPrimaryChannels, DWORD dwPrimaryFreq, DWORD dwPrimaryBitRate)
 {
-	return S_OK;
+	// yea...
+	SAFE_RELEASE(m_pDS);
+
+	HRESULT hr = DirectSoundCreate8(nullptr, &m_pDS, nullptr);
+	if (SUCCEEDED(hr))
+	{
+		hr = m_pDS->SetCooperativeLevel(hWnd, dwCoopLevel);
+		if (SUCCEEDED(hr))
+		{
+			SetPrimaryBufferFormat(dwPrimaryChannels, dwPrimaryFreq, dwPrimaryBitRate);
+
+			FILE* fp = nullptr;
+			fopen_s(&fp, SoundList_Path, "rt");
+
+			if (fp)
+			{
+				int nIndex = -1;
+
+				while (fscanf(fp, "%d", &nIndex) != -1)
+				{
+					if (fscanf(fp, "%s %d", m_stSoundDataList[nIndex].szFileName, &m_stSoundDataList[nIndex].nChannel) == -1)
+					{
+						LOG_WRITELOG("Cannot Init Sound Index : %d\n", nIndex);
+
+						break;
+					}
+				}
+
+				fclose(fp);
+			}
+
+			fp = nullptr;
+			Get3DListenerInterface(&m_pDSListener);
+			memset(&m_dsListenerParams, 0, sizeof m_dsListenerParams);
+			m_dsListenerParams.dwSize = 64;
+			m_pDSListener->GetAllParameters(&m_dsListenerParams);
+
+			return S_OK;
+		}
+		else
+		{
+			LOG_WRITEERROR(1u);
+			g_pSoundManager = nullptr;
+
+			return hr;
+		}
+	}
+
+	LOG_WRITEERROR(0);
+	LOG_WRITELOG("Sound Error Tpye: 0x%x\r\n", hr);
+	g_pSoundManager = nullptr;
+
+	return hr;
 }
 
 HRESULT CSoundManager::SetPrimaryBufferFormat(DWORD dwPrimaryChannels, DWORD dwPrimaryFreq, DWORD dwPrimaryBitRate)

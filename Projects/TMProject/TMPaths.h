@@ -21,6 +21,9 @@ constexpr const char* ItemIcon_Path = "./itemicon.bin";
 constexpr const char* ItemName_Path = "Itemname.bin";
 constexpr const char* SkillData_Path = "SkillData.bin";
 
+// sound 
+constexpr const char* SoundList_Path = "sound\\soundlist.txt";
+
 //Shader Related
 constexpr const char* ShaderSkinMesh_Path = "Shader\\skinmesh%d.bin";
 constexpr const char* ShaderVertexShader_Path = "Shader\\vseffect%d.bin";
