@@ -528,27 +528,64 @@ HRESULT CSound::Play(DWORD dwPriority, DWORD dwFlags, LONG lVolume, LONG lFreque
 
 HRESULT CSound::Play3D(LPDS3DBUFFER p3DBuffer, DWORD dwPriority, DWORD dwFlags, LONG lFrequency)
 {
+	// not implemented on client
 	return E_NOTIMPL;
 }
 
 HRESULT CSound::Stop()
 {
-	return E_NOTIMPL;
+	if (!m_apDSBuffer)
+		return CO_E_NOTINITIALIZED;
+
+	HRESULT hr = S_OK;
+
+	for (int i = 0; i < m_dwNumBuffers; ++i)
+		hr |= m_apDSBuffer[i]->Stop();
+
+	return hr;
 }
 
 HRESULT CSound::Reset()
 {
-	return E_NOTIMPL;
+	if (!m_apDSBuffer)
+		return CO_E_NOTINITIALIZED;
+
+	HRESULT hr = S_OK;
+
+	for (int i = 0; i < m_dwNumBuffers; ++i)
+		hr |= m_apDSBuffer[i]->SetCurrentPosition(0);
+
+	return hr;
 }
 
 BOOL CSound::IsSoundPlaying()
 {
-	return 0;
+	if (!m_apDSBuffer)
+		return CO_E_NOTINITIALIZED;
+
+	int bIsPlaying = 0;
+	for (int i = 0; i < m_dwNumBuffers; ++i)
+	{
+		if (m_apDSBuffer[i])
+		{
+			DWORD dwStatus = 0;
+			m_apDSBuffer[i]->GetStatus(&dwStatus);
+			
+			bIsPlaying |= ((dwStatus % 1) != 0);
+		}
+	}
+
+	return bIsPlaying;
 }
 
 CStreamingSound::CStreamingSound(LPDIRECTSOUNDBUFFER pDSBuffer, DWORD dwDSBufferSize, CWaveFile* pWaveFile, DWORD dwNotifySize)
 	: CSound(&pDSBuffer, dwDSBufferSize, 1, pWaveFile)
 {
+	m_dwLastPlayPos = 0;
+	m_dwPlayProgress = 0;
+	m_dwNotifySize = dwNotifySize;
+	m_dwNextWriteOffset = 0;
+	m_bFillNextNotificationWithSilence = 0;
 }
 
 CStreamingSound::~CStreamingSound()
@@ -557,12 +594,101 @@ CStreamingSound::~CStreamingSound()
 
 HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
 {
-	return E_NOTIMPL;
+	if (!m_apDSBuffer || !m_pWaveFile)
+		return CO_E_NOTINITIALIZED;
+
+	void* pDSLockedBuffer;
+	void* pDSLockedBuffer2;
+	DWORD dwBytesWrittenToBuffer = 0;
+	DWORD dwDSLockedBufferSize = 0;
+	DWORD dwDSLockedBufferSize2 = 0;
+	BOOL bRestored;
+	HRESULT hr = RestoreBuffer(m_apDSBuffer[0], &bRestored);
+
+	if (FAILED(hr))
+		return hr;
+
+	if (bRestored)
+	{
+		hr = FillBufferWithSound(m_apDSBuffer[0], 0);
+
+		return hr;
+	}
+
+	hr = m_apDSBuffer[0]->Lock(m_dwNextWriteOffset, m_dwNotifySize, &pDSLockedBuffer, &dwDSLockedBufferSize, &pDSLockedBuffer2, &dwDSLockedBufferSize2, 0);
+	if (FAILED(hr))
+		return hr;
+
+	if (pDSLockedBuffer2)
+		return E_UNEXPECTED;
+
+	if (m_bFillNextNotificationWithSilence)
+	{
+		memset(pDSLockedBuffer, m_pWaveFile->m_pwfx->wBitsPerSample == 8 ? 128 : 0, dwDSLockedBufferSize);
+		dwBytesWrittenToBuffer = dwDSLockedBufferSize;
+	}
+	else
+	{
+		hr = m_pWaveFile->Read((BYTE*)pDSLockedBuffer, dwDSLockedBufferSize, &dwBytesWrittenToBuffer);
+		if (FAILED(hr))
+			return hr;
+	}
+
+	if (dwBytesWrittenToBuffer < dwDSLockedBufferSize)
+	{
+		if (bLoopedPlay)
+		{
+			for (int dwReadSoFar = dwBytesWrittenToBuffer; dwReadSoFar < dwDSLockedBufferSize; dwReadSoFar += dwBytesWrittenToBuffer)
+			{
+				hr = m_pWaveFile->ResetFile();
+				if (FAILED(hr))
+					return hr;
+
+				hr = m_pWaveFile->Read((BYTE*)pDSLockedBuffer + dwReadSoFar, dwDSLockedBufferSize - dwReadSoFar, &dwBytesWrittenToBuffer);
+				if (FAILED(hr))
+					return hr;
+			}
+		}
+		else
+		{
+			memset((char*)pDSLockedBuffer + dwBytesWrittenToBuffer, m_pWaveFile->m_pwfx->wBitsPerSample == 8 ? 128 : 0, dwDSLockedBufferSize - dwBytesWrittenToBuffer);
+			m_bFillNextNotificationWithSilence = 1;
+		}
+	}
+
+	m_apDSBuffer[0]->Unlock(pDSLockedBuffer, dwDSLockedBufferSize, nullptr, 0);
+
+	int dwCurrentPlayPos;
+	hr = m_apDSBuffer[0]->GetCurrentPosition(&dwCurrentPlayPos, 0);
+
+	if (SUCCEEDED(hr))
+	{
+		unsigned int dwPlayDelta = 0;
+		if (dwCurrentPlayPos >= m_dwLastPlayPos)
+			dwPlayDelta = dwCurrentPlayPos - m_dwLastPlayPos;
+		else
+			dwPlayDelta = dwCurrentPlayPos + m_dwDSBufferSize - m_dwLastPlayPos;
+
+		m_dwPlayProgress += dwPlayDelta;
+		m_dwLastPlayPos = dwCurrentPlayPos;
+
+		if (m_bFillNextNotificationWithSilence)
+		{
+			if (m_dwPlayProgress >= m_pWaveFile->GetSize())
+				m_apDSBuffer[0]->Stop();
+		}
+
+		m_dwNextWriteOffset += dwDSLockedBufferSize;
+		m_dwNextWriteOffset %= m_dwDSBufferSize;
+
+		return S_OK;
+	}
+
+	return hr;
 }
 
 HRESULT CStreamingSound::Reset()
 {
-	return E_NOTIMPL;
 }
 
 HRESULT CWaveFile::ReadMMIO()
