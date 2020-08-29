@@ -102,7 +102,7 @@ HRESULT CSoundManager::SetPrimaryBufferFormat(DWORD dwPrimaryChannels, DWORD dwP
 {
 	IDirectSoundBuffer* pDSBPrimary = nullptr;
 	if (!m_pDS)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 
 	_DSBUFFERDESC dsbd{};
 	memset(&dsbd, 0, sizeof dsbd);
@@ -141,7 +141,7 @@ HRESULT CSoundManager::Get3DListenerInterface(LPDIRECTSOUND3DLISTENER* ppDSListe
 		return E_INVALIDARG;
 
 	if (!m_pDS)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 
 	*ppDSListener = nullptr;
 	_DSBUFFERDESC dsbdesc{};
@@ -177,7 +177,7 @@ HRESULT CSoundManager::Create(CSound** ppSound, LPTSTR strWaveFileName, DWORD dw
 	constexpr int a = DSERR_BUFFERTOOSMALL;
 
 	if (!m_pDS)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 
 	if (!strWaveFileName || !ppSound || dwNumBuffers < 1)
 		return E_INVALIDARG;
@@ -329,7 +329,7 @@ void CSoundManager::SetSoundVolume(int nVolume)
 HRESULT CSound::RestoreBuffer(LPDIRECTSOUNDBUFFER pDSB, BOOL* pbWasRestored)
 {
 	if (!pDSB)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 
 	if (pbWasRestored)
 		*pbWasRestored = false;
@@ -393,7 +393,7 @@ unsigned int __thiscall CSound::GetBufferCount()
 HRESULT CSound::Get3DBufferInterface(DWORD dwIndex, LPDIRECTSOUND3DBUFFER* ppDS3DBuffer)
 {
 	if (!m_apDSBuffer)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 
 	if (dwIndex >= m_dwNumBuffers)
 		return E_INVALIDARG;
@@ -441,7 +441,7 @@ HRESULT CSound::FillBufferWithSound(LPDIRECTSOUNDBUFFER pDSB, BOOL bRepeatWavIfB
 		}
 		else
 		{
-			for (int dwReadSoFar = dwWavDataRead = dwReadSoFar < dwDSLockedBufferSize; dwReadSoFar += dwWavDataRead)
+			for (int dwReadSoFar = dwWavDataRead; dwReadSoFar < dwDSLockedBufferSize; dwReadSoFar += dwWavDataRead)
 			{
 				hr = m_pWaveFile->ResetFile();
 				if (FAILED(hr))
@@ -502,7 +502,7 @@ HRESULT CSound::Play(DWORD dwPriority, DWORD dwFlags, LONG lVolume, LONG lFreque
 		return S_OK;
 
 	if (!m_apDSBuffer)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 
 	IDirectSoundBuffer* pDSB = GetFreeBuffer();
 	if (!pDSB)
@@ -535,7 +535,7 @@ HRESULT CSound::Play3D(LPDS3DBUFFER p3DBuffer, DWORD dwPriority, DWORD dwFlags, 
 HRESULT CSound::Stop()
 {
 	if (!m_apDSBuffer)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 
 	HRESULT hr = S_OK;
 
@@ -548,7 +548,7 @@ HRESULT CSound::Stop()
 HRESULT CSound::Reset()
 {
 	if (!m_apDSBuffer)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 
 	HRESULT hr = S_OK;
 
@@ -561,7 +561,7 @@ HRESULT CSound::Reset()
 BOOL CSound::IsSoundPlaying()
 {
 	if (!m_apDSBuffer)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 
 	int bIsPlaying = 0;
 	for (int i = 0; i < m_dwNumBuffers; ++i)
@@ -595,7 +595,7 @@ CStreamingSound::~CStreamingSound()
 HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
 {
 	if (!m_apDSBuffer || !m_pWaveFile)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 
 	void* pDSLockedBuffer;
 	void* pDSLockedBuffer2;
@@ -658,7 +658,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
 
 	m_apDSBuffer[0]->Unlock(pDSLockedBuffer, dwDSLockedBufferSize, nullptr, 0);
 
-	int dwCurrentPlayPos;
+	DWORD dwCurrentPlayPos;
 	hr = m_apDSBuffer[0]->GetCurrentPosition(&dwCurrentPlayPos, 0);
 
 	if (SUCCEEDED(hr))
@@ -690,7 +690,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
 HRESULT CStreamingSound::Reset()
 {
 	if (!m_apDSBuffer || !m_pWaveFile)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 
 	m_dwLastPlayPos = 0;
 	m_dwPlayProgress = 0;
@@ -715,12 +715,100 @@ HRESULT CStreamingSound::Reset()
 
 HRESULT CWaveFile::ReadMMIO()
 {
-	return E_NOTIMPL;
+	this->m_pwfx = 0;
+	if (mmioDescend(m_hmmio, &m_ckRiff, 0, 0))
+		return E_FAIL;
+	if (m_ckRiff.ckid != 1179011410 || m_ckRiff.fccType != 1163280727)
+		return E_FAIL;
+
+	_MMCKINFO ckIn{};
+	ckIn.ckid = 544501094;
+
+	if (mmioDescend(m_hmmio, &ckIn, &m_ckRiff, 0x10u))
+		return E_FAIL;
+	if (ckIn.cksize < 0x10)
+		return E_FAIL;
+
+	pcmwaveformat_tag pcmWaveFormat{};
+	if (mmioRead(m_hmmio, (HPSTR)&pcmWaveFormat, 16) != 16)
+		return E_FAIL;
+
+	if (pcmWaveFormat.wf.wFormatTag == 1)
+	{
+		m_pwfx = new tWAVEFORMATEX();
+		if (!m_pwfx)
+			return E_FAIL;
+
+		memcpy((char*)m_pwfx, (char*)&pcmWaveFormat, 0x10u);
+		m_pwfx->cbSize = 0;
+
+		if (!mmioAscend(m_hmmio, &ckIn, 0))
+			return S_OK;
+
+		SAFE_DELETE(m_pwfx);
+		return E_FAIL;
+	}
+
+	unsigned short cbExtraBytes = 0;
+	if (mmioRead(m_hmmio, (HPSTR)&cbExtraBytes, 2) != 2)
+		return E_FAIL;
+
+	m_pwfx = new tWAVEFORMATEX();
+	if (!m_pwfx)
+		return E_FAIL;
+
+	memcpy((char*)m_pwfx, (char*)&pcmWaveFormat, 0x10u);
+	m_pwfx->cbSize = cbExtraBytes;
+
+	if (mmioRead(m_hmmio, (HPSTR)&m_pwfx[1], cbExtraBytes) == cbExtraBytes)
+	{
+		if (!mmioAscend(m_hmmio, &ckIn, 0))
+			return S_OK;
+
+		SAFE_DELETE(m_pwfx);
+		return E_FAIL;
+	}
+
+	SAFE_DELETE(m_pwfx);
+	return E_FAIL;
 }
 
 HRESULT CWaveFile::WriteMMIO(WAVEFORMATEX* pwfxDest)
 {
-	return E_NOTIMPL;
+	unsigned int dwFactChunk = -1;
+	m_ckRiff.fccType = 1163280727;
+	m_ckRiff.cksize = 0;
+	if (mmioCreateChunk(m_hmmio, &m_ckRiff, 0x20u))
+		return E_FAIL;
+
+	m_ck.ckid = 544501094;
+	m_ck.cksize = 16;
+	if (mmioCreateChunk(m_hmmio, &m_ck, 0))
+		return E_FAIL;
+	if (pwfxDest->wFormatTag == 1)
+	{
+		if (mmioWrite(m_hmmio, (const char*)pwfxDest, 16) != 16)
+			return E_FAIL;
+	}
+	else if (mmioWrite(m_hmmio, (const char*)pwfxDest, pwfxDest->cbSize + 18) != pwfxDest->cbSize + 18)
+	{
+		return E_FAIL;
+	}
+	if (mmioAscend(m_hmmio, &m_ck, 0))
+		return E_FAIL;
+
+	_MMCKINFO ckOut1{};
+	ckOut1.ckid = 1952670054;
+	ckOut1.cksize = 0;
+
+	if (mmioCreateChunk(m_hmmio, &ckOut1, 0))
+		return E_FAIL;
+	if (mmioWrite(m_hmmio, (const char*)&dwFactChunk, 4) != 4)
+		return E_FAIL;
+	if (mmioAscend(m_hmmio, &ckOut1, 0))
+		return E_FAIL;
+
+	return S_OK;
 }
 
 CWaveFile::CWaveFile()
@@ -797,6 +885,8 @@ HRESULT CWaveFile::Open(LPTSTR strFileName, WAVEFORMATEX* pwfx, DWORD dwFlags)
 		HRESULT hra = ResetFile();
 		if (FAILED(hra))
 			return hra;
+
+		m_dwSize = m_ck.cksize;
 	}
 
 	return S_OK;
@@ -819,7 +909,7 @@ HRESULT CWaveFile::Close()
 	m_mmioinfoOut.dwFlags |= MMIO_DIRTY;
 
 	if (!m_hmmio)
-		return CO_E_NOTINITIALIZED;
+		return DDERR_NOTINITIALIZED;
 	if (mmioSetInfo(m_hmmio, &m_mmioinfoOut, 0))
 		return E_FAIL;
 	if (mmioAscend(m_hmmio, &m_ck, 0))
@@ -848,20 +938,139 @@ HRESULT CWaveFile::Close()
 
 HRESULT CWaveFile::Read(BYTE* pBuffer, DWORD dwSizeToRead, DWORD* pdwSizeRead)
 {
-	return E_NOTIMPL;
+	if (m_bIsReadingFromMemory)
+	{
+		if (m_pbDataCur)
+		{
+			if (pdwSizeRead)
+				*pdwSizeRead = 0;
+
+			if (&m_pbDataCur[dwSizeToRead] > & m_pbData[m_ulDataSize])
+				dwSizeToRead = m_ulDataSize - (m_pbDataCur - m_pbData);
+
+			memcpy(pBuffer, m_pbDataCur, dwSizeToRead);
+			if (pdwSizeRead)
+				*pdwSizeRead = dwSizeToRead;
+
+			return S_OK;
+		}
+
+		return DDERR_NOTINITIALIZED;
+	}
+
+	if (m_hmmio)
+	{
+		if (pBuffer && pdwSizeRead)
+		{
+			if(pdwSizeRead)
+				*pdwSizeRead = 0;
+
+			_MMIOINFO mmioinfoIn{};
+			if (mmioGetInfo(m_hmmio, &mmioinfoIn, 0))
+				return E_FAIL;
+
+			unsigned int cbDataIn = dwSizeToRead;
+			if (dwSizeToRead > m_ck.cksize)
+				cbDataIn = m_ck.cksize;
+
+			m_ck.cksize -= cbDataIn;
+
+			for (int cT = 0; cT < cbDataIn; ++cT)
+			{
+				if (mmioinfoIn.pchNext == mmioinfoIn.pchEndRead)
+				{
+					if (mmioAdvance(m_hmmio, &mmioinfoIn, 0))
+						return E_FAIL;
+
+					if (mmioinfoIn.pchNext == mmioinfoIn.pchEndRead)
+						return E_FAIL;
+				}
+
+				pBuffer[cT] = *mmioinfoIn.pchNext;
+				++mmioinfoIn.pchNext;
+			}
+
+			if (mmioSetInfo(m_hmmio, &mmioinfoIn, 0))
+				return E_FAIL;
+
+			if (pdwSizeRead)
+				*pdwSizeRead = cbDataIn;
+
+			return S_OK;
+		}
+
+		return E_INVALIDARG;
+	}
+
+	return DDERR_NOTINITIALIZED;
 }
 
-HRESULT CWaveFile::Write(UINT nSizeToWrite, BYTE* pbData, UINT* pnSizeWrote)
+HRESULT CWaveFile::Write(UINT nSizeToWrite, BYTE* pbSrcData, UINT* pnSizeWrote)
 {
-	return E_NOTIMPL;
+	if (m_bIsReadingFromMemory)
+		return E_NOTIMPL;
+
+	if (!m_hmmio)
+		return DDERR_NOTINITIALIZED;
+
+	if (!pnSizeWrote || !pbSrcData)
+		return E_INVALIDARG;
+
+	*pnSizeWrote = 0;
+
+	for (int cT = 0; cT < nSizeToWrite; ++cT)
+	{
+		if (m_mmioinfoOut.pchNext == m_mmioinfoOut.pchEndWrite)
+		{
+			m_mmioinfoOut.dwFlags |= MMIO_DIRTY;
+
+			if (mmioAdvance(m_hmmio, &m_mmioinfoOut, 1))
+				return E_FAIL;
+		}
+
+		*m_mmioinfoOut.pchNext++ = pbSrcData[cT];
+		++* pnSizeWrote;
+	}
+
+	return S_OK;
 }
 
 DWORD CWaveFile::GetSize()
 {
-	return 0;
+	return m_dwSize;
 }
 
 HRESULT CWaveFile::ResetFile()
 {
-	return E_NOTIMPL;
+	if (m_bIsReadingFromMemory)
+	{
+		m_pbDataCur = m_pbData;
+
+		return S_OK;
+	}
+
+	if (!m_hmmio)
+		return DDERR_NOTINITIALIZED;
+
+	if (m_dwFlags == 1)
+	{
+		if (mmioSeek(m_hmmio, m_ckRiff.dwDataOffset + 4, 0) == -1)
+			return E_FAIL;
+
+		m_ck.ckid = 1635017060;
+
+		if (mmioDescend(m_hmmio, &m_ck, &m_ckRiff, 16))
+			return E_FAIL;
+	}
+	else
+	{
+		m_ck.ckid = 1635017060;
+		m_ck.cksize = 0;
+		if (mmioCreateChunk(m_hmmio, &this->m_ck, 0))
+			return E_FAIL;
+		if (mmioGetInfo(m_hmmio, &m_mmioinfoOut, 0))
+			return E_FAIL;
+	}
+
+	return S_OK;
 }
