@@ -18,6 +18,7 @@
 #pragma warning(push, 0)        
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <Dshow.h>
 #pragma warning(pop)
 
 #include <iostream>
@@ -29,6 +30,7 @@
 using namespace std::chrono_literals;
 
 #pragma comment(lib, "IPHLPAPI.lib")
+#pragma comment(lib, "Strmiids.lib")
 
 
 #endif //PCH_H
