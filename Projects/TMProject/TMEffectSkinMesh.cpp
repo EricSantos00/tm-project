@@ -254,6 +254,19 @@ int TMEffectSkinMesh::FrameMove(unsigned int dwServerTime)
 
 void TMEffectSkinMesh::RestoreDeviceObjects()
 {
+	if (!m_pSkinMesh)
+	{
+		m_pSkinMesh = new TMSkinMesh(&m_stLookInfo, &m_stSancInfo, m_nSkinMeshType, 0, nullptr, 0, 0, 0);
+
+		if (m_pSkinMesh)
+			m_pSkinMesh->RestoreDeviceObjects();
+	}
+
+	if (m_nSkinMeshType2 > 0 && !m_pSkinMesh2)
+		m_pSkinMesh2 = new TMSkinMesh(&m_stLookInfo2, &m_stSancInfo, m_nSkinMeshType2, 0, nullptr, 0, 0, 0);
+
+	if (m_pSkinMesh2)
+		m_pSkinMesh2->RestoreDeviceObjects();
 }
 
 void TMEffectSkinMesh::InvalidateDeviceObjects()
