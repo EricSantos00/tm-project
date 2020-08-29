@@ -12940,6 +12940,39 @@ void TMHuman::RenderEffect_Pig_Wolf(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_DungeonBear(unsigned int dwServerTime)
 {
+    if ((dwServerTime - m_dwGolemDustTime) > 1000)
+    {
+        TMVector3 vec[2]
+        {
+            { m_vecPosition.x, m_fHeight + 1.0f, m_vecPosition.y },
+            { m_vecTempPos[0] }
+        };
+
+        for (int i = 0; i < 6; ++i)
+        {
+            int nRand = rand() % 5;
+            
+            auto pEffect = new TMEffectBillBoard(
+                0,
+                400 * i + 1500,
+                ((float)nRand * 0.1f) + (0.2f * m_fScale),
+                ((float)nRand * 0.1f) + (0.2f * m_fScale),
+                ((float)nRand * 0.1f) + (0.2f * m_fScale),
+                0.001f,
+                1,
+                80);
+
+            if (pEffect != nullptr)
+            {
+                pEffect->m_vecPosition = vec[i % 2];
+                pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+                pEffect->m_fParticleV = -1.0f;
+                pEffect->SetColor(0xFF00FF00);
+                g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+            }
+        }
+        m_dwGolemDustTime = dwServerTime;
+    }
 }
 
 void TMHuman::RenderEffect_Hydra(unsigned int dwServerTime)
