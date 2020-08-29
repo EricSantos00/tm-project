@@ -689,6 +689,28 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
 
 HRESULT CStreamingSound::Reset()
 {
+	if (!m_apDSBuffer || !m_pWaveFile)
+		return CO_E_NOTINITIALIZED;
+
+	m_dwLastPlayPos = 0;
+	m_dwPlayProgress = 0;
+	m_dwNextWriteOffset = 0;
+	m_bFillNextNotificationWithSilence = 0;
+
+	int bRestored;
+	HRESULT hr = RestoreBuffer(m_apDSBuffer[0], &bRestored);
+	if (FAILED(hr))
+		return hr;
+
+	if (bRestored)
+	{
+		hr = FillBufferWithSound(m_apDSBuffer[0], 0);
+		if (FAILED(hr))
+			return hr;
+	}
+
+	m_pWaveFile->ResetFile();
+	return m_apDSBuffer[0]->SetCurrentPosition(0);
 }
 
 HRESULT CWaveFile::ReadMMIO()
@@ -703,25 +725,125 @@ HRESULT CWaveFile::WriteMMIO(WAVEFORMATEX* pwfxDest)
 
 CWaveFile::CWaveFile()
 {
+	m_pwfx = nullptr;
+	m_hmmio = 0;
+	m_dwSize = 0;
+	m_bIsReadingFromMemory = 0;
 }
 
 CWaveFile::~CWaveFile()
 {
+	Close();
+
+	if (!m_bIsReadingFromMemory)
+		SAFE_DELETE(m_pwfx);
 }
 
 HRESULT CWaveFile::Open(LPTSTR strFileName, WAVEFORMATEX* pwfx, DWORD dwFlags)
 {
-	return E_NOTIMPL;
+	m_dwFlags = dwFlags;
+	m_bIsReadingFromMemory = 0;
+
+	if (dwFlags == 1)
+	{
+		if (!strFileName)
+			return E_INVALIDARG;
+
+		SAFE_DELETE(m_pwfx);
+
+		m_hmmio = mmioOpenA(strFileName, 0, MMIO_ALLOCBUF);
+
+		if (!m_hmmio)
+		{
+			HRSRC__* hResInfo = FindResourceA(NULL, strFileName, "WAVE");
+			if (!hResInfo)
+			{
+				hResInfo = FindResourceA(NULL, strFileName, "WAV");
+				if (!hResInfo)
+					return E_FAIL;
+			}
+
+			HGLOBAL hResData = LoadResource(NULL, hResInfo);
+			if (!hResData)
+				return E_FAIL;
+
+			DWORD dwSize = SizeofResource(NULL, hResInfo);
+			if (!dwSize)
+				return E_FAIL;
+
+			char* pvRes = (char*)LockResource(hResData);
+			if (!pvRes)
+				return E_FAIL;
+
+			char* pData = new char[dwSize];
+			memcpy(pData, pvRes, dwSize);
+
+			_MMIOINFO mmioInfo{};
+			mmioInfo.fccIOProc = 541934925;
+			mmioInfo.cchBuffer = dwSize;
+			mmioInfo.pchBuffer = pData;
+
+			m_hmmio = mmioOpenA(NULL, &mmioInfo, MMIO_ALLOCBUF);
+		}
+
+		HRESULT hr = ReadMMIO();
+		if (FAILED(hr))
+		{
+			mmioClose(m_hmmio, 0);
+
+			return hr;
+		}
+
+		HRESULT hra = ResetFile();
+		if (FAILED(hra))
+			return hra;
+	}
+
+	return S_OK;
 }
 
 HRESULT CWaveFile::OpenFromMemory(BYTE* pbData, ULONG ulDataSize, WAVEFORMATEX* pwfx, DWORD dwFlags)
 {
+	// NOT IMPLEMENTED ON CLIENT
 	return E_NOTIMPL;
 }
 
 HRESULT CWaveFile::Close()
 {
-	return E_NOTIMPL;
+	if (m_dwFlags == 1)
+	{
+		mmioClose(m_hmmio, 0);
+		m_hmmio = nullptr;
+	}
+
+	m_mmioinfoOut.dwFlags |= MMIO_DIRTY;
+
+	if (!m_hmmio)
+		return CO_E_NOTINITIALIZED;
+	if (mmioSetInfo(m_hmmio, &m_mmioinfoOut, 0))
+		return E_FAIL;
+	if (mmioAscend(m_hmmio, &m_ck, 0))
+		return E_FAIL;
+	if (mmioAscend(m_hmmio, &m_ckRiff, 0))
+		return E_FAIL;
+
+	mmioSeek(m_hmmio, 0, 0);
+	if (mmioDescend(m_hmmio, &m_ckRiff, 0, 0))
+		return E_FAIL;
+
+	m_ck.ckid = 1952670054;
+	if (!mmioDescend(m_hmmio, &m_ck, &m_ckRiff, 0x10u))
+	{
+		unsigned int dwSamples = 0;
+		mmioWrite(m_hmmio, (const char*)&dwSamples, 4);
+		mmioAscend(m_hmmio, &m_ck, 0);
+	}
+
+	if (mmioAscend(m_hmmio, &m_ckRiff, 0))
+		return E_FAIL;
+	mmioClose(m_hmmio, 0);
+	m_hmmio = 0;
+	return S_OK;
 }
 
 HRESULT CWaveFile::Read(BYTE* pBuffer, DWORD dwSizeToRead, DWORD* pdwSizeRead)
