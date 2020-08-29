@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "TMEffectSkinMesh.h"
 #include "DXUtil.h"
+#include "TMHuman.h"
 #include "TMGlobal.h"
 #include "TMSkillFire.h"
 
@@ -167,7 +168,83 @@ int TMEffectSkinMesh::InitObject(int bExpand)
 
 int TMEffectSkinMesh::Render()
 {
-	return 0;
+	if (g_bHideEffect == 1 && m_nLevel != 3 && m_nLevel != 4 && m_nLevel != 5 && m_nLevel != 6)
+		return 1;
+
+	if (m_pSkinMesh && IsVisible() == 1)
+	{
+		m_pSkinMesh->m_materials.Diffuse.r = m_color.r;
+		m_pSkinMesh->m_materials.Diffuse.g = m_color.g;
+		m_pSkinMesh->m_materials.Diffuse.b = m_color.b;
+		m_pSkinMesh->m_materials.Diffuse.a = m_color.a;
+
+		m_pSkinMesh->m_materials.Specular.r = 1.0f;
+		m_pSkinMesh->m_materials.Specular.g = 1.0f;
+		m_pSkinMesh->m_materials.Specular.b = 1.0f;
+
+		g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_SRCBLEND, 5u);
+		g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 8u);
+		g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+
+		if (m_efAlphaType == EEFFECT_ALPHATYPE::EF_BRIGHT)
+		{
+			g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+			g_pDevice->SetRenderState(D3DRS_DESTBLEND, 2u);
+			g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 0);
+
+			m_pSkinMesh->m_materials.Emissive.r = 0.3f;
+			m_pSkinMesh->m_materials.Emissive.g = 0.3f;
+			m_pSkinMesh->m_materials.Emissive.b = 0.3f;
+		}
+		else if (m_efAlphaType == EEFFECT_ALPHATYPE::EF_NONEBRIGHT)
+		{
+			g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+			g_pDevice->SetRenderState(D3DRS_DESTBLEND, 2u);
+			g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 0);
+
+			m_pSkinMesh->m_materials.Emissive.r = 0.69f * m_pSkinMesh->m_materials.Diffuse.r;
+			m_pSkinMesh->m_materials.Emissive.g = 0.69f * m_pSkinMesh->m_materials.Diffuse.g;
+			m_pSkinMesh->m_materials.Emissive.b = 0.69f * m_pSkinMesh->m_materials.Diffuse.b;
+		}
+		else
+		{
+			if (m_efAlphaType == EEFFECT_ALPHATYPE::EF_DEFAULT)
+			{
+				g_pDevice->SetRenderState(D3DRS_FOGENABLE, 1u);
+				g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+				g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
+				g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 1u);
+			}
+			else
+			{
+				g_pDevice->SetRenderState(D3DRS_DESTBLEND, 9u);
+				g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 0);
+			}
+
+			m_pSkinMesh->m_materials.Emissive.r = 0.0f;
+			m_pSkinMesh->m_materials.Emissive.g = 0.0f;
+			m_pSkinMesh->m_materials.Emissive.b = 0.0f;
+		}
+
+		if (m_pSkinMesh2)
+			m_pSkinMesh2->m_materials = m_pSkinMesh->m_materials;
+
+		m_pSkinMesh->Render(0.0f, 1.0f, 0.0f);
+		if (m_pSkinMesh2)
+		{
+			TMVector3 vecPosScale{ -0.37 * m_fScale2, 1.0f / m_fScale2, 0.2 * m_fScale2 };
+			m_pSkinMesh2->m_BaseMatrix = m_pSkinMesh->m_OutMatrix;
+			m_pSkinMesh2->Render(vecPosScale.x, vecPosScale.y, vecPosScale.z);
+		}
+
+		g_pDevice->SetRenderState(D3DRS_SRCBLEND, 2u);
+		g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 7u);
+		g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 1u);
+	}
+
+	return 1;
 }
 
 int TMEffectSkinMesh::FrameMove(unsigned int dwServerTime)
