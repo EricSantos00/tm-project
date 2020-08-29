@@ -403,22 +403,127 @@ HRESULT CSound::Get3DBufferInterface(DWORD dwIndex, LPDIRECTSOUND3DBUFFER* ppDS3
 
 HRESULT CSound::FillBufferWithSound(LPDIRECTSOUNDBUFFER pDSB, BOOL bRepeatWavIfBufferLarger)
 {
-	return E_NOTIMPL;
+	void* pDSLockedBuffer = nullptr;
+	DWORD dwDSLockedBufferSize = 0;
+	DWORD dwWavDataRead = 0;
+
+	if (!pDSB)
+		return E_INVALIDARG;
+
+	HRESULT hr = RestoreBuffer(pDSB, nullptr);
+	if (FAILED(hr))
+		return hr;
+
+	hr = pDSB->Lock(0, m_dwDSBufferSize, &pDSLockedBuffer, &dwDSLockedBufferSize, 0, 0, 0);
+	if (FAILED(hr))
+		return hr;
+
+	m_pWaveFile->ResetFile();
+	hr = m_pWaveFile->Read((BYTE*)pDSLockedBuffer, dwDSLockedBufferSize, &dwWavDataRead);
+	if (FAILED(hr))
+		return hr;
+
+	if (!dwWavDataRead)
+	{
+		if (m_pWaveFile->m_pwfx->wBitsPerSample == 8)
+			memset(pDSLockedBuffer, 128, dwDSLockedBufferSize);
+		else
+			memset(pDSLockedBuffer, 0, dwDSLockedBufferSize);
+	}
+	else if (dwWavDataRead < dwDSLockedBufferSize)
+	{
+		if (!bRepeatWavIfBufferLarger)
+		{
+			if (m_pWaveFile->m_pwfx->wBitsPerSample == 8)
+				memset((char*)pDSLockedBuffer + dwWavDataRead, 128, dwDSLockedBufferSize - dwWavDataRead);
+			else
+				memset((char*)pDSLockedBuffer + dwWavDataRead, 0, dwDSLockedBufferSize - dwWavDataRead);
+		}
+		else
+		{
+			for (int dwReadSoFar = dwWavDataRead = dwReadSoFar < dwDSLockedBufferSize; dwReadSoFar += dwWavDataRead)
+			{
+				hr = m_pWaveFile->ResetFile();
+				if (FAILED(hr))
+					return hr;
+
+				hr = m_pWaveFile->Read((BYTE*)pDSLockedBuffer + dwReadSoFar,
+					dwDSLockedBufferSize - dwReadSoFar,
+					&dwWavDataRead);
+
+				if (FAILED(hr))
+					return hr;
+			}
+		}
+	}
+
+	pDSB->Unlock(pDSLockedBuffer, dwDSLockedBufferSize, 0, 0);
+	return S_OK;
 }
 
 LPDIRECTSOUNDBUFFER CSound::GetFreeBuffer()
 {
-	return LPDIRECTSOUNDBUFFER();
+	if (!m_apDSBuffer)
+		return nullptr;
+
+	int i = 0;
+	for (; i < m_dwNumBuffers; ++i)
+	{
+		if (m_apDSBuffer[i])
+		{
+			DWORD dwStatus = 0;
+			m_apDSBuffer[i]->GetStatus(&dwStatus);
+
+			if (!(dwStatus & 1))
+				break;
+		}
+	}
+
+	if (i == m_dwNumBuffers)
+		return m_apDSBuffer[rand() % m_dwNumBuffers];
+
+	return m_apDSBuffer[i];
 }
 
 LPDIRECTSOUNDBUFFER CSound::GetBuffer(DWORD dwIndex)
 {
-	return LPDIRECTSOUNDBUFFER();
+	if (!m_apDSBuffer)
+		return nullptr;
+
+	if (dwIndex < this->m_dwNumBuffers)
+		return this->m_apDSBuffer[dwIndex];
+
+	return nullptr;
 }
 
 HRESULT CSound::Play(DWORD dwPriority, DWORD dwFlags, LONG lVolume, LONG lFrequency, LONG lPan)
 {
-	return E_NOTIMPL;
+	if (g_pSoundManager->m_bMute == 1)
+		return S_OK;
+
+	if (!m_apDSBuffer)
+		return CO_E_NOTINITIALIZED;
+
+	IDirectSoundBuffer* pDSB = GetFreeBuffer();
+	if (!pDSB)
+		return E_FAIL;
+
+	int bRestored;
+	HRESULT hr = RestoreBuffer(pDSB, &bRestored);
+	if (FAILED(hr))
+		return hr;
+
+	if (bRestored)
+	{
+		hr = FillBufferWithSound(pDSB, false);
+		if (FAILED(hr))
+			return hr;
+
+		Reset();
+	}
+
+	return pDSB->Play(0, dwPriority, dwFlags);
+
 }
 
 HRESULT CSound::Play3D(LPDS3DBUFFER p3DBuffer, DWORD dwPriority, DWORD dwFlags, LONG lFrequency)
