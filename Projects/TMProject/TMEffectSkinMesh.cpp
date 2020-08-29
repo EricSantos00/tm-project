@@ -91,7 +91,78 @@ TMEffectSkinMesh::~TMEffectSkinMesh()
 
 int TMEffectSkinMesh::InitObject(int bExpand)
 {
-	return 0;
+	if (m_nSkinMeshType2 >= 0)
+	{
+		if (!m_pSkinMesh)
+		{
+			m_pSkinMesh = new TMSkinMesh(&m_stLookInfo, &m_stSancInfo, m_nSkinMeshType, 0, nullptr, 0, 0, 0);
+
+			if (m_pSkinMesh)
+			{
+				m_pSkinMesh->RestoreDeviceObjects();
+
+				// this is not a TMHuman object. We cannot use static_cast.
+				// Maybe this is wrong or some class was decompiled with the wrong inheritance
+				// This will crash...
+				m_pSkinMesh->m_pOwner = (TMHuman*)this;
+				m_pSkinMesh->m_dwFPS = 80;
+				m_pSkinMesh->m_bBaseMat = 0;
+			}
+		}
+
+		if (m_nMotionType == 10 && m_pSkinMesh)
+		{
+			m_pSkinMesh->m_dwStartTime = 0;
+			m_pSkinMesh->m_dwStartOffset = g_pTimerManager->GetServerTime();
+		}
+
+		if (!m_pSkinMesh2)
+		{
+			m_pSkinMesh2 = new TMSkinMesh(&m_stLookInfo2, &m_stSancInfo, m_nSkinMeshType2, bExpand, nullptr, 0, 0, 0);
+
+			if (m_pSkinMesh2)
+			{
+				m_pSkinMesh2->RestoreDeviceObjects();
+				m_pSkinMesh2->m_dwFPS = 80;
+
+				if (m_nSkinMeshType != 20 || m_stLookInfo2.Mesh0 != 7)
+				{
+					if (m_nSkinMeshType == 20)
+						m_pSkinMesh2->SetVecMantua(3, m_nSkinMeshType);
+					else
+						m_pSkinMesh2->SetVecMantua(2, m_nSkinMeshType);
+				}
+				else
+				{
+					m_pSkinMesh2->SetVecMantua(4, m_nSkinMeshType);
+				}
+			}
+		}
+
+		return 1;
+	}
+
+	if (!m_pSkinMesh)
+	{
+		m_pSkinMesh = new TMSkinMesh(&m_stLookInfo, &m_stSancInfo, m_nSkinMeshType, bExpand, nullptr, 0, 0, 0);
+
+		if (m_pSkinMesh)
+		{
+			m_pSkinMesh->RestoreDeviceObjects();
+			m_pSkinMesh->m_vScale.x = m_fScale;
+			m_pSkinMesh->m_vScale.y = m_fScale;
+			m_pSkinMesh->m_vScale.z = m_fScale;
+			m_pSkinMesh->m_dwFPS = 80;
+		}
+	}
+
+	if (m_nMotionType == 10 && m_pSkinMesh)
+	{
+		m_pSkinMesh->m_dwStartTime = 0;
+		m_pSkinMesh->m_dwStartOffset = g_pTimerManager->GetServerTime();
+	}
+
+	return 1;
 }
 
 int TMEffectSkinMesh::Render()
