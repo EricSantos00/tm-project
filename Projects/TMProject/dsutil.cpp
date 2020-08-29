@@ -63,7 +63,7 @@ HRESULT CSoundManager::Initialize(HWND hWnd, DWORD dwCoopLevel, DWORD dwPrimaryC
 
 				while (fscanf(fp, "%d", &nIndex) != -1)
 				{
-					if (fscanf(fp, "%s %d", m_stSoundDataList[nIndex].szFileName, &m_stSoundDataList[nIndex].nChannel) == -1)
+					if (nIndex > 0 && nIndex < MAX_SOUNDLIST && fscanf(fp, "%s %d", m_stSoundDataList[nIndex].szFileName, &m_stSoundDataList[nIndex].nChannel) == -1)
 					{
 						LOG_WRITELOG("Cannot Init Sound Index : %d\n", nIndex);
 
@@ -168,22 +168,129 @@ HRESULT CSoundManager::Get3DListenerInterface(LPDIRECTSOUND3DLISTENER* ppDSListe
 
 HRESULT CSoundManager::Create(CSound** ppSound, LPTSTR strWaveFileName, DWORD dwCreationFlags, GUID guid3DAlgorithm, DWORD dwNumBuffers)
 {
-	return E_NOTIMPL;
+	CWaveFile* pWaveFile = nullptr;
+	_DSBUFFERDESC dsbd;
+	HRESULT hrRet = S_OK;
+	HRESULT hra = S_OK;
+	HRESULT hrb = S_OK;
+	unsigned int dwDSBufferSize = 0;
+	constexpr int a = DSERR_BUFFERTOOSMALL;
+
+	if (!m_pDS)
+		return CO_E_NOTINITIALIZED;
+
+	if (!strWaveFileName || !ppSound || dwNumBuffers < 1)
+		return E_INVALIDARG;
+
+	IDirectSoundBuffer** apDSBuffer = new IDirectSoundBuffer*[4 * dwNumBuffers];
+	if (!apDSBuffer)
+	{
+		hrRet = ERROR_OUTOFMEMORY;
+
+		goto cleanup;
+	}
+
+	pWaveFile = new CWaveFile();
+	if (!pWaveFile)
+	{
+		hrRet = ERROR_OUTOFMEMORY;
+
+		goto cleanup;
+	}
+
+	pWaveFile->Open(strWaveFileName, nullptr, WAVEFILE_READ);
+
+	if (!pWaveFile->GetSize())
+	{
+		hrRet = E_FAIL;
+
+		goto cleanup;
+	}
+
+	dwDSBufferSize = pWaveFile->GetSize();
+	memset(&dsbd, 0, sizeof dsbd);
+
+	dsbd.dwSize = 36;
+	dsbd.dwFlags = dwCreationFlags;
+	dsbd.dwBufferBytes = dwDSBufferSize;
+	dsbd.guid3DAlgorithm = guid3DAlgorithm;
+	dsbd.lpwfxFormat = pWaveFile->m_pwfx;
+	
+	hra = m_pDS->CreateSoundBuffer(&dsbd, apDSBuffer, nullptr);
+	if (hra == DS_NO_VIRTUALIZATION)
+		hrRet = DS_NO_VIRTUALIZATION;
+
+	if (SUCCEEDED(hra) || hra == DSERR_BUFFERTOOSMALL)
+	{
+		for (int i = 1; i < dwNumBuffers; ++i)
+		{
+			hrb = m_pDS->DuplicateSoundBuffer(*apDSBuffer, &apDSBuffer[i]);
+			if (FAILED(hrb))
+			{
+				hrRet = hrb;
+				goto cleanup;
+			}
+		}
+
+		*ppSound = new CSound(apDSBuffer, dwDSBufferSize, dwNumBuffers, pWaveFile);
+		delete[] apDSBuffer;
+
+		return hrRet;
+	}
+cleanup:
+	if (pWaveFile)
+		delete pWaveFile;
+
+	if (apDSBuffer)
+		delete []apDSBuffer;
+
+	return hrRet;
 }
 
 HRESULT CSoundManager::CreateFromMemory(CSound** ppSound, BYTE* pbData, ULONG ulDataSize, LPWAVEFORMATEX pwfx, DWORD dwCreationFlags, GUID guid3DAlgorithm, DWORD dwNumBuffers)
 {
+	// this class is not used on client...
 	return E_NOTIMPL;
 }
 
 HRESULT CSoundManager::CreateStreaming(CStreamingSound** ppStreamingSound, LPTSTR strWaveFileName, DWORD dwCreationFlags, GUID guid3DAlgorithm, DWORD dwNotifyCount, DWORD dwNotifySize, HANDLE hNotifyEvent)
 {
+	// this class is not used on client...
 	return E_NOTIMPL;
 }
 
 CSound* CSoundManager::GetSoundData(int nIndex)
 {
-	return nullptr;
+	if (nIndex <= 0 || nIndex >= MAX_SOUNDLIST)
+		return nullptr;
+
+	if (m_nSoundVolume == -10000)
+		return nullptr;
+
+	if (!m_stSoundDataList[nIndex].pSoundData)
+	{
+		if (FAILED(Create(&m_stSoundDataList[nIndex].pSoundData,
+			m_stSoundDataList[nIndex].szFileName,
+			DSBCAPS_CTRLVOLUME,
+			GUID_NULL,
+			m_stSoundDataList[nIndex].nChannel)))
+		{
+			LOG_WRITELOG("Load Sound Error %d : %s\n", nIndex, m_stSoundDataList[nIndex].szFileName);
+
+			return nullptr;
+		}
+
+		int nBufferCount = m_stSoundDataList[nIndex].pSoundData->GetBufferCount();
+		for (int j = 0; j < nBufferCount; ++j)
+		{
+			IDirectSoundBuffer* buff = m_stSoundDataList[nIndex].pSoundData->GetBuffer(j);
+
+			if(buff)
+				buff->SetVolume(m_nSoundVolume);
+		}
+	}
+
+	return m_stSoundDataList[nIndex].pSoundData;
 }
 
 void CSoundManager::SetSoundVolumeByIndex(int nIndex, int nVolume)
@@ -205,6 +312,11 @@ CSound::CSound(LPDIRECTSOUNDBUFFER* apDSBuffer, DWORD dwDSBufferSize, DWORD dwNu
 
 CSound::~CSound()
 {
+}
+
+unsigned int __thiscall CSound::GetBufferCount()
+{
+	return 0;
 }
 
 HRESULT CSound::Get3DBufferInterface(DWORD dwIndex, LPDIRECTSOUND3DBUFFER* ppDS3DBuffer)

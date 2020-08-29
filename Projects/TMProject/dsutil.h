@@ -39,7 +39,7 @@ class CSoundManager
 {
 protected:
 	LPDIRECTSOUND8 m_pDS;
-	stSoundData m_stSoundDataList[512];
+	stSoundData m_stSoundDataList[MAX_SOUNDLIST];
 
 public:
 	int m_nSoundVolume;
@@ -84,6 +84,7 @@ public:
 	CSound(LPDIRECTSOUNDBUFFER* apDSBuffer, DWORD dwDSBufferSize, DWORD dwNumBuffers, CWaveFile* pWaveFile);
 	virtual ~CSound();
 
+	unsigned int __thiscall GetBufferCount();
 	HRESULT Get3DBufferInterface(DWORD dwIndex, LPDIRECTSOUND3DBUFFER* ppDS3DBuffer);
 	HRESULT FillBufferWithSound(LPDIRECTSOUNDBUFFER pDSB, BOOL bRepeatWavIfBufferLarger);
 	LPDIRECTSOUNDBUFFER GetFreeBuffer();

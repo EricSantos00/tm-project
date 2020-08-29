@@ -19,6 +19,7 @@ constexpr auto MAX_TRADE = 15;
 
 constexpr auto MAX_EFFECT_STRING_TABLE = 50;
 constexpr auto MAX_SUB_EFFECT_STRING_TABLE = 10;
+constexpr auto MAX_SOUNDLIST = 512;
 
 constexpr auto MAX_ITEM_PRICE_REPLACE = 100;
 
