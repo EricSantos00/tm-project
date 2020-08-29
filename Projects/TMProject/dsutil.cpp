@@ -295,15 +295,68 @@ CSound* CSoundManager::GetSoundData(int nIndex)
 
 void CSoundManager::SetSoundVolumeByIndex(int nIndex, int nVolume)
 {
+	if (nIndex > 0 && nIndex < MAX_SOUNDLIST && m_nSoundVolume != -10000 && m_stSoundDataList[nIndex].pSoundData)
+	{
+		int nBufferCount = m_stSoundDataList[nIndex].pSoundData->GetBufferCount();
+
+		for (int j = 0; j < nBufferCount; ++j)
+			m_stSoundDataList[nIndex].pSoundData->GetBuffer(j)->SetVolume(nVolume);
+	}
 }
 
 void CSoundManager::SetSoundVolume(int nVolume)
 {
+	if (nVolume > 0)
+		nVolume = 0;
+
+	if (nVolume < -10000)
+		nVolume = -10000;
+
+	m_nSoundVolume = nVolume;
+
+	for (int i = 0; i < MAX_SOUNDLIST; ++i)
+	{
+		if (m_stSoundDataList[i].pSoundData)
+		{
+			int nBufferCount = m_stSoundDataList[i].pSoundData->GetBufferCount();
+
+			for (int j = 0; j < nBufferCount; ++j)
+				m_stSoundDataList[i].pSoundData->GetBuffer(j)->SetVolume(m_nSoundVolume);
+		}
+	}
 }
 
 HRESULT CSound::RestoreBuffer(LPDIRECTSOUNDBUFFER pDSB, BOOL* pbWasRestored)
 {
-	return E_NOTIMPL;
+	if (!pDSB)
+		return CO_E_NOTINITIALIZED;
+
+	if (pbWasRestored)
+		*pbWasRestored = false;
+
+	DWORD dwStatus;
+	HRESULT hr = pDSB->GetStatus(&dwStatus);
+
+	if (FAILED(hr))
+		return hr;
+
+	if (!(dwStatus & 2))
+		return 1;
+
+	do
+	{
+		hr = pDSB->Restore();
+
+		if (hr == DSERR_BUFFERLOST)
+			Sleep(10);
+
+		hr = pDSB->Restore();
+	} while (hr);
+
+	if (pbWasRestored)
+		*pbWasRestored = 1;
+
+	return S_OK;
 }
 
 CSound::CSound(LPDIRECTSOUNDBUFFER* apDSBuffer, DWORD dwDSBufferSize, DWORD dwNumBuffers, CWaveFile* pWaveFile)
