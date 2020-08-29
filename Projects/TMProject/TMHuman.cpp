@@ -13005,6 +13005,63 @@ void TMHuman::RenderEffect_BoneDragon(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_Golem(unsigned int dwServerTime)
 {
+    if (m_stLookInfo.FaceMesh == 2)
+    {
+        for (int i = 0; i < 6; ++i)
+        {
+            if (m_pEyeFire[i] != nullptr)
+            {
+                m_pEyeFire[i]->m_vecPosition = m_vecTempPos[i];
+                m_pEyeFire[i]->m_vecPosition.y += (0.5f * m_fScale);
+                m_pEyeFire[i]->FrameMove(0);
+            }
+        }
+    }
+    else if (m_stLookInfo.FaceMesh == 1 && !m_stLookInfo.FaceSkin)
+    {
+        unsigned int dwTerm = 500;
+        float fSpeed = 0.000099999997f;
+        float fBaseSize = 1.0f;
+        int nTextureIndex = 119;
+
+        if (m_stLookInfo.FaceSkin == 2)
+        {
+            nTextureIndex = 152;
+            fSpeed = 0.00019999999f;
+            fBaseSize = 0.30000001f;
+            dwTerm = 600;
+        }
+
+        if ((dwServerTime - m_dwGolemDustTime) > dwTerm)
+        {
+            for (int j = 0; j < 6; ++j)
+            {
+                auto pEffect = new TMEffectBillBoard(
+                    nTextureIndex,
+                    3000,
+                    (fBaseSize * m_fScale) + 0.1f,
+                    (fBaseSize * m_fScale) + 0.30000001f,
+                    (fBaseSize * m_fScale) + 0.1f,
+                    fSpeed,
+                    1,
+                    80);
+
+                if (pEffect != nullptr)
+                {
+                    if (m_stLookInfo.FaceSkin == 2)
+                    {
+                        pEffect->SetColor(0xAAFFFFFF);
+                        pEffect->m_nParticleType = 1;
+                        pEffect->m_fParticleV = -1.0f;
+                    }
+                    pEffect->m_nFade = 3;
+                    pEffect->m_vecStartPos = pEffect->m_vecPosition = m_vecTempPos[j];
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+                }
+            }
+            m_dwGolemDustTime = dwServerTime;
+        }
+    }
 }
 
 void TMHuman::RenderEffect_Skull()
