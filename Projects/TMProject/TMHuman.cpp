@@ -12956,6 +12956,20 @@ void TMHuman::RenderEffect_DarkElf(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_Minotauros(unsigned int dwServerTime)
 {
+    if ((dwServerTime - m_dwGolemDustTime) > 300)
+    {
+        auto pEffect = new TMEffectBillBoard(0, 2500, 0.0049999999f * m_fScale, 0.0049999999f * m_fScale, 0.0049999999f * m_fScale, 0.001f, 1, 80);
+
+        if (pEffect != nullptr)
+        {
+            pEffect->m_vecPosition = TMVector3{ ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[0].x, m_vecTempPos[0].y, ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[0].z };
+            pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pEffect->SetColor(0xFFAAAAAA);
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+        }
+
+        m_dwGolemDustTime = dwServerTime;
+    }
 }
 
 void TMHuman::RenderEffect_EmeraldDragon(unsigned int dwServerTime)
