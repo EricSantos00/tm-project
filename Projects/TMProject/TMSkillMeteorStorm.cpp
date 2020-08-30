@@ -557,12 +557,12 @@ int TMSkillMeteorStorm::FrameMove(unsigned int dwServerTime)
 		auto pMesh = g_pMeshManager->GetCommonMesh(708, 1, 180000u);
 		if (!pMesh)
 			return 0;
-		_D3DVERTEXBUFFER_DESC vDesc;
+		D3DVERTEXBUFFER_DESC vDesc;
 		RDLVERTEX* pVertex;
 		pMesh->m_pVB->GetDesc(&vDesc);
 		pMesh->m_pVB->Lock(0, 0, (void**)&pVertex, 0);
 
-		int nCount = vDesc.Size / sizeof _D3DVERTEXBUFFER_DESC;
+		int nCount = vDesc.Size / sizeof RDLVERTEX;
 
 		for (int i = 0; i < nCount; ++i)
 			pVertex[i].diffuse = -1;
@@ -574,9 +574,9 @@ int TMSkillMeteorStorm::FrameMove(unsigned int dwServerTime)
 		m_fAngle = atan2f(result.x, result.z) - D3DXToRadian(90);
 	}
 	if (m_nLevel != 2 || m_fLength <= 33.0f || m_fDestLength >= 33.0f)
-		m_fProgress = (static_cast<float>(dwServerTime) - static_cast<float>(m_dwStartTime)) / static_cast<float>(m_dwLifeTime);
+		m_fProgress = (static_cast<float>(static_cast<int>(dwServerTime - m_dwStartTime))) / static_cast<float>(m_dwLifeTime);
 	else
-		m_fProgress = (static_cast<float>(dwServerTime) - static_cast<float>(m_dwStartTime)) / static_cast<float>(m_dwLifeTime) + 0.80f;
+		m_fProgress = (static_cast<float>(static_cast<int>(dwServerTime - m_dwStartTime))) / static_cast<float>(m_dwLifeTime) + 0.80f;
 
 	if (m_fProgress < 1.0f)
 	{
