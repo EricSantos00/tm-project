@@ -4453,7 +4453,8 @@ int TMHuman::OnPacketUpdateScore(MSG_STANDARD* pStd)
                     if (pFScene->m_pLevelQuest[pMobData->CurrentScore.Level + 1] == 100)
                         dwCol = pFScene->LoadMsgText4(
                             szStr,
-                            (char*)"UI\\QuestMessage.txt",
+                            sizeof szStr,
+                            "UI\\QuestMessage.txt",
                             pMobData->CurrentScore.Level + 2,
                             pMobData->Equip[0].sIndex % 10);
                     else

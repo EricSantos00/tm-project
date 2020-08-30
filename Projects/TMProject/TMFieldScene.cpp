@@ -15130,11 +15130,11 @@ void TMFieldScene::InitBoard()
 
 		memset(m_pLevelQuest, 0, sizeof(m_pLevelQuest));
 
-		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects.txt", 97);
-		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects2.txt", 98);
-		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects3.txt", 99);
-		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects4.txt", 101);
-		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestMessage.txt", 100);
+		LoadMsgLevel(m_pLevelQuest, "UI\\QuestSubjects.txt", 97);
+		LoadMsgLevel(m_pLevelQuest, "UI\\QuestSubjects2.txt", 98);
+		LoadMsgLevel(m_pLevelQuest, "UI\\QuestSubjects3.txt", 99);
+		LoadMsgLevel(m_pLevelQuest, "UI\\QuestSubjects4.txt", 101);
+		LoadMsgLevel(m_pLevelQuest, "UI\\QuestMessage.txt", 100);
 
 		m_pQuestMemo = (SButton*)m_pControlContainer->FindControl(1054273);
 		m_pQuestMemo->m_cAlwaysAlt = 1;
@@ -15149,7 +15149,7 @@ void TMFieldScene::InitBoard()
 
 		if (!g_pObjectManager->m_stMobData.CurrentScore.Level)
 		{
-			STRUCT_MOB* pMobData = &g_pObjectManager->m_stMobData;
+			const STRUCT_MOB* pMobData = &g_pObjectManager->m_stMobData;
 			LoadMsgText3(m_pQuestList[0], 
 				(char*)"UI\\QuestSubjects.txt",	
 				g_pObjectManager->m_stMobData.CurrentScore.Level + 1, 
@@ -15174,6 +15174,7 @@ void TMFieldScene::InitBoard()
 			if (m_pLevelQuest[pMobData->CurrentScore.Level] == 100)
 				dwCol = LoadMsgText4(					
 					szStr,
+					sizeof szStr,
 					(char*)"UI\\QuestMessage.txt",
 					pMobData->CurrentScore.Level + 1,
 					pMobData->Equip[0].sIndex % 10);

@@ -2385,7 +2385,7 @@ void TMScene::ReadCameraPos(const char* szFileName)
 	fclose(fpBin);
 }
 
-int TMScene::LoadMsgText(SListBox* pListBox, char* szFileName)
+int TMScene::LoadMsgText(SListBox* pListBox, const char* szFileName)
 {
 	FILE* fp{};
 
@@ -2440,7 +2440,7 @@ int TMScene::LoadMsgText(SListBox* pListBox, char* szFileName)
 	return 1;
 }
 
-int TMScene::LoadMsgText2(SListBox* pListBox, char* szFileName, int nStartLine, int nEndLine)
+int TMScene::LoadMsgText2(SListBox* pListBox, const char* szFileName, int nStartLine, int nEndLine)
 {
 	FILE* fp{};
 
@@ -2502,7 +2502,7 @@ int TMScene::LoadMsgText2(SListBox* pListBox, char* szFileName, int nStartLine, 
 	return 1;
 }
 
-int TMScene::LoadMsgText3(SListBox* pListBox, char* szFileName, int nLv, int ntrans)
+int TMScene::LoadMsgText3(SListBox* pListBox, const char* szFileName, int nLv, int ntrans)
 {
 	FILE* fp{};
 
@@ -2576,7 +2576,7 @@ int TMScene::LoadMsgText3(SListBox* pListBox, char* szFileName, int nLv, int ntr
 	return 1;
 }
 
-unsigned int TMScene::LoadMsgText4(char* pStr, char* szFileName, int nLv, int ntrans)
+unsigned int TMScene::LoadMsgText4(char* pStr, int dwStrSize, const char* szFileName, int nLv, int ntrans)
 {
 	FILE* fp{};
 
@@ -2612,7 +2612,7 @@ unsigned int TMScene::LoadMsgText4(char* pStr, char* szFileName, int nLv, int nt
 					*szRet = 0;
 
 				if (szTemp[10] == 32)
-					sprintf_s(pStr, sizeof(szTemp), "%s", &szTemp[10]);
+					sprintf_s(pStr, dwStrSize, "%s", &szTemp[10]);
 			}
 			else
 			{
@@ -2628,7 +2628,7 @@ unsigned int TMScene::LoadMsgText4(char* pStr, char* szFileName, int nLv, int nt
 	return dwCol | 0xFF000000;
 }
 
-int TMScene::LoadMsgLevel(char* LevelQuest, char* szFileName, char cType)
+int TMScene::LoadMsgLevel(char* LevelQuest, const char* szFileName, char cType)
 {
 	FILE* fp{};
 
