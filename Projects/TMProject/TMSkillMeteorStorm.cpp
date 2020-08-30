@@ -575,9 +575,9 @@ int TMSkillMeteorStorm::FrameMove(unsigned int dwServerTime)
 		m_fAngle = atan2f(result.x, result.z - D3DXToRadian(90));
 	}
 	if (m_nLevel != 2 || m_fLength <= 33.0f || m_fDestLength >= 33.0f)
-		m_fProgress = static_cast<float>(dwServerTime - m_dwStartTime) / static_cast<float>(m_dwLifeTime);
+		m_fProgress = (static_cast<float>(dwServerTime) - static_cast<float>(m_dwStartTime)) / static_cast<float>(m_dwLifeTime);
 	else
-		m_fProgress = static_cast<float>(dwServerTime - m_dwStartTime) / static_cast<float>(m_dwLifeTime) + 0.80f;
+		m_fProgress = (static_cast<float>(dwServerTime) - static_cast<float>(m_dwStartTime)) / static_cast<float>(m_dwLifeTime) + 0.80f;
 
 	if (m_fProgress < 1.0f)
 	{
