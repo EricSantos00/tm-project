@@ -6,6 +6,7 @@
 #include "TMEffectBillBoard2.h"
 #include "TMEffectParticle.h"
 #include "TMSkillExplosion2.h"
+#include "TMMesh.h"
 #include "TMGlobal.h"
 #include "TMShade.h"
 
@@ -296,14 +297,223 @@ TMSkillMeteorStorm::~TMSkillMeteorStorm()
 		auto pBill4 = new TMEffectBillBoard(59, 2500u, 1.2f, 1.2f, 1.2f, 0.003f, 1, 80);
 		if (pBill4)
 		{
+			pBill4->m_vecPosition = { m_vecTargetPos.x, m_vecTargetPos.y + 1.0f, m_vecPosition.z };
+			pBill4->m_vecStartPos = pBill4->m_vecPosition;
+			pBill4->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+			
+			if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+				pBill4->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
 
+			pBill4->SetColor(0xFFFFFFFF);
+			g_pCurrentScene->m_pEffectContainer->AddChild(pBill4);
 		}
+
+		auto pParticle = new TMEffectParticle({ m_vecTargetPos.x - 3.0f, m_vecTargetPos.y, m_vecTargetPos.z - 3.0f }, 4, 12, 0.1f, 0xFFFFAA00, 0, 56, 1.0f, 1, {}, 1000u);
+
+		if (pParticle)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pParticle);
+
+		unsigned int fScale = dwColor;
+		auto pExplosion = new TMSkillExplosion2({ m_vecTargetPos.x - 3.0f, m_vecTargetPos.y, m_vecTargetPos.z - 3.0f }, 0, 3.0f, 2120u, fScale);
+		if (pExplosion)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pExplosion);
+
+		auto pBill = new TMEffectBillBoard(59, 2500u, 1.2f, 1.2f, 1.2f, 0.003f, 1, 80);
+		if (pBill)
+		{
+			pBill->m_vecPosition = { m_vecTargetPos.x - 3.0f, m_vecTargetPos.y + 1.0f, m_vecPosition.z - 3.0f };
+			pBill->m_vecStartPos = pBill->m_vecPosition;
+			pBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+			if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+				pBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+			pBill->SetColor(0xFFFFFFFF);
+			g_pCurrentScene->m_pEffectContainer->AddChild(pBill);
+		}
+
+		auto pParticle1 = new TMEffectParticle({ m_vecTargetPos.x - 3.0f, m_vecTargetPos.y, m_vecTargetPos.z + 3.0f }, 4, 12, 0.1f, 0xFFFFAA00, 0, 56, 1.0f, 1, {}, 1000u);
+		if (pParticle1)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pParticle1);
+
+		auto pExplosion1 = new TMSkillExplosion2({ m_vecTargetPos.x + 3.0f, m_vecTargetPos.y, m_vecTargetPos.z + 3.0f }, 0, 3.0f, 210, dwColor);
+		if(pExplosion1)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pExplosion1);
+
+		auto pBill1 = new TMEffectBillBoard(59, 2500u, 1.2f, 1.2f, 1.2f, 0.003f, 1, 80);
+		if (pBill1)
+		{
+			pBill1->m_vecPosition = { m_vecTargetPos.x - 3.0f, m_vecTargetPos.y + 1.0f, m_vecPosition.z + 3.0f};
+			pBill1->m_vecStartPos = pBill1->m_vecPosition;
+			pBill1->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+
+			if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+				pBill1->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+			pBill1->SetColor(0xFFFFFFFF);
+			g_pCurrentScene->m_pEffectContainer->AddChild(pBill1);
+		}
+
+		auto pParticle2 = new TMEffectParticle({ m_vecTargetPos.x + 3.0f, m_vecTargetPos.y, m_vecTargetPos.z - 3.0f }, 4, 12, 0.1f, 0xFFFFAA00, 0, 56, 1.0f, 1, {}, 1000u);
+		if(pParticle2)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pParticle2);
+
+		auto pExplosion2 = new TMSkillExplosion2({ m_vecTargetPos.x + 3.0f, m_vecTargetPos.y, m_vecTargetPos.z + 3.0f }, 0, 3.0f, 210, dwColor);
+		if (pExplosion2)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pExplosion2);
+
+		auto pBill2 = new TMEffectBillBoard(59, 2500u, 1.2f, 1.2f, 1.2f, 0.003f, 1, 80);
+		if (pBill2)
+		{
+			pBill2->m_vecPosition = { m_vecTargetPos.x + 3.0f, m_vecTargetPos.y + 1.0f, m_vecPosition.z - 3.0f};
+			pBill2->m_vecStartPos = pBill2->m_vecPosition;
+			pBill2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+
+			if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+				pBill2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+			pBill2->SetColor(0xFFFFFFFF);
+			g_pCurrentScene->m_pEffectContainer->AddChild(pBill2);
+		}
+
+		auto pParticle3 = new TMEffectParticle({ m_vecTargetPos.x + 3.0f, m_vecTargetPos.y, m_vecTargetPos.z + 3.0f }, 4, 12, 0.1f, 0xFFFFAA00, 0, 56, 1.0f, 1, {}, 1000u);
+		if (pParticle3)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pParticle3);
+
+		auto pExplosion3 = new TMSkillExplosion2({ m_vecTargetPos.x + 3.0f, m_vecTargetPos.y, m_vecTargetPos.z + 3.0f }, 0, 3.0f, 210, dwColor);
+		if (pExplosion3)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pExplosion3);
+
+		auto pBill3 = new TMEffectBillBoard(59, 2500u, 1.2f, 1.2f, 1.2f, 0.003f, 1, 80);
+		if (pBill2)
+		{
+			pBill3->m_vecPosition = { m_vecTargetPos.x + 3.0f, m_vecTargetPos.y + 1.0f, m_vecPosition.z + 3.0f };
+			pBill3->m_vecStartPos = pBill3->m_vecPosition;
+			pBill3->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+
+			if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+				pBill3->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+			pBill3->SetColor(0xFFFFFFFF);
+			g_pCurrentScene->m_pEffectContainer->AddChild(pBill3);
+		}
+
+		nSoundIndex = 309;
 	}
+
+	if (g_pSoundManager && g_pSoundManager->GetSoundData(nSoundIndex))
+		g_pSoundManager->GetSoundData(nSoundIndex)->Play(0, 0);
 }
 
 int TMSkillMeteorStorm::Render()
 {
-	return 0;
+	if (m_fProgress < 0.05f)
+		return 1;
+
+	TMEffect::Render();
+
+	TMMesh* pMesh = nullptr;
+	switch (m_nLevel)
+	{
+	case 1:
+		pMesh = g_pMeshManager->GetCommonMesh(708, 1, 180000u);
+		if (!pMesh)
+			return 0;
+
+		g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_DESTBLEND, 2u);
+		g_pDevice->SetRenderState(D3DRS_SRCBLEND, 5u);
+		g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 8u);
+		g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+		g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 0);
+		g_pDevice->SetRenderState(D3DRS_LIGHTING, 0);
+		g_pDevice->SetRenderState(D3DRS_CULLMODE, 1u);
+
+		pMesh->m_fScaleH = 1.7f;
+		pMesh->m_fScaleV = 1.7f;
+
+		pMesh->Render(m_vecPosition.x, m_vecPosition.y, m_vecPosition.z, m_fAngle + D3DXToRadian(90), D3DXToRadian(45), 0.0f, 0, 0);
+
+		pMesh->m_fScaleH = 2.0f;
+		pMesh->m_fScaleV = 2.0f;
+
+		g_pDevice->SetRenderState(D3DRS_CULLMODE, 3u);
+		g_pDevice->SetRenderState(D3DRS_LIGHTING, 1u);
+		g_pDevice->SetRenderState(D3DRS_SRCBLEND, 2u);
+		g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 7u);
+		g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
+		break;
+	case 2:
+		pMesh = g_pMeshManager->GetCommonMesh(1608, 0, 180000u);
+		if (!pMesh)
+			return 0;
+
+		g_pDevice->SetRenderState(D3DRS_LIGHTING, 1u);
+		g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 0);
+		g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+		g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+
+		pMesh->m_fScaleH = 3.0f;
+		pMesh->m_fScaleV = 3.0f;
+
+		pMesh->Render(m_vecPosition.x, m_vecPosition.y, m_vecPosition.z, 0.0f, 0.0f, 0.0f, 0, 0);
+		break;
+	case 3:
+		for (int i = 0; i < 3; ++i)
+		{
+			pMesh = g_pMeshManager->GetCommonMesh(i + 2816, 0, 180000);
+			if (!pMesh)
+				return 0;
+
+			g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+			g_pDevice->SetRenderState(D3DRS_DESTBLEND, 2u);
+			g_pDevice->SetRenderState(D3DRS_SRCBLEND, 5u);
+			g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 8u);
+			g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+			g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 0);
+			g_pDevice->SetRenderState(D3DRS_LIGHTING, 0);
+			g_pDevice->SetRenderState(D3DRS_CULLMODE, 1u);
+
+			pMesh->Render(m_vecPosition.x, m_vecPosition.y, m_vecPosition.z, m_fAngle, 0.0f, 0.0f, 0, 0);
+
+			g_pDevice->SetRenderState(D3DRS_CULLMODE, 3u);
+			g_pDevice->SetRenderState(D3DRS_LIGHTING, 1u);
+			g_pDevice->SetRenderState(D3DRS_SRCBLEND, 2u);
+			g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 7u);
+			g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 1u);
+			g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 1u);
+			g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
+		}
+		break;
+	case 5:
+		pMesh = g_pMeshManager->GetCommonMesh(2840, 1, 180000u);
+		if (!pMesh)
+			return 0;
+
+		g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_DESTBLEND, 4u);
+		g_pDevice->SetRenderState(D3DRS_SRCBLEND, 3u);
+		g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 8u);
+		g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+		g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 0);
+		g_pDevice->SetRenderState(D3DRS_LIGHTING, 0);
+		g_pDevice->SetRenderState(D3DRS_CULLMODE, 1u);
+
+		pMesh->Render(m_vecPosition.x, m_vecPosition.y, m_vecPosition.z, m_fAngle + D3DXToRadian(180), 0.0f, 0.0f, 0, 0);
+
+		g_pDevice->SetRenderState(D3DRS_CULLMODE, 3u);
+		g_pDevice->SetRenderState(D3DRS_LIGHTING, 1u);
+		g_pDevice->SetRenderState(D3DRS_SRCBLEND, 2u);
+		g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 7u);
+		g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 1u);
+		g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
+		break;
+	}
+
+	return 1;
 }
 
 int TMSkillMeteorStorm::IsVisible()
