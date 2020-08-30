@@ -12932,6 +12932,120 @@ void TMHuman::RenderEffect_LegendBerielKeeper(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_LegendBeriel(unsigned int dwServerTime)
 {
+    int nRand = rand() % 20;
+    float fSize = 0.40000001f;
+
+    auto mpBill1 = new TMEffectBillBoard(
+        0,
+        500,
+        fSize,
+        ((float)nRand * 0.1f) + (fSize * 0.0099999998f),
+        ((float)nRand * 0.0099999998f) + (fSize * 0.0f),
+        0.000099999997f,
+        1,
+        80);
+
+    if (mpBill1 != nullptr)
+    {
+        mpBill1->m_vecPosition = TMVector3{ ((float)(rand() % 6 - 3) * 0.02f) + m_vecTempPos[8].x, m_vecTempPos[8].y + 0.60000002f, ((float)(rand() % 40 - 20) * 0.02f) + m_vecTempPos[8].z };
+        mpBill1->m_vecStartPos = mpBill1->m_vecPosition;
+        mpBill1->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        mpBill1->m_bStickGround = 0;
+        mpBill1->m_nParticleType = 1;
+        mpBill1->m_fParticleV = 0.89999998f;
+        mpBill1->SetColor(0xFFAAAACC);
+        g_pCurrentScene->m_pEffectContainer->AddChild(mpBill1);
+    }
+
+    nRand = rand() % 20;
+    fSize = 0.30000001f;
+    
+    auto mpBill2 = new TMEffectBillBoard(
+        0,
+        500,
+        fSize,
+        ((float)nRand * 0.1f) + (fSize * 0.0099999998f),
+        ((float)nRand * 0.0099999998f) + (fSize * 0.30000001f),
+        0.000099999997f,
+        1,
+        80);
+
+    if (mpBill2 != nullptr)
+    {
+        mpBill2->m_vecPosition = TMVector3{ ((float)(rand() % 6 - 3) * 0.02f) + m_vecTempPos[8].x, m_vecTempPos[8].y + 0.60000002f, ((float)(rand() % 40 - 20) * 0.02f) + m_vecTempPos[8].z };
+        mpBill2->m_vecStartPos = mpBill2->m_vecPosition;
+        mpBill2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        mpBill2->m_bStickGround = 0;
+        mpBill2->m_nParticleType = 1;
+        mpBill2->m_fParticleV = 0.5f;
+        mpBill2->SetColor(0xFF9999AA);
+        g_pCurrentScene->m_pEffectContainer->AddChild(mpBill2);
+    }
+    
+    nRand = rand() % 2;
+    fSize = 1.5f;
+    
+    auto mpBill3 = new TMEffectBillBoard(0, 500, fSize, fSize, 0.30000001f * fSize, 0.000099999997f, 1, 80);
+    if (mpBill3 != nullptr)
+    {
+        mpBill3->m_vecPosition = TMVector3{ ((float)(rand() % 6 - 3) * 0.02f) + m_vecTempPos[8].x, m_vecTempPos[8].y + 0.60000002f, ((float)(rand() % 40 - 20) * 0.02f) + m_vecTempPos[8].z };
+        mpBill3->m_vecStartPos = mpBill3->m_vecPosition;
+        mpBill3->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        mpBill3->m_bStickGround = 0;
+        mpBill3->m_nParticleType = 1;
+        mpBill3->m_fParticleV = 0.5f;
+        mpBill3->SetColor(0xFF1111AA);
+        g_pCurrentScene->m_pEffectContainer->AddChild(mpBill3);
+    }
+
+    fSize = 0.1f;
+    nRand = rand() % 20;
+    
+    auto mpBill4 = new TMEffectBillBoard(
+        0,
+        700,
+        ((float)nRand * 0.0099999998f) + fSize,
+        ((float)nRand * 0.1f) + (fSize * 0.0099999998f),
+        ((float)nRand * 0.0099999998f) + (fSize * 0.30000001f),
+        0.000099999997f,
+        1,
+        80);
+
+    if (mpBill4 != nullptr)
+    {
+        mpBill4->m_vecPosition = TMVector3{ ((float)(rand() % 6 - 3) * 0.02f) + m_vecTempPos[9].x, m_vecTempPos[9].y, ((float)(rand() % 40 - 20) * 0.02f) + m_vecTempPos[9].z };
+        mpBill4->m_vecStartPos = mpBill4->m_vecPosition;
+        mpBill4->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        mpBill4->m_bStickGround = 0;
+        mpBill4->m_nParticleType = 1;
+        mpBill4->m_fParticleV = -0.5f;
+        mpBill4->SetColor(0xFFFFAAAA);
+        g_pCurrentScene->m_pEffectContainer->AddChild(mpBill4);
+    }
+
+    nRand = rand() % 20;
+
+    auto mpBill5 = new TMEffectBillBoard(
+        0,
+        700,
+        ((float)nRand * 0.0099999998f) + fSize,
+        ((float)nRand * 0.1f) + (fSize * 0.0099999998),
+        ((float)nRand * 0.0099999998f) + (fSize * 0.30000001),
+        0.000099999997f,
+        1,
+        80);
+
+    if (mpBill5 != nullptr)
+    {
+        mpBill5->m_vecPosition = TMVector3{ ((float)(rand() % 6 - 3) * 0.02f) + m_AlphaColor, *(float*)&m_nAlpha, ((float)(rand() % 40 - 20) * 0.02f) + *(float*)&m_bAlphaObj };
+        mpBill5->m_vecStartPos = mpBill5->m_vecPosition;
+        mpBill5->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        mpBill5->m_bStickGround = 0;
+        mpBill5->m_nParticleType = 1;
+        mpBill5->m_fParticleV = -0.5f;
+        mpBill5->SetColor(0xFFFFAAAA);
+        g_pCurrentScene->m_pEffectContainer->AddChild(mpBill5);
+    }
 }
 
 void TMHuman::RenderEffect_Pig_Wolf(unsigned int dwServerTime)
