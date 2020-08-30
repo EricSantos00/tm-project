@@ -13036,6 +13036,27 @@ void TMHuman::RenderEffect_DarkNightZombieTroll(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_DarkElf(unsigned int dwServerTime)
 {
+    if ((dwServerTime - m_dwGolemDustTime) > 100)
+    {
+        int nBase = 1;
+
+        if (m_nClass == 38)
+            nBase = 2;
+
+        for (int i = 0; i < 2; ++i)
+        {
+            auto pEffect = new TMEffectBillBoard(0, 400 * i + 1500, 0.1f, 0.1f, 0.1f, 0.001f, 1, 80);
+
+            if (pEffect != nullptr)
+            {
+                pEffect->m_vecPosition = TMVector3{ ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[i + nBase].x, m_vecTempPos[i + nBase].y, ((float)(rand() % 10 - 5) * 0.050000001f) + m_vecTempPos[i + nBase].z };
+                pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                pEffect->SetColor(0xFFFF6666);
+                g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+            }
+        }
+        m_dwGolemDustTime = dwServerTime;
+    }
 }
 
 void TMHuman::RenderEffect_Minotauros(unsigned int dwServerTime)
