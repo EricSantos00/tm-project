@@ -243,6 +243,16 @@ struct RDLVERTEX
 	}
 };
 
+struct RDLVERTEX2
+{
+	TMVector3 position;
+	unsigned int diffuse;
+	float tu1;
+	float tv1;
+	float tu2;
+	float tv2;
+};
+
 struct RDLNVERTEX2
 {
 	TMVector3 position;

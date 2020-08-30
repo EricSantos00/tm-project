@@ -2,6 +2,7 @@
 #include "TMMesh.h"
 #include "TMSea.h"
 #include "TMGlobal.h"
+#include "TMLog.h"
 
 TMSea::TMSea()
 {
@@ -178,7 +179,84 @@ int TMSea::Render()
 
 int TMSea::InitObject()
 {
-	return 0;
+    m_nGridNumX = m_nMaskIndex / 2;
+    m_nGridNumY = m_nTextureSetIndex / 2;
+    m_nMaskIndex = 0;
+
+    if (m_pMesh != nullptr)
+        return 0;
+    
+    m_pMesh = new TMMesh();
+    m_pMesh->m_dwFVF = 578;
+    m_pMesh->m_sizeVertex = 32;
+    m_pMesh->m_nTextureIndex[0] = 3;
+    m_pMesh->m_dwAttCount = 1;
+    m_pMesh->m_AttRange[0].VertexCount = (m_nGridNumY + 1) * (m_nGridNumX + 1);
+    m_pMesh->m_AttRange[0].FaceCount = m_nGridNumY * 2 * m_nGridNumX;
+
+    if (g_pDevice->m_pd3dDevice->CreateVertexBuffer(
+        m_pMesh->m_sizeVertex * m_pMesh->m_AttRange[0].VertexCount,
+        0,
+        m_pMesh->m_dwFVF,
+        D3DPOOL_MANAGED,
+        &m_pMesh->m_pVB,
+        0) >= 0)
+    {
+        RDLVERTEX2* pVertex{};
+        m_pMesh->m_pVB->Lock(0, 0, (void**)&pVertex, 0);
+
+        for (int nY = 0; nY < m_nGridNumY + 1; ++nY)
+        {
+            for (int nX = 0; nX < m_nGridNumX + 1; ++nX)
+            {
+                pVertex[nX + nY * (m_nGridNumX + 1)].position.x = (float)(nX - m_nGridNumX / 2) * 2.0f;
+                pVertex[nX + nY * (m_nGridNumX + 1)].position.z = (float)(nY - m_nGridNumY / 2) * 2.0f;
+                pVertex[nX + nY * (m_nGridNumX + 1)].tu1 = (float)nX / 2.0f;
+                pVertex[nX + nY * (m_nGridNumX + 1)].tv1 = (float)nY / 2.0f;
+                pVertex[nX + nY * (m_nGridNumX + 1)].tu2 = (float)nX / 12.0f;
+                pVertex[nX + nY * (m_nGridNumX + 1)].tv2 = (float)nY / 12.0f;
+                pVertex[nX + nY * (m_nGridNumX + 1)].position.y = 0.0f;
+            }
+        }
+
+        m_pMesh->m_pVB->Unlock();
+
+        if (g_pDevice->m_pd3dDevice->CreateIndexBuffer(6 * m_pMesh->m_AttRange[0].FaceCount, 0, D3DFMT_INDEX16, D3DPOOL_MANAGED, &m_pMesh->m_pIB, 0) >= 0)
+        {
+            unsigned short* pIndex;
+            m_pMesh->m_pIB->Lock(0, 0, (void**)&pIndex, 0);
+
+            int nIndex = 0;
+            for (int nY = 0; nY < m_nGridNumY; ++nY)
+            {
+                for (int nX = 0; nX < m_nGridNumX; ++nX)
+                {
+                    pIndex[nIndex++] = nX + nY * (m_nGridNumX + 1);
+                    pIndex[nIndex++] = nX + (m_nGridNumX + 1) * (nY + 1);
+                    pIndex[nIndex++] = nX + nY * (m_nGridNumX + 1) + 1;
+                    pIndex[nIndex++] = nX + (m_nGridNumX + 1) * (nY + 1);
+                    pIndex[nIndex++] = nX + (m_nGridNumX + 1) * (nY + 1) + 1;
+                    pIndex[nIndex++] = nX + nY * (m_nGridNumX + 1) + 1;
+                }
+            }
+            m_pMesh->m_pIB->Unlock();
+            return 1;
+        }
+
+        if (m_pMesh->m_pVB)
+        {
+            m_pMesh->m_pVB->Release();
+            m_pMesh->m_pVB = nullptr;
+        }
+        SAFE_DELETE(m_pMesh);
+        LOG_WRITELOG("Can't Create Index Buffer in SeaMesh\r\n");
+    }
+    else
+    {
+        SAFE_DELETE(m_pMesh);
+        LOG_WRITELOG("Can't Create Vertex Buffer in SeaMesh\r\n");
+    }
+    return 0;
 }
 
 void TMSea::InitPosition(float fX, float fY, float fZ)
