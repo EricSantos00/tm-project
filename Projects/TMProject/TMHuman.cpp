@@ -12920,6 +12920,21 @@ int TMHuman::SetHumanCostume()
 
 void TMHuman::RenderEffect_RudolphCostume(unsigned int dwServerTime)
 {
+    if ((dwServerTime - m_dwGolemDustTime) > 800)
+    {
+        auto pEffect = new TMEffectBillBoard(56, 200, 0.1f, 0.1f, 0.1f, 0.0f, 1, 80);
+
+        if (pEffect != nullptr)
+        {
+            pEffect->m_nFade = 0;
+            pEffect->SetColor(0xFFFF5500);
+            pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pEffect->m_vecPosition = TMVector3{ m_AlphaColor, *(float*)&m_nAlpha, *(float*)&m_bAlphaObj };
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+        }
+
+        m_dwGolemDustTime = dwServerTime;
+    }
 }
 
 void TMHuman::RenderEffect_Khepra(unsigned int dwServerTime)
@@ -13459,6 +13474,22 @@ void TMHuman::RenderEffect_Golem(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_Skull()
 {
+    static const int nPosIndex[7]{ 8, 9, 1, 6, 7, 2, 3 };
+
+    for (int i = 0; i < 7; ++i)
+    {
+        if (m_pEyeFire[i] != nullptr)
+        {
+            m_pEyeFire[i]->m_vecPosition = m_vecTempPos[nPosIndex[i]];
+
+            if (i >= 3 && i < 5)
+                m_pEyeFire[i]->m_vecPosition.y += (m_fScale * 0.1f);
+            if (i >= 5)
+                m_pEyeFire[i]->m_vecPosition.y += (m_fScale * 0.30000001f);
+
+            m_pEyeFire[i]->FrameMove(0);
+        }
+    }
 }
 
 bool _locationCheck(float posx, float posy, int mapX, int mapY)
