@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "TMMesh.h"
 #include "TMSea.h"
+#include "TMCamera.h"
 #include "TMGlobal.h"
 #include "TMLog.h"
 
@@ -261,6 +262,12 @@ int TMSea::InitObject()
 
 void TMSea::InitPosition(float fX, float fY, float fZ)
 {
+    TMObject::InitPosition(fX, fY, fZ);
+
+    m_rectRange.left = (int)(m_vecPosition.x - (float)m_nGridNumX);
+    m_rectRange.right = (int)(m_vecPosition.x + (float)m_nGridNumX);
+    m_rectRange.top = (int)(m_vecPosition.y - (float)m_nGridNumY);
+    m_rectRange.bottom = (int)(m_vecPosition.y + (float)m_nGridNumY);
 }
 
 D3DXVECTOR3* TMSea::GetPickPos(D3DXVECTOR3* result)
@@ -270,7 +277,14 @@ D3DXVECTOR3* TMSea::GetPickPos(D3DXVECTOR3* result)
 
 float TMSea::GetHeight(float fX, float fY)
 {
-	return 0.0f;
+    float fHeight = -100.0f;
+
+    if (PtInRect(&m_rectRange, POINT{ (int)fX, (int)fY }))
+    {
+        fHeight = (sinf((((fX - (float)m_rectRange.left) * 3.1415927f) / 2.0f) + ((((float)(m_dwServerTime % 12000) / 6000.0f) * 3.1415927f) * 2.0f)) * 0.1f) - 0.1f;
+    }
+
+    return fHeight;
 }
 
 int TMSea::FrameMove(unsigned int dwServerTime)
@@ -280,5 +294,21 @@ int TMSea::FrameMove(unsigned int dwServerTime)
 
 int TMSea::IsVisible()
 {
-	return 0;
+    if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELECT_SERVER)
+        return 1;
+
+    if (TMObject::IsVisible() == 1)
+        return 1;
+
+    if (g_pObjectManager->m_pCamera->m_pFocusedObject &&
+        g_pObjectManager->m_pCamera->m_pFocusedObject->m_vecPosition.DistanceFrom(m_vecPosition) < 36.0f)
+    {
+        m_bVisible = 1;
+    }
+    else
+    {
+        m_bVisible = 0;
+    }
+
+    return m_bVisible;
 }
