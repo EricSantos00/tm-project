@@ -12928,6 +12928,63 @@ void TMHuman::RenderEffect_Khepra(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_LegendBerielKeeper(unsigned int dwServerTime)
 {
+    if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD)
+        static_cast<TMFieldScene*>(g_pCurrentScene)->m_bShowBoss = 1;
+
+    if ((dwServerTime - m_dwGolemDustTime) > 100)
+    {
+        static_cast<TMFieldScene*>(g_pCurrentScene)->m_nWTime = 12;
+        g_nWeather = 0;
+        RenderDevice::m_bDungeon = 1;
+
+        auto pEffect1 = new TMEffectBillBoard(56, 500, 0.1f, 0.1f, 0.1f, 0.0f, 1, 80);
+        if (pEffect1 != nullptr)
+        {
+            pEffect1->m_nFade = 0;
+            pEffect1->SetColor(0xFF0088FF);
+            pEffect1->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+            pEffect1->m_vecPosition = TMVector3{ m_vecTempPos[8].x, m_vecTempPos[8].y, m_vecTempPos[8].z };
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect1);
+        }
+
+        auto pEffect2 = new TMEffectBillBoard(56, 500, 0.1f, 0.1f, 0.1f, 0.0f, 1, 80);
+        if (pEffect2 != nullptr)
+        {
+            pEffect2->m_nFade = 0;
+            pEffect2->SetColor(0xFF0088FF);
+            pEffect2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+            pEffect2->m_vecPosition = TMVector3{ m_vecTempPos[9].x, m_vecTempPos[9].y, m_vecTempPos[9].z };
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect2);
+        }
+        m_dwGolemDustTime = dwServerTime;
+    }
+
+    int nRand = rand() % 20;
+    float fSize = 2.0f;
+    
+    auto mpBill = new TMEffectBillBoard(
+        0,
+        1500,
+        ((float)nRand * 0.0099999998f) + (fSize * 0.0099999998f),
+        ((float)nRand * 0.1f) + (fSize * 0.0099999998f),
+        ((float)nRand * 0.0099999998f) + (fSize * 0.029999999f),
+        0.000099999997f,
+        1,
+        80);
+
+    if (mpBill != nullptr)
+    {
+        mpBill->m_vecPosition = TMVector3{ ((float)(rand() % 6 - 3) * 0.02f) + m_AlphaColor, *(float*)&m_nAlpha, ((float)(rand() % 40 - 20) * 0.02f) + *(float*)&m_bAlphaObj };
+        mpBill->m_vecStartPos = mpBill->m_vecPosition;
+        mpBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        mpBill->m_bStickGround = 0;
+        mpBill->m_nParticleType = 1;
+        mpBill->m_fParticleV = -0.5f;
+        mpBill->SetColor(0xFFAAAAFF);
+        g_pCurrentScene->m_pEffectContainer->AddChild(mpBill);
+    }
 }
 
 void TMHuman::RenderEffect_LegendBeriel(unsigned int dwServerTime)
