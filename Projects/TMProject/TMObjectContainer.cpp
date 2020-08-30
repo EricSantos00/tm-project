@@ -766,6 +766,8 @@ int TMObjectContainer::Load(const char* szFileName)
 				pChild->m_vecPosition = TMVector3(m_fOffsetX + vecPosition.x, fHeight, m_fOffsetY + vecPosition.y);
 				m_pGroundEffectContainer->AddChildWithKey(pChild, Key);
 			}
+
+			continue;
 		}
 		else if (dwObjType == 8)
 		{
