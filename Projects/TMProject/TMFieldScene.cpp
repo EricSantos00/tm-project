@@ -23657,7 +23657,7 @@ void TMFieldScene::GameAuto()
 
 	for (int i = 10 * m_bSkillBeltSwitch; i < 10 * m_bSkillBeltSwitch + 10; ++i)
 	{
-		int idxSkill = (unsigned char)g_pObjectManager->m_cShortSkill[i];
+		int idxSkill = (char)g_pObjectManager->m_cShortSkill[i];
 		if (idxSkill == -1)
 			continue;
 
@@ -23667,27 +23667,45 @@ void TMFieldScene::GameAuto()
 			idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 87 || idxSkill == 75 || idxSkill == 76 || idxSkill == 77 ||
 			idxSkill == 81 || idxSkill == 85 || idxSkill == 89 || idxSkill == 92)
 		{
-			useSkill = 0;
-		}
-
-		for (int j = 0; j < 32; ++j)
-		{
-			if ((unsigned char)m_pMyHuman->m_stAffect[j].Type <= 0)
-				continue;
-
-			if (idxSkill == 64 || idxSkill == 66 || idxSkill == 68 || idxSkill == 70 || idxSkill == 71)
+			for (int j = 0; j < 32; ++j)
 			{
-				if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == 71 && m_pMyHuman->m_stAffect[j].Time > 3)
+				if ((unsigned char)m_pMyHuman->m_stAffect[j].Type <= 0)
+					continue;
+
+				if (idxSkill == 64 || idxSkill == 66 || idxSkill == 68 || idxSkill == 70 || idxSkill == 71)
+				{
+					if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == 71 && m_pMyHuman->m_stAffect[j].Time > 3)
+					{
+						useSkill = 0;
+						break;
+					}
+				}
+				else if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == idxSkill && m_pMyHuman->m_stAffect[j].Time > 3)
 				{
 					useSkill = 0;
 					break;
 				}
-			}
-			else if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == idxSkill && m_pMyHuman->m_stAffect[j].Time > 3)
+			}	
+
+			int DelayTime = 0;
+			if (idxSkill == 3 || idxSkill == 5 || idxSkill == 53 || idxSkill == 54 || idxSkill == 74 || idxSkill == 76 || idxSkill == 77)
+				DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[1];
+			else if (idxSkill == 9 || idxSkill == 11 || idxSkill == 13 || idxSkill == 15 || idxSkill == 37 || idxSkill == 86 || idxSkill == 87)
+				DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[2];
+			else if (idxSkill == 41 || idxSkill == 43 || idxSkill == 44 || idxSkill == 45 || idxSkill == 46 || idxSkill == 64 || idxSkill == 66 ||
+				idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 89 || idxSkill == 90)
 			{
-				useSkill = 0;
-				break;
+				DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[3];
 			}
+
+			if (DelayTime + m_dwSkillLastTime[idxSkill] <= dwServerTime)
+			{
+				g_pObjectManager->m_cSelectShortSkill = i;
+				if (SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0) == 1)
+					return;
+			}
+
+			continue;
 		}
 
 		if (!useSkill)
@@ -23700,24 +23718,6 @@ void TMFieldScene::GameAuto()
 				return;
 			}
 			continue;
-		}
-
-		int DelayTime = 0;
-		if (idxSkill == 3 || idxSkill == 5 || idxSkill == 53 || idxSkill == 54 || idxSkill == 74 || idxSkill == 76 || idxSkill == 77)
-			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[1];
-		else if (idxSkill == 9 || idxSkill == 11 || idxSkill == 13 || idxSkill == 15 || idxSkill == 37 || idxSkill == 86 || idxSkill == 87)
-			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[2];
-		else if (idxSkill == 41 || idxSkill == 43 || idxSkill == 44 || idxSkill == 45 || idxSkill == 46 || idxSkill == 64 || idxSkill == 66 ||
-			idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 89 || idxSkill == 90)
-		{
-			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[3];
-		}
-
-		if (DelayTime + m_dwSkillLastTime[idxSkill] <= dwServerTime)
-		{
-			g_pObjectManager->m_cSelectShortSkill = i;
-			if (SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0) == 1)
-				return;
 		}
 	}
 
