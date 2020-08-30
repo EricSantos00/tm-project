@@ -9480,7 +9480,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 				|| (int)pNode->m_vecPosition.x != TX
 				|| (int)pNode->m_vecPosition.y != TY)
 			{
-				pNode = (TMHuman*)pNode->m_pDown;
+				pNode = (TMHuman*)pNode->m_pNextLink;
 				continue;
 			}
 
@@ -9488,12 +9488,12 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 			{
 				if (!pNode->IsInPKZone() || !TMFieldScene::m_bPK || pNode->m_bParty == 1)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK && g_pObjectManager->m_usWarGuild != pNode->m_usGuild && !g_bCastleWar)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK
@@ -9501,7 +9501,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 					&& m_pMyHuman->m_cMantua == pNode->m_cMantua
 					&& g_bCastleWar > 0)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK
@@ -9509,12 +9509,12 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 					&& m_pMyHuman->m_cMantua == 3
 					&& (pNode->m_dwID > 0 && pNode->m_dwID < 1000 || (pNode->m_cMantua > 0 && pNode->m_cMantua != 4)))
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK && g_bCastleWar > 0 && !pNode->IsInCastleZone())
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 			}
@@ -9532,7 +9532,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 			{
 				if (!pNode->IsInCastleZone() && g_bCastleWar > 0 || !g_bCastleWar)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 			}
@@ -10579,7 +10579,7 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 				|| (int)pNode->m_vecPosition.x != TX
 				|| (int)pNode->m_vecPosition.y != TY)
 			{
-				pNode = (TMHuman*)pNode->m_pDown;
+				pNode = (TMHuman*)pNode->m_pNextLink;
 				continue;
 			}
 
@@ -10587,12 +10587,12 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 			{
 				if (!pNode->IsInPKZone() || !TMFieldScene::m_bPK || pNode->m_bParty == 1)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK && g_pObjectManager->m_usWarGuild != pNode->m_usGuild && !g_bCastleWar)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK
@@ -10600,7 +10600,7 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 					&& m_pMyHuman->m_cMantua == pNode->m_cMantua
 					&& g_bCastleWar > 0)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK
@@ -10608,12 +10608,12 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 					&& m_pMyHuman->m_cMantua == 3
 					&& (pNode->m_dwID > 0 && pNode->m_dwID < 1000 || (pNode->m_cMantua > 0 && pNode->m_cMantua != 4)))
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK && g_bCastleWar > 0 && !pNode->IsInCastleZone())
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 			}
@@ -10631,7 +10631,7 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 			{
 				if (!pNode->IsInCastleZone() && g_bCastleWar > 0 || !g_bCastleWar)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 			}
