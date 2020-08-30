@@ -289,7 +289,63 @@ float TMSea::GetHeight(float fX, float fY)
 
 int TMSea::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+    bool bFog{ false };
+
+    if (((int)m_vecPosition.x >> 7 == 28 || (int)m_vecPosition.x >> 7 == 29) && 
+        ((int)m_vecPosition.y >> 7 == 23 || (int)m_vecPosition.y >> 7 == 22))
+    {
+        bFog = true;
+    }
+
+    dwServerTime = g_pTimerManager->GetServerTime();
+    m_dwServerTime = dwServerTime;
+
+    if (m_pMesh)
+    {
+        RDLVERTEX2* pVertex{};
+        m_pMesh->m_pVB->Lock(0, 0, (void**)&pVertex, 0);
+
+        int nIndex0 = dwServerTime % 12000;
+        int nIndex1 = dwServerTime % 18000;
+
+        for (int nY = 0; nY < m_nGridNumY + 1; ++nY)
+        {
+            for (int nX = 0; nX < m_nGridNumX + 1; ++nX)
+            {
+                if (bFog)
+                {
+                    pVertex[nX + nY * (m_nGridNumX + 1)].tv1 = ((float)nY / 9.5f) + ((float)nIndex1 / 18000.0f);
+                    pVertex[nX + nY * (m_nGridNumX + 1)].tu1 = ((float)nX / 9.5f);
+                    pVertex[nX + nY * (m_nGridNumX + 1)].tv2 = ((float)nY / 3.8f);
+                    pVertex[nX + nY * (m_nGridNumX + 1)].tu2 = ((float)nX / 3.8f) + ((float)nIndex1 / 18000.0f);
+                    pVertex[nX + nY * (m_nGridNumX + 1)].position.y = (sinf((((float)nX * 3.1415927f) / 4.5f) + (((float)nIndex0 / 6000.0) * 2.0f)) * 0.89999998f) - 0.1f;
+                }
+                else
+                {
+                    if (RenderDevice::m_bDungeon && RenderDevice::m_bDungeon != 3 && RenderDevice::m_bDungeon != 4)
+                    {
+                        pVertex[nX + nY * (m_nGridNumX + 1)].tv1 = ((float)nY / 1.2f) + ((float)nIndex0 / 12000.0f);
+                        pVertex[nX + nY * (m_nGridNumX + 1)].tu1 = ((float)nX / 1.8f);
+                    }
+                    else
+                    {
+                        pVertex[nX + nY * (m_nGridNumX + 1)].tv2 = ((float)nY / 3.0f) + ((float)nIndex0 / 12000.0f);
+                    }
+
+                    if (RenderDevice::m_bDungeon == 2)
+                    {
+                        pVertex[nX + nY * (m_nGridNumX + 1)].position.y = (sinf((((float)nX * 3.1415927f) / 2.0f) + ((((float)nIndex0 / 6000.0f) * 3.1415927f) * 2.0f)) * 0.050000001f) - 0.050000001f;
+                    }
+                    else
+                    {
+                        pVertex[nX + nY * (m_nGridNumX + 1)].position.y = (sinf((((float)nX * 3.1415927f) / 2.0f) + ((((float)nIndex0 / 6000.0f) * 3.1415927f) * 2.0f)) * 0.050000001f) - 0.1f;
+                    }
+                }
+            }
+        }
+        m_pMesh->m_pVB->Unlock();
+    }
+    return 1;
 }
 
 int TMSea::IsVisible()
