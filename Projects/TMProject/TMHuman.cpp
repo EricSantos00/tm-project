@@ -12936,6 +12936,33 @@ void TMHuman::RenderEffect_LegendBeriel(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_Pig_Wolf(unsigned int dwServerTime)
 {
+    int nRand = rand() % 5;
+    
+    auto pEffect = new TMEffectBillBoard(
+        0,
+        1500,
+        ((float)nRand * 0.0099999998f) + 0.0099999998f,
+        ((float)nRand * 0.029999999f) + 0.0099999998f,
+        ((float)nRand * 0.0099999998f) + 0.0099999998f,
+        0.000099999997f,
+        1,
+        80);
+
+    if (pEffect != nullptr)
+    {
+        pEffect->m_vecPosition = TMVector3{ ((float)(rand() % 10 - 5) * 0.02f) + m_vecTempPos[0].x, m_vecTempPos[0].y, ((float)(rand() % 10 - 5) * 0.02f) + m_vecTempPos[0].z };
+        pEffect->m_vecStartPos = pEffect->m_vecPosition;
+        pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pEffect->m_bStickGround = 0;
+        pEffect->m_nParticleType = 1;
+        pEffect->m_fParticleV = -1.0f;
+        pEffect->SetColor(0xFFFFFFCC);
+
+        if (m_nClass == 27)
+            pEffect->SetColor(0xFFFFDD88);
+
+        g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+    }
 }
 
 void TMHuman::RenderEffect_DungeonBear(unsigned int dwServerTime)
