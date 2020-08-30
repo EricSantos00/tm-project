@@ -254,7 +254,7 @@ TMSkillMeteorStorm::~TMSkillMeteorStorm()
 	break;
 	case 6:
 	{
-		auto pChild = new TMEffectBillBoard2(8, 1000u, 0.0099999998f, 0.0099999998f, 0.0099999998f, 0.0060000001, 0);
+		auto pChild = new TMEffectBillBoard2(8, 1000u, 0.0099999998f, 0.0099999998f, 0.0099999998f, 0.0060000001f, 0);
 
 		if (pChild)
 		{
@@ -518,10 +518,236 @@ int TMSkillMeteorStorm::Render()
 
 int TMSkillMeteorStorm::IsVisible()
 {
-	return 0;
+	auto pMesh = g_pMeshManager->GetCommonMesh(708, 1, 1800000u);
+	if (pMesh)
+		m_fRadius = pMesh->m_fRadius;
+
+	m_fRadius = 1.0f;
+	return TMEffect::IsVisible();
 }
 
 int TMSkillMeteorStorm::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	if (g_pCurrentScene->m_eSceneType == ESCENE_TYPE::ESCENE_SELECT_SERVER)
+		m_pOwner = nullptr;
+
+	dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (!IsVisible())
+		return 0;
+
+	if (static_cast<float>(dwServerTime) - static_cast<float>(m_dwStartTime) < 0.0f)
+		return 1;
+
+	if (m_nLevel == 9 || m_nLevel == 10)
+		g_pObjectManager->DeleteObject(this);
+
+	if (m_pOwner)
+	{
+		m_vecTargetPos.x = m_pOwner->m_vecPosition.x;
+		m_vecTargetPos.z = m_pOwner->m_vecPosition.y;
+		m_vecTargetPos.y = m_pOwner->m_fHeight + 1.0f;
+	}
+
+	auto vecDPos = m_vecTargetPos - m_vecStartPos;
+	auto constexpr a = D3DXToRadian(90);
+	m_fAngle = atan2f(vecDPos.x, vecDPos.y) - D3DXToRadian(90);
+
+	if (m_nLevel == 1)
+	{
+		auto pMesh = g_pMeshManager->GetCommonMesh(708, 1, 180000u);
+		if (!pMesh)
+			return 0;
+		_D3DVERTEXBUFFER_DESC vDesc;
+		RDLVERTEX* pVertex;
+		pMesh->m_pVB->GetDesc(&vDesc);
+		pMesh->m_pVB->Lock(0, 0, (void**)&pVertex, 0);
+
+		int nCount = vDesc.Size / sizeof _D3DVERTEXBUFFER_DESC;
+
+		for (int i = 0; i < nCount; ++i)
+			pVertex[i].diffuse = -1;
+
+		pMesh->m_pVB->Unlock();
+		pMesh->m_nTextureIndex[0] = 19;
+
+		auto result = m_vecTargetPos - m_vecStartPos;
+		m_fAngle = atan2f(result.x, result.z - D3DXToRadian(90));
+	}
+	if (m_nLevel != 2 || m_fLength <= 33.0f || m_fDestLength >= 33.0f)
+		m_fProgress = static_cast<float>(dwServerTime - m_dwStartTime) / static_cast<float>(m_dwLifeTime);
+	else
+		m_fProgress = static_cast<float>(dwServerTime - m_dwStartTime) / static_cast<float>(m_dwLifeTime) + 0.80f;
+
+	if (m_fProgress < 1.0f)
+	{
+		m_vecPosition = (m_vecStartPos * (1.0f - m_fProgress)) + (m_vecTargetPos * m_fProgress);
+
+		if (!m_nLevel)
+		{
+			if (m_pCenterLight)
+				m_pCenterLight->m_vecPosition = m_vecPosition;
+			if (m_pCenterLight2)
+				m_pCenterLight2->m_vecPosition = m_vecPosition;
+			if (m_pCenterFlare)
+				m_pCenterFlare->m_vecPosition = m_vecPosition;
+
+			if (m_pLightMap)
+				m_pLightMap->SetPosition({ m_vecPosition.x, m_vecPosition.z });
+		}
+		else if (m_nLevel != 1 || m_bPlaySound || m_fProgress <= 0.1f)
+		{
+			if (m_nLevel == 4)
+			{
+				if (m_pCenterLight)
+					m_pCenterLight->m_vecPosition = m_vecPosition;
+				if (m_pCenterLight2)
+					m_pCenterLight2->m_vecPosition = m_vecPosition;
+				if (m_pCenterFlare)
+					m_pCenterFlare->m_vecPosition = m_vecPosition;
+
+				if (m_pLightMap)
+					m_pLightMap->SetPosition({ m_vecPosition.x, m_vecPosition.z });
+			}
+			else if (m_nLevel == 6)
+			{
+				if (m_pCenterLight)
+					m_pCenterLight->m_vecPosition = m_vecPosition;
+				if (m_pCenterLight2)
+					m_pCenterLight2->m_vecPosition = m_vecPosition;
+				if (m_pCenterFlare)
+					m_pCenterFlare->m_vecPosition = m_vecPosition;
+
+				if (m_pLightMap)
+					m_pLightMap->SetPosition({ m_vecPosition.x, m_vecPosition.z });
+			}
+		}
+		else
+		{
+			m_bPlaySound = 1;
+			if (g_pSoundManager && g_pSoundManager->GetSoundData(161))
+				g_pSoundManager->GetSoundData(161)->Play(0, 0);
+		}
+	}
+	else
+	{
+		g_pObjectManager->DeleteObject(this);
+	}
+
+	switch (m_nLevel)
+	{
+	case 2:
+		m_vecPosition.y = ((sinf(m_fProgress * D3DXToRadian(180)) * m_fLength) * 0.2f) + m_vecPosition.y;
+		break;
+	case 3:
+		m_fAngle = ((static_cast<float>(dwServerTime % 250)) * D3DXToRadian(180)) / 125.0f;
+		break;
+	case 6:
+		m_fAngle = ((static_cast<float>(dwServerTime % 250)) * D3DXToRadian(180)) / 85.0f;
+
+		m_vecPosition.x += sinf(m_fProgress * D3DXToRadian(180) * 16.0f);
+		m_vecPosition.z += sinf(m_fProgress * D3DXToRadian(180) * 16.0f);
+		break;
+	}
+
+	int nTotalEffects = 4; // v67
+	static unsigned int dwOldTime_1 = 0; // 2B42A04 kkkkkkkkkkkkkkkkkkkkk
+	if (dwServerTime - dwOldTime_1 < 20)
+		nTotalEffects = 1;
+	else if (dwServerTime - dwOldTime_1 < 30)
+		nTotalEffects = 2;
+
+	for (int j = 0; j < nTotalEffects; ++j)
+	{
+		int nRand = rand() % 5;
+		float fRand = static_cast<float>(nRand);
+		auto pBill = new TMEffectBillBoard(0, 
+			1000u, 
+			fRand * 0.1f + 0.40f,
+			fRand * 0.1f + 0.40f,
+			fRand * 0.1f + 0.40f,
+			0.001f, 1, 80);
+
+		if (pBill)
+		{
+			pBill->m_vecPosition = { fRand * 0.0099999998f + m_vecPosition.x, m_vecPosition.y - 0.69999999f + fRand * 0.0099999998f, fRand * 0.0099999998f + m_vecPosition.z };
+			pBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+			pBill->m_bStickGround = 1;
+
+			if (m_nLevel)
+			{
+				switch (m_nLevel)
+				{
+				case 1:
+					pBill->SetColor(0xFF3333FF);
+					break;
+				case 2:
+					pBill->SetColor(0xFFFFEE55);
+					break;
+				case 3:
+					pBill->SetColor(0xFF555555);
+					break;
+				case 4:
+					pBill->SetColor(0xFFFF7711);
+					break;
+				case 5:
+					pBill->SetColor(0xFF6677FF);
+					break;
+				}
+			}
+			else
+				pBill->SetColor(0xFFFF7711);
+
+			g_pCurrentScene->m_pEffectContainer->AddChild(pBill);
+
+			if (j == 3 && m_nLevel == 2)
+			{
+				auto pChild = new TMEffectBillBoard(59, 800, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, 0.001f, 1, 80);
+				if (pChild)
+				{
+					pChild->m_vecPosition = { m_vecPosition.x - 0.0099999998f, m_vecPosition.y - 0.69999999f, m_vecPosition.z - 0.0099999998f };
+					pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+
+					if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+						pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+					pChild->m_bStickGround = 1;
+					pChild->SetColor(0xFFFFFFFF);
+
+					g_pCurrentScene->m_pEffectContainer->AddChild(pChild);
+				}
+			}
+
+			if (!m_nLevel || m_nLevel == 4)
+			{
+				auto pChild = new TMEffectBillBoard(59, 800, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, 0.001f, 1, 80);
+				if (pChild)
+				{
+					pChild->m_vecPosition = { m_vecPosition.x - 0.0099999998f, m_vecPosition.y - 0.5f, m_vecPosition.z - 0.0099999998f };
+					pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+
+					if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+						pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+					pChild->m_bStickGround = 1;
+
+					if (j == 3)
+					{
+						pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_NONEBRIGHT;
+						pChild->SetColor(0xFFFFFF28);
+					}
+					else
+					{
+						pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+						pChild->SetColor(0xFFFF7711);
+					}
+
+					g_pCurrentScene->m_pEffectContainer->AddChild(pChild);
+				}
+			}
+		}
+	}
+
+	dwOldTime_1 = dwServerTime;
+	return 1;
 }
