@@ -550,7 +550,7 @@ int TMSkillMeteorStorm::FrameMove(unsigned int dwServerTime)
 	}
 
 	auto vecDPos = m_vecTargetPos - m_vecStartPos;
-	m_fAngle = atan2f(vecDPos.x, vecDPos.y) - D3DXToRadian(90);
+	m_fAngle = atan2f(vecDPos.x, vecDPos.z) - D3DXToRadian(90);
 
 	if (m_nLevel == 1)
 	{
@@ -571,7 +571,7 @@ int TMSkillMeteorStorm::FrameMove(unsigned int dwServerTime)
 		pMesh->m_nTextureIndex[0] = 19;
 
 		auto result = m_vecTargetPos - m_vecStartPos;
-		m_fAngle = atan2f(result.x, result.z - D3DXToRadian(90));
+		m_fAngle = atan2f(result.x, result.z) - D3DXToRadian(90);
 	}
 	if (m_nLevel != 2 || m_fLength <= 33.0f || m_fDestLength >= 33.0f)
 		m_fProgress = (static_cast<float>(dwServerTime) - static_cast<float>(m_dwStartTime)) / static_cast<float>(m_dwLifeTime);
