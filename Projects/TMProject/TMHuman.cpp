@@ -12924,6 +12924,37 @@ void TMHuman::RenderEffect_RudolphCostume(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_Khepra(unsigned int dwServerTime)
 {
+    if (m_pCancelation && !m_cCancel)
+    {
+        m_cCancel = 1;
+        m_pCancelation->m_dwVisibleTime = 3000;
+        m_pCancelation->m_fVectorH = (float)-(rand() % 50) / 100.0f;
+        m_pCancelation->SetColor(0xFFFFFFFF);
+    }
+
+    int nRand = rand() % 5;
+   
+    auto pEffect = new TMEffectBillBoard(
+        0,
+        1500,
+        ((float)nRand * 0.40000001f) + 0.2f,
+        ((float)nRand * 0.69999999f) + 0.89999998f,
+        ((float)nRand * 0.5f) + 0.5f,
+        0.000099999997f,
+        1,
+        80);
+
+    if (pEffect != nullptr)
+    {
+        pEffect->m_vecPosition = TMVector3{ ((float)(rand() % 40 - 5) * 0.02f) + m_vecTempPos[0].x, m_vecTempPos[0].y, ((float)(rand() % 10 - 5) * 0.02f) + m_vecTempPos[0].z };
+        pEffect->m_vecStartPos = pEffect->m_vecPosition;
+        pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pEffect->m_bStickGround = 0;
+        pEffect->m_nParticleType = 1;
+        pEffect->m_fParticleV = -3.0f;
+        pEffect->SetColor(0xFFFF7777);
+        g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+    }
 }
 
 void TMHuman::RenderEffect_LegendBerielKeeper(unsigned int dwServerTime)
