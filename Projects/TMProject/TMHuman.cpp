@@ -13032,6 +13032,77 @@ void TMHuman::RenderEffect_Hydra(unsigned int dwServerTime)
 
 void TMHuman::RenderEffect_DarkNightZombieTroll(unsigned int dwServerTime)
 {
+    unsigned int dwTerm = 400;
+
+    if (m_nClass == 25)
+        dwTerm = 1000;
+
+    if ((dwServerTime - m_dwLiquidTime) > dwTerm)
+    {
+        int nCount = 3;
+        float fHeight = 1.0f;
+        int nTexIndex = 119;
+
+        if (m_nClass == 25)
+        {
+            nCount = 2;
+            nTexIndex = 89;
+            fHeight = 1.6f;
+        }
+
+        for (int i = 0; i < nCount; ++i)
+        {
+            int nRand = rand() % 3;
+            
+            auto pEffect = new TMEffectBillBoard(
+                nTexIndex,
+                600 * i + 2400,
+                ((float)nRand * 0.1f) + (1.2f * m_fScale),
+                (1.0f * m_fScale) + 0.30000001f,
+                ((float)nRand * 0.1f) + (1.2f * m_fScale),
+                0.00050000002f,
+                1,
+                80);
+
+            if (pEffect != nullptr)
+            {
+                pEffect->m_vecPosition = TMVector3{
+                    (((float)i * 0.30000001f) * (float)nRand) + m_vecPosition.x,
+                    ((fHeight * m_fScale) + m_fHeight) - (((float)i * 0.30000001f) * (float)nRand),
+                    (((float)i * 0.30000001f) * (float)nRand) + m_vecPosition.y };
+
+                pEffect->m_vecStartPos = pEffect->m_vecPosition;
+                pEffect->m_nParticleType = 1;
+                pEffect->m_fParticleV = -2.0f;
+                g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+            }
+        }
+
+        if (m_nClass == 25)
+        {
+            int nRand = rand() % 3;
+            
+            auto pCrater = new TMShade(2, nTexIndex, 1.0f);
+
+            if (pCrater != nullptr)
+            {
+                pCrater->m_bFI = 0;
+                pCrater->m_dwLifeTime = 3000;
+                pCrater->m_fAngle = ((float)nRand * 3.1415927f) / 6.0f;
+                pCrater->SetColor(0xCCCCCCCC);
+
+                TMVector2 vec
+                {
+                    ((cosf(m_fAngle - 3.1415927f) * 0.5f) + m_vecPosition.x) + ((float)nRand * 0.2f),
+                    (m_vecPosition.y - (sinf(m_fAngle - 3.1415927f) * 0.5f)) + ((float)nRand * 0.2f) 
+                };
+
+                pCrater->SetPosition(vec);
+                g_pCurrentScene->m_pShadeContainer->AddChild(pCrater);
+            }
+        }
+        m_dwLiquidTime = dwServerTime;
+    }
 }
 
 void TMHuman::RenderEffect_DarkElf(unsigned int dwServerTime)
