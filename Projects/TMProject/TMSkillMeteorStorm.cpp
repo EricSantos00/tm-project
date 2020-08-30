@@ -628,126 +628,125 @@ int TMSkillMeteorStorm::FrameMove(unsigned int dwServerTime)
 			if (g_pSoundManager && g_pSoundManager->GetSoundData(161))
 				g_pSoundManager->GetSoundData(161)->Play(0, 0);
 		}
-	}
-	else
-	{
-		g_pObjectManager->DeleteObject(this);
-	}
 
-	switch (m_nLevel)
-	{
-	case 2:
-		m_vecPosition.y = ((sinf(m_fProgress * D3DXToRadian(180)) * m_fLength) * 0.2f) + m_vecPosition.y;
-		break;
-	case 3:
-		m_fAngle = ((static_cast<float>(dwServerTime % 250)) * D3DXToRadian(180)) / 125.0f;
-		break;
-	case 6:
-		m_fAngle = ((static_cast<float>(dwServerTime % 250)) * D3DXToRadian(180)) / 85.0f;
-
-		m_vecPosition.x += sinf(m_fProgress * D3DXToRadian(180) * 16.0f);
-		m_vecPosition.z += sinf(m_fProgress * D3DXToRadian(180) * 16.0f);
-		break;
-	}
-
-	int nTotalEffects = 4; // v67
-	static unsigned int dwOldTime_1 = 0; // 2B42A04 kkkkkkkkkkkkkkkkkkkkk
-	if (dwServerTime - dwOldTime_1 < 20)
-		nTotalEffects = 1;
-	else if (dwServerTime - dwOldTime_1 < 30)
-		nTotalEffects = 2;
-
-	for (int j = 0; j < nTotalEffects; ++j)
-	{
-		int nRand = rand() % 5;
-		float fRand = static_cast<float>(nRand);
-		auto pBill = new TMEffectBillBoard(0, 
-			1000u, 
-			fRand * 0.1f + 0.40f,
-			fRand * 0.1f + 0.40f,
-			fRand * 0.1f + 0.40f,
-			0.001f, 1, 80);
-
-		if (pBill)
+		switch (m_nLevel)
 		{
-			pBill->m_vecPosition = { fRand * 0.0099999998f + m_vecPosition.x, m_vecPosition.y - 0.69999999f + fRand * 0.0099999998f, fRand * 0.0099999998f + m_vecPosition.z };
-			pBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
-			pBill->m_bStickGround = 1;
+		case 2:
+			m_vecPosition.y = ((sinf(m_fProgress * D3DXToRadian(180)) * m_fLength) * 0.2f) + m_vecPosition.y;
+			break;
+		case 3:
+			m_fAngle = ((static_cast<float>(dwServerTime % 250)) * D3DXToRadian(180)) / 125.0f;
+			break;
+		case 6:
+			m_fAngle = ((static_cast<float>(dwServerTime % 250)) * D3DXToRadian(180)) / 85.0f;
 
-			if (m_nLevel)
+			m_vecPosition.x += sinf(m_fProgress * D3DXToRadian(180) * 16.0f);
+			m_vecPosition.z += sinf(m_fProgress * D3DXToRadian(180) * 16.0f);
+			break;
+		}
+
+		int nTotalEffects = 4; // v67
+		static unsigned int dwOldTime_1 = 0; // 2B42A04 kkkkkkkkkkkkkkkkkkkkk
+		if (dwServerTime - dwOldTime_1 < 20)
+			nTotalEffects = 1;
+		else if (dwServerTime - dwOldTime_1 < 30)
+			nTotalEffects = 2;
+
+		for (int j = 0; j < nTotalEffects; ++j)
+		{
+			int nRand = rand() % 5;
+			float fRand = static_cast<float>(nRand);
+			auto pBill = new TMEffectBillBoard(0,
+				1000u,
+				fRand * 0.1f + 0.40f,
+				fRand * 0.1f + 0.40f,
+				fRand * 0.1f + 0.40f,
+				0.001f, 1, 80);
+
+			if (pBill)
 			{
-				switch (m_nLevel)
+				pBill->m_vecPosition = { fRand * 0.0099999998f + m_vecPosition.x, m_vecPosition.y - 0.69999999f + fRand * 0.0099999998f, fRand * 0.0099999998f + m_vecPosition.z };
+				pBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+				pBill->m_bStickGround = 1;
+
+				if (m_nLevel)
 				{
-				case 1:
-					pBill->SetColor(0xFF3333FF);
-					break;
-				case 2:
-					pBill->SetColor(0xFFFFEE55);
-					break;
-				case 3:
-					pBill->SetColor(0xFF555555);
-					break;
-				case 4:
+					switch (m_nLevel)
+					{
+					case 1:
+						pBill->SetColor(0xFF3333FF);
+						break;
+					case 2:
+						pBill->SetColor(0xFFFFEE55);
+						break;
+					case 3:
+						pBill->SetColor(0xFF555555);
+						break;
+					case 4:
+						pBill->SetColor(0xFFFF7711);
+						break;
+					case 5:
+						pBill->SetColor(0xFF6677FF);
+						break;
+					}
+				}
+				else
 					pBill->SetColor(0xFFFF7711);
-					break;
-				case 5:
-					pBill->SetColor(0xFF6677FF);
-					break;
-				}
-			}
-			else
-				pBill->SetColor(0xFFFF7711);
 
-			g_pCurrentScene->m_pEffectContainer->AddChild(pBill);
+				g_pCurrentScene->m_pEffectContainer->AddChild(pBill);
 
-			if (j == 3 && m_nLevel == 2)
-			{
-				auto pChild = new TMEffectBillBoard(59, 800, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, 0.001f, 1, 80);
-				if (pChild)
+				if (j == 3 && m_nLevel == 2)
 				{
-					pChild->m_vecPosition = { m_vecPosition.x - 0.0099999998f, m_vecPosition.y - 0.69999999f, m_vecPosition.z - 0.0099999998f };
-					pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+					auto pChild = new TMEffectBillBoard(59, 800, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, 0.001f, 1, 80);
+					if (pChild)
+					{
+						pChild->m_vecPosition = { m_vecPosition.x - 0.0099999998f, m_vecPosition.y - 0.69999999f, m_vecPosition.z - 0.0099999998f };
+						pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
 
-					if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
-						pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+						if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+							pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
 
-					pChild->m_bStickGround = 1;
-					pChild->SetColor(0xFFFFFFFF);
+						pChild->m_bStickGround = 1;
+						pChild->SetColor(0xFFFFFFFF);
 
-					g_pCurrentScene->m_pEffectContainer->AddChild(pChild);
+						g_pCurrentScene->m_pEffectContainer->AddChild(pChild);
+					}
 				}
-			}
 
-			if (!m_nLevel || m_nLevel == 4)
-			{
-				auto pChild = new TMEffectBillBoard(59, 800, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, 0.001f, 1, 80);
-				if (pChild)
+				if (!m_nLevel || m_nLevel == 4)
 				{
-					pChild->m_vecPosition = { m_vecPosition.x - 0.0099999998f, m_vecPosition.y - 0.5f, m_vecPosition.z - 0.0099999998f };
-					pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
-
-					if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
-						pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
-
-					pChild->m_bStickGround = 1;
-
-					if (j == 3)
+					auto pChild = new TMEffectBillBoard(59, 800, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, fRand * 0.1f + 0.40f, 0.001f, 1, 80);
+					if (pChild)
 					{
-						pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_NONEBRIGHT;
-						pChild->SetColor(0xFFFFFF28);
-					}
-					else
-					{
-						pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
-						pChild->SetColor(0xFFFF7711);
-					}
+						pChild->m_vecPosition = { m_vecPosition.x - 0.0099999998f, m_vecPosition.y - 0.5f, m_vecPosition.z - 0.0099999998f };
+						pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
 
-					g_pCurrentScene->m_pEffectContainer->AddChild(pChild);
+						if (g_pDevice->m_bSavage == 1 || g_pDevice->m_bIntel == 1)
+							pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+						pChild->m_bStickGround = 1;
+
+						if (j == 3)
+						{
+							pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_NONEBRIGHT;
+							pChild->SetColor(0xFFFFFF28);
+						}
+						else
+						{
+							pChild->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+							pChild->SetColor(0xFFFF7711);
+						}
+
+						g_pCurrentScene->m_pEffectContainer->AddChild(pChild);
+					}
 				}
 			}
 		}
-	}
 
-	dwOldTime_1 = dwServerTime;
+		dwOldTime_1 = dwServerTime;
+	}
+	else
+		g_pObjectManager->DeleteObject(this);
+
 	return 1;
 }
