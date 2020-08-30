@@ -8356,6 +8356,132 @@ void TMHuman::FrameMoveEffect_AvatarTrans()
 
 void TMHuman::FrameMoveEffect_AvatarFoema()
 {
+    if (m_c8thSkill == 1)
+    {
+        auto pEffect = new TMEffectSkinMesh(m_nSkinMeshType, TMVector3{}, TMVector3{}, 0, 0);
+        if (pEffect != nullptr)
+        {
+            bool bExpand{ false };
+
+            if (m_nClass == 4 || m_nClass == 8)
+                bExpand = true;
+
+            memcpy(&pEffect->m_stLookInfo, &m_stLookInfo, sizeof(pEffect->m_stLookInfo));
+
+            ECHAR_MOTION eMotion{ ECHAR_MOTION::ECMOTION_LEVELUP };
+
+            pEffect->m_StartColor.r = 0.30000001f;
+            pEffect->m_StartColor.g = 0.30000001f;
+            pEffect->m_StartColor.b = 0.30000001f;
+            pEffect->InitObject(bExpand);
+            pEffect->m_nFade = 1;
+            pEffect->m_dwLifeTime = 1400;
+
+            float fHeight = m_fHeight;
+            if (m_cMount > 0 && m_pMount)
+                fHeight += 0.5f;
+
+            pEffect->InitPosition(m_vecPosition.x, fHeight, m_vecPosition.y);
+            pEffect->m_pSkinMesh->m_vScale.x = 2.0f;
+            pEffect->m_pSkinMesh->m_vScale.y = 2.0f;
+            pEffect->m_pSkinMesh->m_vScale.z = 2.0f;
+            pEffect->m_fAngle = m_fAngle;
+            pEffect->m_pSkinMesh->m_dwFPS = m_pSkinMesh->m_dwFPS;
+            pEffect->m_pSkinMesh->SetAnimation(g_MobAniTable[m_nSkinMeshType].dwAniTable[static_cast<int>(eMotion)]);
+            pEffect->m_fStartAngle = 1.0f;
+            pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+            
+            auto mpBill = new TMEffectBillBoard(0, 1300, 7.0f, 7.0f, 7.0f, 0.000099999997f, 1, 80);
+            if (mpBill != nullptr)
+            {
+                mpBill->m_vecStartPos = mpBill->m_vecPosition = TMVector3{ m_vecPosition.x, m_fHeight + 1.0f, m_vecPosition.y };
+                mpBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                mpBill->m_bStickGround = 1;
+                mpBill->m_nParticleType = 2;
+                mpBill->m_fParticleV = 0.050000001f;
+                mpBill->m_fParticleH = 0.050000001f;
+                mpBill->SetColor(0xFFFFFFFF);
+                g_pCurrentScene->m_pEffectContainer->AddChild(mpBill);
+            }
+        }
+    }
+    else if (m_c8thSkill == 2)
+    {
+        for (int i = 0; i < 3; ++i)
+        {
+            TMVector3 vecDest{ m_stEffectEvent.vecTo.x, m_stEffectEvent.vecTo.y + 2.5f, m_stEffectEvent.vecTo.z };
+
+            auto pEffect1 = new TMEffectBillBoard(33, 1000, ((float)i * 1.5f) + 2.0f, ((float)i * 1.5f) + 2.0f, ((float)i * 1.5f) + 2.0f, 0.0f, 9, 110);
+            
+            if (pEffect1 == nullptr)
+                break;
+
+            pEffect1->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pEffect1->m_nFade = 0;
+            pEffect1->m_vecPosition = vecDest;
+            pEffect1->m_vecPosition.y -= 0.5f;
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect1);
+            
+            auto pEffect2 = new TMEffectBillBoard(0, 1500, ((float)i * 1.0f) + 4.0f, ((float)i * 2.0f) + 4.0f,  ((float)i * 1.0f) + 4.0f, 0.000099999997f, 1, 80);
+            
+            if (pEffect2 == nullptr)
+                break;
+
+            pEffect2->m_vecStartPos = pEffect2->m_vecPosition = TMVector3(m_vecPosition.x, m_fHeight + 2.0f, m_vecPosition.y);
+            pEffect2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pEffect2->m_bStickGround = 1;
+            pEffect2->m_nParticleType = 1;
+            pEffect2->m_fParticleV = 0.079999998f;
+            pEffect2->m_fParticleH = 0.079999998f;
+            pEffect2->SetColor(0xFFFF5555);
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect2);
+            
+            auto pEffect3 = new TMEffectBillBoard2(8, 1500, 0.00050000002f, 0.00050000002f, 0.00050000002f, 0.0049999999f, 0);
+            
+            if (pEffect3 == nullptr)
+                break;
+
+            pEffect3->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pEffect3->m_vecPosition = vecDest;
+            pEffect3->m_vecPosition.y -= (2.0f - ((float)i * 0.1f));
+            pEffect3->SetColor(0xFFFF5555);
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect3);
+        }
+    }
+    else if (m_c8thSkill == 3)
+    {
+        for (int j = 0; j < 8; ++j)
+        {
+            auto pEffect1 = new TMEffectBillBoard(56, 100 * j + 1000, ((float)j * 0.5f) + 1.5f, ((float)j * 0.40000001f) + 1.5f, ((float)j * 0.5f) + 1.5f, 0.0f, 1,  80);
+            
+            if (pEffect1 == nullptr)
+                break;
+
+            pEffect1->m_vecStartPos = pEffect1->m_vecPosition = TMVector3{ m_vecPosition.x, (m_fHeight + 5.0f) - ((float)j * 0.89999998f), m_vecPosition.y };
+            pEffect1->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pEffect1->m_bStickGround = 1;
+            pEffect1->m_nParticleType = 9;
+            pEffect1->m_fParticleV = ((float)j * 2.0f) + 1.0f;
+            pEffect1->m_fParticleH = ((float)j * 2.0f) + 1.0f;
+            pEffect1->SetColor(0xFFFF3300);
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect1);
+            
+            auto pEffect2 = new TMEffectBillBoard(0, 1000, 5.0f, 5.0f, 5.0f, 0.000099999997f, 1, 80);
+            
+            if (pEffect2 == nullptr)
+                break;
+            
+            pEffect2->m_vecStartPos = pEffect2->m_vecPosition = TMVector3{ m_vecPosition.x, m_fHeight + 2.0f, m_vecPosition.y };
+            pEffect2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pEffect2->m_bStickGround = 0;
+            pEffect2->m_nParticleType = 1;
+            pEffect2->m_fParticleV = 5.0f;
+            pEffect2->m_fParticleH = 5.0f;
+            pEffect2->SetColor(0xFFFF0000);
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect2);
+        }
+    }
 }
 
 void TMHuman::FrameMoveEffect_AvatarBMaster()
