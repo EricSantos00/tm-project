@@ -550,7 +550,6 @@ int TMSkillMeteorStorm::FrameMove(unsigned int dwServerTime)
 	}
 
 	auto vecDPos = m_vecTargetPos - m_vecStartPos;
-	auto constexpr a = D3DXToRadian(90);
 	m_fAngle = atan2f(vecDPos.x, vecDPos.y) - D3DXToRadian(90);
 
 	if (m_nLevel == 1)
