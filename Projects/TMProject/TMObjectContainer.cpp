@@ -747,10 +747,12 @@ int TMObjectContainer::Load(const char* szFileName)
 		}
 		else if (dwObjType == 531)
 		{
+			pos += sz2;
 			m_pObjectList[m_nObjectIndex] = new TMDust(fScaleV, 0);
 		}
 		else if (dwObjType == 532)
 		{
+			pos += sz2;
 			TMEffectMesh* pChild = new TMEffectMesh(dwObjType, 0xAAAAAAAA, fAngle - 1.5707964f, 0);
 			if (pChild)
 			{
