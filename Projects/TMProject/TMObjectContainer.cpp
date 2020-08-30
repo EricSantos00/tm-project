@@ -642,7 +642,7 @@ int TMObjectContainer::Load(const char* szFileName)
 
 				pEffect2->m_vecPosition = TMVector3(m_fOffsetX + vecPosition.x, fHeight + 0.5f, m_fOffsetY + vecPosition.y);
 				pEffect2->m_nAnimationType = 1;
-				m_pGroundEffectContainer->AddChildWithKey(pEffect1, Key);
+				m_pGroundEffectContainer->AddChildWithKey(pEffect2, Key);
 			}
 
 			TMFieldScene* pScene = (TMFieldScene*)g_pCurrentScene;
@@ -783,6 +783,7 @@ int TMObjectContainer::Load(const char* szFileName)
 
 			if (pDrop)
 				m_pGroundEffectContainer->AddChildWithKey(pDrop, Key);
+			continue;
 		}
 		else if (dwObjType == 13)
 		{

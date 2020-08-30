@@ -6,7 +6,7 @@
 TMEffect::TMEffect() : TreeNode(0),
 	m_matEffect{},
 	m_vecPosition{}
-{
+{	
 	m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
 	m_bVisible = 1;
 	m_bShow = 1;
