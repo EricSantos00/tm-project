@@ -536,7 +536,7 @@ int TMSkillMeteorStorm::FrameMove(unsigned int dwServerTime)
 	if (!IsVisible())
 		return 0;
 
-	if (static_cast<float>(dwServerTime) - static_cast<float>(m_dwStartTime) < 0.0f)
+	if (static_cast<float>(static_cast<int>(dwServerTime - m_dwStartTime)) < 0.0f)
 		return 1;
 
 	if (m_nLevel == 9 || m_nLevel == 10)
