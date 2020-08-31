@@ -9516,7 +9516,7 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
         }
     }
 
-    if (m_cShield == 1 && dwServerTime - m_dwLastMagicShield > 0x3E8)
+    if (m_cShield == 1 && dwServerTime - m_dwLastMagicShield > 1000)
     {
         if (m_pMagicShield)
             m_pMagicShield->StartVisible(dwServerTime);

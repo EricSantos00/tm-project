@@ -105,34 +105,34 @@ int TMSkillMagicShield::Render()
 	}
 	else
 	{
-		auto v6 = g_pMeshManager->GetCommonMesh(704, 1, 180000u);
-		auto v5 = g_pMeshManager->GetCommonMesh(705, 1, 180000u);
+		auto pMesh1 = g_pMeshManager->GetCommonMesh(704, 1, 180000u);
+		auto pMesh2 = g_pMeshManager->GetCommonMesh(705, 1, 180000u);
 
-		if (!v5 || !v6)
+		if (!pMesh1 || !pMesh2)
 			return 0;
 
 		if (m_nType)
 		{
 			if (m_nType == 1)
 			{
-				v5->m_nTextureIndex[0] = 45;
-				v6->m_nTextureIndex[0] = 45;
+				pMesh2->m_nTextureIndex[0] = 45;
+				pMesh1->m_nTextureIndex[0] = 45;
 			}
 			else if (m_nType == 2)
 			{
-				v5->m_nTextureIndex[0] = 99;
-				v6->m_nTextureIndex[0] = 99;
+				pMesh2->m_nTextureIndex[0] = 99;
+				pMesh1->m_nTextureIndex[0] = 99;
 			}
 			else if (m_nType == 3)
 			{
-				v5->m_nTextureIndex[0] = 99;
-				v6->m_nTextureIndex[0] = 99;
+				pMesh2->m_nTextureIndex[0] = 99;
+				pMesh1->m_nTextureIndex[0] = 99;
 			}
 		}
 		else
 		{
-			v5->m_nTextureIndex[0] = 57;
-			v6->m_nTextureIndex[0] = 57;
+			pMesh2->m_nTextureIndex[0] = 57;
+			pMesh1->m_nTextureIndex[0] = 57;
 		}
 
 		g_pDevice->SetRenderState(D3DRS_FOGENABLE, 0);
@@ -151,19 +151,20 @@ int TMSkillMagicShield::Render()
 		if (m_pOwner && m_pOwner->m_dwObjType == 3 && pOwner->m_cMount == 1)
 			fScale = 1.5f;
 
-		v6->m_fScaleH = 1.0f * fScale;
-		v5->m_fScaleH = 1.0f * fScale;
+		pMesh1->m_fScaleH = 1.0f * fScale;
+		pMesh2->m_fScaleH = 1.0f * fScale;
 
-		v6->Render(
+		pMesh1->Render(
 			m_vecPosition.x,
-			m_fVectorH* fScale + m_vecPosition.y,
+			(float)(m_fVectorH * fScale) + m_vecPosition.y,
 			m_vecPosition.z,
 			-m_fAngle,
 			0,
 			D3DXToRadian(90),
 			0,
 			0);
-		v5->Render(
+
+		pMesh2->Render(
 			m_vecPosition.x,
 			m_fVectorH * fScale + m_vecPosition.y,
 			m_vecPosition.z,
@@ -173,12 +174,12 @@ int TMSkillMagicShield::Render()
 			0,
 			0);
 
-		v6->m_fScaleH = 1.5f * fScale;
-		v5->m_fScaleH = 1.5f * fScale;
+		pMesh1->m_fScaleH = 1.5f * fScale;
+		pMesh2->m_fScaleH = 1.5f * fScale;
 
-		v6->Render(
+		pMesh1->Render(
 			m_vecPosition.x,
-			(m_vecPosition.y - 0.1f) + m_fVectorH * fScale,
+			(m_vecPosition.y - 0.1f) + (m_fVectorH * fScale),
 			m_vecPosition.z,
 			-m_fAngle + D3DXToRadian(45),
 			0,
@@ -186,9 +187,9 @@ int TMSkillMagicShield::Render()
 			0,
 			0);
 
-		v5->Render(
+		pMesh2->Render(
 			m_vecPosition.x,
-			(m_vecPosition.y - 0.1f) + m_fVectorH * fScale,
+			(m_vecPosition.y - 0.1f) + (m_fVectorH * fScale),
 			m_vecPosition.z,
 			-m_fAngle + D3DXToRadian(45),
 			0,
@@ -196,21 +197,12 @@ int TMSkillMagicShield::Render()
 			0,
 			0);
 
-		v6->m_fScaleH = 2.0f * fScale;
-		v5->m_fScaleH = 2.0f* fScale;
+		pMesh1->m_fScaleH = 2.0f * fScale;
+		pMesh2->m_fScaleH = 2.0f* fScale;
 
-		v6->Render(
+		pMesh1->Render(
 			m_vecPosition.x,
-			(m_vecPosition.y - 0.2f) + m_fVectorH * fScale,
-			m_vecPosition.z,
-			-m_fAngle + D3DXToRadian(90),
-			0,
-			D3DXToRadian(90),
-			0,
-			0);
-		v5->Render(
-			m_vecPosition.x,
-			(m_vecPosition.y - 0.2f) + m_fVectorH * fScale,
+			(m_vecPosition.y - 0.2f) + (m_fVectorH * fScale),
 			m_vecPosition.z,
 			-m_fAngle + D3DXToRadian(90),
 			0,
@@ -218,21 +210,31 @@ int TMSkillMagicShield::Render()
 			0,
 			0);
 
-		v6->m_fScaleH = 2.0f * fScale;
-		v5->m_fScaleH = 2.0f * fScale;
-
-		v6->Render(
+		pMesh2->Render(
 			m_vecPosition.x,
-			(m_vecPosition.y - 0.1f) + m_fVectorH * fScale,
+			(m_vecPosition.y - 0.2f) + (m_fVectorH * fScale),
+			m_vecPosition.z,
+			-m_fAngle + D3DXToRadian(90),
+			0,
+			D3DXToRadian(90),
+			0,
+			0);
+
+		pMesh1->m_fScaleH = 2.0f * fScale;
+		pMesh2->m_fScaleH = 2.0f * fScale;
+
+		pMesh1->Render(
+			m_vecPosition.x,
+			(m_vecPosition.y - 0.1f) + (m_fVectorH * fScale),
 			m_vecPosition.z,
 			-m_fAngle - D3DXToRadian(45),
 			0,
 			D3DXToRadian(90),
 			0,
 			0);
-		v5->Render(
+		pMesh2->Render(
 			m_vecPosition.x,
-			(m_vecPosition.y - 0.1f) + m_fVectorH * fScale,
+			(m_vecPosition.y - 0.1f) + (m_fVectorH * fScale),
 			m_vecPosition.z,
 			-m_fAngle - D3DXToRadian(45),
 			0,
@@ -240,21 +242,21 @@ int TMSkillMagicShield::Render()
 			0,
 			0);
 
-		v6->m_fScaleH = 1.5f * fScale;
-		v5->m_fScaleH = 1.5f * fScale;
+		pMesh1->m_fScaleH = 1.5f * fScale;
+		pMesh2->m_fScaleH = 1.5f * fScale;
 
-		v6->Render(
+		pMesh1->Render(
 			m_vecPosition.x,
-			(m_vecPosition.y - 0.2f) + m_fVectorH * fScale,
+			(m_vecPosition.y - 0.2f) + (m_fVectorH * fScale),
 			m_vecPosition.z,
 			-m_fAngle - D3DXToRadian(90),
 			0,
 			D3DXToRadian(90),
 			0,
 			0);
-		v5->Render(
+		pMesh2->Render(
 			m_vecPosition.x,
-			(m_vecPosition.y - 0.2f) + m_fVectorH * fScale,
+			(m_vecPosition.y - 0.2f) + (m_fVectorH * fScale),
 			m_vecPosition.z,
 			-m_fAngle - D3DXToRadian(90),
 			0,
@@ -303,7 +305,7 @@ int TMSkillMagicShield::FrameMove(unsigned int dwServerTime)
 	if (!IsVisible())
 		return 0;
 
-	m_fProgress = static_cast<float>(g_pTimerManager->GetServerTime() - m_dwStartTime) / static_cast<float>(m_dwVisibleTime);
+	m_fProgress = static_cast<float>(static_cast<int>(g_pTimerManager->GetServerTime() - m_dwStartTime)) / static_cast<float>(m_dwVisibleTime);
 
 	if (m_fProgress > 1.0f)
 	{
@@ -331,11 +333,7 @@ int TMSkillMagicShield::FrameMove(unsigned int dwServerTime)
 
 	if (m_fProgress <= 1.0f)
 	{
-		auto fSinDiff = sinf(m_fProgress * D3DXToRadian(180)); // v45 v79
-		if (fSinDiff <= 0.0f)
-			fSinDiff = -fSinDiff;
-
-		float fDif = fSinDiff;
+		float fDif = fabsf(sinf(m_fProgress * D3DXToRadian(180)));
 
 		if (m_nType == 2)
 			m_vecPosition.y = m_vecPosition.y - 0.30000001f;
@@ -364,7 +362,7 @@ int TMSkillMagicShield::FrameMove(unsigned int dwServerTime)
 			if (!pMesh || !pMesh->m_pVB)
 				return 0;
 
-			_D3DVERTEXBUFFER_DESC vDesc;
+			D3DVERTEXBUFFER_DESC vDesc;
 			RDLVERTEX* pVertex;
 
 			pMesh->m_pVB->GetDesc(&vDesc);
@@ -392,7 +390,11 @@ int TMSkillMagicShield::FrameMove(unsigned int dwServerTime)
 					pVertex[i].diffuse = dwB | dwG | dwR;
 				}
 			}
+
+			pMesh->m_pVB->Unlock();
 		}
+
+		m_fAngle = (float)(m_fProgress * D3DXToRadian(180)) * 2.0f;
 	}
 
 	return 1;
