@@ -86,7 +86,7 @@ int TMSkillTownPortal::FrameMove(unsigned int dwServerTime)
     if (!IsVisible())
         return 0;
 
-    m_fProgress = (float)(dwServerTime - m_dwStartTime) / (float)m_dwLifeTime;
+    m_fProgress = (float)((int)(dwServerTime - m_dwStartTime)) / (float)m_dwLifeTime;
     if (m_fProgress > 1.0f)
     {
         g_pObjectManager->DeleteObject(this);
