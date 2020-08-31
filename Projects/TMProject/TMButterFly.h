@@ -13,7 +13,7 @@ public:
 	void RestoreDeviceObjects() override;
 	void InvalidateDeviceObjects() override;
 	void InitPosition(float fX, float fY, float fZ) override;
-	static void SetAnimation(int nAniIndex);
+	virtual void SetAnimation(int nAniIndex);
 
 public:
 	LOOK_INFO m_stLookInfo;

@@ -3,6 +3,7 @@
 #include "TMEffectBillBoard.h"
 
 TMFlail::TMFlail()
+	: TMObject()
 {
 }
 
@@ -12,10 +13,10 @@ TMFlail::~TMFlail()
 
 int TMFlail::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	return 1;
 }
 
 int TMFlail::Render()
 {
-	return 0;
+	return 1;
 }

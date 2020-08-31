@@ -3,6 +3,7 @@
 #include "TMFloat.h"
 
 TMFloat::TMFloat(int nType)
+	: TMObject()
 {
 }
 
@@ -12,17 +13,17 @@ TMFloat::~TMFloat()
 
 int TMFloat::InitObject()
 {
-	return 0;
+	return 1;
 }
 
 int TMFloat::Render()
 {
-	return 0;
+	return 1;
 }
 
 int TMFloat::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	return 1;
 }
 
 void TMFloat::RestoreDeviceObjects()

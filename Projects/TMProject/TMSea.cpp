@@ -6,6 +6,7 @@
 #include "TMLog.h"
 
 TMSea::TMSea()
+    : TMObject()
 {
 	m_dwObjType = 2;
 	m_nPickX = -1;

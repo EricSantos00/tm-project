@@ -4,7 +4,8 @@
 #include "SControl.h"
 #include "TMItem.h"
 
-TMItem::TMItem()
+TMItem::TMItem() 
+	: TMObject()
 {
 }
 
@@ -18,7 +19,7 @@ void TMItem::InitItem(STRUCT_ITEM stItem)
 
 int TMItem::InitObject()
 {
-	return 0;
+	return 1;
 }
 
 void TMItem::InitPosition(float fX, float fY, float fZ)
@@ -27,17 +28,17 @@ void TMItem::InitPosition(float fX, float fY, float fZ)
 
 int TMItem::Render()
 {
-	return 0;
+	return 1;
 }
 
 int TMItem::IsMouseOver()
 {
-	return 0;
+	return 1;
 }
 
 int TMItem::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	return 1;
 }
 
 void TMItem::LabelPosition()

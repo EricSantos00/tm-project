@@ -84,7 +84,7 @@ int TMObjectContainer::Load(const char* szFileName)
 	int sz1 = 28;
 	int sz2 = 8;
 
-	for (int m_nObjectIndex = 0; m_nObjectIndex < MAX_OBJECT_LIST && pos < sz; ++m_nObjectIndex)
+	for (m_nObjectIndex = 0; m_nObjectIndex < MAX_OBJECT_LIST && pos < sz; ++m_nObjectIndex)
 	{
 		ObjectFileItem* item = (ObjectFileItem*)&buff[pos];
 		unsigned int dwObjType = item->dwObjType;
@@ -99,7 +99,7 @@ int TMObjectContainer::Load(const char* szFileName)
 		pos += sz1;
 		int intx = (int)(vecPosition.x + m_fOffsetX);
 		int inty = (int)(vecPosition.y + m_fOffsetY);
-		int Key = (inty >> 5 << 16) + (intx >> 5);
+		unsigned int Key = (intx >> 5) + ((inty >> 5) << 16);
 
 		nCheckSum += dwObjType;
 		nCheckSum += (int)vecPosition.x;
@@ -642,7 +642,7 @@ int TMObjectContainer::Load(const char* szFileName)
 
 				pEffect2->m_vecPosition = TMVector3(m_fOffsetX + vecPosition.x, fHeight + 0.5f, m_fOffsetY + vecPosition.y);
 				pEffect2->m_nAnimationType = 1;
-				m_pGroundEffectContainer->AddChildWithKey(pEffect1, Key);
+				m_pGroundEffectContainer->AddChildWithKey(pEffect2, Key);
 			}
 
 			TMFieldScene* pScene = (TMFieldScene*)g_pCurrentScene;
@@ -694,6 +694,7 @@ int TMObjectContainer::Load(const char* szFileName)
 		}
 		else if (dwObjType >= 520 && dwObjType <= 530)
 		{
+			pos += sz2;
 			TMEffectMesh* pChild = new TMEffectMesh(dwObjType, 0x223333u, fAngle - 1.5707964f, 0);
 			if (pChild)
 			{
@@ -747,10 +748,12 @@ int TMObjectContainer::Load(const char* szFileName)
 		}
 		else if (dwObjType == 531)
 		{
+			pos += sz2;
 			m_pObjectList[m_nObjectIndex] = new TMDust(fScaleV, 0);
 		}
 		else if (dwObjType == 532)
 		{
+			pos += sz2;
 			TMEffectMesh* pChild = new TMEffectMesh(dwObjType, 0xAAAAAAAA, fAngle - 1.5707964f, 0);
 			if (pChild)
 			{
@@ -764,6 +767,8 @@ int TMObjectContainer::Load(const char* szFileName)
 				pChild->m_vecPosition = TMVector3(m_fOffsetX + vecPosition.x, fHeight, m_fOffsetY + vecPosition.y);
 				m_pGroundEffectContainer->AddChildWithKey(pChild, Key);
 			}
+
+			continue;
 		}
 		else if (dwObjType == 8)
 		{
@@ -779,6 +784,7 @@ int TMObjectContainer::Load(const char* szFileName)
 
 			if (pDrop)
 				m_pGroundEffectContainer->AddChildWithKey(pDrop, Key);
+			continue;
 		}
 		else if (dwObjType == 13)
 		{

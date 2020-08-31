@@ -6,6 +6,7 @@
 #include "TMGlobal.h"
 
 TMLeaf::TMLeaf(int nType) :
+    TMObject(),
 	m_stLookInfo{},
 	m_stSancInfo{}
 {

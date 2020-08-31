@@ -89,11 +89,11 @@ public:
     void SaveHeightMap(char* szFileName);
     void CameraAction();
     void ReadCameraPos(const char* szFileName);
-    int LoadMsgText(SListBox* pListBox, char* szFileName);
-    int LoadMsgText2(SListBox* pListBox, char* szFileName, int nStartLine, int nEndLine);
-    int LoadMsgText3(SListBox* pListBox, char* szFileName, int nLv, int ntrans);
-    unsigned int LoadMsgText4(char* pStr, char* szFileName, int nLv, int ntrans);
-    int LoadMsgLevel(char* LevelQuest, char* szFileName, char cType);
+    int LoadMsgText(SListBox* pListBox, const char* szFileName);
+    int LoadMsgText2(SListBox* pListBox, const char* szFileName, int nStartLine, int nEndLine);
+    int LoadMsgText3(SListBox* pListBox, const char* szFileName, int nLv, int ntrans);
+    unsigned int LoadMsgText4(char* pStr, int dwStrSize, const char* szFileName, int nLv, int ntrans);
+    int LoadMsgLevel(char* LevelQuest, const char* szFileName, char cType);
     void CheckPKNonePK(int nServerIndex);
     void LogMsgCriticalError(int Type, int ID, int nMesh, int X, int Y);
     void DeleteOwnerAllContainer();

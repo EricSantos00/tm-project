@@ -9480,7 +9480,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 				|| (int)pNode->m_vecPosition.x != TX
 				|| (int)pNode->m_vecPosition.y != TY)
 			{
-				pNode = (TMHuman*)pNode->m_pDown;
+				pNode = (TMHuman*)pNode->m_pNextLink;
 				continue;
 			}
 
@@ -9488,12 +9488,12 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 			{
 				if (!pNode->IsInPKZone() || !TMFieldScene::m_bPK || pNode->m_bParty == 1)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK && g_pObjectManager->m_usWarGuild != pNode->m_usGuild && !g_bCastleWar)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK
@@ -9501,7 +9501,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 					&& m_pMyHuman->m_cMantua == pNode->m_cMantua
 					&& g_bCastleWar > 0)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK
@@ -9509,12 +9509,12 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 					&& m_pMyHuman->m_cMantua == 3
 					&& (pNode->m_dwID > 0 && pNode->m_dwID < 1000 || (pNode->m_cMantua > 0 && pNode->m_cMantua != 4)))
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK && g_bCastleWar > 0 && !pNode->IsInCastleZone())
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 			}
@@ -9532,7 +9532,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 			{
 				if (!pNode->IsInCastleZone() && g_bCastleWar > 0 || !g_bCastleWar)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 			}
@@ -10579,7 +10579,7 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 				|| (int)pNode->m_vecPosition.x != TX
 				|| (int)pNode->m_vecPosition.y != TY)
 			{
-				pNode = (TMHuman*)pNode->m_pDown;
+				pNode = (TMHuman*)pNode->m_pNextLink;
 				continue;
 			}
 
@@ -10587,12 +10587,12 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 			{
 				if (!pNode->IsInPKZone() || !TMFieldScene::m_bPK || pNode->m_bParty == 1)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK && g_pObjectManager->m_usWarGuild != pNode->m_usGuild && !g_bCastleWar)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK
@@ -10600,7 +10600,7 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 					&& m_pMyHuman->m_cMantua == pNode->m_cMantua
 					&& g_bCastleWar > 0)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK
@@ -10608,12 +10608,12 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 					&& m_pMyHuman->m_cMantua == 3
 					&& (pNode->m_dwID > 0 && pNode->m_dwID < 1000 || (pNode->m_cMantua > 0 && pNode->m_cMantua != 4)))
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 				if (!TMFieldScene::m_bPK && g_bCastleWar > 0 && !pNode->IsInCastleZone())
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 			}
@@ -10631,7 +10631,7 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 			{
 				if (!pNode->IsInCastleZone() && g_bCastleWar > 0 || !g_bCastleWar)
 				{
-					pNode = (TMHuman*)pNode->m_pDown;
+					pNode = (TMHuman*)pNode->m_pNextLink;
 					continue;
 				}
 			}
@@ -15130,11 +15130,11 @@ void TMFieldScene::InitBoard()
 
 		memset(m_pLevelQuest, 0, sizeof(m_pLevelQuest));
 
-		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects.txt", 97);
-		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects2.txt", 98);
-		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects3.txt", 99);
-		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestSubjects4.txt", 101);
-		LoadMsgLevel(m_pLevelQuest, (char*)"UI\\QuestMessage.txt", 100);
+		LoadMsgLevel(m_pLevelQuest, "UI\\QuestSubjects.txt", 97);
+		LoadMsgLevel(m_pLevelQuest, "UI\\QuestSubjects2.txt", 98);
+		LoadMsgLevel(m_pLevelQuest, "UI\\QuestSubjects3.txt", 99);
+		LoadMsgLevel(m_pLevelQuest, "UI\\QuestSubjects4.txt", 101);
+		LoadMsgLevel(m_pLevelQuest, "UI\\QuestMessage.txt", 100);
 
 		m_pQuestMemo = (SButton*)m_pControlContainer->FindControl(1054273);
 		m_pQuestMemo->m_cAlwaysAlt = 1;
@@ -15149,7 +15149,7 @@ void TMFieldScene::InitBoard()
 
 		if (!g_pObjectManager->m_stMobData.CurrentScore.Level)
 		{
-			STRUCT_MOB* pMobData = &g_pObjectManager->m_stMobData;
+			const STRUCT_MOB* pMobData = &g_pObjectManager->m_stMobData;
 			LoadMsgText3(m_pQuestList[0], 
 				(char*)"UI\\QuestSubjects.txt",	
 				g_pObjectManager->m_stMobData.CurrentScore.Level + 1, 
@@ -15174,6 +15174,7 @@ void TMFieldScene::InitBoard()
 			if (m_pLevelQuest[pMobData->CurrentScore.Level] == 100)
 				dwCol = LoadMsgText4(					
 					szStr,
+					sizeof szStr,
 					(char*)"UI\\QuestMessage.txt",
 					pMobData->CurrentScore.Level + 1,
 					pMobData->Equip[0].sIndex % 10);
@@ -23656,7 +23657,7 @@ void TMFieldScene::GameAuto()
 
 	for (int i = 10 * m_bSkillBeltSwitch; i < 10 * m_bSkillBeltSwitch + 10; ++i)
 	{
-		int idxSkill = (unsigned char)g_pObjectManager->m_cShortSkill[i];
+		int idxSkill = (char)g_pObjectManager->m_cShortSkill[i];
 		if (idxSkill == -1)
 			continue;
 
@@ -23666,27 +23667,45 @@ void TMFieldScene::GameAuto()
 			idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 87 || idxSkill == 75 || idxSkill == 76 || idxSkill == 77 ||
 			idxSkill == 81 || idxSkill == 85 || idxSkill == 89 || idxSkill == 92)
 		{
-			useSkill = 0;
-		}
-
-		for (int j = 0; j < 32; ++j)
-		{
-			if ((unsigned char)m_pMyHuman->m_stAffect[j].Type <= 0)
-				continue;
-
-			if (idxSkill == 64 || idxSkill == 66 || idxSkill == 68 || idxSkill == 70 || idxSkill == 71)
+			for (int j = 0; j < 32; ++j)
 			{
-				if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == 71 && m_pMyHuman->m_stAffect[j].Time > 3)
+				if ((unsigned char)m_pMyHuman->m_stAffect[j].Type <= 0)
+					continue;
+
+				if (idxSkill == 64 || idxSkill == 66 || idxSkill == 68 || idxSkill == 70 || idxSkill == 71)
+				{
+					if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == 71 && m_pMyHuman->m_stAffect[j].Time > 3)
+					{
+						useSkill = 0;
+						break;
+					}
+				}
+				else if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == idxSkill && m_pMyHuman->m_stAffect[j].Time > 3)
 				{
 					useSkill = 0;
 					break;
 				}
-			}
-			else if (g_AffectSkillType[(unsigned char)m_pMyHuman->m_stAffect[j].Type] == idxSkill && m_pMyHuman->m_stAffect[j].Time > 3)
+			}	
+
+			int DelayTime = 0;
+			if (idxSkill == 3 || idxSkill == 5 || idxSkill == 53 || idxSkill == 54 || idxSkill == 74 || idxSkill == 76 || idxSkill == 77)
+				DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[1];
+			else if (idxSkill == 9 || idxSkill == 11 || idxSkill == 13 || idxSkill == 15 || idxSkill == 37 || idxSkill == 86 || idxSkill == 87)
+				DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[2];
+			else if (idxSkill == 41 || idxSkill == 43 || idxSkill == 44 || idxSkill == 45 || idxSkill == 46 || idxSkill == 64 || idxSkill == 66 ||
+				idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 89 || idxSkill == 90)
 			{
-				useSkill = 0;
-				break;
+				DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[3];
 			}
+
+			if (DelayTime + m_dwSkillLastTime[idxSkill] <= dwServerTime)
+			{
+				g_pObjectManager->m_cSelectShortSkill = i;
+				if (SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0) == 1)
+					return;
+			}
+
+			continue;
 		}
 
 		if (!useSkill)
@@ -23699,24 +23718,6 @@ void TMFieldScene::GameAuto()
 				return;
 			}
 			continue;
-		}
-
-		int DelayTime = 0;
-		if (idxSkill == 3 || idxSkill == 5 || idxSkill == 53 || idxSkill == 54 || idxSkill == 74 || idxSkill == 76 || idxSkill == 77)
-			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[1];
-		else if (idxSkill == 9 || idxSkill == 11 || idxSkill == 13 || idxSkill == 15 || idxSkill == 37 || idxSkill == 86 || idxSkill == 87)
-			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[2];
-		else if (idxSkill == 41 || idxSkill == 43 || idxSkill == 44 || idxSkill == 45 || idxSkill == 46 || idxSkill == 64 || idxSkill == 66 ||
-			idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 89 || idxSkill == 90)
-		{
-			DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[3];
-		}
-
-		if (DelayTime + m_dwSkillLastTime[idxSkill] <= dwServerTime)
-		{
-			g_pObjectManager->m_cSelectShortSkill = i;
-			if (SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0) == 1)
-				return;
 		}
 	}
 

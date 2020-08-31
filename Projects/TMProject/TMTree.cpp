@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "TMTree.h"
 
-TMTree::TMTree(int nType)
+TMTree::TMTree(int nType) 
+	: TMObject()
 {
 }
 
@@ -11,17 +12,17 @@ TMTree::~TMTree()
 
 int TMTree::InitObject()
 {
-	return 0;
+	return 1;
 }
 
 int TMTree::Render()
 {
-	return 0;
+	return 1;
 }
 
 int TMTree::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	return 1;
 }
 
 void TMTree::RestoreDeviceObjects()

@@ -1494,6 +1494,7 @@ void TMScene::Cleanup()
 char heightMapData[128][128]{};
 int TMScene::GroundNewAttach(EDirection eDir)
 {
+	memset(heightMapData, 0, sizeof(heightMapData));
 	if (!m_pGround)
 		return 0;
 
@@ -1723,7 +1724,7 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0f && (vFocusePos.y - vPickPos.y) < 2.0f)
+			if (vPickTempPos.y > -5000.0f && fabsf(vFocusePos.y - vPickPos.y) < 2.0f)
 				return vPickPos;
 		}
 	}
@@ -1758,12 +1759,13 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 	{
 		vPickTempPos = m_pGround->m_pDownGround->GetPickPos();
 
-		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y) || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y))
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0 && fabsf(vFocusePos.y - vPickPos.y) < 2.0f)
+			if (vPickTempPos.y > -5000.0 && fabsf(vFocusePos.y - vPickPos.y) < 2.0f || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 				return vPickPos;
+
 		}
 	}
 
@@ -2385,7 +2387,7 @@ void TMScene::ReadCameraPos(const char* szFileName)
 	fclose(fpBin);
 }
 
-int TMScene::LoadMsgText(SListBox* pListBox, char* szFileName)
+int TMScene::LoadMsgText(SListBox* pListBox, const char* szFileName)
 {
 	FILE* fp{};
 
@@ -2440,7 +2442,7 @@ int TMScene::LoadMsgText(SListBox* pListBox, char* szFileName)
 	return 1;
 }
 
-int TMScene::LoadMsgText2(SListBox* pListBox, char* szFileName, int nStartLine, int nEndLine)
+int TMScene::LoadMsgText2(SListBox* pListBox, const char* szFileName, int nStartLine, int nEndLine)
 {
 	FILE* fp{};
 
@@ -2502,7 +2504,7 @@ int TMScene::LoadMsgText2(SListBox* pListBox, char* szFileName, int nStartLine, 
 	return 1;
 }
 
-int TMScene::LoadMsgText3(SListBox* pListBox, char* szFileName, int nLv, int ntrans)
+int TMScene::LoadMsgText3(SListBox* pListBox, const char* szFileName, int nLv, int ntrans)
 {
 	FILE* fp{};
 
@@ -2576,7 +2578,7 @@ int TMScene::LoadMsgText3(SListBox* pListBox, char* szFileName, int nLv, int ntr
 	return 1;
 }
 
-unsigned int TMScene::LoadMsgText4(char* pStr, char* szFileName, int nLv, int ntrans)
+unsigned int TMScene::LoadMsgText4(char* pStr, int dwStrSize, const char* szFileName, int nLv, int ntrans)
 {
 	FILE* fp{};
 
@@ -2612,7 +2614,7 @@ unsigned int TMScene::LoadMsgText4(char* pStr, char* szFileName, int nLv, int nt
 					*szRet = 0;
 
 				if (szTemp[10] == 32)
-					sprintf_s(pStr, sizeof(szTemp), "%s", &szTemp[10]);
+					sprintf_s(pStr, dwStrSize, "%s", &szTemp[10]);
 			}
 			else
 			{
@@ -2628,7 +2630,7 @@ unsigned int TMScene::LoadMsgText4(char* pStr, char* szFileName, int nLv, int nt
 	return dwCol | 0xFF000000;
 }
 
-int TMScene::LoadMsgLevel(char* LevelQuest, char* szFileName, char cType)
+int TMScene::LoadMsgLevel(char* LevelQuest, const char* szFileName, char cType)
 {
 	FILE* fp{};
 
