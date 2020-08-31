@@ -2,6 +2,7 @@
 #include "TMFish.h"
 
 TMFish::TMFish(unsigned int dwObjType, int nType)
+	: TMObject()
 {
 }
 
@@ -11,17 +12,17 @@ TMFish::~TMFish()
 
 int TMFish::InitObject()
 {
-	return 0;
+	return 1;
 }
 
 int TMFish::Render()
 {
-	return 0;
+	return 1;
 }
 
 int TMFish::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	return 1;
 }
 
 void TMFish::RestoreDeviceObjects()

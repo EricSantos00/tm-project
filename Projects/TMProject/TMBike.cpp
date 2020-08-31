@@ -2,6 +2,7 @@
 #include "TMBike.h"
 
 TMBike::TMBike()
+	: TMObject()
 {
 }
 
@@ -15,5 +16,5 @@ void TMBike::InitPosition(float fX, float fY, float fZ)
 
 int TMBike::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	return 1;
 }

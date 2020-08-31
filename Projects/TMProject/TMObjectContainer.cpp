@@ -84,7 +84,7 @@ int TMObjectContainer::Load(const char* szFileName)
 	int sz1 = 28;
 	int sz2 = 8;
 
-	for (int m_nObjectIndex = 0; m_nObjectIndex < MAX_OBJECT_LIST && pos < sz; ++m_nObjectIndex)
+	for (m_nObjectIndex = 0; m_nObjectIndex < MAX_OBJECT_LIST && pos < sz; ++m_nObjectIndex)
 	{
 		ObjectFileItem* item = (ObjectFileItem*)&buff[pos];
 		unsigned int dwObjType = item->dwObjType;
@@ -99,7 +99,7 @@ int TMObjectContainer::Load(const char* szFileName)
 		pos += sz1;
 		int intx = (int)(vecPosition.x + m_fOffsetX);
 		int inty = (int)(vecPosition.y + m_fOffsetY);
-		int Key = (inty >> 5 << 16) + (intx >> 5);
+		unsigned int Key = (intx >> 5) + ((inty >> 5) << 16);
 
 		nCheckSum += dwObjType;
 		nCheckSum += (int)vecPosition.x;
