@@ -694,6 +694,7 @@ int TMObjectContainer::Load(const char* szFileName)
 		}
 		else if (dwObjType >= 520 && dwObjType <= 530)
 		{
+			pos += sz2;
 			TMEffectMesh* pChild = new TMEffectMesh(dwObjType, 0x223333u, fAngle - 1.5707964f, 0);
 			if (pChild)
 			{
