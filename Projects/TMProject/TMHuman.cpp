@@ -50,6 +50,8 @@
 #include "TMSkillFire.h"
 #include "TMSkillIceSpear.h"
 #include "TMSkillPoison.h"
+#include "TMSkillSpChange.h"
+#include "TMArrow.h"
 
 TMVector2 TMHuman::m_vecPickSize[100] = {
   { 0.40000001f, 2.0f },
@@ -9087,14 +9089,1157 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
                     g_pCurrentScene->m_pEffectContainer->AddChild(mpBill);
                 }
             }
-            else if (m_stEffectEvent.sEffectIndex == 72
-                || m_stEffectEvent.sEffectIndex == 80)
+            else if (m_stEffectEvent.sEffectIndex == 72 || m_stEffectEvent.sEffectIndex == 80)
             {
                 if (m_stEffectEvent.pTarget)
                 {
+                    int nType = 0;
+                    if (m_stEffectEvent.sEffectIndex == 80)
+                        nType = 1;
+
+                    const static unsigned int dwCol[2][2]{ 0xFFFFFFFF, 0xFFFFAA55, 0xFFFFFFFF, 0xFFFF0000 };
+                    auto pCamera = g_pObjectManager->GetCamera();
+                    if (pCamera->m_pFocusedObject == this)
+                        pCamera->EarthQuake(1);
+
+                    auto pLightMap = new TMShade(nType + 2, 7, 1.0f);
+                    pLightMap->SetColor(dwCol[nType][1]);
+                    pLightMap->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                    pLightMap->SetPosition({ m_stEffectEvent.pTarget->m_vecPosition.x, m_stEffectEvent.pTarget->m_vecPosition.y });
+                    pLightMap->m_dwLifeTime = 800;
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pLightMap);
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        auto pBill = new TMEffectBillBoard(4 * nType + 56,
+                            700,
+                            ((float)i * 0.2f) + 1.0f,
+                            ((float)i * 0.2f) + 1.0f,
+                            ((float)i * 0.2f) + 1.0f,
+                            ((float)nType * 0.0049999999f) + 0.001f,
+                            1,
+                            80);
+
+                        pBill->SetColor(dwCol[nType][i]);
+                        pBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                        pBill->m_nFade = 1;
+                        pBill->m_vecPosition = { m_stEffectEvent.pTarget->m_vecPosition.x, m_stEffectEvent.pTarget->m_fHeight + 1.0f,
+                                                    m_stEffectEvent.pTarget->m_vecPosition.y };
+                        g_pCurrentScene->m_pEffectContainer->AddChild(pBill);
+                    }
+                    GetSoundAndPlay(11 * nType + 160, 0, 0);
+                }
+            }
+            else if (m_stEffectEvent.sEffectIndex == 75)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    auto pEnchant = new TMEffectBillBoard(56,
+                        200 * i + 500,
+                        ((float)i * 0.69999999f) + 1.0f,
+                        ((float)i * 0.5f) + 1.0f,
+                        ((float)i * 0.69999999f) + 1.0f,
+                        0.0,
+                        1,
+                        80);
+
+                    pEnchant->SetColor(0xFF55AAFF);
+                    pEnchant->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                    pEnchant->m_nFade = 1;
+                    pEnchant->m_vecPosition = { vecStart.x, (((float)i * 0.30000001f) + vecStart.y) - 0.5f, vecStart.z };
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pEnchant);
+                }
+                GetSoundAndPlay(174, 0, 0);
+            }
+            else if (m_stEffectEvent.sEffectIndex == 76)
+            {
+                const static unsigned int dwColor[5]{ 0xFF99BBFF, 0xFF00FFAA, 0xFFFFAA00, 0xFF880088, 0xFFCC8888 };
+
+                for (int i = 0; i < 5; i++)
+                {
+                    TMEffectMesh* pImmunity = new TMEffectMesh(12, dwColor[i], 0.0f, 1);
+                    pImmunity->m_nTextureIndex = 0;
+                    pImmunity->m_vecPosition = m_vecSkinPos;
+                    pImmunity->m_vecPosition.y += 1.1f;
+                    pImmunity->m_dwLifeTime = 50 * i + 1300;
+                    pImmunity->m_fScaleH = 1.0f;
+                    pImmunity->m_fScaleV = 1.0f;
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pImmunity);
+                }
+            }
+            else if (m_stEffectEvent.sEffectIndex == 77)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    auto pBill = new TMEffectBillBoard(101,
+                        100 * i + 500,
+                        0.12f - ((float)i * 0.0099999998f),
+                        0.2f - ((float)i * 0.0099999998f),
+                        0.2f - ((float)i * 0.0099999998f),
+                        0.0020000001f,
+                        8,
+                        80);
+
+                    pBill->SetColor(0xFF5500FF);
+                    pBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                    pBill->m_nFade = 1;
+                    pBill->m_vecPosition = { m_vecPosition.x, (float)(m_fHeight + 0.2f) + ((float)i * 0.2f), m_vecPosition.y };
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pBill);
+
+                    int fRand = (float)(rand() % 5);
+                    auto pBill2 = new TMEffectBillBoard(101,
+                        100 * i + 500,
+                        (fRand * 0.0099999998f) + 0.1f,
+                        (fRand * 0.0099999998f) + 0.1f,
+                        (fRand * 0.0099999998f) + 0.1f,
+                        0.00050000002f,
+                        8,
+                        80);
+
+                    pBill2->SetColor(0xFFFFFFFF);
+                    pBill2->m_fAxisAngle = (D3DXToRadian(180) * fRand) / 3.0f;
+                    pBill2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                    pBill2->m_nFade = 1;
+                    pBill2->m_vecPosition = { m_vecPosition.x, (float)(m_fHeight + 0.2f) + ((float)i * 0.2f), m_vecPosition.y };
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pBill2);
+                }
+            }
+            else if (m_stEffectEvent.sEffectIndex == 81)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    auto pSoul = new TMEffectBillBoard(56,
+                        50 * i + 800,
+                        2.0,
+                        ((float)i * 0.2f) + 1.0f,
+                        2.0f,
+                        0.0f,
+                        1,
+                        80);
+
+                    pSoul->SetColor(0xFFFFFFFF);
+                    pSoul->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                    pSoul->m_nFade = 1;
+                    pSoul->m_vecPosition = { vecStart.x, vecStart.y + 0.2f, vecStart.z };
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pSoul);
+                }
+            }
+            else if (m_stEffectEvent.sEffectIndex == 85)
+            {
+                auto pLevelUp = new TMEffectLevelUp({ m_vecPosition.x, m_fHeight, m_vecPosition.y }, 1);
+                g_pCurrentScene->m_pEffectContainer->AddChild(pLevelUp);
+
+                GetSoundAndPlay(37, 0, 0);
+            }
+            else if (m_stEffectEvent.sEffectIndex == 87)
+            {
+                auto pSpChange = new TMSkillSpChange({ m_vecPosition.x, m_fHeight, m_vecPosition.y }, 0, this);
+                g_pCurrentScene->m_pEffectContainer->AddChild(pSpChange);
+            }
+            else if (m_stEffectEvent.sEffectIndex == 88 && m_pSkinMesh)
+            {
+                if (m_stEffectEvent.pTarget)
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        bool bExpand = false;
+                        if (m_nClass == 4 || m_nClass == 8)
+                            bExpand = true;
+
+                        auto pEffect = new TMEffectSkinMesh(m_nSkinMeshType, { m_vecPosition.x, m_fHeight, m_vecPosition.y }, 
+                            { m_stEffectEvent.pTarget->m_vecPosition.x, m_stEffectEvent.pTarget->m_fHeight,m_stEffectEvent.pTarget->m_vecPosition.y },
+                            0, nullptr);
+
+                        pEffect->m_fScale = m_fScale;
+                        if (m_cMount > 0 && m_pMount)
+                        {
+                            bExpand = false;
+                            memcpy(&pEffect->m_stLookInfo, &m_stMountLook, sizeof(pEffect->m_stLookInfo));
+                            pEffect->m_nSkinMeshType = m_nMountSkinMeshType;
+                        }
+                        else
+                        {
+                            memcpy(
+                                &pEffect->m_stLookInfo,
+                                &m_stLookInfo,
+                                sizeof(pEffect->m_stLookInfo));
+                        }
+
+                        pEffect->m_nFade = 1;
+                        pEffect->m_StartColor.r = 0.5f;
+                        pEffect->m_StartColor.g = 0.3f;
+                        pEffect->m_StartColor.b = 0.2f;
+                        pEffect->InitObject(bExpand);
+                        pEffect->m_dwStartTime = dwServerTime;
+                        pEffect->m_dwLifeTime = 200 * i + 100;
+                        pEffect->InitPosition(m_vecPosition.x, m_fHeight + 0.1f, m_vecPosition.y);
+                        pEffect->m_fStartAngle = m_fAngle;
+                        pEffect->m_fAngle = pEffect->m_fStartAngle;
+                        pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                        pEffect->m_pSkinMesh->SetAnimation(MeshManager::m_sAnimationArray[m_nSkinMeshType][m_nWeaponTypeIndex][g_MobAniTable[m_nSkinMeshType].dwAniTable[(int)m_eMotion]]);
+                        pEffect->m_pSkinMesh->m_dwFPS = m_pSkinMesh->m_dwFPS;
+                        pEffect->m_nMotionType = 6;
+                        g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+                    }
+
+                    GetSoundAndPlay(160, 0, 0);
+                }
+            }
+            else if (m_stEffectEvent.sEffectIndex == 89)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    bool bExpand = false;
+                    if (m_nClass == 4 || m_nClass == 8)
+                        bExpand = true;
+
+                    auto pEffect = new TMEffectSkinMesh(m_nSkinMeshType, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, 0, nullptr);
+                    if (m_cMount > 0 && m_pMount)
+                    {
+                        bExpand = false; 
+                        pEffect->m_nSkinMeshType = m_nMountSkinMeshType;
+                        memcpy(&pEffect->m_stLookInfo, &m_stMountLook, sizeof(pEffect->m_stLookInfo));
+                        pEffect->m_fScale = m_fScale;
+                        pEffect->InitPosition(m_pMount->m_vPosition.x, m_fHeight + 0.1f, m_pMount->m_vPosition.z);
+                    }
+                    else
+                    {
+                        memcpy(
+                            &pEffect->m_stLookInfo,
+                            &m_stLookInfo,
+                            sizeof(pEffect->m_stLookInfo));
+                        pEffect->m_fScale = m_fScale;
+                        pEffect->InitPosition(m_vecPosition.x, m_fHeight + 0.1f, m_vecPosition.y);
+                    }
+
+                    pEffect->m_nFade = 1;
+                    pEffect->m_StartColor.r = 0.3f;
+                    pEffect->m_StartColor.g = 0.3f;
+                    pEffect->m_StartColor.b = 0.3f;
+                    pEffect->InitObject(bExpand);
+                    pEffect->m_dwStartTime = dwServerTime + 100 * i;
+                    pEffect->m_dwLifeTime = 50 * i + 400;
+                    pEffect->m_fStartAngle = m_fAngle;
+                    pEffect->m_fAngle = pEffect->m_fStartAngle;
+                    pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                    pEffect->m_pSkinMesh->SetAnimation(MeshManager::m_sAnimationArray[m_nSkinMeshType][m_nWeaponTypeIndex][g_MobAniTable[m_nSkinMeshType].dwAniTable[(int)m_eMotion]]);
+                    if (m_cMount > 0 && m_pMount && pEffect->m_pSkinMesh)
+                    {
+                        pEffect->m_pSkinMesh->SetAnimation(g_MobAniTable[m_nMountSkinMeshType].dwAniTable[3]);
+                    }
+
+                    pEffect->m_pSkinMesh->m_dwFPS = m_pSkinMesh->m_dwFPS;
+                    pEffect->m_nMotionType = 0;
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+                }
+            }
+            else if (m_stEffectEvent.sEffectIndex == 90)
+            {
+                GetSoundAndPlay(169, 0, 0);
+            }
+            else if (m_stEffectEvent.sEffectIndex == 79)
+            {
+                vecDest.y += 1.2f;
+                auto vecTempDest = vecDest;
+                int nCount = 3;
+                if (m_stEffectEvent.pTarget)
+                {
+                    vecTempDest = { m_stEffectEvent.pTarget->m_vecPosition.x,
+                        (float)(m_stEffectEvent.pTarget->m_fScale / 1.5f)
+                        + m_stEffectEvent.pTarget->m_fHeight,
+                        m_stEffectEvent.pTarget->m_vecPosition.y };
+
+                    nCount += m_stScore.Special[3] / 80;
+                    if (nCount < 3)
+                        nCount = 3;
+                    if (nCount > 6)
+                        nCount = 6;
+                }
+
+                auto vecTempStart = vecStart;
+                int nColor = 0;
+
+                for (int i = 0; i < nCount; i++)
+                {
+                    int nRand = rand() % 1000;
+                    if (i > 1)
+                        nColor = i + 3;
+
+                    vecTempStart.x = (vecTempStart.x - 0.1f) + ((m_fScale * 1.0) * (sinf((((float)i / 6.0f) * D3DXToRadian(180)) * 2.0f)));
+                    vecTempStart.z = (vecTempStart.z - 0.1f) + ((m_fScale * 1.0) * (cosf((((float)i / 6.0f) * D3DXToRadian(180)) * 2.0f)));
+                    vecTempStart.y = m_fHeight + m_fScale;
+
+                    unsigned int BillColor = 0x00777777;
+                    switch (nColor)
+                    {
+                    case 8:
+                        BillColor = 0x00883333;
+                        break;
+                    case 7:
+                        BillColor = 0x00884388;
+                        break;
+                    case 6:
+                        BillColor = 0x00338843;
+                        break;
+                    case 5:
+                        BillColor = 0x00222288;
+                        break;
+                    }
+
+                    auto pBillBoard = new TMEffectBillBoard(56,
+                        100 * i + 400,
+                        1.0f,
+                        1.0f,
+                        1.0f,
+                        0.0f,
+                        1,
+                        80);
+
+                    pBillBoard->SetColor(BillColor);
+                    pBillBoard->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                    pBillBoard->m_nFade = 2;
+                    pBillBoard->m_vecPosition = vecTempStart;
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pBillBoard);
+
+                    auto pArrow = new TMArrow(vecTempStart, vecTempDest, m_stEffectEvent.sEffectLevel, 151, 0, nColor, 0);
+                    pArrow->m_dwStartTime += 100 * i;
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pArrow);
+                }
+            }
+            else if (m_stEffectEvent.sEffectIndex >= 151 && m_stEffectEvent.sEffectIndex <= 153 ||
+                m_stEffectEvent.sEffectIndex == 104 || m_stEffectEvent.sEffectIndex == 105 || m_stEffectEvent.sEffectIndex == 90)
+            {
+                vecStart.y = ((float)(TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) * 0.69999999f) + m_fHeight;
+                if (m_nSkinMeshType == 8)
+                    vecStart.y = (float)(1.0f * m_fScale) + vecStart.y;
+
+                vecDest.y += 1.2f;
+                auto vecTempDest = vecDest;
+
+                if (m_stEffectEvent.pTarget)
+                {
+                    vecTempDest = { m_stEffectEvent.pTarget->m_vecPosition.x,
+                        (float)(m_stEffectEvent.pTarget->m_fScale / 2.5f)
+                        + m_stEffectEvent.pTarget->m_fHeight,
+                        m_stEffectEvent.pTarget->m_vecPosition.y };
+                }
+
+                ++m_nDoubleCount;
+
+                if (m_cSoul == 1 && m_pSoul[0] && m_cDie != 1 && !m_cShadow)
+                {
+                    auto pArrow = new TMArrow(m_pSoul[0]->m_vecPosition, vecTempDest, m_stEffectEvent.sEffectLevel, 10000, m_cAvatar, 0, m_nAttackDestID);
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pArrow);
+                }
+
+                if (m_stEffectEvent.sEffectIndex == 105 && m_stEffectEvent.sEffectLevel == 2)
+                {
+                    auto pSwing = new TMSkillDoubleSwing(vecStart, vecTempDest, 3, m_stEffectEvent.pTarget);
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pSwing);
+                    m_stEffectEvent.dwTime += 700;
+                }
+                else
+                {
+                    auto pMobData = &g_pObjectManager->m_stMobData;
+                    int left = g_pObjectManager->m_stMobData.Equip[6].sIndex;
+                    if (left == 1010)
+                        m_stEffectEvent.sEffectLevel = 99;
+
+                    auto pArrow = new TMArrow(vecStart, vecTempDest, m_stEffectEvent.sEffectLevel, m_stEffectEvent.sEffectIndex,
+                        m_cAvatar, m_stSancInfo.Legend7, m_nAttackDestID);
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pArrow);
+                    m_stEffectEvent.dwTime += 500;
                 }
             }
         }
+        if ((m_stEffectEvent.sEffectIndex < 151 || m_stEffectEvent.sEffectIndex > 153) && 
+            m_stEffectEvent.sEffectIndex != 104 && m_stEffectEvent.sEffectIndex != 105 && m_stEffectEvent.sEffectIndex != 90 || 
+            !m_bDoubleAttack || m_nDoubleCount >= 2)
+        {
+            memset(&m_stEffectEvent, 0, sizeof(m_stEffectEvent));
+            m_nDoubleCount = 0;
+        }
+    }
+
+    if (m_cLighten == 1 && !g_bHideEffect)
+    {
+        if (dwServerTime - m_dwLastLighten > 500)
+        {
+            float fRand = (float)(rand() % 5);
+
+            float fScale = 2.0f;
+            if (m_cMount == 1)
+                fScale = 1.3f;
+
+            for (int i = 0; i < 2; i++)
+            {
+                if (!m_pLightenStorm[i])
+                {
+                    m_pLightenStorm[i] = new TMEffectBillBoard(109,
+                        0,
+                        (((0.2f * fRand) + 1.0f) * fScale) - ((float)i * 0.40000001f),
+                        (((0.2f * fRand) + 1.0f) * fScale) - ((float)i * 0.40000001f),
+                        (((0.2f * fRand) + 1.0f) * fScale) - ((float)i * 0.40000001f),
+                        0.0,
+                        8,
+                        80);
+
+                    m_pLightenStorm[i]->SetColor(0xFFFFDD00);
+                    m_pLightenStorm[i]->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                    m_pLightenStorm[i]->m_nFade = 0;
+                    g_pCurrentScene->m_pEffectContainer->AddChild(m_pLightenStorm[i]);
+                }
+                if (m_pLightenStorm[i])
+                {
+                    m_pLightenStorm[i]->m_fAxisAngle = (((float)((dwServerTime - m_pLightenStorm[i]->m_dwCreateTime) % 1000) * D3DXToRadian(360)) / 1000.0f) + (float)i;
+                    m_pLightenStorm[i]->m_vecPosition = { m_vecPosition.x + 0.5f, m_fHeight + 1.8f, m_vecPosition.y + 0.5f };
+                }
+            }
+            m_dwLastLighten = dwServerTime;
+        }
+        for (int i = 0; i < 2; ++i)
+        {
+            if (m_pLightenStorm[i])
+                m_pLightenStorm[i]->m_vecPosition = { m_vecSkinPos.x, m_vecSkinPos.y + 1.2f, m_vecSkinPos.z + 0.5f };
+        }
+    }
+    else
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            if (m_pLightenStorm[i])
+            {
+                g_pObjectManager->DeleteObject(m_pLightenStorm[i]);
+                m_pLightenStorm[i] = nullptr;
+            }
+        }
+    }
+
+    if (m_cShield == 1 && dwServerTime - m_dwLastMagicShield > 0x3E8)
+    {
+        if (m_pMagicShield)
+            m_pMagicShield->StartVisible(dwServerTime);
+        m_dwLastMagicShield = dwServerTime;
+    }
+    if (m_cCancel == 1)
+    {
+        unsigned int CancelTime = 1000;
+        if (m_nClass == 56 && !m_stLookInfo.FaceMesh)
+            CancelTime = 3000;
+        if (dwServerTime - m_dwLastCancelTime > CancelTime && m_pCancelation)
+        {
+            if (m_nClass == 56 && !m_stLookInfo.FaceMesh)
+                m_pCancelation->m_fVectorH = (float)-(rand() % 50) / 100.0f;
+
+            m_pCancelation->StartVisible(dwServerTime);
+            m_pCancelation->m_fCancelScale = TMHuman::m_vecPickSize[m_nSkinMeshType].x * m_fScale;
+            m_dwLastCancelTime = dwServerTime;
+        }
+    }
+    if (m_cWaste == 1 && dwServerTime - m_dwLastWaste > 1000)
+    {
+        TMVector3 vec{ m_vecPosition.x, m_fHeight, m_vecPosition.y };
+        auto pSlow = new TMSkillSlowSlash(vec, vec, 1, m_stEffectEvent.pTarget);
+        g_pCurrentScene->m_pEffectContainer->AddChild(pSlow);
+        m_dwLastWaste = dwServerTime;
+    }
+
+    if ((m_cImmunity == 1 || m_nClass == 44) && m_cDie != 1 && !g_bHideEffect)
+    {
+        const static unsigned int dwColor[5]{ 0xFF99BBFF, 0xFF00FFAA, 0xFFFFAA00, 0xFF880088, 0xFFCC8888 };
+        for (int i = 0; i < 2; i++)
+        {
+            if (m_pImmunity[i])
+            {
+                float fAngle = ((((float)(i % 5) * 1.0f) / 5.0f) + ((float)(dwServerTime % 5000) / 5000.0f)) * D3DXToRadian(360);
+                if (!(i % 2))
+                    m_pImmunity[i]->m_fAngle = fAngle;
+                if (i % 3 == 1)
+                    m_pImmunity[i]->m_fAngle2 = fAngle;
+                if (m_cMount == 1)
+                {
+                    m_pImmunity[i]->m_vecPosition = { m_vecSkinPos.x, m_vecSkinPos.y, m_vecSkinPos.z };
+                    m_pImmunity[i]->m_fScaleH = 1.5f;
+                    m_pImmunity[i]->m_fScaleV = 1.5f;
+                }
+                else
+                {
+                    m_pImmunity[i]->m_vecPosition = { m_vecPosition.x, ((float)(TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) / 2.0f)
+                        + m_fHeight,
+                        m_vecPosition.y };
+
+                    m_pImmunity[i]->m_fScaleH = 1.0f;
+                    m_pImmunity[i]->m_fScaleV = 1.0f;
+                }
+
+                if (m_nClass == 44)
+                {
+                    m_pImmunity[i]->m_nTextureIndex = 45;
+                    m_pImmunity[i]->m_fScaleH = m_fScale;
+                    m_pImmunity[i]->m_fScaleV = m_fScale;
+                    m_pImmunity[i]->m_vecPosition.y = (float)(m_fScale * 5.0999999f) + m_pImmunity[i]->m_vecPosition.y;
+                }
+            }
+            else
+            {
+                m_pImmunity[i] = new TMEffectMesh(12, dwColor[i], 0.0f, 1);
+                m_pImmunity[i]->m_nTextureIndex = 0;
+                m_pImmunity[i]->m_vecPosition = m_vecSkinPos;
+                g_pCurrentScene->m_pEffectContainer->AddChild(m_pImmunity[i]);
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < 5; ++i)
+        {
+            if (m_pImmunity[i])
+            {
+                g_pObjectManager->DeleteObject(m_pImmunity[i]);
+                m_pImmunity[i] = nullptr;
+            }
+        }
+    }
+
+    if (!g_bHideSkillBuffEffect2 && m_cElimental == 1 && dwServerTime - m_dwElimental > 250)
+    {
+        TMVector3 vec{ m_vecPosition.x, m_fHeight, m_vecPosition.y };
+
+        auto pSlow = new TMSkillSlowSlash(vec, vec, 2, this);
+        g_pCurrentScene->m_pEffectContainer->AddChild(pSlow);
+
+        m_dwElimental = dwServerTime;
+        if (m_pEleStream)
+            m_pEleStream->StartVisible(dwServerTime);
+    }
+    if (m_cAurora == 1)
+    {
+        if (m_pAurora)
+            m_pAurora->m_vecPosition = { m_vecPosition.x, m_fHeight + 0.30000001f, m_vecPosition.y };
+        else
+        {
+            m_pAurora = new TMEffectBillBoard2(94, 0, 1.5f, 1.5f, 1.5f, 0.0, 3000);
+            if (m_pAurora)
+            {
+                m_pAurora->m_nFade = 2;
+                m_pAurora->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                m_pAurora->m_vecPosition = { m_vecPosition.x,
+                    m_fHeight + 0.30000001f,
+                    m_vecPosition.y };
+                m_pAurora->SetColor(0x33333333);
+                g_pCurrentScene->m_pEffectContainer->AddChild(m_pAurora);
+            }
+        }
+    }
+    else if (m_pAurora)
+    {
+        g_pObjectManager->DeleteObject(m_pAurora);
+        m_pAurora = nullptr;
+    }
+
+    if (!g_bHideSkillBuffEffect && m_cDodge == 1 && (m_eMotion == ECHAR_MOTION::ECMOTION_WALK || m_eMotion == ECHAR_MOTION::ECMOTION_RUN) && dwServerTime - m_dwDodgeTime > 80)
+    {
+        bool bExpand = false;
+        if (m_nClass == 4 || m_nClass == 8)
+            bExpand = true;
+
+        auto pEffect = new TMEffectSkinMesh(m_nSkinMeshType, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, 0, nullptr);
+        if (m_cMount > 0 && m_pMount)
+        {
+            bExpand = false;
+            pEffect->m_nSkinMeshType = m_nMountSkinMeshType;
+            memcpy(&pEffect->m_stLookInfo, &m_stMountLook, sizeof(pEffect->m_stLookInfo));
+            pEffect->m_fScale = m_fScale;
+            pEffect->InitPosition(m_pMount->m_vPosition.x, m_fHeight + 0.1f, m_pMount->m_vPosition.z);
+        }
+        else
+        {
+            memcpy(
+                &pEffect->m_stLookInfo,
+                &m_stLookInfo,
+                sizeof(pEffect->m_stLookInfo));
+            pEffect->m_fScale = m_fScale;
+            pEffect->InitPosition(m_vecPosition.x, m_fHeight + 0.1f, m_vecPosition.y);
+        }
+
+        pEffect->m_nFade = 1;
+        pEffect->m_StartColor.r = 0.3f;
+        pEffect->m_StartColor.g = 0.3f;
+        pEffect->m_StartColor.b = 0.3f;
+        pEffect->InitObject(bExpand);
+        pEffect->m_dwStartTime = dwServerTime;
+        pEffect->m_dwLifeTime = 200;
+        pEffect->m_fStartAngle = m_fAngle;
+        pEffect->m_fAngle = pEffect->m_fStartAngle;
+        pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pEffect->m_pSkinMesh->SetAnimation(MeshManager::m_sAnimationArray[m_nSkinMeshType][m_nWeaponTypeIndex][g_MobAniTable[m_nSkinMeshType].dwAniTable[(int)m_eMotion]]);
+        if (m_cMount > 0 && m_pMount && pEffect->m_pSkinMesh)
+        {
+            pEffect->m_pSkinMesh->SetAnimation(g_MobAniTable[m_nMountSkinMeshType].dwAniTable[3]);
+        }
+
+        pEffect->m_pSkinMesh->m_dwFPS = m_pSkinMesh->m_dwFPS;
+        pEffect->m_nMotionType = 0;
+        g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+        m_dwDodgeTime = dwServerTime;
+    }
+    if (m_cSKillAmp == 1)
+    {
+        if (m_pSkillAmp)
+        {
+            m_pSkillAmp->m_vecPosition = { m_vecPosition.x,
+                m_fHeight + 0.40000001f,
+                m_vecPosition.y };
+        }
+        else
+        {
+            m_pSkillAmp = new TMEffectBillBoard2(93, 0, 1.5f, 1.5f, 1.5f, 0.0f, 5000);
+
+            m_pSkillAmp->m_nFade = 3;
+            m_pSkillAmp->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            m_pSkillAmp->m_vecPosition = { m_vecPosition.x,
+                m_fHeight + 0.40000001f,
+                m_vecPosition.y };
+            m_pSkillAmp->SetColor(0x88888800);
+            g_pCurrentScene->m_pEffectContainer->AddChild(m_pSkillAmp);
+        }
+    }
+    else if (m_pSkillAmp)
+    {
+        g_pObjectManager->DeleteObject(m_pSkillAmp);
+        m_pSkillAmp = nullptr;
+    }
+    if (m_cShadow == 1 && g_pCurrentScene->m_pMyHuman == this)
+    {
+        if (m_pShadow)
+        {
+            m_pShadow->m_vecPosition = { m_vecPosition.x, m_fHeight + 0.5f, m_vecPosition.y };
+        }
+        else
+        {
+            m_pShadow = new TMEffectBillBoard2(94, 0, 1.2f, 1.2f, 1.2f, 0.0f, 5000);
+            m_pShadow->m_nFade = 4;
+            m_pShadow->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            m_pShadow->m_vecPosition = { m_vecPosition.x, m_fHeight + 0.5f, m_vecPosition.y };
+            m_pShadow->SetColor(0xAAAA0000);
+            g_pCurrentScene->m_pEffectContainer->AddChild(m_pShadow);
+        }
+    }
+    else if (m_pShadow)
+    {
+        g_pObjectManager->DeleteObject(m_pShadow);
+        m_pShadow = nullptr;
+    }
+
+    if ((m_nClass != 8 || m_cCoinArmor != 1) && m_nClass == 8 && m_pEyeFire[0])
+    {
+        for (int i = 0; i < 7; ++i)
+        {
+            if (m_pEyeFire[i])
+            {
+                g_pObjectManager->DeleteObject(m_pEyeFire[i]);
+                m_pEyeFire[i] = nullptr;
+            }
+        }
+    }
+    if (m_cHuntersVision != 1 || m_cOverExp)
+    {
+        if (m_pHuntersVision)
+        {
+            g_pObjectManager->DeleteObject(m_pHuntersVision);
+            m_pHuntersVision = 0;
+        }
+    }
+    else if (!m_pHuntersVision)
+    {
+        m_pHuntersVision = new TMEffectBillBoard(438, 0, 0.4f, 0.4f, 0.4f, 0.0f, 1, 80);
+        m_pHuntersVision->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        m_pHuntersVision->m_nFade = 2;
+
+        if (m_cMount == 1)
+            m_pHuntersVision->m_vecPosition = { m_vecSkinPos.x, ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_vecSkinPos.y) - 0.30000001f, m_vecSkinPos.z };
+        else
+            m_pHuntersVision->m_vecPosition = { m_vecPosition.x, (TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y };
+
+        m_pHuntersVision->m_nParticleType = 10;
+        m_pHuntersVision->m_fParticleH = 0.1f;
+        m_pHuntersVision->m_fParticleV = 0.1f;
+        g_pCurrentScene->m_pEffectContainer->AddChild(m_pHuntersVision);
+    }
+    else
+    {
+        if (m_cMount == 1)
+            m_pHuntersVision->m_vecPosition = { m_vecSkinPos.x, ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_vecSkinPos.y) - 0.30000001f, m_vecSkinPos.z };
+        else
+            m_pHuntersVision->m_vecPosition = { m_vecPosition.x, (TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y };
+    }
+    if (m_cOverExp != 1 || m_cHuntersVision)
+    {
+        if (m_pOverExp)
+        {
+            g_pObjectManager->DeleteObject(m_pOverExp);
+            m_pOverExp = nullptr;
+        }
+    }
+    else if (!m_pOverExp)
+    {
+        m_pOverExp = new TMEffectBillBoard(439, 0, 0.4f, 0.4f, 0.4f, 0.0f, 1, 80);
+        m_pOverExp->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        m_pOverExp->m_nFade = 2;
+
+        if (m_cMount == 1)
+            m_pOverExp->m_vecPosition = { m_vecSkinPos.x, ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_vecSkinPos.y) - 0.30000001f, m_vecSkinPos.z };
+        else
+            m_pOverExp->m_vecPosition = { m_vecPosition.x, (TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y };
+
+        m_pOverExp->m_nParticleType = 10;
+        m_pOverExp->m_fParticleH = 0.1f;
+        m_pOverExp->m_fParticleV = 0.1f;
+        g_pCurrentScene->m_pEffectContainer->AddChild(m_pOverExp);
+    }
+    else
+    {
+        if (m_cMount == 1)
+            m_pOverExp->m_vecPosition = { m_vecSkinPos.x, ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_vecSkinPos.y) - 0.30000001f, m_vecSkinPos.z };
+        else
+            m_pOverExp->m_vecPosition = { m_vecPosition.x, (TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y };
+    }
+
+    if (m_cOverExp != 1 || m_cHuntersVision != 1)
+    {
+        if (m_pBraveOverExp)
+        {
+            g_pObjectManager->DeleteObject(m_pBraveOverExp);
+            m_pBraveOverExp = 0;
+        }
+    }
+    else if (!m_pBraveOverExp)
+    {
+        m_pBraveOverExp = new TMEffectBillBoard(440, 0, 0.4f, 0.4f, 0.4f, 0.0f, 1, 80);
+        m_pBraveOverExp->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        m_pBraveOverExp->m_nFade = 2;
+
+        if (m_cMount == 1)
+            m_pBraveOverExp->m_vecPosition = { m_vecSkinPos.x, ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_vecSkinPos.y) - 0.30000001f, m_vecSkinPos.z };
+        else
+            m_pBraveOverExp->m_vecPosition = { m_vecPosition.x, (TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y };
+
+        m_pBraveOverExp->m_nParticleType = 10;
+        m_pBraveOverExp->m_fParticleH = 0.1f;
+        m_pBraveOverExp->m_fParticleV = 0.1f;
+        g_pCurrentScene->m_pEffectContainer->AddChild(m_pBraveOverExp);
+    }
+    else
+    {
+        if (m_cMount == 1)
+            m_pBraveOverExp->m_vecPosition = { m_vecSkinPos.x, ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_vecSkinPos.y) - 0.30000001f, m_vecSkinPos.z };
+        else
+            m_pBraveOverExp->m_vecPosition = { m_vecPosition.x, (TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y };
+    }
+
+    if (!g_bHideSkillBuffEffect && m_cManaControl == 1)
+    {
+        int nRand = rand() % 5;
+        auto mpBill = new TMEffectBillBoard(56,
+            1500,
+            (float)((float)nRand * 0.02f) + 0.02f,
+            (float)((float)nRand * 0.05f) + 0.02f,
+            (float)((float)nRand * 0.02f) + 0.02f,
+            0.0f,
+            1,
+            80);
+
+        float fY = ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale)
+            + m_fHeight)
+            - ((float)nRand * 0.05f);
+        float fZ = ((float)(rand() % 10 - 5) * 0.07f) + m_vecPosition.y;
+        mpBill->m_vecPosition = { ((float)(rand() % 10 - 5) * 0.07f) + m_vecPosition.x, fY, fZ };
+        mpBill->m_vecStartPos = mpBill->m_vecPosition;
+        mpBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        mpBill->m_bStickGround = 0;
+        mpBill->m_nParticleType = nRand % 3;
+        mpBill->m_fParticleV = -1.2f;
+        mpBill->m_fParticleH = 0.1f;
+        mpBill->SetColor(0xFFFF3300);
+        g_pCurrentScene->m_pEffectContainer->AddChild(mpBill);
+
+        auto mpBill2 = new TMEffectBillBoard(0,
+            1500,
+            ((float)nRand * 0.1f) + 0.1f,
+            ((float)nRand * 0.05f) + 0.80000001f,
+            ((float)nRand * 0.1f) + 0.1f,
+            0.000099999997f,
+            1,
+            80);
+        mpBill2->m_vecPosition = { ((float)(rand() % 10 - 5) * 0.01f) + m_vecPosition.x, m_fHeight, ((float)(rand() % 10 - 5) * 0.01f) + m_vecPosition.y };
+        mpBill2->m_vecStartPos = mpBill2->m_vecPosition;
+        mpBill2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        mpBill2->m_bStickGround = 0;
+        mpBill2->m_nParticleType = 1;
+        mpBill2->m_fParticleV = 1.5f;
+        mpBill2->SetColor(0xFFFF0000);
+        g_pCurrentScene->m_pEffectContainer->AddChild(mpBill2);
+    }
+
+    if (!g_bHideSkillBuffEffect2 && m_cProtector == 1 && !m_pProtector)
+    {
+        TMVector3 vec{ m_vecPosition.x, m_fHeight + 2.5f, m_vecPosition.y };
+        m_pProtector = new TMEffectSkinMesh(32, vec, vec, 3, this);
+        m_pProtector->m_stLookInfo.Mesh1 = 0;
+        m_pProtector->m_stLookInfo.Mesh0 = 0;
+        m_pProtector->m_stLookInfo.Skin1 = 0;
+        m_pProtector->m_stLookInfo.Skin0 = 0;
+        m_pProtector->InitObject(0);
+        m_pProtector->m_dwLifeTime = 0;
+        m_pProtector->m_pSkinMesh->m_vScale.x = 0.3f;
+        m_pProtector->m_pSkinMesh->m_vScale.y = 0.3f;
+        m_pProtector->m_pSkinMesh->m_vScale.z = 0.3f;
+        m_pProtector->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        m_pProtector->m_StartColor.r = 1.0f;
+        m_pProtector->m_StartColor.g = 1.0f;
+        m_pProtector->m_StartColor.b = 1.0f;
+        m_pProtector->m_nFade = 1;
+        m_pProtector->m_fStartAngle = m_fAngle;
+        m_pProtector->m_nMotionType = 5;
+        g_pCurrentScene->m_pEffectContainer->AddChild(m_pProtector);
+    }
+    else if (!m_cProtector && m_pProtector)
+    {
+        g_pObjectManager->DeleteObject(m_pProtector);
+        m_pProtector = nullptr;
+    }
+
+    if (m_cCriticalArmor == 1)
+    {
+        if (!m_pCriticalArmor)
+        {
+            m_pCriticalArmor = new TMEffectMesh(2838, 0xFF999999, m_fAngle, 0);
+            if (m_pCriticalArmor)
+            {
+                m_pCriticalArmor->m_nTextureIndex = 413;
+                m_pCriticalArmor->m_dwCycleTime = 1500;
+                if (m_cMount == 1)
+                    m_pCriticalArmor->m_vecPosition = {
+                        m_vecSkinPos.x,
+                        ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale)
+                            + m_vecSkinPos.y)
+                        + 1.7f,
+                        m_vecSkinPos.z };
+                else
+                    m_pCriticalArmor->m_vecPosition = {
+                        m_vecPosition.x,
+                        ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale)
+                            + m_fHeight)
+                        + 1.3f,
+                        m_vecPosition.y };
+
+                m_pCriticalArmor->m_fScaleH = 2.0f;
+                m_pCriticalArmor->m_fScaleV = 1.5f;
+                m_pCriticalArmor->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                m_pCriticalArmor->m_cShine = 1;
+                // TODO they removed the critical armor..
+            }
+        }
+        else
+        {
+            if (m_cMount == 1)
+                m_pCriticalArmor->m_vecPosition = {
+                    m_vecSkinPos.x,
+                    ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale)
+                        + m_vecSkinPos.y)
+                    + 1.7f,
+                    m_vecSkinPos.z };
+            else
+                m_pCriticalArmor->m_vecPosition = {
+                    m_vecPosition.x,
+                    ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale)
+                        + m_fHeight)
+                    + 1.3f,
+                    m_vecPosition.y };
+            m_pCriticalArmor->m_fAngle = m_fAngle;
+        }
+    }
+    else if (!m_cCriticalArmor && m_pCriticalArmor)
+    {
+        g_pObjectManager->DeleteObject(m_pCriticalArmor);
+        m_pCriticalArmor = nullptr;
+    }
+
+    if (m_cSoul == 1 && m_cDie != 1 && !m_cShadow)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            if (!m_pSoul[i])
+            {
+                m_pSoul[i] = new TMEffectMeshRotate({ m_vecPosition.x, (float)(m_fHeight + 0.80000001f) + (float)((float)i * 0.2f), m_vecPosition.y }, 1, this, 1, 0);
+
+                if (m_cMount == 1)
+                    m_pSoul[i]->m_vecPosition = { m_vecSkinPos.x, ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_vecSkinPos.y) - 0.30000001f, m_vecSkinPos.z };
+                else
+                    m_pSoul[i]->m_vecPosition = { m_vecPosition.x, (TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y };
+
+                m_pSoul[i]->m_dwStartTime = (unsigned int)((float)dwServerTime - (((float)i * 2000.0f) / 2.0f));
+                m_pSoul[i]->m_nMeshIndex = 2839;
+                m_pSoul[i]->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                m_pSoul[i]->m_fScale = 1.4f;
+                m_pSoul[i]->SetColor(0xFF999999);
+                g_pCurrentScene->m_pEffectContainer->AddChild(m_pSoul[i]);
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            if (m_pSoul[i])
+            {
+                g_pObjectManager->DeleteObject(m_pSoul[i]);
+                m_pSoul[i] = nullptr;
+            }
+        }
+    }
+
+    if (m_sFamiliar == 753 && !m_pFamiliar)
+    {
+        TMVector3 vec{ m_vecPosition.x, (float)(TMHuman::m_vecPickSize[m_nSkinMeshType].y + 0.3f) * m_fScale, m_vecPosition.y };
+        if (!m_pFamiliar)
+        {
+            m_pFamiliar = new TMEffectSkinMesh(20, vec, vec, 3, this);
+        }
+        if (m_pFamiliar)
+        {
+            m_pFamiliar->m_stLookInfo.Mesh1 = 2;
+            m_pFamiliar->m_stLookInfo.Mesh0 = 2;
+            m_pFamiliar->m_stLookInfo.Skin1 = 0;
+            m_pFamiliar->m_stLookInfo.Skin0 = 0;
+            m_pFamiliar->InitObject(0);
+            m_pFamiliar->m_dwLifeTime = 0;
+            m_pFamiliar->m_pSkinMesh->m_vScale.x = 0.090000004f;
+            m_pFamiliar->m_pSkinMesh->m_vScale.y = 0.090000004f;
+            m_pFamiliar->m_pSkinMesh->m_vScale.z = 0.090000004f;
+            m_pFamiliar->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+            m_pFamiliar->m_StartColor.r = 1.0f;
+            m_pFamiliar->m_StartColor.g = 1.0f;
+            m_pFamiliar->m_StartColor.b = 1.0f;
+            m_pFamiliar->m_nFade = 1;
+            m_pFamiliar->m_fStartAngle = m_fAngle;
+            m_pFamiliar->m_nMotionType = 7;
+            g_pCurrentScene->m_pEffectContainer->AddChild(m_pFamiliar);
+        }
+    }
+    else if (m_sFamiliar == 769 && !m_pFamiliar)
+    {
+        TMVector3 vec{ m_vecPosition.x, (float)((TMHuman::m_vecPickSize[m_nSkinMeshType].y + 0.3f) * m_fScale) + m_fHeight, m_vecPosition.y };
+        if (!m_pFamiliar)
+        {
+            m_pFamiliar = new TMEffectSkinMesh(32, vec, vec, 4, this);
+        }
+        if (m_pFamiliar)
+        {
+            m_pFamiliar->m_stLookInfo.Mesh1 = 1;
+            m_pFamiliar->m_stLookInfo.Mesh0 = 1;
+            m_pFamiliar->m_stLookInfo.Skin1 = 0;
+            m_pFamiliar->m_stLookInfo.Skin0 = 0;
+            m_pFamiliar->InitObject(0);
+            m_pFamiliar->m_dwLifeTime = 0;
+            m_pFamiliar->m_pSkinMesh->m_vScale.x = 1.2f;
+            m_pFamiliar->m_pSkinMesh->m_vScale.y = 1.2f;
+            m_pFamiliar->m_pSkinMesh->m_vScale.z = 1.2f;
+            m_pFamiliar->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            m_pFamiliar->m_StartColor.r = 1.0f;
+            m_pFamiliar->m_StartColor.g = 1.0f;
+            m_pFamiliar->m_StartColor.b = 1.0f;
+            m_pFamiliar->m_nFade = 1;
+            m_pFamiliar->m_fStartAngle = m_fAngle;
+            m_pFamiliar->m_nMotionType = 5;
+            g_pCurrentScene->m_pEffectContainer->AddChild(m_pFamiliar);
+        }
+    }
+    else if (m_sFamiliar == 1726 && !m_pFamiliar)
+    {
+        TMVector3 vec{ m_vecPosition.x, (float)((TMHuman::m_vecPickSize[m_nSkinMeshType].y + 0.3f) * m_fScale) + m_fHeight, m_vecPosition.y };
+        if (!m_pFamiliar)
+        {
+            m_pFamiliar = new TMEffectSkinMesh(32, vec, vec, 5, this);
+        }
+        if (m_pFamiliar)
+        {
+            m_pFamiliar->m_stLookInfo.Mesh1 = 2;
+            m_pFamiliar->m_stLookInfo.Mesh0 = 2;
+            m_pFamiliar->m_stLookInfo.Skin1 = 0;
+            m_pFamiliar->m_stLookInfo.Skin0 = 0;
+            m_pFamiliar->InitObject(0);
+            m_pFamiliar->m_dwLifeTime = 0;
+            m_pFamiliar->m_pSkinMesh->m_vScale.x = 1.0f;
+            m_pFamiliar->m_pSkinMesh->m_vScale.y = 1.0f;
+            m_pFamiliar->m_pSkinMesh->m_vScale.z = 1.0f;
+            m_pFamiliar->m_efAlphaType = EEFFECT_ALPHATYPE::EF_DEFAULT;
+            m_pFamiliar->m_StartColor.r = 1.0f;
+            m_pFamiliar->m_StartColor.g = 1.0f;
+            m_pFamiliar->m_StartColor.b = 1.0f;
+            m_pFamiliar->m_nFade = 1;
+            m_pFamiliar->m_fStartAngle = m_fAngle;
+            m_pFamiliar->m_nMotionType = 5;
+            g_pCurrentScene->m_pEffectContainer->AddChild(m_pFamiliar);
+        }
+    }
+    else if ((m_sFamiliar >= 3900 && m_sFamiliar <= 3908 || m_sFamiliar >= 3911 && m_sFamiliar <= 3916 || m_sFamiliar == 4060) && !m_pFamiliar)
+    {
+        TMVector3 vec{ m_vecPosition.x, (float)((TMHuman::m_vecPickSize[m_nSkinMeshType].y + 0.3f) * m_fScale) + m_fHeight, m_vecPosition.y };
+        if (!m_pFamiliar)
+        {
+            m_pFamiliar = new TMEffectSkinMesh(32, vec, vec, 6, this);
+        }
+        if (m_pFamiliar)
+        {
+            m_pFamiliar->m_stLookInfo.Mesh1 = 3;
+            m_pFamiliar->m_stLookInfo.Mesh0 = 3;
+            if (m_sFamiliar == 3900 || m_sFamiliar == 3903 || m_sFamiliar == 3906 || m_sFamiliar >= 3911 && m_sFamiliar <= 3913)
+            {
+                m_pFamiliar->m_stLookInfo.Skin1 = 0;
+                m_pFamiliar->m_stLookInfo.Skin0 = 0;
+            }
+            else if (m_sFamiliar == 3901 || m_sFamiliar == 3904 || m_sFamiliar == 3907)
+            {
+                m_pFamiliar->m_stLookInfo.Skin1 = 1;
+                m_pFamiliar->m_stLookInfo.Skin0 = 1;
+            }
+            else if (m_sFamiliar == 3902 || m_sFamiliar == 3905 || m_sFamiliar == 3908)
+            {
+                m_pFamiliar->m_stLookInfo.Skin1 = 2;
+                m_pFamiliar->m_stLookInfo.Skin0 = 2;
+            }
+            else if (m_sFamiliar == 3914)
+            {
+                m_pFamiliar->m_stLookInfo.Skin1 = 3;
+                m_pFamiliar->m_stLookInfo.Skin0 = 3;
+            }
+            else if (m_sFamiliar == 3915 || m_sFamiliar == 3916)
+            {
+                m_pFamiliar->m_stLookInfo.Skin1 = 4;
+                m_pFamiliar->m_stLookInfo.Skin0 = 4;
+            }
+            else if (m_sFamiliar == 4060)
+            {
+                m_pFamiliar->m_stLookInfo.Skin1 = 1;
+                m_pFamiliar->m_stLookInfo.Skin0 = 1;
+            }
+            m_pFamiliar->InitObject(0);
+            m_pFamiliar->m_dwLifeTime = 0;
+            m_pFamiliar->m_pSkinMesh->m_vScale.x = 1.0f;
+            m_pFamiliar->m_pSkinMesh->m_vScale.y = 1.0f;
+            m_pFamiliar->m_pSkinMesh->m_vScale.z = 1.0f;
+            m_pFamiliar->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            m_pFamiliar->m_StartColor.r = 1.0f;
+            m_pFamiliar->m_StartColor.g = 1.0f;
+            m_pFamiliar->m_StartColor.b = 1.0f;
+            m_pFamiliar->m_nFade = 1;
+            m_pFamiliar->m_fStartAngle = m_fAngle;
+            m_pFamiliar->m_nMotionType = 5;
+            g_pCurrentScene->m_pEffectContainer->AddChild(m_pFamiliar);
+        }
+    }
+    else
+    {
+        g_pObjectManager->DeleteObject(m_pFamiliar);
+        m_pFamiliar = nullptr;
+    }
+
+    if (dwServerTime - m_dwPunishedTime > 1500 && m_cPunish == 1)
+        m_cPunish = 0;
+    if (m_cPunish == 1 && dwServerTime - m_dwLastDummyTime > 300)
+    {
+        bool bExpand = false;
+        if (m_nClass == 4 || m_nClass == 8)
+            bExpand = true;
+
+        auto pEffect = new TMEffectSkinMesh(m_nSkinMeshType, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, 0, nullptr);
+        if (m_cMount > 0 && m_pMount)
+        {
+            pEffect->m_nSkinMeshType = m_nMountSkinMeshType;
+            memcpy(&pEffect->m_stLookInfo, &m_stMountLook, sizeof(pEffect->m_stLookInfo));
+            pEffect->m_nSkinMeshType2 = m_nSkinMeshType;
+            memcpy(&pEffect->m_stLookInfo2, &m_stLookInfo, sizeof(pEffect->m_stLookInfo));
+
+        }
+        else
+        {
+            memcpy(&pEffect->m_stLookInfo, &m_stLookInfo, sizeof(pEffect->m_stLookInfo));           
+        }
+
+        pEffect->m_nFade = 1;
+        pEffect->m_StartColor.r = 0.5f;
+        pEffect->m_StartColor.g = 0.5f;
+        pEffect->m_StartColor.b = 0.5f;
+        pEffect->InitObject(bExpand);
+        pEffect->m_dwStartTime = dwServerTime;
+        pEffect->m_dwLifeTime = 700;        
+        pEffect->InitPosition(m_vecPosition.x, m_fHeight + 0.1f, m_vecPosition.y);
+        pEffect->m_fStartAngle = m_fAngle;
+        pEffect->m_fAngle = pEffect->m_fStartAngle;
+        pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+        if (m_cMount > 0 && m_pMount)
+        {
+            if (pEffect->m_pSkinMesh)
+                pEffect->m_pSkinMesh->SetAnimation(MeshManager::m_sAnimationArray[m_nSkinMeshType][m_nWeaponTypeIndex][g_MobAniTable[m_nMountSkinMeshType].dwAniTable[(int)m_eMotion]]);
+            if (pEffect->m_pSkinMesh2)
+                pEffect->m_pSkinMesh2->SetAnimation(MeshManager::m_sAnimationArray[m_nSkinMeshType][m_nWeaponTypeIndex][g_MobAniTable[m_nSkinMeshType].dwAniTable[(int)m_eMotion + 24]]);
+        }
+        else
+        {
+            if (pEffect->m_pSkinMesh)
+                pEffect->m_pSkinMesh->SetAnimation(MeshManager::m_sAnimationArray[m_nSkinMeshType][m_nWeaponTypeIndex][g_MobAniTable[m_nSkinMeshType].dwAniTable[(int)m_eMotion]]);
+        }
+        if (pEffect->m_pSkinMesh)
+            pEffect->m_pSkinMesh->m_dwFPS = m_pSkinMesh->m_dwFPS;
+        pEffect->m_nMotionType = 0;
+
+        GetSoundAndPlayIfNot(160, 0, 0);
+
+        g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+        m_dwLastDummyTime = dwServerTime;
+    }
+
+    if (m_stEffectEvent.sEffectIndex == 102 && !m_bStartAvatarEffect)
+    {
+        int nCls = m_sHeadIndex % 10;
+        if (nCls == 6)
+            FrameMoveEffect_AvatarTrans();
+        else if (nCls == 7)
+            FrameMoveEffect_AvatarFoema();
+        else if (nCls == 8 || m_sHeadIndex >= 22 && m_sHeadIndex <= 25 || m_sHeadIndex == 32)
+            FrameMoveEffect_AvatarBMaster();
+        else if (nCls == 9)
+            FrameMoveEffect_AvatarHunter();
+
+        m_bStartAvatarEffect = 1;
+        m_dwAvatarEffTime = g_pTimerManager->GetServerTime();
+    }
+
+    if (m_bStartAvatarEffect == 1 && m_cAvatar == 1 && dwServerTime > m_dwAvatarEffTime + 1250)
+    {
+        TMVector3 vPos{ m_vecPosition.x, m_fHeight + 2.0f, m_vecPosition.y };
+        int nCls = m_sHeadIndex / 10;   
+        for (int i = 0; i < 3; ++i)
+        {
+            auto pEffect1 = new TMEffectBillBoard(
+                56,
+                700,
+                (float)((float)i * 1.5f) + 3.0f,
+                (float)((float)i * 1.5f) + 3.0f,
+                (float)((float)i * 0.5f) + 3.0f,
+                0.001f,
+                1,
+                80);
+
+            pEffect1->SetColor(0xFFFFFFFF);
+            pEffect1->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pEffect1->m_nFade = 1;
+            pEffect1->m_vecPosition = vPos;
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect1);
+        }
+        m_bStartAvatarEffect = 0;
     }
 }
 
