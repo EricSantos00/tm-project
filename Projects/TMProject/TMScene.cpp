@@ -1494,6 +1494,7 @@ void TMScene::Cleanup()
 char heightMapData[128][128]{};
 int TMScene::GroundNewAttach(EDirection eDir)
 {
+	memset(heightMapData, 0, sizeof(heightMapData));
 	if (!m_pGround)
 		return 0;
 
@@ -1723,7 +1724,7 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0f && (vFocusePos.y - vPickPos.y) < 2.0f)
+			if (vPickTempPos.y > -5000.0f && fabsf(vFocusePos.y - vPickPos.y) < 2.0f)
 				return vPickPos;
 		}
 	}
@@ -1758,12 +1759,13 @@ D3DXVECTOR3 TMScene::GroundGetPickPos()
 	{
 		vPickTempPos = m_pGround->m_pDownGround->GetPickPos();
 
-		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y) || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
+		if (fabsf(vFocusePos.y - vPickPos.y) > fabsf(vFocusePos.y - vPickTempPos.y))
 		{
 			vPickPos = vPickTempPos;
 
-			if (vPickTempPos.y > -5000.0 && fabsf(vFocusePos.y - vPickPos.y) < 2.0f)
+			if (vPickTempPos.y > -5000.0 && fabsf(vFocusePos.y - vPickPos.y) < 2.0f || fabsf(vFocusePos.y - vPickTempPos.y) < 4.0f)
 				return vPickPos;
+
 		}
 	}
 

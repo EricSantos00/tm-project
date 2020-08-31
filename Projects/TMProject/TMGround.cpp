@@ -2399,8 +2399,8 @@ int TMGround::Attach(TMGround* pGround)
 
         for (int i = 0; i < 64; ++i)
         {
-            pGround->m_TileMapData[i * 64].cHeight = m_TileMapData[(i << 6) + 63].cHeight;
-            pGround->m_TileMapData[i * 64].dwColor = m_TileMapData[(i << 6) + 63].dwColor;
+            pGround->m_TileMapData[64 * i].cHeight = m_TileMapData[(i << 6) + 63].cHeight;
+            pGround->m_TileMapData[64 * i].dwColor = m_TileMapData[(i << 6) + 63].dwColor;
 
             pGround->m_TileNormalVector[64 * i] = m_TileNormalVector[64 * i + 63];
         }
@@ -2409,24 +2409,24 @@ int TMGround::Attach(TMGround* pGround)
         m_pRightGround->m_nMiniMapPos = 1;
         return 1;
     }
-    else if (pGround->m_vecOffsetIndex.x == m_vecOffsetIndex.x - 1)
+    if (pGround->m_vecOffsetIndex.x == m_vecOffsetIndex.x - 1)
     {
         m_pLeftGround = pGround;
         m_pLeftGround->m_pRightGround = this;
 
         for (int i = 0; i < 64; ++i)
         {
-            pGround->m_TileMapData[i * 64].cHeight = m_TileMapData[(i << 6) + 63].cHeight;
-            pGround->m_TileMapData[i * 64].dwColor = m_TileMapData[(i << 6) + 63].dwColor;
+            m_TileMapData[64 * i].cHeight = pGround->m_TileMapData[(i << 6) + 63].cHeight;
+            m_TileMapData[64 * i].dwColor = pGround->m_TileMapData[(i << 6) + 63].dwColor;
 
-            pGround->m_TileNormalVector[64 * i] = m_TileNormalVector[64 * i + 63];
+           m_TileNormalVector[64 * i] = pGround->m_TileNormalVector[64 * i + 63];
         }
 
         m_nMiniMapPos = 1;
         m_pLeftGround->m_nMiniMapPos = 0;
         return 1;
     }
-    else if (pGround->m_vecOffsetIndex.y == m_vecOffsetIndex.y + 1)
+    if (pGround->m_vecOffsetIndex.y == m_vecOffsetIndex.y + 1)
     {
         m_pDownGround = pGround;
         m_pDownGround->m_pUpGround = this;
@@ -2443,17 +2443,17 @@ int TMGround::Attach(TMGround* pGround)
         m_pDownGround->m_nMiniMapPos = 2;
         return 1;
     }
-    else if (pGround->m_vecOffsetIndex.y == m_vecOffsetIndex.y - 1)
+    if (pGround->m_vecOffsetIndex.y == m_vecOffsetIndex.y - 1)
     {
         m_pUpGround = pGround;
         m_pUpGround->m_pDownGround = this;
 
         for (int i = 0; i < 64; ++i)
         {
-            pGround->m_TileMapData[i].cHeight = m_TileMapData[i + 4032].cHeight;
-            pGround->m_TileMapData[i].dwColor = m_TileMapData[i + 4032].dwColor;
+            m_TileMapData[i].cHeight = pGround->m_TileMapData[i + 4032].cHeight;
+            m_TileMapData[i].dwColor = pGround->m_TileMapData[i + 4032].dwColor;
 
-            pGround->m_TileNormalVector[i] = m_TileNormalVector[i + 4032];
+            m_TileNormalVector[i] = pGround->m_TileNormalVector[i + 4032];
         }
 
         m_nMiniMapPos = 2;
@@ -2625,7 +2625,7 @@ int TMGround::LoadTileMap(const char* szFileName)
             for (int m = 0; m < 128; ++m)
             {
                 for (int n = 0; n < 15; ++n)
-                    m_pMaskData[n][m] = 127;
+                    m_pMaskData[m][n] = 127;
             }
         }
 
@@ -2634,7 +2634,7 @@ int TMGround::LoadTileMap(const char* szFileName)
             for (int ii = 0; ii < 128; ++ii)
             {
                 for (int jj = 114; jj < 128; ++jj)
-                    m_pMaskData[jj][ii] = 127;
+                    m_pMaskData[ii][jj] = 127;
             }
         }
 
@@ -3309,8 +3309,7 @@ D3DXVECTOR3 TMGround::GetPickPos()
     float fV = 0.0f;
     float fDistance = 0.0f;
     TMCamera* pCamera = g_pObjectManager->m_pCamera;
-
-    TMVector2 vecCam;
+    TMVector2 vecCam{};
 
     if (pCamera->m_pFocusedObject)
     {
@@ -3351,7 +3350,7 @@ D3DXVECTOR3 TMGround::GetPickPos()
                     vertex[1] = D3DXVECTOR3((float)nX + m_vecOffset.x, (float)nMaskHeight * 0.1f, ((float)nY + m_vecOffset.y) + 1.0f);
                     vertex[2] = D3DXVECTOR3(((float)nX + m_vecOffset.x) + 1.0f, (float)nMaskHeight * 0.1f, (float)nY + m_vecOffset.y);
                     vertex[3] = D3DXVECTOR3(((float)nX + m_vecOffset.x) + 1.0f, (float)nMaskHeight * 0.1f, ((float)nY + m_vecOffset.y) + 1.0f);
-                    if (D3DXIntersectTri(vertex, &vertex[1], &vertex[2], &vPickRayOrig, &vPickRayDir, &fU, &fV, &fDistance) == 1)
+                    if (D3DXIntersectTri(&vertex[0], &vertex[1], &vertex[2], &vPickRayOrig, &vPickRayDir, &fU, &fV, &fDistance) == 1)
                     {
                         vPickPos.y = vertex[0].y;
                         vPickPos.x = vertex[0].x + fV;
@@ -3418,11 +3417,11 @@ D3DXVECTOR3 TMGround::GetPickPos()
                                 (float)m_TileMapData[k + ((j + 1) << 6) + 1].cHeight * 0.1f,
                                 (float)((float)(j + 1) * 2.0f) + m_vecOffset.y);
 
-                            if (fabsf((float)m_pMaskData[j][k] * 0.1f - ((((vec[0].y + vec[1].y) + vec[2].y) + vec[3].y) / 4.0f)) > 1.0f)
+                            if (fabsf((((float)m_pMaskData[j][k] * 0.1f) - ((((vec[0].y + vec[1].y) + vec[2].y) + vec[3].y) / 4.0f))) > 1.0f)
                                 continue;
                         }
 
-                        if (D3DXIntersectTri(vec, &vec[1], &vec[2], &vPickRayOrig, &vPickRayDir, &fU, &fV, &fDistance) == 1)
+                        if (D3DXIntersectTri(&vec[0], &vec[1], &vec[2], &vPickRayOrig, &vPickRayDir, &fU, &fV, &fDistance) == 1)
                         {
                             int bVisible = 0;
                             for (int i = 0; i < 3; ++i)
@@ -3435,9 +3434,9 @@ D3DXVECTOR3 TMGround::GetPickPos()
                                 if (vPosTransformed.z >= 0.0f && vPosTransformed.z < 1.0f)
                                 {
                                     int vPosInX = g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift;
-                                    vPosInX = (int)(((vPosTransformed.x + 1.0f) * vPosInX) / 2.0f);
+                                    vPosInX = (int)(((vPosTransformed.x + 1.0f) * (float)vPosInX) / 2.0f);
                                     int vPosInY = g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift;
-                                    vPosInY = (int)(((-vPosTransformed.y + 1.0f) * vPosInY) / 2.0f);
+                                    vPosInY = (int)(((-vPosTransformed.y + 1.0f) * (float)vPosInY) / 2.0f);
 
                                     if ((float)vPosInX > (float)(-100.0f * RenderDevice::m_fWidthRatio)
                                         && (float)((float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)
@@ -3473,9 +3472,9 @@ D3DXVECTOR3 TMGround::GetPickPos()
                                 if (vPosTransformed.z >= 0.0f && vPosTransformed.z < 1.0f)
                                 {
                                     int vPosInX = g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift;
-                                    vPosInX = (int)(((vPosTransformed.x + 1.0f) * vPosInX) / 2.0f);
+                                    vPosInX = (int)(((vPosTransformed.x + 1.0f) * (float)vPosInX) / 2.0f);
                                     int vPosInY = g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift;
-                                    vPosInY = (int)(((-vPosTransformed.y + 1.0f) * vPosInY) / 2.0f);
+                                    vPosInY = (int)(((-vPosTransformed.y + 1.0f) * (float)vPosInY) / 2.0f);
 
 
                                     if ((float)vPosInX > (float)(-100.0f * RenderDevice::m_fWidthRatio)
