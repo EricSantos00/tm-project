@@ -155,6 +155,8 @@ extern int g_bRunning;
 
 extern int g_nCombineMode;
 
+extern int g_nItemCount;
+
 static stTeleportPos g_TeleportTable[37] =
 {
   { 2116, 2100, 700, g_pMessageStringTable[209] },
