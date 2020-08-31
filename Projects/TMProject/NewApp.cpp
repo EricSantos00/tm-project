@@ -176,7 +176,7 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 		TMSkinMesh::m_nSmooth = 2;
 
 	g_bHideEffect = 0;
-	g_bHideSkillBuffEffect = 1;
+	g_bHideSkillBuffEffect = 0;
 	g_bHideSkillBuffEffect2 = 0;
 
 	m_nSound = Config.Config[2];

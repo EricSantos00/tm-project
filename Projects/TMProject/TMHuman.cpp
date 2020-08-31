@@ -10226,9 +10226,9 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
             auto pEffect1 = new TMEffectBillBoard(
                 56,
                 700,
-                (float)((float)i * 1.5f) + 3.0f,
-                (float)((float)i * 1.5f) + 3.0f,
-                (float)((float)i * 0.5f) + 3.0f,
+                ((float)i * 1.5f) + 3.0f,
+                ((float)i * 1.5f) + 3.0f,
+                ((float)i * 0.5f) + 3.0f,
                 0.001f,
                 1,
                 80);
