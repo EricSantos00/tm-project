@@ -306,7 +306,7 @@ int EventTranslator::CameraEventData()
                         pCamera->m_fVerticalAngle = nMaxVerticalAngle;
                 }
             }
-            if (pCamera->m_nQuaterView == 0|| pCamera->m_nQuaterView == 1)
+            if (pCamera->m_nQuaterView == 0 || pCamera->m_nQuaterView == 1)
             {
                 if (pCamera->m_fSightLength > fClose && wheel < 0)
                 {
@@ -335,10 +335,9 @@ int EventTranslator::CameraEventData()
         }
         else if (pCamera->m_nEarthLevel == 10)
         {  
-            float fProgress = (float)g_pTimerManager->GetServerTime() - (float)pCamera->m_dwSetTime;
-            fProgress = (((fProgress / 3000.0f) * D3DXToRadian(180)) / 2.0f) + 4.712389f;
-           
-            if (fProgress + 1.0f > 1.0f)
+            float fProgress = sinf(((((float)(g_pTimerManager->GetServerTime() - pCamera->m_dwSetTime) / 3000.0f) * D3DXToRadian(180)) / 2.0f) + 4.712389f);
+            fProgress += 1.0f;           
+            if (fProgress >= 1.0f)
                 fProgress = 1.0f;
 
             pCamera->m_fVerticalAngle = (float)((float)(1.0f - fProgress) * 0.1f) - (float)(D3DXToRadian(45) * fProgress);
@@ -350,9 +349,9 @@ int EventTranslator::CameraEventData()
         }
         else
         {
-            float fProgress = (float)g_pTimerManager->GetServerTime() - (float)pCamera->m_dwSetTime;
-
-            if (fProgress / 1000.0f > 1.0f)
+            float fProgress = (float)(g_pTimerManager->GetServerTime() - pCamera->m_dwSetTime);
+            fProgress /= 1000.0f;
+            if (fProgress > 1.0f)
                 fProgress = 1.0f;
 
             pCamera->m_fVerticalAngle = ((((sinf(fProgress * D3DXToRadian(180)) * 12.0f) * 0.01f) * (float)pCamera->m_nEarthLevel)
