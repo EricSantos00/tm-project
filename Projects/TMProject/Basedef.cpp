@@ -3000,6 +3000,83 @@ int BASE_GetDoubleCritical(STRUCT_MOB* mob, unsigned short* sProgress, unsigned 
 
 void BASE_GetHitPosition2(int sx, int sy, int* tx, int* ty, char* pHeight, int MH)
 {
+    if ((sx != *tx || sy != *ty) && sx && sy && *tx && *ty)
+    {
+        int dx = sx <= *tx ? *tx - sx : sx - *tx;
+        int dy = sy <= *ty ? *ty - sy : sy - *ty;
+        int This = pHeight[sx + g_HeightWidth * (sy - g_HeightPosY) - g_HeightPosX];
+
+        if (dx > dy)
+        {
+            int dir = sx >= *tx ? -1 : 1;
+            int leng = dx;
+            for (int x = sx; x - dir != *tx; x += dir)
+            {
+                if (x == sx)
+                {
+                    if (--leng < 0)
+                        return;
+
+                    continue;
+                }
+
+                int Last = This;
+                int a = 1000 * (*ty - sy) / (*tx - sx);
+                This = pHeight[x + g_HeightWidth * ((1000 * sy - sx * a + x * a) / 1000 - g_HeightPosY) - g_HeightPosX];
+                if (This > MH + Last || This < Last - MH)
+                {
+                    *tx = 0;
+                    *ty = 0;
+                    return;
+                }
+                if (--leng < 0)
+                    return;
+            }
+
+            return;
+        }
+
+
+        int dir = sy >= *ty ? - 1 : 1;
+        int leng = dy;
+        for (int y = sy; y - dir != *ty; y += dir)
+        {
+            if (y == sy)
+            {
+                if (--leng < 0)
+                    return;
+
+                continue;
+            }
+
+            int xt = 1000 * (*tx - sx) / (*ty - sy);
+            int xp = (1000 * sx - sy * xt + y * xt) / 1000;
+            int Last = This;
+            if (y - g_HeightPosY < 0 || y - g_HeightPosY >= 256 || xp - g_HeightPosX < 0 || xp - g_HeightPosX >= 256)
+            {
+                *tx = 0;
+                *ty = 0;
+                return;
+            }
+
+            This = pHeight[xp + g_HeightWidth * (y - g_HeightPosY) - g_HeightPosX];
+            if (y == sy)
+            {
+                --leng;
+                continue;
+            }
+
+            if (This > MH + Last || This < Last - MH)
+            {
+                *tx = 0;
+                *ty = 0;
+                return;
+            }
+            if (--leng < 0)
+                return;
+
+        }
+    }
 }
 
 void BASE_SetBit(char* byte, int pos)
@@ -3009,7 +3086,24 @@ void BASE_SetBit(char* byte, int pos)
 
 int BASE_UpdateItem2(int maskidx, int CurrentState, int NextState, int xx, int yy, char* pHeight, int rotate, int height)
 {
-    return 0;
+    if (maskidx >= 10 || maskidx < 0)
+        return 0;
+
+    for (int y = 0; y <= 5; ++y)
+    {
+        for (int x = 0; x <= 5; ++x)
+        {
+            int xp = xx + x - 2;
+            int  yp = yy + y - 2;
+            if (xp - g_HeightPosX < 1 || yp - g_HeightPosY < 1 || xp - g_HeightPosX > g_HeightWidth - 2 || yp - g_HeightPosY > g_HeightHeight - 2)
+                break;
+
+            if (g_pGroundMask[maskidx][rotate][y][x])
+                pHeight[xp + g_HeightWidth * (yp - g_HeightPosY) - g_HeightPosX] = height;
+        }
+    }
+
+    return 1;
 }
 
 int IsPassiveSkill(int nSkillIndex)
