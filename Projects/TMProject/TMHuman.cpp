@@ -15089,8 +15089,8 @@ int TMHuman::MAutoAttack(TMHuman* pTarget, int mode)
     int nMoveSX = (int)m_vecPosition.x;
     int nMoveSY = (int)m_vecPosition.y;
 
-    int nTX = (int)pTarget->m_vecPosition.x;
-    int nTY = (int)pTarget->m_vecPosition.y;
+    nTX = (int)pTarget->m_vecPosition.x;
+    nTY = (int)pTarget->m_vecPosition.y;
 
     int nMoveDistance2 = BASE_GetDistance(nMoveSX, nMoveSY, nTX, nTY);
 
