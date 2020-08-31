@@ -9416,12 +9416,10 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
 
                 vecDest.y += 1.2f;
                 auto vecTempDest = vecDest;
-
                 if (m_stEffectEvent.pTarget)
                 {
-                    vecTempDest = { m_stEffectEvent.pTarget->m_vecPosition.x,
-                        (float)(m_stEffectEvent.pTarget->m_fScale / 2.5f)
-                        + m_stEffectEvent.pTarget->m_fHeight,
+                    vecTempDest = { m_stEffectEvent.pTarget->m_vecPosition.x, 
+                        (float)(m_stEffectEvent.pTarget->m_fScale / 2.5f) + m_stEffectEvent.pTarget->m_fHeight,
                         m_stEffectEvent.pTarget->m_vecPosition.y };
                 }
 
@@ -9432,7 +9430,6 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
                     auto pArrow = new TMArrow(m_pSoul[0]->m_vecPosition, vecTempDest, m_stEffectEvent.sEffectLevel, 10000, m_cAvatar, 0, m_nAttackDestID);
                     g_pCurrentScene->m_pEffectContainer->AddChild(pArrow);
                 }
-
                 if (m_stEffectEvent.sEffectIndex == 105 && m_stEffectEvent.sEffectLevel == 2)
                 {
                     auto pSwing = new TMSkillDoubleSwing(vecStart, vecTempDest, 3, m_stEffectEvent.pTarget);
@@ -9784,7 +9781,7 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
     }
     else if (!m_pOverExp)
     {
-        m_pOverExp = new TMEffectBillBoard(439, 0, 0.4f, 0.4f, 0.4f, 0.0f, 1, 80);
+        m_pOverExp = new TMEffectBillBoard(439, 0, 0.40000001f, 0.40000001f, 0.40000001f, 0.0f, 1, 80);
         m_pOverExp->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
         m_pOverExp->m_nFade = 2;
 
@@ -9811,7 +9808,7 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
         if (m_pBraveOverExp)
         {
             g_pObjectManager->DeleteObject(m_pBraveOverExp);
-            m_pBraveOverExp = 0;
+            m_pBraveOverExp = nullptr;
         }
     }
     else if (!m_pBraveOverExp)
@@ -9823,7 +9820,7 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
         if (m_cMount == 1)
             m_pBraveOverExp->m_vecPosition = { m_vecSkinPos.x, ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_vecSkinPos.y) - 0.30000001f, m_vecSkinPos.z };
         else
-            m_pBraveOverExp->m_vecPosition = { m_vecPosition.x, (TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y };
+            m_pBraveOverExp->m_vecPosition = { m_vecPosition.x, (float)(TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y };
 
         m_pBraveOverExp->m_nParticleType = 10;
         m_pBraveOverExp->m_fParticleH = 0.1f;
@@ -9835,7 +9832,7 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
         if (m_cMount == 1)
             m_pBraveOverExp->m_vecPosition = { m_vecSkinPos.x, ((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_vecSkinPos.y) - 0.30000001f, m_vecSkinPos.z };
         else
-            m_pBraveOverExp->m_vecPosition = { m_vecPosition.x, (TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y };
+            m_pBraveOverExp->m_vecPosition = { m_vecPosition.x, (float)(TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) + m_fHeight, m_vecPosition.y };
     }
 
     if (!g_bHideSkillBuffEffect && m_cManaControl == 1)
@@ -9910,7 +9907,7 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
         m_pProtector = nullptr;
     }
 
-    if (m_cCriticalArmor == 1)
+    if (!g_bHideSkillBuffEffect && m_cCriticalArmor == 1)
     {
         if (!m_pCriticalArmor)
         {
@@ -9938,7 +9935,7 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
                 m_pCriticalArmor->m_fScaleV = 1.5f;
                 m_pCriticalArmor->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
                 m_pCriticalArmor->m_cShine = 1;
-                // TODO they removed the critical armor..
+                g_pCurrentScene->m_pEffectContainer->AddChild(m_pCriticalArmor);
             }
         }
         else
