@@ -247,174 +247,181 @@ int TMHouse::Render()
             g_pDevice->SetRenderState(D3DRS_SRCBLEND, 2u);
             g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
         }
-        else
+        else if (m_cHouseType == 4)
         {
             auto pMesh1 = g_pMeshManager->GetCommonMesh(m_dwObjType + 1, 0, 180000);
             auto pMesh2 = g_pMeshManager->GetCommonMesh(m_dwObjType + 2, 0, 180000);
+            if (!pMesh1)
+                return 0;
+            if (!pMesh2)
+                return 0;
 
-            switch (m_cHouseType)
-            {
-            case 4:
-                if (!pMesh1)
-                    return 0;
-                if (!pMesh2)
-                    return 0;
+            pMesh1->Render(
+                m_vecPosition.x,
+                m_fHeight + 0.44999999f,
+                m_vecPosition.y,
+                -m_fWindMillAngle,
+                0,
+                0,
+                0,
+                0);
 
-                pMesh1->Render(
-                    m_vecPosition.x,
-                    m_fHeight + 0.44999999f,
-                    m_vecPosition.y,
-                    -m_fWindMillAngle,
-                    0,
-                    0,
-                    0,
-                    0);
+            pMesh1->Render(
+                m_vecPosition.x,
+                m_fHeight + 2.7f,
+                m_vecPosition.y,
+                -m_fWindMillAngle,
+                0,
+                0,
+                0,
+                0);
 
-                pMesh1->Render(
-                    m_vecPosition.x,
-                    m_fHeight + 2.7f,
-                    m_vecPosition.y,
-                    -m_fWindMillAngle,
-                    0,
-                    0,
-                    0,
-                    0);
+            pMesh2->Render(
+                m_vecPosition.x,
+                m_fHeight + 2.0f,
+                m_vecPosition.y,
+                m_fWindMillAngle,
+                0,
+                0,
+                0,
+                0);
+        }
+        else if (m_cHouseType == 5)
+        {
+            auto pMesh1 = g_pMeshManager->GetCommonMesh(m_dwObjType + 1, 0, 180000);
+            auto pMesh2 = g_pMeshManager->GetCommonMesh(m_dwObjType + 2, 0, 180000);
+            if (!pMesh1)
+                return 0;
+            if (!pMesh2)
+                return 0;
 
-                pMesh2->Render(
-                    m_vecPosition.x,
-                    m_fHeight + 2.0f,
-                    m_vecPosition.y,
-                    m_fWindMillAngle,
-                    0,
-                    0,
-                    0,
-                    0);
-                break;
-            case 5:
-                if (!pMesh1)
-                    return 0;
-                if (!pMesh2)
-                    return 0;
+            pMesh1->Render(
+                m_vecPosition.x + m_vecPos1.x,
+                m_fHeight + 1.2f,
+                m_vecPosition.y + m_vecPos1.y,
+                m_fAngle - 1.5707964f,
+                m_fWindMillAngle,
+                1.5707964f,
+                0,
+                0);
+            pMesh1->Render(
+                m_vecPosition.x + m_vecPos2.x,
+                m_fHeight + 1.2f,
+                m_vecPosition.y + m_vecPos2.y,
+                m_fAngle - 1.5707964f,
+                -m_fWindMillAngle,
+                1.5707964f,
+                0,
+                0);
+            pMesh2->Render(
+                m_vecPosition.x,
+                m_fHeight,
+                m_vecPosition.y,
+                m_fAngle,
+                0,
+                0,
+                0,
+                0);
+        }
+        else if (m_cHouseType == 6)
+        {
+            auto pMesh1 = g_pMeshManager->GetCommonMesh(m_dwObjType + 1, 0, 180000);
+            if (!pMesh1)
+                return 0;
 
-                pMesh1->Render(
-                    m_vecPosition.x + m_vecPos1.x,
-                    m_fHeight + 1.2f,
-                    m_vecPosition.y + m_vecPos1.y,
-                    m_fAngle - 1.5707964f,
-                    m_fWindMillAngle,
-                    1.5707964f,
-                    0,
-                    0);
-                pMesh1->Render(
-                    m_vecPosition.x + m_vecPos2.x,
-                    m_fHeight + 1.2f,
-                    m_vecPosition.y + m_vecPos2.y,
-                    m_fAngle - 1.5707964f,
-                    -m_fWindMillAngle,
-                    1.5707964f,
-                    0,
-                    0);
-                pMesh2->Render(
-                    m_vecPosition.x,
-                    m_fHeight,
-                    m_vecPosition.y,
-                    m_fAngle,
-                    0,
-                    0,
-                    0,
-                    0);
-                break;
-            case 6:
-                if (!pMesh1)
-                    return 0;
+            pMesh1->Render(
+                m_vecPosition.x,
+                m_fHeight,
+                m_vecPosition.y,
+                m_fAngle,
+                0,
+                0,
+                6,
+                0);
+        }
+        else if (m_cHouseType == 7)
+        {
+            auto pMesh1 = g_pMeshManager->GetCommonMesh(m_dwObjType + 20, 0, 180000);
+            if (!pMesh1)
+                return 0;
 
-                pMesh1->Render(
-                    m_vecPosition.x,
-                    m_fHeight,
-                    m_vecPosition.y,
-                    m_fAngle,
-                    0,
-                    0,
-                    6,
-                    0);
-                break;
-            case 7:
-                if (!pMesh1)
-                    return 0;
+            pMesh1->Render(
+                m_vecPosition.x,
+                m_fHeight,
+                m_vecPosition.y,
+                m_fAngle,
+                0,
+                0,
+                101,
+                0);
+        }
+        else if (m_cHouseType == 8)
+        {
+            auto pMesh1 = g_pMeshManager->GetCommonMesh(m_dwObjType + 32, 0, 180000);
+            if (!pMesh1)
+                return 0;
 
-                pMesh1->Render(
-                    m_vecPosition.x,
-                    m_fHeight,
-                    m_vecPosition.y,
-                    m_fAngle,
-                    0,
-                    0,
-                    101,
-                    0);
-                break;
-            case 8:
-                if (!pMesh1)
-                    return 0;
+            pMesh1->Render(
+                m_vecPosition.x,
+                m_fHeight,
+                m_vecPosition.y,
+                m_fAngle,
+                0,
+                0,
+                100,
+                0);
+        }
+        else if (m_cHouseType == 9)
+        {
+            auto pMesh1 = g_pMeshManager->GetCommonMesh(m_dwObjType + 61, 0, 180000);
+            if (!pMesh1)
+                return 0;
 
-                pMesh1->Render(
-                    m_vecPosition.x,
-                    m_fHeight,
-                    m_vecPosition.y,
-                    m_fAngle,
-                    0,
-                    0,
-                    100,
-                    0);
-                break;
-            case 9:
-                if (!pMesh1)
-                    return 0;
-
-                pMesh1->Render(
-                    m_vecPosition.x,
-                    m_fHeight,
-                    m_vecPosition.y,
-                    m_fAngle,
-                    0,
-                    0,
-                    6,
-                    0);
-                break;
-            case 0xA:
-                if (!pMesh1)
-                    return 0;
-                g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
-                g_pDevice->SetRenderState(D3DRS_DESTBLEND, 2u);
-                g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
-                g_pDevice->SetRenderState(D3DRS_LIGHTING, 1u);
-                g_pDevice->SetRenderState(D3DRS_SRCBLEND, 3u);
-                g_pDevice->SetRenderState(D3DRS_DESTBLEND, 4u);
-                g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
-                g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 8u);
-                g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 0);
-                g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 0);
-                g_pDevice->SetRenderState(D3DRS_CULLMODE, 1u);
-                pMesh1->m_bEffect = 1;
-                int Index = pMesh1->m_nTextureIndex[0];
-                pMesh1->m_nTextureIndex[0] = 234;
-                pMesh1->Render(
-                    m_vecPosition.x,
-                    m_fHeight,
-                    m_vecPosition.y,
-                    m_fAngle,
-                    0,
-                    0,
-                    100,
-                    0);
-                pMesh1->m_nTextureIndex[0] = Index;
-                pMesh1->m_bEffect = 0;
-                g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
-                g_pDevice->SetRenderState(D3DRS_CULLMODE, 3u);
-                g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
-                g_pDevice->SetRenderState(D3DRS_SRCBLEND, 2u);
-                g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
-                break;
-            }
+            pMesh1->Render(
+                m_vecPosition.x,
+                m_fHeight,
+                m_vecPosition.y,
+                m_fAngle,
+                0,
+                0,
+                6,
+                0);
+        }
+        else if (m_cHouseType == 10)
+        {
+            auto pMesh1 = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 180000);
+            if (!pMesh1)
+                return 0;
+            g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+            g_pDevice->SetRenderState(D3DRS_DESTBLEND, 2u);
+            g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+            g_pDevice->SetRenderState(D3DRS_LIGHTING, 1u);
+            g_pDevice->SetRenderState(D3DRS_SRCBLEND, 3u);
+            g_pDevice->SetRenderState(D3DRS_DESTBLEND, 4u);
+            g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+            g_pDevice->SetRenderState(D3DRS_ALPHAFUNC, 8u);
+            g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+            g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 0);
+            g_pDevice->SetRenderState(D3DRS_CULLMODE, 1u);
+            pMesh1->m_bEffect = 1;
+            int Index = pMesh1->m_nTextureIndex[0];
+            pMesh1->m_nTextureIndex[0] = 234;
+            pMesh1->Render(
+                m_vecPosition.x,
+                m_fHeight,
+                m_vecPosition.y,
+                m_fAngle,
+                0,
+                0,
+                100,
+                0);
+            pMesh1->m_nTextureIndex[0] = Index;
+            pMesh1->m_bEffect = 0;
+            g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+            g_pDevice->SetRenderState(D3DRS_CULLMODE, 3u);
+            g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+            g_pDevice->SetRenderState(D3DRS_SRCBLEND, 2u);
+            g_pDevice->SetRenderState(D3DRS_DESTBLEND, 6u);
         }
     }
     g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1);

@@ -4,6 +4,7 @@
 #include "TMGlobal.h"
 
 TMShip::TMShip(int nType) :
+    TMObject(),
 	m_vecMoveToPos{}
 {
 	m_dwObjType = nType;
