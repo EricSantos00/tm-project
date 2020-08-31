@@ -8,6 +8,7 @@
 #include "TMSkillPoison.h"
 
 TMEffectSkinMesh::TMEffectSkinMesh(int nSkinMeshType, TMVector3 vecStart, TMVector3 vecTarget, int nLevel, TMObject* pOwner)
+	: TMObject()
 {
 	m_dwObjType = 331;
 	m_pSkinMesh = 0;
@@ -45,8 +46,8 @@ TMEffectSkinMesh::TMEffectSkinMesh(int nSkinMeshType, TMVector3 vecStart, TMVect
 	if (!m_dwLifeTime)
 		m_dwLifeTime = 1;
 
-	if (m_dwLifeTime > 5000u)
-		m_dwLifeTime = 5000u;
+	if (m_dwLifeTime > 5000)
+		m_dwLifeTime = 5000;
 
 	m_stLookInfo = {};
 	m_stSancInfo = {};
@@ -58,7 +59,14 @@ TMEffectSkinMesh::~TMEffectSkinMesh()
 {
 	SAFE_DELETE(m_pSkinMesh2);
 
-	if (m_nLevel || m_nMotionType != 2)
+	if (!m_nLevel && m_nMotionType == 2)
+	{
+		TMSkillFire* pFire = new TMSkillFire(m_vecTargetPos, 0, nullptr, 0xFFFFFFFF, 0x22331100);
+
+		if (pFire)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pFire);
+	}
+	else
 	{
 		TMEffectSkinMesh* pEffect = nullptr;
 		if (m_nLevel == 1)
@@ -82,13 +90,6 @@ TMEffectSkinMesh::~TMEffectSkinMesh()
 
 			g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
 		}
-	}
-	else
-	{
-		TMSkillFire* pFire = new TMSkillFire(m_vecTargetPos, 0, nullptr, 0xFFFFFFFF, 0x22331100);
-
-		if (pFire)
-			g_pCurrentScene->m_pEffectContainer->AddChild(pFire);
 	}
 }
 

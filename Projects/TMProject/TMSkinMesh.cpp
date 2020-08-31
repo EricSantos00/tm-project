@@ -340,7 +340,7 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 			if (god2cos)
 				tmpMesh->m_god2cos = 1;
 
-			char nColor = *((unsigned char*)&m_Color.Sanc0 + i);
+			unsigned char nColor = *((unsigned char*)&m_Color.Sanc0 + i);
 			if (m_nCosType)
 				tmpMesh->m_bHead = 1;
 
@@ -408,12 +408,10 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 				else
 					LOG_WRITELOG("Can't Find Parent Node in ID : %d, MshName : %s\r\n", tmpMesh->m_dwID, szName);
 			}
-			else
+			else if (tmpMesh)
 			{
 				std::cout << "Can't Load " << szName << " mesh.\n";
-
-				if (tmpMesh)
-					delete tmpMesh;
+				delete tmpMesh;
 			}
 		}
 	}

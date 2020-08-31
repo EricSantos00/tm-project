@@ -10137,7 +10137,8 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
             g_pCurrentScene->m_pEffectContainer->AddChild(m_pFamiliar);
         }
     }
-    else
+    else if (m_sFamiliar != 753 && m_sFamiliar != 769 && m_sFamiliar != 1726 &&
+        (m_sFamiliar < 3900 || m_sFamiliar > 3908) && (m_sFamiliar < 3911 || m_sFamiliar > 3916) && m_sFamiliar != 4060 && m_pFamiliar)
     {
         g_pObjectManager->DeleteObject(m_pFamiliar);
         m_pFamiliar = nullptr;
