@@ -12122,10 +12122,185 @@ void TMHuman::CheckWeapon(short sIndexL, short sIndexR)
 
 void TMHuman::PlayAttackSound(ECHAR_MOTION eMotion, int nLR)
 {
+    if (m_dwDelayDel)
+        return;
+
+    STRUCT_ITEM itemL{};
+    STRUCT_ITEM itemR{};
+
+    itemL.sIndex = m_sLeftIndex;
+    itemR.sIndex = m_sRightIndex;
+    BASE_GetItemAbility(&itemL, 17);
+    
+    int nWeaponPosR = BASE_GetItemAbility(&itemR, 17);
+    int nSoundIndex = 121;
+
+    if (m_nSkinMeshType == 3 || m_nClass == 40)
+    {
+        if (!nLR && m_nWeaponTypeL || nLR == 1 && nWeaponPosR && nWeaponPosR != 128)
+        {
+            if (g_pSoundManager)
+            {
+                auto pSoundData = g_pSoundManager->GetSoundData(nSoundIndex);
+                if (pSoundData && (!pSoundData->IsSoundPlaying() || m_sAttackLR != nLR))
+                {
+                    pSoundData->Play(0, 0);
+                }
+            }
+        }
+        m_sAttackLR = nLR;
+        return;
+    }
+
+    if (m_nWeaponTypeL == 1 && !nLR || m_nWeaponTypeR == 1 && nLR == 1)
+    {
+        if (g_pItemList[m_sLeftIndex].nReqLvl > 90 && !nLR || g_pItemList[m_sRightIndex].nReqLvl > 90 && !nLR)
+        {
+            if (!((int)eMotion % 2))
+                nSoundIndex = 124;
+            else if ((int)eMotion % 2 == 1)
+                nSoundIndex = 125;
+        }
+        else if (!((signed int)eMotion % 2))
+            nSoundIndex = 121;
+        else if ((signed int)eMotion % 2 == 1)
+            nSoundIndex = 122;
+    }
+    else if (m_nWeaponTypeL == 2 && !nLR || m_nWeaponTypeR == 2 && nLR == 1)
+    {
+        if (!((int)eMotion % 2))
+            nSoundIndex = 124;
+        else if ((int)eMotion % 2 == 1)
+            nSoundIndex = 125;
+    }
+    else if (m_nWeaponTypeL == 3 && !nLR || m_nWeaponTypeR == 3 && nLR == 1)
+    {
+        if (!((int)eMotion % 2))
+            nSoundIndex = 126;
+        else if ((int)eMotion % 2 == 1)
+            nSoundIndex = 127;
+    }
+    else if (!nLR
+        && (m_nWeaponTypeL == 11
+            || m_nWeaponTypeL == 12
+            || m_nWeaponTypeL == 31
+            || m_nWeaponTypeL == 32
+            || m_nWeaponTypeL == 61
+            || m_nWeaponTypeL == 62)
+        || nLR == 1
+        && (m_nWeaponTypeR == 11
+            || m_nWeaponTypeR == 12
+            || m_nWeaponTypeR == 31
+            || m_nWeaponTypeR == 32
+            || m_nWeaponTypeR == 61
+            || m_nWeaponTypeR == 62))
+    {
+        if (!((int)eMotion % 2))
+            nSoundIndex = 128;
+        else if ((int)eMotion % 2 == 1)
+            nSoundIndex = 129;
+    }
+    else if (m_nWeaponTypeL == 13 || m_nWeaponTypeL == 33 || m_nWeaponTypeL == 63)
+    {
+        if (!((int)eMotion % 2))
+            nSoundIndex = 131;
+        else if ((int)eMotion % 2 == 1)
+            nSoundIndex = 132;
+    }
+    else
+    {
+        if (m_nWeaponTypeL == 101)
+            return;
+        if (m_nWeaponTypeL == 41)
+        {
+            if (!((int)eMotion % 2))
+                nSoundIndex = 135;
+            else if ((int)eMotion % 2 == 1)
+                nSoundIndex = 136;
+        }
+        else if (m_nWeaponTypeL == 21 || m_nWeaponTypeL == 22 || m_nWeaponTypeL == 23)
+        {
+            if (!((int)eMotion % 2))
+                nSoundIndex = 137;
+            else if ((int)eMotion % 2 == 1)
+                nSoundIndex = 138;
+        }
+        else if (m_nWeaponTypeL == 102)
+            nSoundIndex = 139;
+        else if (m_nWeaponTypeL != 103 && m_nWeaponTypeL != 104)
+            nSoundIndex = 121;
+        else
+            nSoundIndex = 140;
+    }
+
+    if (!nLR && m_nWeaponTypeL || nLR == 1 && nWeaponPosR && nWeaponPosR != 128)
+    {
+        if (g_pSoundManager)
+        {
+            auto pSoundData = g_pSoundManager->GetSoundData(nSoundIndex);
+            if (pSoundData && (!pSoundData->IsSoundPlaying() || m_sAttackLR != nLR))
+            {
+                pSoundData->Play(0, 0);
+            }
+        }
+    }
+
+    m_sAttackLR = nLR;
 }
 
 void TMHuman::PlayPunchedSound(int nType, int nLR)
 {
+    if (m_dwDelayDel)
+        return;
+
+    int nSoundIndex = 27;
+    unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+    if (m_nSkinMeshType == 3 || m_nClass == 40)
+    {
+        if (g_pSoundManager)
+        {
+            auto pSoundData = g_pSoundManager->GetSoundData(nSoundIndex);
+            if (pSoundData && (!pSoundData->IsSoundPlaying() || m_sPunchLR != nLR || dwServerTime > m_dwLastPlayPunchedTime + 400))
+            {
+                pSoundData->Play(0, 0);
+                m_dwLastPlayPunchedTime = dwServerTime;
+            }
+        }
+
+        m_sPunchLR = nLR;
+        return;
+    }
+    
+    if (nType == 1)
+        nSoundIndex = 21;
+    if (nType == 2)
+        nSoundIndex = 22;
+    if (nType == 3)
+        nSoundIndex = 23;
+    if (nType == 11 || nType == 31 || nType == 61)
+        nSoundIndex = 25;
+    if (nType == 12 || nType == 32 || nType == 62)
+        nSoundIndex = 26;
+    if (nType == 13 || nType == 33 || nType == 63)
+        nSoundIndex = 27;
+    if (nType == 21 || nType == 22 || nType == 23 || nType == 41)
+        nSoundIndex = 28;
+    if (nType > 100 && nType < 105)
+        nSoundIndex = 24;
+
+    if (g_pSoundManager)
+    {
+        if (nSoundIndex != 24)
+        {
+            auto pSoundData = g_pSoundManager->GetSoundData(nSoundIndex);
+            if (pSoundData && (!pSoundData->IsSoundPlaying() || m_sPunchLR != nLR || dwServerTime > m_dwLastPlayPunchedTime + 400))
+            {
+                pSoundData->Play(0, 0);
+                m_dwLastPlayPunchedTime = dwServerTime;
+            }
+        }
+        m_sPunchLR = nLR;
+    }
 }
 
 void TMHuman::SetMotion(ECHAR_MOTION eMotion, float fAngle)
