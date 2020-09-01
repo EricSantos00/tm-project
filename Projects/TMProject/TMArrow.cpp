@@ -6,7 +6,7 @@
 #include "TMUtil.h"
 #include "TMEffectBillBoard3.h"
 #include "TMCamera.h"
-
+#include "TMMesh.h"
 TMArrow::TMArrow(TMVector3 vecStart, TMVector3 vecTarget, int nLevel, int nType, char cAvatar, int nColor, int nDestID) 
 	: TreeNode(0),
 	m_vecStartPos{},
@@ -205,7 +205,173 @@ TMArrow::~TMArrow()
 
 int TMArrow::Render()
 {
-	return 0;
+    if (m_bVisible == 1 && m_nType != 10000)
+    {
+        bool bEffect = false;
+        if (m_nType == 10001)
+            bEffect = true;
+
+        auto pMesh = g_pMeshManager->GetCommonMesh(m_nMeshIndex, bEffect, 180000);
+        D3DMATERIAL9 Materials{};
+        if (m_nType == 10001 || m_nType == 10002 || m_nType == 10003)
+        {
+            Materials.Diffuse.r = 0.3f;
+            Materials.Diffuse.g = 0.3f;
+            Materials.Diffuse.b = 1.0f;
+            Materials.Emissive.r = 0.3f;
+            Materials.Emissive.g = 0.3f;
+            Materials.Emissive.b = 1.0f;
+            Materials.Emissive.a = Materials.Diffuse.a;
+            Materials.Specular.r = 0.3f;
+            Materials.Specular.g = 0.3f;
+            Materials.Specular.b = 1.0f;
+            Materials.Specular.a = Materials.Diffuse.a;
+            Materials.Power = 0.0;
+        }
+        else if (m_nType == 10003)
+        {
+            Materials.Diffuse.r = 1.0f;
+            Materials.Diffuse.g = 1.0f;
+            Materials.Diffuse.b = 1.0f;
+            Materials.Emissive.r = 1.0f;
+            Materials.Emissive.g = 1.0f;
+            Materials.Emissive.b = 1.0f;
+            Materials.Emissive.a = Materials.Diffuse.a;
+            Materials.Specular.r = 1.0f;
+            Materials.Specular.g = 1.0f;
+            Materials.Specular.b = 1.0f;
+            Materials.Specular.a = Materials.Diffuse.a;
+            Materials.Power = 1.0f;
+        }
+        else
+        {
+            Materials.Emissive.r = 0.3f;
+            Materials.Emissive.g = 0.3f;
+            Materials.Emissive.b = 0.3f;
+            Materials.Diffuse.r = 0.3f;
+            Materials.Diffuse.g = 0.3f;
+            Materials.Diffuse.b = 0.3f;
+            Materials.Diffuse.a = Materials.Emissive.a;
+            Materials.Specular.r = 0.3f;
+            Materials.Specular.g = 0.3f;
+            Materials.Specular.b = 0.3f;
+            Materials.Specular.a = Materials.Emissive.a;
+            Materials.Power = 0.0;
+        }
+        g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+        if (!m_nColor)
+        {
+            g_pDevice->SetTexture(1u, nullptr);
+            g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+        }
+        else
+        {
+            int nBaseIndex = 153;
+            if (m_nColor == 6)
+                nBaseIndex = 166;
+            if (m_nColor == 7)
+                nBaseIndex = 246;
+            if (m_nColor == 8)
+                nBaseIndex = 260;
+
+            g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(nBaseIndex + 10, 5000));
+            if (g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400)
+            {
+                g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+                g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 7u);
+            }
+            else
+            {
+                g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+                g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 0xBu);
+            }
+        }
+        if (pMesh)
+        {
+            switch (m_nType)
+            {
+            case 151:
+            {
+                pMesh->Render(m_vecCurrentPos.x, m_vecCurrentPos.y, m_vecCurrentPos.z, m_fAngle, m_fRotAngle - D3DXToRadian(90), 0, 0, 0);
+            }
+            break;
+            case 104:
+            case 152:
+            {
+                pMesh->Render(m_vecCurrentPos.x, m_vecCurrentPos.y, m_vecCurrentPos.z, m_fAngle - D3DXToRadian(90), D3DXToRadian(90), 0, 0, 0);
+            }
+            break;
+            case 10001:
+            {
+                pMesh->Render(m_vecCurrentPos.x, m_vecCurrentPos.y, m_vecCurrentPos.z, m_fAngle - D3DXToRadian(90), -0.69813174f, 0.78539819f, 0, 0);
+            }
+            break;
+            case 10002:
+            {
+                pMesh->m_fScaleH = 0.55f;
+                pMesh->m_fScaleV = 0.55f;
+                TMVector3 vPos1;
+                TMVector3 vPos2;
+                TMVector3 vPos3;
+                vPos1 = vPos2 = vPos3 = m_vecCurrentPos;
+                float m_nHeight = (float)(m_vecRotatePos1.x / 3.0f) + 0.3f;
+                vPos1.x = vPos1.x + m_vecRotatePos1.x;
+                vPos1.z = vPos1.z + m_vecRotatePos1.y;
+                pMesh->Render(vPos1.x, vPos1.y + m_nHeight, vPos1.z, m_vecRotatePos1.x * 4.0f, 0, 0, 0, 0);
+                vPos2.x = vPos2.x + m_vecRotatePos2.x;
+                vPos2.z = vPos2.z + m_vecRotatePos2.y;
+                pMesh->Render(vPos2.x, vPos2.y + m_nHeight, vPos2.z, m_vecRotatePos2.x * 4.0f, 0, 0, 0, 0);
+                vPos3.x = vPos3.x + m_vecRotatePos3.x;
+                vPos3.z = vPos3.z + m_vecRotatePos3.y;
+                pMesh->Render(vPos3.x, vPos3.y + m_nHeight, vPos3.z, m_vecRotatePos3.x * 4.0f, 0, 0, 0, 0);
+            }
+            break;
+            case 10003:
+            {
+                g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(6, 0x1388u));
+                g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 0xBu);
+                g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 9u);
+                pMesh->m_fScaleH = 1.5f;
+                pMesh->m_fScaleV = 1.5f;
+                TMVector3 vPos1;
+                TMVector3 vPos2;
+                TMVector3 vPos3;
+                vPos1 = vPos2 = vPos3 = m_vecCurrentPos;
+                float m_nHeight = (float)(m_vecRotatePos1.x / 3.0f) + 0.1f;
+                vPos1.x += m_vecRotatePos1.x;
+                vPos1.z += m_vecRotatePos1.y;
+                pMesh->Render(vPos1.x, vPos1.y + m_nHeight, vPos1.z, (m_vecRotatePos1.x * 2.0f) - 1.6f, m_vecRotatePos1.x * 2.0f, m_vecRotatePos1.x / 2.0f, 0, 0);
+
+                vPos2.x += m_vecRotatePos2.x;
+                vPos2.z += m_vecRotatePos2.y;
+                pMesh->Render(vPos2.x, vPos2.y + m_nHeight, vPos2.z, m_vecRotatePos2.x * 2.0f, m_vecRotatePos2.x * 2.0f, m_vecRotatePos2.x / 2.0f, 0, 0);
+
+                vPos3.x += m_vecRotatePos3.x;
+                vPos3.z += m_vecRotatePos3.y;
+                pMesh->Render(vPos3.x, vPos3.y + m_nHeight, vPos3.z, (m_vecRotatePos2.x * 2.0f) + 4.1999998f, m_vecRotatePos3.x * 2.0f, m_vecRotatePos3.x / 2.0f, 0, 0);
+            }
+            break;
+            default:
+            {
+                pMesh->Render(m_vecCurrentPos.x, m_vecCurrentPos.y, m_vecCurrentPos.z, m_fAngle, D3DXToRadian(90), 0, 0, 0);
+            }
+            break;
+            }
+        }
+        if (m_nColor)
+        {
+            g_pDevice->SetTexture(1u, nullptr);
+            g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+            g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+        }
+        g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+        g_pDevice->SetTextureStageState(1u, D3DTSS_TEXCOORDINDEX, 1u);
+        g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 1u);
+        if (m_pEffectMesh)
+            m_pEffectMesh->Render();
+    }
+
+    return 1;
 }
 
 int TMArrow::IsVisible()
