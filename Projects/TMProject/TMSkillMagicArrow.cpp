@@ -30,7 +30,7 @@ TMSkillMagicArrow::TMSkillMagicArrow(TMVector3 vecStart, TMVector3 vecTarget, in
 
 	auto vecD = vecTarget - vecStart;
 	float fLength = vecD.Length();
-	m_dwLifeTime = 50 * fLength;
+	m_dwLifeTime = static_cast<unsigned int>(50.0f * fLength);
 
 	switch (m_nType)
 	{
@@ -123,7 +123,7 @@ TMSkillMagicArrow::~TMSkillMagicArrow()
 				pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
 				pEffect->m_nFade = 0;
 				pEffect->m_vecPosition = m_vecTargetPos;
-				pEffect->m_vecPosition.y = pEffect->m_vecPosition.y - 0.5;
+				pEffect->m_vecPosition.y = pEffect->m_vecPosition.y - 0.5f;
 
 				g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
 			}

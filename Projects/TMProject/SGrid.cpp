@@ -2148,7 +2148,6 @@ int SGridControl::SellItem(int nCellX, int nCellY, unsigned int dwFlags, unsigne
 			g_pCurrentScene->OnMouseEvent(dwFlags, wParam, (int)pos.x, (int)pos.y);
 		}
 	}
-	// TODO
 	return 2;
 }
 

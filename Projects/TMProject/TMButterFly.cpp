@@ -49,7 +49,7 @@ TMButterFly::TMButterFly(int nType, int nBD, TMObject* pOwner)
 
 	m_fCircleSpeed = static_cast<float>(nRand) * 0.1f + 1.0f;
 	m_fParticleH = static_cast<float>(nRand) * 0.5f + 3.0f;
-	m_fParticleH = static_cast<float>(nRand) * 0.050000001 + 0.2f;
+	m_fParticleH = static_cast<float>(nRand) * 0.05f + 0.2f;
 }
 
 TMButterFly::~TMButterFly()
@@ -302,7 +302,7 @@ int TMButterFly::FrameMove(unsigned int dwServerTime)
 			m_pSkinMesh->m_materials.Emissive.g = (float)(g_pDevice->m_colorBackLight.g * 0.40000001f) + (float)(color * 0.40000001f);
 			m_pSkinMesh->m_materials.Emissive.b = (float)(g_pDevice->m_colorBackLight.b * 0.40000001f) + (float)(color * 0.40000001f);
 
-			m_pSkinMesh->FrameMove(dwServerTime + ((m_fParticleH * 10.0f) + (m_fParticleV * 100.0f) + 5 * m_nMotionType));
+			m_pSkinMesh->FrameMove(dwServerTime + static_cast<unsigned int>(((m_fParticleH * 10.0f) + (m_fParticleV * 100.0f) + 5 * m_nMotionType)));
 		}
 
 		return 1;

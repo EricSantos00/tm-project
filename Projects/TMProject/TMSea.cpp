@@ -319,7 +319,7 @@ int TMSea::FrameMove(unsigned int dwServerTime)
                     pVertex[nX + nY * (m_nGridNumX + 1)].tu1 = ((float)nX / 9.5f);
                     pVertex[nX + nY * (m_nGridNumX + 1)].tv2 = ((float)nY / 3.8f);
                     pVertex[nX + nY * (m_nGridNumX + 1)].tu2 = ((float)nX / 3.8f) + ((float)nIndex1 / 18000.0f);
-                    pVertex[nX + nY * (m_nGridNumX + 1)].position.y = (sinf((((float)nX * 3.1415927f) / 4.5f) + (((float)nIndex0 / 6000.0) * 2.0f)) * 0.89999998f) - 0.1f;
+                    pVertex[nX + nY * (m_nGridNumX + 1)].position.y = (sinf((((float)nX * 3.1415927f) / 4.5f) + (((float)nIndex0 / 6000.0f) * 2.0f)) * 0.89999998f) - 0.1f;
                 }
                 else
                 {

@@ -3788,7 +3788,7 @@ int TMHuman::OnPacketIllusion(MSG_STANDARD* pStd)
 
     TMVector2 vecPosition{ (float)pAction->TargetX + 0.5f, (float)pAction->TargetY + 0.5f };
 
-    InitPosition(vecPosition.x, pScene->GroundGetMask(vecPosition), vecPosition.y);
+    InitPosition(vecPosition.x, static_cast<float>(pScene->GroundGetMask(vecPosition)), vecPosition.y);
 
     if (pScene->m_pMyHuman != this)
     {
@@ -4519,7 +4519,7 @@ int TMHuman::OnPacketUpdateScore(MSG_STANDARD* pStd)
         }
         memcpy(&g_pObjectManager->m_stMobData.CurrentScore, &pUpdateScore->Score, sizeof(STRUCT_SCORE));
         m_sGuildLevel = static_cast<unsigned char>(g_pObjectManager->m_stMobData.GuildLevel);
-        g_pObjectManager->m_stMobData.Magic = pUpdateScore->Magic;
+        g_pObjectManager->m_stMobData.Magic = static_cast<char>(pUpdateScore->Magic);
     }
 
     unsigned short usGuild = pUpdateScore->Guild;
@@ -4786,7 +4786,7 @@ int TMHuman::OnPacketSetHpDam(MSG_STANDARD* pStd)
 
     int nTX = 0;
     int nTY = 0;
-    if (BASE_Get3DTo2DPos(m_vecPosition.x, m_fHeight + 1.0, m_vecPosition.y, &nTX, &nTY))
+    if (BASE_Get3DTo2DPos(m_vecPosition.x, m_fHeight + 1.0f, m_vecPosition.y, &nTX, &nTY))
     {
         char szVal[128]{};
 
@@ -6443,7 +6443,7 @@ void TMHuman::AnimationFrame(int nWalkSndIndex)
         {
             nWalkSndIndex = 4;
             unsigned int dwServerTime = g_pTimerManager->GetServerTime();
-            int nWaterTime = 80;
+            unsigned int nWaterTime = 80;
             if (m_eMotion == ECHAR_MOTION::ECMOTION_WALK)
                 nWaterTime = 120;
             if ((dwServerTime - m_dwWaterTime) > nWaterTime)
@@ -9189,7 +9189,7 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
                     pBill->m_vecPosition = { m_vecPosition.x, (float)(m_fHeight + 0.2f) + ((float)i * 0.2f), m_vecPosition.y };
                     g_pCurrentScene->m_pEffectContainer->AddChild(pBill);
 
-                    int fRand = (float)(rand() % 5);
+                    float fRand = (float)(rand() % 5);
                     auto pBill2 = new TMEffectBillBoard(101,
                         100 * i + 500,
                         (fRand * 0.0099999998f) + 0.1f,
@@ -9368,8 +9368,8 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
                     if (i > 1)
                         nColor = i + 3;
 
-                    vecTempStart.x = (vecTempStart.x - 0.1f) + ((m_fScale * 1.0) * (sinf((((float)i / 6.0f) * D3DXToRadian(180)) * 2.0f)));
-                    vecTempStart.z = (vecTempStart.z - 0.1f) + ((m_fScale * 1.0) * (cosf((((float)i / 6.0f) * D3DXToRadian(180)) * 2.0f)));
+                    vecTempStart.x = (vecTempStart.x - 0.1f) + ((m_fScale * 1.0f) * (sinf((((float)i / 6.0f) * D3DXToRadian(180)) * 2.0f)));
+                    vecTempStart.z = (vecTempStart.z - 0.1f) + ((m_fScale * 1.0f) * (cosf((((float)i / 6.0f) * D3DXToRadian(180)) * 2.0f)));
                     vecTempStart.y = m_fHeight + m_fScale;
 
                     unsigned int BillColor = 0x00777777;
@@ -14603,7 +14603,7 @@ int TMHuman::StartKhepraDieEffect()
         return 0;
 
     float PtX = pScene->m_pKhepraPortalEff1->m_vecPosition.x;
-    float PtY = -4.73;
+    float PtY = -4.73f;
     float PtZ = pScene->m_pKhepraPortalEff1->m_vecPosition.z;
     float MyX = m_vecPosition.x;
     float MyY = m_fHeight + 1.5f;
@@ -15337,7 +15337,7 @@ int TMHuman::MAutoAttack(TMHuman* pTarget, int mode)
 
     if (!mode)
         return 0;
-    if ((unsigned char)GetKeyState(VK_SHIFT) >> 8 > 0)
+    if ((GetKeyState(VK_SHIFT) >> 8) > 0)
         return 0;
 
     int nMoveSX = (int)m_vecPosition.x;
@@ -15882,8 +15882,8 @@ void TMHuman::RenderEffect_LegendBeriel(unsigned int dwServerTime)
         0,
         700,
         ((float)nRand * 0.0099999998f) + fSize,
-        ((float)nRand * 0.1f) + (fSize * 0.0099999998),
-        ((float)nRand * 0.0099999998f) + (fSize * 0.30000001),
+        ((float)nRand * 0.1f) + (fSize * 0.0099999998f),
+        ((float)nRand * 0.0099999998f) + (fSize * 0.3f),
         0.000099999997f,
         1,
         80);

@@ -65,4 +65,6 @@ int TMSkillHeal::FrameMove(unsigned int dwServerTime)
 
 	if (static_cast<float>(dwServerTime - m_dwStartTime) / static_cast<float>(m_dwLifeTime) > 1.0f)
 		g_pObjectManager->DeleteObject(this);
+
+	return 1;
 }

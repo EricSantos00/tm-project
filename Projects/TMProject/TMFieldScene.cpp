@@ -13942,7 +13942,7 @@ void TMFieldScene::SetMyHumanExp(long long unExp, int nFakeExp)
 	if (nExp >= 0 && BASE_Get3DTo2DPos(m_pMyHuman->m_vecPosition.x, m_pMyHuman->m_fHeight + 1.0f, m_pMyHuman->m_vecPosition.y, &nTX, &nTY))
 	{
 		char szStr[128]{};
-		sprintf(szStr, "Exp +%d", nExp);
+		sprintf(szStr, "Exp +%d", static_cast<unsigned int>(nExp));
 
 		m_pExtraContainer->AddChild(new TMFont3(szStr, nTX, nTY + (int)(RenderDevice::m_fHeightRatio * 80.0f), 0xFFFF8866, 0.5f, 0, 1, 1200, 0, 1));
 
@@ -14075,7 +14075,7 @@ void TMFieldScene::SetShortSkill(int nIndex, SGridControlItem* pGridItem)
 		SAFE_DELETE(pReturnItem3);
 	}
 
-	g_pObjectManager->m_cShortSkill[nIndex] = g_pItemList[pGridItem->m_pItem->sIndex].nIndexTexture;
+	g_pObjectManager->m_cShortSkill[nIndex] = static_cast<char>(g_pItemList[pGridItem->m_pItem->sIndex].nIndexTexture);
 	MSG_SetShortSkill stSetShortSkill{};
 	stSetShortSkill.Header.ID = m_pMyHuman->m_dwID;
 	stSetShortSkill.Header.Type = MSG_SetShortSkill_Opcode;
@@ -14730,7 +14730,7 @@ void TMFieldScene::CreateGate(int nZoneIndex, int bInit)
 	stCreateItem.Item.sIndex = g_pInitItem[nZoneIndex].sIndex;
 	stCreateItem.GridX = g_pInitItem[nZoneIndex].PosX;
 	stCreateItem.GridY = g_pInitItem[nZoneIndex].PosY;
-	stCreateItem.Rotate = g_pInitItem[nZoneIndex].Rotate;
+	stCreateItem.Rotate = static_cast<char>(g_pInitItem[nZoneIndex].Rotate);
 	stCreateItem.Height = 16;
 	stCreateItem.State = 2;
 	auto pCreateItem = &stCreateItem;
@@ -17498,7 +17498,7 @@ int TMFieldScene::OnPacketMessageChat(MSG_MessageChat* pStd)
 				auto pChatList = m_pChatList;
 
 				char szMsg[128]{};
-				sprintf(szMsg, "[%s]> %s", pPartyItem->GetText());
+				sprintf(szMsg, "[%s]> %s", pPartyItem->GetText(), pStd->String);
 
 				pChatList->AddItem(new SListBoxItem(szMsg, 0xFFAAFFAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
 
@@ -17547,7 +17547,7 @@ int TMFieldScene::OnPacketMessageChat_Index(MSG_MessageChat* pStd)
 				auto pChatList = m_pChatList;
 
 				char szMsg[128]{};
-				sprintf(szMsg, "[%s]> %s", pPartyItem->GetText());
+				sprintf(szMsg, "[%s]> %s", pPartyItem->GetText(), pStd->String);
 
 				pChatList->AddItem(new SListBoxItem(szMsg, 0xFFAAFFAA, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0));
 
@@ -18507,7 +18507,7 @@ int TMFieldScene::OnPacketCNFRemoveServer(MSG_CNFRemoveServer* pStd)
 			int tpos = 0;
 			int grid = 0;
 			char temp[256]{};
-			for (int i = 0; i < strlen(pInfo->AdapterName); ++i)
+			for (size_t i = 0; i < strlen(pInfo->AdapterName); ++i)
 			{
 				if (sour[i] != '{' && sour[i] != '}' && sour[i] != '-')
 				{
@@ -23365,7 +23365,7 @@ int TMFieldScene::StrByteCheck(char* szString)
 {
 	int value = 0;
 	int byteCheck = 0;
-	for (int i = 0; i < strlen(szString); ++i)
+	for (size_t i = 0; i < strlen(szString); ++i)
 	{
 		if (szString[i] >= 'A' && szString[i] <= 'z')
 			++value;

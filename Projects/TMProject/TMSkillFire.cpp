@@ -75,7 +75,7 @@ int TMSkillFire::FrameMove(unsigned int dwServerTime)
 
 	if (fProgress <= 1.0f)
 	{
-		unsigned int dwTime = 100;       
+		unsigned int dwTime = 100;
 		if (m_nType == 1)
 			dwTime = 300;
 		if (m_nType == 2 || m_nType == 5)
@@ -196,4 +196,6 @@ int TMSkillFire::FrameMove(unsigned int dwServerTime)
 	}
 	else
 		g_pObjectManager->DeleteObject(this);
+
+	return 1;
 }

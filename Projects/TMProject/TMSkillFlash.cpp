@@ -48,7 +48,7 @@ TMSkillFlash::TMSkillFlash(TMVector3 vecPosition, int nType)
 		pEffect20->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
 		pEffect20->m_vecPosition = m_vecPosition;
 		pEffect20->m_bSlope = 1;
-		pEffect20->m_vecPosition.y + 0.30f;
+		pEffect20->m_vecPosition.y += 0.30f;
 		pEffect20->SetColor(0xFFAAAAAA);
 
 		g_pCurrentScene->m_pEffectContainer->AddChild(pEffect20);

@@ -318,10 +318,10 @@ int TMEffectSkinMesh::FrameMove(unsigned int dwServerTime)
 
 			m_fAngle = atan2f(vecDPos.x, vecDPos.z);
 
-			auto value = static_cast<float>(dwServerTime - m_dwStartTime) / static_cast<float>(m_dwLifeTime) < 1.0f;
+			auto value = static_cast<float>(dwServerTime - m_dwStartTime) / static_cast<float>(m_dwLifeTime);
 			if (value < 1.0f)
 			{
-				TMVector3 vec = m_vecStartPos * (1.0 - value) + (m_vecTargetPos * value);
+				TMVector3 vec = m_vecStartPos * (1.0f - value) + (m_vecTargetPos * value);
 				m_vecPosition = { vec.x, vec.z };
 				m_fHeight = vec.y;
 

@@ -370,7 +370,7 @@ int TMSkillMagicShield::FrameMove(unsigned int dwServerTime)
 
 			auto nCount = vDesc.Size / sizeof RDLVERTEX;
 
-			for (int i = 0; i < nCount; ++i)
+			for (size_t i = 0; i < nCount; ++i)
 			{
 				if (m_nType == 4)
 				{
