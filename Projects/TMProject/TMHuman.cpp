@@ -10518,6 +10518,52 @@ void TMHuman::FrameMoveEffect_AvatarBMaster()
 
 void TMHuman::FrameMoveEffect_AvatarHunter()
 {
+    if (m_c8thSkill == 1)
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            auto pSoul = new TMEffectMeshRotate({ m_vecPosition.x, (m_fHeight - 3.0f) - ((float)i * 1.5f), m_vecPosition.y }, 2, this, 1, 0);
+            if (!pSoul)
+                break;
+
+            if (m_cMount == 1)
+                pSoul->m_vecPosition = { m_vecSkinPos.x, m_fHeight - 3.0f, m_vecSkinPos.z };
+            else
+                pSoul->m_vecPosition = { m_vecPosition.x, m_fHeight - 3.0f, m_vecPosition.y };
+            
+            pSoul->m_dwLifeTime = 1000 - 100 * i;
+            pSoul->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pSoul->m_fScale = 6.5f;
+            pSoul->SetColor(0xFF5555AA);
+            g_pCurrentScene->m_pEffectContainer->AddChild(pSoul);
+        }
+    }
+    else if (m_c8thSkill == 2)
+    {
+        for (int i = 0; i < 3; ++i)
+        {
+            auto pSpChange = new TMSkillSpChange({ m_vecPosition.x, ((float)i * 0.69999999f) + m_fHeight, m_vecPosition.y }, 1, this);
+            if (!pSpChange)
+                break;
+
+            pSpChange->m_dwLifeTime = 300 * i + 700;
+            g_pCurrentScene->m_pEffectContainer->AddChild(pSpChange);
+        }
+    }
+    else if (m_c8thSkill == 3)
+    {
+        for (int i = 0; i < 7; ++i)
+        {
+            TMVector3 vecPos{ m_vecPosition.x, (m_fHeight + 0.5f) + ((float)i * 0.30000001f), m_vecPosition.y };
+
+            auto pEffect = new TMArrow(vecPos, vecPos, m_stEffectEvent.sEffectLevel, 10003, 0, 0, 0);
+            if (!pEffect)
+                break;
+
+            pEffect->m_dwStartTime += 100 * i;
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+        }
+    }
 }
 
 void TMHuman::MoveTo(TMVector2 vecPos)
