@@ -320,4 +320,54 @@ int TMItem::FrameMove(unsigned int dwServerTime)
 
 void TMItem::LabelPosition()
 {
+    if (m_pNameLabel)
+    {
+        if (m_pNameLabel->IsVisible() != 1 || m_stGuildMark.pGuildMark->m_GCPanel.nMarkIndex == -1)
+            m_stGuildMark.pGuildMark->SetVisible(0);
+        else
+            m_stGuildMark.pGuildMark->SetVisible(1);
+
+        m_pNameLabel->SetTextColor(m_dwNameColor);
+        if (m_bMouseOver != 1 && g_pEventTranslator->m_bCtrl != 1)
+            m_pNameLabel->SetVisible(0);
+        else
+        {
+            if (m_bMouseOver == 1 && g_pEventTranslator->m_bCtrl == 1)
+                m_pNameLabel->SetTextColor(0xFFFFFFFF);
+
+            D3DXVECTOR3 vTemp;
+            D3DXVECTOR3 vPosTransformed;
+            D3DXVECTOR3 vecPos;
+            vecPos.x = m_vecPosition.x;
+            vecPos.z = m_vecPosition.y;
+            vecPos.y = m_fHeight + 0.3f;
+            D3DXVec3TransformCoord(&vTemp, &vecPos, &g_pDevice->m_matView);
+            D3DXVec3TransformCoord(&vPosTransformed, &vTemp, &g_pDevice->m_matProj);
+            if (vPosTransformed.z < 0.0f || vPosTransformed.z >= 1.0f)
+                m_pNameLabel->SetVisible(0);
+            else
+            {
+                int vPosInX = (int)(((vPosTransformed.x + 1.0f) * (float)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift)) / 2.0f);
+                int vPosInY = (int)(((-vPosTransformed.y + 1.0f) * (float)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift)) / 2.0f);
+                if (vPosInX <= 0 || vPosInX >= (int)(g_pDevice->m_dwScreenWidth - g_pDevice->m_nWidthShift) || 
+                    vPosInY <= 0 || vPosInY >= (int)(g_pDevice->m_dwScreenHeight - g_pDevice->m_nHeightShift))
+                    m_pNameLabel->SetVisible(0);
+                else
+                {
+                    m_pNameLabel->SetVisible(1);
+                    m_pNameLabel->SetRealPos((float)vPosInX - 64.0f, (float)vPosInY);
+                    if (m_stGuildMark.pGuildMark)
+                    {
+                         m_stGuildMark.pGuildMark->SetPos(m_pNameLabel->m_nPosX + 10.0f,
+                            m_pNameLabel->m_nPosY + 3.0f);
+                        m_stGuildMark.pGuildMark->SetVisible(1);
+                    }
+                }
+            }
+        }
+    }
+
+    if (m_stGuildMark.nGuild == -1)
+        m_stGuildMark.pGuildMark->SetVisible(0);
+
 }
