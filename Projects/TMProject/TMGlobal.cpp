@@ -129,3 +129,4 @@ int g_bRunning = 1;
 int g_nCombineMode = 0;
 
 int g_nItemCount;
+int g_nSpringTree;

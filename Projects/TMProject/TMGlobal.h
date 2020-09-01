@@ -156,6 +156,7 @@ extern int g_bRunning;
 extern int g_nCombineMode;
 
 extern int g_nItemCount;
+extern int g_nSpringTree;
 
 const static TMVector3 g_vecItemBillPos[28] = 
 {
