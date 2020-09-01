@@ -10244,6 +10244,68 @@ void TMHuman::FrameMoveEffect(unsigned int dwServerTime)
 
 void TMHuman::FrameMoveEffect_AvatarTrans()
 {
+    if (m_c8thSkill == 1)
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            TMVector3 vecPos{ m_vecPosition.x, ((float)i * 0.5f) + m_fHeight, m_vecPosition.y };
+
+            auto pAvaTrans1 = new TMArrow(vecPos, vecPos, 0, 10002, 0, 0, 0);
+            if (!pAvaTrans1)
+                break;
+
+            pAvaTrans1->m_dwStartTime += 150 * i;
+
+            if (g_pCurrentScene != nullptr)
+            {
+                if (pAvaTrans1)
+                    g_pCurrentScene->m_pEffectContainer->AddChild(pAvaTrans1);
+            }
+        }
+    }
+    else if (m_c8thSkill == 2)
+    {
+        for (int i = 0; i < 15; ++i)
+        {
+            auto pCrArmor = new TMEffectMesh(2838, 0x33555555, m_fAngle, 3);
+            if (!pCrArmor)
+                break;
+
+            pCrArmor->m_nTextureIndex = 413;
+            pCrArmor->m_dwLifeTime = 30 * i + 1000;
+            pCrArmor->m_dwCycleTime = 1000 - 30 * i;
+
+            if (m_cMount == 1)
+                pCrArmor->m_vecPosition = { m_vecSkinPos.x, (((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) / 2.0f) + m_vecSkinPos.y) - 0.30000001f, m_vecSkinPos.z };
+            else
+                pCrArmor->m_vecPosition = { m_vecPosition.x, (((TMHuman::m_vecPickSize[m_nSkinMeshType].y * m_fScale) / 2.0f) + m_fHeight) + 0.30000001f, m_vecPosition.y };
+            
+            pCrArmor->m_fScaleH = ((float)i * 0.30000001f) + 1.0f;
+            pCrArmor->m_fScaleV = ((float)i * 0.30000001f) + 1.0f;
+            pCrArmor->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pCrArmor->m_cShine = 1;
+            g_pCurrentScene->m_pEffectContainer->AddChild(pCrArmor);
+        }
+    }
+    else if (m_c8thSkill == 3)
+    {
+        for (int i = 0; i < 3; ++i)
+        {
+            auto pFreeze = new TMSkillFreezeBlade({ m_stEffectEvent.vecTo.x, m_stEffectEvent.vecTo.y, m_stEffectEvent.vecTo.z }, 1, 0, 1);
+            if (!pFreeze)
+                return;
+            
+            g_pCurrentScene->m_pEffectContainer->AddChild(pFreeze);
+            pFreeze->m_dwLifeTime = 500 * i + 1000;
+        }
+
+        auto pFreeze = new TMSkillFreezeBlade({ m_stEffectEvent.vecTo.x, m_stEffectEvent.vecTo.y, m_stEffectEvent.vecTo.z }, 1, 0, 1);
+        if (pFreeze != nullptr)
+        {
+            g_pCurrentScene->m_pEffectContainer->AddChild(pFreeze);
+            pFreeze->m_dwLifeTime = 1500;
+        }
+    }
 }
 
 void TMHuman::FrameMoveEffect_AvatarFoema()
