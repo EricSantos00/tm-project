@@ -7,6 +7,13 @@
 #include "TMEffectBillBoard3.h"
 #include "TMCamera.h"
 #include "TMMesh.h"
+#include "TMEffectBillBoard.h"
+#include "TMEffectBillBoard2.h"
+#include "TMShade.h"
+#include "TMScene.h"
+#include "TMHuman.h"
+#include "TMEffectParticle.h"
+
 TMArrow::TMArrow(TMVector3 vecStart, TMVector3 vecTarget, int nLevel, int nType, char cAvatar, int nColor, int nDestID) 
 	: TreeNode(0),
 	m_vecStartPos{},
@@ -450,9 +457,355 @@ int TMArrow::IsInView()
 
 int TMArrow::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+    dwServerTime = g_pTimerManager->GetServerTime();
+    auto pMesh = g_pMeshManager->GetCommonMesh(m_nMeshIndex, 0, 180000u);
+    if (!pMesh && m_nType != 10000)
+        return 0;
+
+    IsVisible();
+
+    float fProgress = 0.0f;
+    if (m_nType == 151 || m_nType == 152 || m_nType == 153 || m_nType == 10000 || m_nType == 10001 || m_nType == 10002)
+    {
+        if (m_dwStartTime <= dwServerTime)
+            fProgress = (float)((int)(dwServerTime - m_dwStartTime)) / (float)(m_dwLifeTime);
+        else
+            fProgress = 0.0f;
+    }
+    else if (m_dwStartTime <= dwServerTime)
+        fProgress = (float)((int)(dwServerTime - m_dwStartTime)) / (float)(m_dwLifeTime);
+    else
+        fProgress = 0.0f;
+
+    if (m_nType == 10002)
+    {
+        m_vecRotatePos1.x = sinf(fProgress * 4.0f) * (1.5f - fProgress);
+        m_vecRotatePos1.y = cosf(fProgress * 4.0f) * (1.5f - fProgress);
+        m_vecRotatePos2.x = sinf((fProgress - 0.5f) * 4.0f) * (1.5f - fProgress);
+        m_vecRotatePos2.y = cosf((fProgress - 0.5f) * 4.0f) * (1.5f - fProgress);
+        m_vecRotatePos3.x = sinf((fProgress - 1.0f) * 4.0f) * (1.5f - fProgress);
+        m_vecRotatePos3.y = cosf((fProgress - 1.0f) * 4.0f) * (1.5f - fProgress);
+
+        if (fProgress > 1.0f)
+        {
+            ReleaseEffect();
+            g_pObjectManager->DeleteObject(this);
+        }
+
+        return 0;
+    }
+    if (m_nType == 10003)
+    {
+        m_vecRotatePos1.x = sinf(fProgress * 4.0f) * (1.9f - fProgress);
+        m_vecRotatePos1.y = cosf(fProgress * 4.0f) * (1.9f - fProgress);
+        m_vecRotatePos2.x = sinf((fProgress - 0.5f) * 4.0f) * (1.9f - fProgress);
+        m_vecRotatePos2.y = cosf((fProgress - 0.5f) * 4.0f) * (1.9f - fProgress);
+        m_vecRotatePos3.x = sinf((fProgress - 1.0f) * 4.0f) * (1.9f - fProgress);
+        m_vecRotatePos3.y = cosf((fProgress - 1.0f) * 4.0f) * (1.9f - fProgress);
+        if (fProgress > 1.0f)
+        {
+            ReleaseEffect();
+            g_pObjectManager->DeleteObject(this);
+        }
+
+        return 0;
+    }
+
+    auto vecDPos = m_vecTargetPos - m_vecStartPos;
+    m_fAngle = atan2f(vecDPos.x, vecDPos.z) + D3DXToRadian(90);
+    m_fRotAngle = atan2f(vecDPos.x, vecDPos.y);
+    if (m_nType == 153)
+        m_fAngle = (((float)(dwServerTime % 300) / 300.0f) * D3DXToRadian(180)) * 2.0f;
+   
+    if (fProgress >= 1.0)
+    {
+        ReleaseEffect();
+        g_pObjectManager->DeleteObject(this);
+        return 1;
+    }
+
+    m_vecCurrentPos = (m_vecStartPos * (1.0f - fProgress)) + (m_vecTargetPos * fProgress);
+    if (m_nType == 152 && m_nLevel == 2)
+        m_vecCurrentPos.y = (sinf((fProgress * D3DXToRadian(180)) * 4.0f) * 0.1f) + m_vecCurrentPos.y;
+    if (m_pEffectMesh)
+    {
+        m_pEffectMesh->m_fAngle = m_fAngle + D3DXToRadian(180);
+        m_pEffectMesh->m_vecPosition = m_vecCurrentPos;
+        m_pEffectMesh->m_nTextureIndex = m_nType == 152 ? (dwServerTime % 320 / 80 + 101) : (dwServerTime % 320 / 80 + 11);
+        m_pEffectMesh->FrameMove(dwServerTime);
+    }
+    
+    unsigned int dwColor = 0xFFAAAAEE;
+    if (m_nType == 151 && m_nLevel == 1)
+        dwColor = 0xFFFFAA00;
+    if (m_nType == 151 && m_nLevel == 2)
+        dwColor = 0xFF00AA00;
+
+    int nRand = rand() % 5;
+    if (m_nType != 10000)
+    {
+        auto pBill = new TMEffectBillBoard(0,
+            1000,
+            ((float)nRand * 0.2f) + 0.2f,
+            ((float)nRand * 0.2f) + 0.2f,
+            ((float)nRand * 0.2f) + 0.2f,
+            0.001f,
+            1,
+            80);
+
+        pBill->m_vecPosition = { m_vecCurrentPos.x, m_vecCurrentPos.y - 0.5f, m_vecCurrentPos.z };
+        pBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pBill->m_bStickGround = 1;
+        pBill->SetColor(dwColor);
+        g_pCurrentScene->m_pEffectContainer->AddChild(pBill);
+    }
+    if (m_nMeshIndex == 919 && fProgress > 0.2)
+    {
+        float fRand = (float)(rand() % 5);
+        float fBase = 0.3f;
+
+        auto pFire = new TMEffectBillBoard(11,
+            1000,
+            (float)(0.039999999f * fRand) + fBase,
+            (float)(0.039999999f * fRand) + fBase,
+            (float)(0.039999999f * fRand) + fBase,
+            0.001f,
+            1,
+            80);
+        pFire->SetColor(0xFFAA8855);
+        pFire->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pFire->m_nFade = 1;
+        pFire->m_nParticleType = 1;
+        pFire->m_fParticleV = 1.0f;
+        pFire->m_vecPosition = { m_vecCurrentPos.x, m_vecCurrentPos.y, m_vecCurrentPos.z };
+        pFire->m_vecStartPos = pFire->m_vecPosition;
+        g_pCurrentScene->m_pEffectContainer->AddChild(pFire);
+    }
+    if (m_pBeam && fProgress > 0.2f && m_dwStartTime + m_dwLifeTime + 2000 > dwServerTime)
+    {
+        D3DXVECTOR3 vecMyToTarget{ m_vecStartPos.x - m_vecTargetPos.x, m_vecStartPos.y - m_vecTargetPos.y, m_vecStartPos.z - m_vecTargetPos.z };
+        D3DXVec3Normalize(&vecMyToTarget, &vecMyToTarget);
+        
+        auto vecMyVec = ((m_vecStartPos * 2.0f) + m_vecTargetPos) / 3.0f;
+        if (m_nType == 10001)
+            vecMyVec = m_vecStartPos;
+
+        m_pBeam->SetPosition(m_vecCurrentPos, {(m_vecStartPos * (1.0f - fProgress) + (vecMyVec * fProgress))});
+    }
+
+    return 1;
 }
 
 void TMArrow::ReleaseEffect()
 {
+    SAFE_DELETE(m_pEffectMesh);
+    
+    if (m_pBeam)
+    {
+        unsigned int dwShortTime = g_pTimerManager->GetServerTime();
+        if (m_dwStartTime + m_dwLifeTime + 2000 > dwShortTime)
+        {
+            m_pBeam->m_dwLifeTime = dwShortTime - m_pBeam->m_dwCreateTime + 100;
+            m_pBeam->SetShort(dwShortTime);
+        }
+    }
+
+    if (m_nType == 10000 || m_nType == 10002)
+        return;
+
+    if (m_nType == 10003)
+    {
+        auto pLightMap = new TMShade(3, 7, 1.0f);
+        pLightMap->SetColor(0x80FFFFFF);
+        pLightMap->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pLightMap->SetPosition({ m_vecCurrentPos.x, m_vecCurrentPos.z });
+        pLightMap->m_dwLifeTime = 400;
+        g_pCurrentScene->m_pEffectContainer->AddChild(pLightMap);
+        return;
+    }
+    if (m_nType == 152 && m_nLevel == 2)
+    {
+        const static unsigned int dwCol[2]{ 0xFFFFFFFF, 0xFF003377 };
+        auto pLightMap = new TMShade(1, 7, 1.0f);
+    
+        pLightMap->SetColor(dwCol[1]);
+        pLightMap->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pLightMap->SetPosition({ m_vecCurrentPos.x, m_vecCurrentPos.z });
+        pLightMap->m_dwLifeTime = 800;
+        g_pCurrentScene->m_pEffectContainer->AddChild(pLightMap);
+
+        for (int i = 0; i < 2; ++i)
+        {
+            auto pEffect = new TMEffectBillBoard(
+                56,
+                700,
+                ((float)i * 0.2f) + 0.5f,
+                ((float)i * 0.2f) + 0.5f,
+                ((float)i * 0.2f) + 0.5f,
+                0.001f,
+                1,
+                80);
+
+            pEffect->SetColor(dwCol[i]);
+            pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pEffect->m_nFade = 1;
+            pEffect->m_vecPosition = m_vecCurrentPos;
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+        }
+    }
+    else if (m_nType == 10001)
+    {
+        auto pEffect2 = new TMEffectBillBoard2(8, 1000, 0.0099999998f, 0.0099999998f, 0.0099999998f, 0.003f, 0);
+
+        pEffect2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pEffect2->m_vecPosition = m_vecTargetPos;
+        pEffect2->m_vecPosition.y -= 0.60000002f;
+        g_pCurrentScene->m_pEffectContainer->AddChild(pEffect2);
+
+        auto pLightMap = new TMShade(4, 7, 1.0f);
+        pLightMap->SetColor(0xFF7777FF);
+        pLightMap->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pLightMap->SetPosition({ m_vecCurrentPos.x, m_vecCurrentPos.z });
+        pLightMap->m_dwLifeTime = 800;
+        g_pCurrentScene->m_pEffectContainer->AddChild(pLightMap);
+    }
+    if (m_nType == 105 || m_nType == 10001)
+    {
+        GetSoundAndPlay(26, 0, 0);
+        return;
+    }
+
+    GetSoundAndPlay(24, 0, 0);
+
+    float fWeaponLen = 1.0f;
+    float fLevel = 0.5f;
+    TMVector3 vec{ m_vecCurrentPos.x, m_vecCurrentPos.y, m_vecCurrentPos.z };
+    
+    D3DXVECTOR3 vecMyToTarget{ m_vecTargetPos.x - m_vecCurrentPos.x, 0.0f, m_vecTargetPos.z - m_vecCurrentPos.z };
+    D3DXVec3Normalize(&vecMyToTarget, &vecMyToTarget);
+    
+    unsigned int dwCenterColor = 0x80FFFFFF;
+    unsigned int dwOtherColor = 0x0052A9E5;
+    unsigned int dwLightColor = 0x00334388;
+
+    switch (m_nColor)
+    {
+    case 8:
+        dwCenterColor = 0x80FFCCCC;
+        dwOtherColor = 0x00E57777;
+        dwLightColor = 0x00883333;
+        break;
+    case 7:
+        dwCenterColor = 0x80FFCCFF;
+        dwOtherColor = 0x00CC88CC;
+        dwLightColor = 0x00884388;
+        break;
+    case 6:
+        dwCenterColor = 0x80CCFFCC;
+        dwOtherColor = 0x0088E588;
+        dwLightColor = 0x00338843;
+        break;
+    case 5:
+        dwCenterColor = 0x80CCCCFF;
+        dwOtherColor = 0x005253E5;
+        dwLightColor = 0x00222288;
+        break;
+    }
+
+    if (m_nType == 153)
+    {
+        auto vecDPos = m_vecTargetPos - m_vecStartPos;
+        m_fAngle = atan2f(vecDPos.x, vecDPos.z) + D3DXToRadian(90);
+    }
+    if (m_cAvatar == 1)
+    {
+        dwCenterColor = 0xFFFFFFFF;
+        dwOtherColor = 0xFFFFFFFF;
+        dwLightColor = 0xFFFFFFFF;
+    }
+
+    TMEffectMesh* pMeshEffect = new TMEffectMesh(531, dwCenterColor, m_fAngle, 4);
+    pMeshEffect->m_nTextureIndex = 229;
+    pMeshEffect->m_dwLifeTime = 200;
+    pMeshEffect->m_dwCycleTime = 200;
+    pMeshEffect->m_vecPosition = vec;
+    pMeshEffect->m_fScaleH = 1.0f;
+    pMeshEffect->m_fScaleV = 1.0f;
+    pMeshEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+    pMeshEffect->m_cShine = 0;
+    g_pCurrentScene->m_pEffectContainer->AddChild(pMeshEffect);
+
+    auto pLightMap = new TMShade(7, 118, 1.0f);
+    if (g_pCurrentScene->m_pMyHuman->m_bCritical)
+        pLightMap->SetColor(0x00883333);
+    else
+        pLightMap->SetColor(dwLightColor);
+    pLightMap->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+    pLightMap->SetPosition({ (vecMyToTarget.x * 0.5f) + vec.x, (vecMyToTarget.z * 0.5f) + vec.z });
+    pLightMap->m_dwLifeTime = 200;
+    g_pCurrentScene->m_pEffectContainer->AddChild(pLightMap);
+
+    if (m_nDestID)
+    {
+        auto pAttackDest = g_pObjectManager->GetHumanByID(m_nDestID);
+        if (pAttackDest)
+        {
+            pAttackDest->m_bPunchEffect = 1;
+            pAttackDest->m_dwPunchEffectTime = g_pTimerManager->GetServerTime();
+        }
+    }
+
+    TMVector3 vecDir = *reinterpret_cast<TMVector3*>(&vecMyToTarget);
+    if (g_pCurrentScene->m_pMyHuman->m_bCritical)
+    {
+        auto pParticle = new TMEffectParticle({ vec + (vecDir * 0.3f) }, 5, 50, 1.0f, 0x00883333, 0, 231, 1.0f, 1, vecDir, 300);
+        g_pCurrentScene->m_pEffectContainer->AddChild(pParticle);
+
+        auto vecTargetPos = vec;
+        auto pBill1 = new TMEffectBillBoard(230, 600, 3.0f, 3.0f, 3.0f, 0.0005f, 1, 80);
+        pBill1->m_bLookCam = 0;
+        pBill1->m_vecPosition = vecTargetPos + (vecDir * 0.5f);
+        pBill1->m_vecRotAxis = vecDir;
+        pBill1->m_fAxisAngle = (m_fAngle + D3DXToRadian(90)) + 0.05f;
+        pBill1->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pBill1->m_nParticleType = 14;
+        pBill1->m_fScaleVelX = 0.001f;
+        pBill1->m_fScaleVelY = 0.001f;
+        pBill1->m_fScaleVelZ = 0.001f;
+        if (g_pCurrentScene->m_pMyHuman->m_bCritical)
+        {
+            pBill1->m_fScaleVelX = 0.002f;
+            pBill1->m_fScaleVelY = 0.002f;
+            pBill1->m_fScaleVelZ = 0.002f;
+            pBill1->SetColor(0x00883333);
+        }
+        else
+        {
+            pBill1->SetColor(dwOtherColor);
+        }
+        g_pCurrentScene->m_pEffectContainer->AddChild(pBill1);
+
+        auto pBill2 = new TMEffectBillBoard(230, 600, 3.0f, 3.0f, 3.0f, 0.0005f, 1, 80);
+        pBill2->m_bLookCam = 0;
+        pBill2->m_vecPosition = vecTargetPos + (vecDir * 0.5f);
+        pBill2->m_vecRotAxis = vecDir;
+        pBill2->m_fAxisAngle = (m_fAngle + D3DXToRadian(90)) - 0.05f;
+        pBill2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        pBill2->m_nParticleType = 15;
+        pBill2->m_fScaleVelX = 0.001f;
+        pBill2->m_fScaleVelY = 0.001f;
+        pBill2->m_fScaleVelZ = 0.001f;
+        if (g_pCurrentScene->m_pMyHuman->m_bCritical)
+        {
+            pBill2->m_fScaleVelX = 0.002f;
+            pBill2->m_fScaleVelY = 0.002f;
+            pBill2->m_fScaleVelZ = 0.002f;
+            pBill2->SetColor(0x00883333);
+        }
+        else
+        {
+            pBill2->SetColor(dwOtherColor);
+        }
+        g_pCurrentScene->m_pEffectContainer->AddChild(pBill2);
+    }
 }
