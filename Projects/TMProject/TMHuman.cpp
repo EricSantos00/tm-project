@@ -52,6 +52,8 @@
 #include "TMSkillPoison.h"
 #include "TMSkillSpChange.h"
 #include "TMArrow.h"
+#include "TMSkillThunderBolt.h"
+#include "TMEffectDust.h"
 
 TMVector2 TMHuman::m_vecPickSize[100] = {
   { 0.40000001f, 2.0f },
@@ -14593,7 +14595,76 @@ void TMHuman::SetCharHeight(float fCon)
 
 int TMHuman::StartKhepraDieEffect()
 {
-	return 0;
+    if (!g_pCurrentScene)
+        return 0;
+
+    auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+    if (!pScene->m_pKhepraPortalEff1)
+        return 0;
+
+    float PtX = pScene->m_pKhepraPortalEff1->m_vecPosition.x;
+    float PtY = -4.73;
+    float PtZ = pScene->m_pKhepraPortalEff1->m_vecPosition.z;
+    float MyX = m_vecPosition.x;
+    float MyY = m_fHeight + 1.5f;
+    float MyZ = m_vecPosition.y;
+    pScene->m_pKhepraPortalEff1->m_nAnimationType = 2;
+
+    auto pEffect1 = new TMEffectBillBoard(423, 0, 4.0f, 4.0f, 2.7f, 0.0f, 1, 80);
+    pEffect1->m_nFade = 1;
+    pEffect1->SetColor(0x88FFFFFF);
+    pEffect1->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+    pEffect1->m_vecPosition = { PtX - 0.8f, PtY, PtZ - 0.3f };
+    pEffect1->m_nAnimationType = 3;
+    pEffect1->SetLifeTime(3800);
+    pScene->m_pEffectContainer->AddChild(pEffect1);
+
+    auto pEffect2 = new TMEffectBillBoard(423, 0, 4.0f, 4.0f, 2.7f, 0.0f, 1, 80);
+    pEffect2->m_nFade = 1;
+    pEffect2->SetColor(0x88FFFFFF);
+    pEffect2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+    pEffect2->m_vecPosition = { PtX + 0.8f, PtY, PtZ + 0.3f };
+    pEffect2->m_nAnimationType = 3;
+    pEffect2->SetLifeTime(3800);
+    pScene->m_pEffectContainer->AddChild(pEffect2);
+
+    auto pEffect3 = new TMEffectBillBoard(423, 0, 4.0f, 4.0f, 2.7f, 0.0f, 1, 80);
+    pEffect3->m_nFade = 1;
+    pEffect3->SetColor(0x88FFFFFF);
+    pEffect3->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+    pEffect3->m_vecPosition = { PtX, PtY + 0.8f, PtZ };
+    pEffect3->m_nAnimationType = 3;
+    pEffect3->SetLifeTime(3800);
+    pScene->m_pEffectContainer->AddChild(pEffect3);
+
+    auto pThunder1 = new TMSkillThunderBolt({ MyX, MyY, MyZ }, 5);
+    pScene->m_pEffectContainer->AddChild(pThunder1);
+
+    auto pDust1 = new TMEffectDust({ MyX, MyY, MyZ }, 50.0f, 0);;
+    pScene->m_pEffectContainer->AddChild(pDust1);
+
+    auto pDust2 = new TMEffectDust({ MyX - 0.3f, MyY, MyZ - 0.3f }, 50.0f, 0);
+    pScene->m_pEffectContainer->AddChild(pDust2);
+
+    auto pDust3 = new TMEffectDust({ MyX + 0.3f, MyY, MyZ + 0.3f }, 50.0f, 0);
+    pScene->m_pEffectContainer->AddChild(pDust3);
+
+    if ((int)pScene->m_pMyHuman->m_vecPosition.x >> 7 == 18 && (int)pScene->m_pMyHuman->m_vecPosition.y >> 7 == 30)
+    {
+        auto pGround = pScene->m_pGround;
+        if (pGround)
+        {
+            pGround->m_dwEffStart = g_pTimerManager->GetServerTime() - 100;
+            pGround->m_vecEffset = { MyX, MyZ };
+        }
+    }
+
+    auto pJudgement = new TMSkillJudgement({ MyX, MyY - 2.0f, MyZ }, 5, 0.1f);
+    pScene->m_pEffectContainer->AddChild(pJudgement);
+
+    pScene->m_dwKhepraDieTime = g_pTimerManager->GetServerTime();
+    pScene->m_nKhepraDieFlag = 1;
+    return 1;
 }
 
 void TMHuman::SetAvatar(char cAvatar)
