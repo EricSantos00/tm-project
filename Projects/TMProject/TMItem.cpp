@@ -151,7 +151,299 @@ void TMItem::InitItem(STRUCT_ITEM stItem)
 
 int TMItem::InitObject()
 {
-	return 1;
+    m_nItemType = BASE_GetItemAbility(&m_stItem, 38);
+    int nSanc = BASE_GetItemSanc(&m_stItem);
+    unsigned int dwTextColor = BASE_GetItemColor(&m_stItem);
+    if (m_nItemType == 10)
+        m_bBonusEffect = 1;
+    if (dwTextColor != 0xFFAAAAFF)
+        m_bBonusEffect = 1;
+
+    auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+    int usGuild = BASE_GetItemAbility(&m_stItem, 57) | BASE_GetItemAbility(&m_stItem, 56) << 8;
+    if (m_nItemType == 2)
+    {
+        unsigned char coin = (unsigned char)BASE_GetItemAbility(&m_stItem, 36) << 8;
+        char tempb = BASE_GetItemAbility(&m_stItem, 37);
+        coin += (unsigned char)tempb;
+
+        char szValue[64]{};
+        sprintf(szValue, g_pMessageStringTable[65], coin);
+        if (m_pNameLabel)
+            m_pNameLabel->SetText(szValue, 0);
+    }
+    else if (!usGuild)
+    {
+        char szStrName[128]{};
+        if (m_stItem.sIndex >= 0)
+            sprintf(szStrName, "%s", g_pItemList[m_stItem.sIndex].Name);
+        if (m_pNameLabel)
+        {
+            m_pNameLabel->SetText(szStrName, 0);
+            m_pNameLabel->SetTextColor(0xFFAAAAFF);
+        }
+    }
+    else
+    {
+        m_stGuildMark.nGuild = usGuild & 0xFFF;
+        m_stGuildMark.nSubGuild = 0;
+        m_stGuildMark.nGuildChannel = ((int)usGuild >> 12) & 0xF;
+        m_stGuildMark.sGuildIndex = 1;
+        if (pFScene)
+            pFScene->Guildmark_Create(&m_stGuildMark);
+        
+        char szValue[64]{};
+        strcat(szValue, g_pItemList[m_stItem.sIndex].Name);
+        if (m_pNameLabel)
+        {
+            m_pNameLabel->SetText(szValue, 0);
+            if (m_stItem.sIndex >= 3145 && m_stItem.sIndex <= 3149)
+                m_pNameLabel->SetTextColor(0xFFFFFFAA);
+            else
+                m_pNameLabel->SetTextColor(0xFFAAAAAA);
+        }
+    }
+
+    m_pEffectSpecial = new TMEffectBillBoard2(2, 0, 0.8f, 0.8f, 0.8f, 0.0f, 0);
+    if (m_pEffectSpecial && pFScene != nullptr)
+    {
+        m_pEffectSpecial->m_pOwner = this;
+        m_pEffectSpecial->m_bSlope = 1;
+        m_pEffectSpecial->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+        m_pEffectSpecial->m_nFade = 2;
+        m_pEffectSpecial->m_fLocalHeight = 0.1f;
+
+        if (m_nItemType > 0 && m_nItemType <= 5)
+        {
+            switch (m_nItemType)
+            {
+            case 1:
+                if (BASE_GetItemAbility(&m_stItem, 4) <= 0)
+                    m_pEffectSpecial->SetColor(0xFF000066);
+                else
+                {
+                    m_bHPotion = 1;
+                    if (m_stItem.sIndex == 1739)
+                        m_pEffectSpecial->SetColor(0xFFAA8888);
+                    else
+                        m_pEffectSpecial->SetColor(0xFF660000);
+                }
+                break;
+            case 2:
+                m_pEffectSpecial->SetColor(0xFF666600);
+                break;
+            case 3:
+                m_pEffectSpecial->SetColor(0xFF666600);
+                break;
+            case 4:
+                if (m_pNameLabel)
+                    m_pNameLabel->SetTextColor(0xFFFFFFAA);
+                m_pEffectSpecial->SetColor(0xFF774400);
+                break;
+            case 5:
+                if (m_pNameLabel)
+                    m_pNameLabel->SetTextColor(0xFFFFFFAA);
+                m_pEffectSpecial->SetColor(0xFF440077);
+                break;
+            }
+
+            pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+        }
+        else if (m_nItemType == 10)
+        {
+            m_pEffectSpecial->SetColor(0xFF006600);
+            pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+        }
+        else if (m_stItem.sIndex == 747)
+        {
+            if (m_pNameLabel)
+                m_pNameLabel->SetTextColor(0xFFFFAA00);
+            m_pEffectSpecial->SetColor(0xFF884400);
+            pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+        }
+        else if (m_stItem.sIndex >= 777 && m_stItem.sIndex <= 784
+            || m_stItem.sIndex >= 3170 && m_stItem.sIndex <= 3199)
+        {
+            m_pEffectSpecial->SetColor(0xFF660000);
+            pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+            if (m_pNameLabel)
+                m_pNameLabel->SetTextColor(0xFFFFFFAA);
+        }
+        else if (m_stItem.sIndex != 3914 && m_stItem.sIndex != 3915)
+        {
+            if (m_stItem.sIndex >= 3310 && m_stItem.sIndex <= 3550)
+            {
+                m_pEffectSpecial->SetColor(0xFF664466);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+                if (m_pNameLabel)
+                    m_pNameLabel->SetTextColor(0xFFFFFFAA);
+            }
+            else if (m_stItem.sIndex == 5135)
+            {
+                m_pEffectSpecial->SetColor(0xFF664466);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+                if (m_pNameLabel)
+                    m_pNameLabel->SetTextColor(0xFFFFFFAA);
+            }
+            else if (m_stItem.sIndex >= 4012 && m_stItem.sIndex <= 4050)
+            {
+                m_pEffectSpecial->SetColor(0xFF666644);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+                if (m_pNameLabel)
+                    m_pNameLabel->SetTextColor(0xFFFFFFAA);
+            }
+            else if (m_stItem.sIndex == 5316)
+            {
+                m_pEffectSpecial->SetColor(0xFF444488);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+                if (m_pNameLabel)
+                    m_pNameLabel->SetTextColor(0xFFFFFFAA);
+            }
+            else if (m_stItem.sIndex >= 4101 && m_stItem.sIndex < 4150 && m_stItem.sIndex != 4143)
+            {
+                m_pEffectSpecial->SetColor(0xFF444488);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+                if (m_pNameLabel)
+                    m_pNameLabel->SetTextColor(0xFFFFFFAA);
+            }
+            else if (m_stItem.sIndex >= 4010 && m_stItem.sIndex <= 4011 || m_stItem.sIndex >= 4026 && m_stItem.sIndex <= 4029)
+            {
+                m_pEffectSpecial->SetColor(0xFF666666);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+                if (m_pNameLabel)
+                    m_pNameLabel->SetTextColor(0xFFFFFFAA);
+            }
+            else if (m_stItem.sIndex == 785)
+            {
+                m_pEffectSpecial->SetColor(0xFF555533);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+            }
+            else if (m_stItem.sIndex >= 788 && m_stItem.sIndex <= 794)
+            {
+                m_pEffectSpecial->SetColor(0xFF555533);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+            }
+            else if (m_stItem.sIndex == 661)
+            {
+                m_pEffectSpecial->SetColor(0xFF660000);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+            }
+            else if (m_stItem.sIndex == 662)
+            {
+                m_pEffectSpecial->SetColor(0xFF000066);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+            }
+            else if (m_stItem.sIndex == 663)
+            {
+                m_pEffectSpecial->SetColor(0xFF006600);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+            }
+            else if (m_stItem.sIndex == 667)
+            {
+                m_pEffectSpecial->m_vecScale.x = 1.4f;
+                m_pEffectSpecial->m_vecScale.y = 1.4f;
+                m_pEffectSpecial->m_vecScale.z = 1.4f;
+                m_pEffectSpecial->SetColor(0xFF000066);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+            }
+            else if (m_stItem.sIndex >= 436 && m_stItem.sIndex <= 441)
+            {
+                m_pEffectSpecial->m_vecScale.x = 1.4f;
+                m_pEffectSpecial->m_vecScale.y = 1.4f;
+                m_pEffectSpecial->m_vecScale.z = 1.4f;
+                if (m_stItem.sIndex >= 439)
+                    m_pEffectSpecial->SetColor(0xFF660000);
+                else
+                    m_pEffectSpecial->SetColor(0xFF000066);
+                pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+            }
+            else if (m_stItem.sIndex < 1744 || m_stItem.sIndex > 1751)
+            {
+                if (m_stItem.sIndex >= 5110 && m_stItem.sIndex <= 5133)
+                {
+                    m_pEffectSpecial->m_vertex[0].position = { -0.5f, 0.0f, -0.8f };
+                    m_pEffectSpecial->m_vertex[1].position = { 0.89999998f, 0.0f, -0.8f };
+                    m_pEffectSpecial->m_vertex[2].position = { 0.89999998f, 0.0f, 0.5f };
+                    m_pEffectSpecial->m_vertex[3].position = { -0.5f, 0.0f, 0.5f };
+                    m_pEffectSpecial->m_vecScale.x = 1.0f;
+                    m_pEffectSpecial->m_vecScale.y = 1.0f;
+                    m_pEffectSpecial->m_vecScale.z = 1.0f;
+                    m_pEffectSpecial->m_fLocalHeight = -0.029999999f;
+                    m_pEffectSpecial->SetColor(0xFF774400);
+                    pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+                }
+                else if (m_bBonusEffect == 1)
+                {
+                    switch (m_stItem.sIndex)
+                    {
+                    case 419:
+                        m_pEffectSpecial->SetColor(0xFF774400);
+                        pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+                        break;
+                    case 420:
+                        m_pEffectSpecial->SetColor(0xFF440077);
+                        pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+                        break;
+                    case 753:
+                        m_pEffectSpecial->SetColor(0xFF660000);
+                        pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+                        break;
+                    default:
+                        m_pEffectSpecial->m_fLocalHeight = 0.05f;
+                        unsigned int dwEffectColor = 0xFF003300;
+                        if (dwTextColor == 0xFFFFFFAA)
+                            dwEffectColor = 0xFF555533;
+                        else if (dwTextColor == 0xFFFFAA00)
+                            dwEffectColor = 0xFF884400;
+
+                        m_pEffectSpecial->SetColor(dwEffectColor);
+                        pFScene->m_pEffectContainer->AddChild(m_pEffectSpecial);
+                        break;
+                    }
+                    if (m_pNameLabel)
+                        m_pNameLabel->SetTextColor(dwTextColor);
+                }
+                else
+                {
+                    if (m_pNameLabel)
+                        m_pNameLabel->SetTextColor(dwTextColor);
+                    SAFE_DELETE(m_pEffectSpecial);
+                }
+            }
+        }
+    }
+    if (m_stItem.sIndex == 1727)
+    {
+        for (int i = 0; i < 28; ++i)
+        {
+            if (m_pEffectBill[i])
+            {
+                g_pObjectManager->DeleteObject(m_pEffectBill[i]);
+                m_pEffectBill[i] = nullptr;
+            }
+            m_pEffectBill[i] = new TMEffectBillBoard(56, 0, 1.5f, 1.5f, 1.5f, 0.0f, 1, 80);
+            if (m_pEffectBill[i])
+            {
+                m_pEffectBill[i]->m_nFade = 2;
+                if (i < 14)
+                    m_pEffectBill[i]->SetColor(0xFFAAAA00);
+                else if (i < 23)
+                    m_pEffectBill[i]->SetColor(0xFF0088FF);
+                else
+                    m_pEffectBill[i]->SetColor(0xFFFF5500);
+
+                m_pEffectBill[i]->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+
+                if(pFScene)
+                    pFScene->m_pEffectContainer->AddChild(m_pEffectBill[i]);
+            }
+        }
+    }
+
+    if(m_pNameLabel)
+        m_dwNameColor = m_pNameLabel->m_GCText.pFont->m_dwColor;
+
+    return TMObject::InitObject();
 }
 
 void TMItem::InitPosition(float fX, float fY, float fZ)

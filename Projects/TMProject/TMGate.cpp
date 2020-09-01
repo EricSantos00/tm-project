@@ -3,6 +3,7 @@
 #include "TMGate.h"
 
 TMGate::TMGate()
+	: TMItem()
 {
 }
 
@@ -16,12 +17,12 @@ void TMGate::InitGate(STRUCT_ITEM stItem)
 
 int TMGate::Render()
 {
-	return 0;
+	return 1;
 }
 
 int TMGate::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	return 1;
 }
 
 void TMGate::SetState(EGATE_STATE eState)
@@ -30,5 +31,5 @@ void TMGate::SetState(EGATE_STATE eState)
 
 int TMGate::IsMouseOver()
 {
-	return 0;
+	return 1;
 }
