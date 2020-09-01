@@ -19,12 +19,7 @@ TMSea::TMSea()
 
 TMSea::~TMSea()
 {
-	if (m_pMesh != nullptr)
-	{
-		delete m_pMesh;
-
-		m_pMesh = nullptr;
-	}
+    SAFE_DELETE(m_pMesh);
 }
 
 int TMSea::Render()
@@ -282,7 +277,7 @@ float TMSea::GetHeight(float fX, float fY)
 
     if (PtInRect(&m_rectRange, POINT{ (int)fX, (int)fY }))
     {
-        fHeight = (sinf((((fX - (float)m_rectRange.left) * 3.1415927f) / 2.0f) + ((((float)(m_dwServerTime % 12000) / 6000.0f) * 3.1415927f) * 2.0f)) * 0.1f) - 0.1f;
+        fHeight = (sinf((((fX - (float)m_rectRange.left) * D3DXToRadian(180)) / 2.0f) + ((((float)(m_dwServerTime % 12000) / 6000.0f) * 3.1415927f) * 2.0f)) * 0.1f) - 0.1f;
     }
 
     return fHeight;

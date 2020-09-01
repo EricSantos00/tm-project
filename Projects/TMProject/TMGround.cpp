@@ -2980,145 +2980,145 @@ int TMGround::Render()
                     {
                         m_vertex[k].tu2 = TMGround::BackTileCoordList[(unsigned char)bCoordBackIndex][k][0];
                         m_vertex[k].tv2 = TMGround::BackTileCoordList[(unsigned char)bCoordBackIndex][k][1];
-                        continue;
+                       continue;
                     }
 
-                    if (m_vecOffsetIndex.x >= 26 && m_vecOffsetIndex.x <= 30 && m_vecOffsetIndex.y >= 8 && m_vecOffsetIndex.y <= 12)
-                        continue;
-
-                    if (nIndex == 170 || nIndex == 171)
+                    if (m_vecOffsetIndex.x < 26 || m_vecOffsetIndex.x > 30 || m_vecOffsetIndex.y < 8 || m_vecOffsetIndex.y > 12)
                     {
-                        m_vertex[k].tu1 = (float)((float)(m_dwServertime % 10000) / 10000.0f) + m_vertex[k].tu1;
-
-                        if (g_bHideEffect)
-                            continue;
-
-                        int nRandV = rand();
-
-                        TMVector3 vecPos = TMVector3((float)((float)((float)nX * 2.0f) + m_vecOffset.x) + 0.5f,
-                            (float)((float)m_TileMapData[nX + (nY << 6)].cHeight * 0.1f) + 1.5f,
-                            (float)((float)((float)nY * 2.0f) + m_vecOffset.y) + 0.5f);
-
-                        if (nRandV % 200 < 2)
+                        if (nIndex == 170 || nIndex == 171)
                         {
-                            int nRand = rand() % 10;
+                            m_vertex[k].tu1 = (float)((float)(m_dwServertime % 10000) / 10000.0f) + m_vertex[k].tu1;
 
-                            TMEffectBillBoard* mpBill = new TMEffectBillBoard(0, 1000,
-                                (float)((float)nRand * 0.19f) + 0.02f,
-                                (float)((float)nRand * 0.60000002f) + 0.02f,
-                                (float)((float)nRand * 0.19f) + 0.02f,
-                                0.000099999997f, 1, 80);
+                            if (g_bHideEffect)
+                                continue;
 
-                            if (mpBill)
+                            int nRandV = rand();
+
+                            TMVector3 vecPos = TMVector3((float)((float)((float)nX * 2.0f) + m_vecOffset.x) + 0.5f,
+                                (float)((float)m_TileMapData[nX + (nY << 6)].cHeight * 0.1f) + 1.5f,
+                                (float)((float)((float)nY * 2.0f) + m_vecOffset.y) + 0.5f);
+
+                            if (nRandV % 200 < 2)
                             {
-                                vecPos.x = (float)((float)(rand() % 10 - 5) * 0.02f) + vecPos.x;
-                                vecPos.z = (float)((float)(rand() % 10 - 5) * 0.02f) + vecPos.z;
+                                int nRand = rand() % 10;
 
-                                mpBill->m_vecPosition = vecPos;
-                                mpBill->m_vecStartPos = vecPos;
+                                TMEffectBillBoard* mpBill = new TMEffectBillBoard(0, 1000,
+                                    (float)((float)nRand * 0.19f) + 0.02f,
+                                    (float)((float)nRand * 0.60000002f) + 0.02f,
+                                    (float)((float)nRand * 0.19f) + 0.02f,
+                                    0.000099999997f, 1, 80);
 
-                                mpBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
-                                mpBill->m_bStickGround = 0;
-                                mpBill->m_nParticleType = 1;
-                                mpBill->m_fParticleV = 0.69999999f;
-                                mpBill->SetColor(0xFFFFAA00);
+                                if (mpBill)
+                                {
+                                    vecPos.x = (float)((float)(rand() % 10 - 5) * 0.02f) + vecPos.x;
+                                    vecPos.z = (float)((float)(rand() % 10 - 5) * 0.02f) + vecPos.z;
 
-                                g_pCurrentScene->m_pEffectContainer->AddChild(mpBill);
+                                    mpBill->m_vecPosition = vecPos;
+                                    mpBill->m_vecStartPos = vecPos;
+
+                                    mpBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                                    mpBill->m_bStickGround = 0;
+                                    mpBill->m_nParticleType = 1;
+                                    mpBill->m_fParticleV = 0.69999999f;
+                                    mpBill->SetColor(0xFFFFAA00);
+
+                                    g_pCurrentScene->m_pEffectContainer->AddChild(mpBill);
+                                }
+                            }
+                            if (m_dwServertime - m_dwLastEffectTime > 2000
+                                && !(nX % 2)
+                                && !(nY % 3)
+                                && (nRandV % 100 < 1))
+                            {
+                                int glowRand = (rand() % 7);
+
+                                auto pGlow = new TMEffectBillBoard(56, 20000, 0.2f, 0.2f, 0.2f, 0.0f, 1, 80);
+
+                                if (pGlow)
+                                {
+                                    pGlow->m_vecPosition = TMVector3(
+                                        vecPos.x,
+                                        (float)(vecPos.y + 1.5f) + (float)((float)glowRand * 0.2f),
+                                        vecPos.z);
+
+                                    pGlow->m_vecStartPos = pGlow->m_vecPosition;
+
+                                    pGlow->m_fCircleSpeed = (float)((float)glowRand * 0.1f) + 1.5f;
+                                    pGlow->m_fParticleH = (float)((float)glowRand * 0.30000001f) + 3.0f;
+                                    pGlow->m_fParticleV = (float)((float)glowRand * 0.050000001f) + 0.2f;
+                                    pGlow->m_nParticleType = glowRand % 3 + 6;
+                                    pGlow->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                                    pGlow->SetColor(0xFFFFAA00);
+
+                                    g_pCurrentScene->m_pEffectContainer->AddChild(pGlow);
+                                }
+
+                                pGlow = new TMEffectBillBoard(60, 20000, 0.07f, 0.07f, 0.07f, 0.0f, 1, 80);
+
+                                if (pGlow)
+                                {
+                                    pGlow->m_vecPosition = TMVector3(
+                                        vecPos.x,
+                                        (float)(vecPos.y + 1.5f) + (float)((float)glowRand * 0.2f),
+                                        vecPos.z);
+
+                                    pGlow->m_vecStartPos = pGlow->m_vecPosition;
+
+                                    pGlow->m_fCircleSpeed = (float)((float)glowRand * 0.1f) + 1.5f;
+                                    pGlow->m_fParticleH = (float)((float)glowRand * 0.30000001f) + 3.0f;
+                                    pGlow->m_fParticleV = (float)((float)glowRand * 0.050000001f) + 0.2f;
+                                    pGlow->m_nParticleType = glowRand % 3 + 6;
+                                    pGlow->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+                                    pGlow->SetColor(0xFFFFFF00);
+
+                                    g_pCurrentScene->m_pEffectContainer->AddChild((TreeNode*)pGlow);
+                                }
+
+                                if (glowRand < 3)
+                                {
+                                    auto pFire = new TMSkillFire(vecPos, 1, 0, 0xFFFFFFFF, 0x22331100);
+
+                                    if (pFire)
+                                        g_pCurrentScene->m_pEffectContainer->AddChild(pFire);
+                                }
                             }
                         }
-                        if (m_dwServertime - m_dwLastEffectTime > 2000
-                            && !(nX % 2)
-                            && !(nY % 3)
-                            && (nRandV % 100 < 1))
+                        else if (nIndex == 38 || nIndex == 39)
                         {
-                            int glowRand = (rand() % 7);
+                            fX[0] = 0.0f;
+                            fX[1] = 0.0f;
+                            fX[2] = 1.0f;
+                            fX[3] = 1.0f;
+                            fY[0] = 0.0f;
+                            fY[1] = 1.0f;
+                            fY[2] = 0.0f;
+                            fY[3] = 1.0f;
 
-                            auto pGlow = new TMEffectBillBoard(56, 20000, 0.2f, 0.2f, 0.2f, 0.0f, 1, 80);
+                            g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 5);
 
-                            if (pGlow)
-                            {
-                                pGlow->m_vecPosition = TMVector3(
-                                    vecPos.x,
-                                    (float)(vecPos.y + 1.5f) + (float)((float)glowRand * 0.2f),
-                                    vecPos.z);
+                            g_pDevice->SetTexture(1, g_pTextureManager->GetEnvTexture(344, 5000));
 
-                                pGlow->m_vecStartPos = pGlow->m_vecPosition;
+                            float fAngle = (float)(m_dwServertime % 10000) / 10000.0f;
 
-                                pGlow->m_fCircleSpeed = (float)((float)glowRand * 0.1f) + 1.5f;
-                                pGlow->m_fParticleH = (float)((float)glowRand * 0.30000001f) + 3.0f;
-                                pGlow->m_fParticleV = (float)((float)glowRand * 0.050000001f) + 0.2f;
-                                pGlow->m_nParticleType = glowRand % 3 + 6;
-                                pGlow->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
-                                pGlow->SetColor(0xFFFFAA00);
+                            m_vertex[k].tu2 = fX[k];
+                            m_vertex[k].tv2 = fY[k] + fAngle;
 
-                                g_pCurrentScene->m_pEffectContainer->AddChild(pGlow);
-                            }
-
-                            pGlow = new TMEffectBillBoard(60, 20000, 0.07f, 0.07f, 0.07f, 0.0f, 1, 80);
-
-                            if (pGlow)
-                            {
-                                pGlow->m_vecPosition = TMVector3(
-                                    vecPos.x,
-                                    (float)(vecPos.y + 1.5f) + (float)((float)glowRand * 0.2f),
-                                    vecPos.z);
-
-                                pGlow->m_vecStartPos = pGlow->m_vecPosition;
-
-                                pGlow->m_fCircleSpeed = (float)((float)glowRand * 0.1f) + 1.5f;
-                                pGlow->m_fParticleH = (float)((float)glowRand * 0.30000001f) + 3.0f;
-                                pGlow->m_fParticleV = (float)((float)glowRand * 0.050000001f) + 0.2f;
-                                pGlow->m_nParticleType = glowRand % 3 + 6;
-                                pGlow->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
-                                pGlow->SetColor(0xFFFFFF00);
-
-                                g_pCurrentScene->m_pEffectContainer->AddChild((TreeNode*)pGlow);
-                            }
-
-                            if (glowRand < 3)
-                            {
-                                auto pFire = new TMSkillFire(vecPos, 1, 0, 0xFFFFFFFF, 0x22331100);
-
-                                if (pFire)
-                                    g_pCurrentScene->m_pEffectContainer->AddChild(pFire);
-                            }
+                            nTexIndex = nIndex + 92;
                         }
-                    }
-                    else if (nIndex == 38 || nIndex == 39)
-                    {
-                        fX[0] = 0.0f;
-                        fX[1] = 0.0f;
-                        fX[2] = 1.0f;
-                        fX[3] = 1.0f;
-                        fY[0] = 0.0f;
-                        fY[1] = 1.0f;
-                        fY[2] = 0.0f;
-                        fY[3] = 1.0f;
+                        else if (nIndex >= 62 && nIndex <= 65)
+                        {
+                            g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 5);
+                            g_pDevice->SetTexture(1, g_pTextureManager->GetEnvTexture(nIndex + 286, 5000));
 
-                        g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 5);
+                            m_vertex[k].tu2 = m_vertex[k].tu1;
+                            m_vertex[k].tv2 = m_vertex[k].tv1;
 
-                        g_pDevice->SetTexture(1, g_pTextureManager->GetEnvTexture(344, 5000));
-
-                        float fAngle = (float)(m_dwServertime % 10000) / 10000.0f;
-
-                        m_vertex[k].tu2 = fX[k];
-                        m_vertex[k].tv2 = fY[k] + fAngle;
-
-                        nTexIndex = nIndex + 92;
-                    }
-                    else if (nIndex >= 62 && nIndex <= 65)
-                    {
-                        g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 1);
-                        g_pDevice->SetTexture(1, g_pTextureManager->GetEnvTexture(nIndex + 286, 5000));
-
-                        m_vertex[k].tu2 = m_vertex[k].tu1;
-                        m_vertex[k].tv2 = m_vertex[k].tv1;
-
-                        nTexIndex = nIndex % 2 + 130;
-                    }
-                    else
-                    {
-                        g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 1);
+                            nTexIndex = nIndex % 2 + 130;
+                        }
+                        else
+                        {
+                            g_pDevice->SetTextureStageState(1, D3DTSS_COLOROP, 1);
+                        }
                     }
                 }
 

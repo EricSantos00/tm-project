@@ -2362,13 +2362,13 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 			if (g_bHideEffect)
 			{
 				g_bHideEffect = 0;
-				g_bHideSkillBuffEffect = 1;
+				g_bHideSkillBuffEffect = 0;
 				g_bHideSkillBuffEffect2 = 0;
 			}
 			else
 			{
 				g_bHideEffect = 1;
-				g_bHideSkillBuffEffect = 0;
+				g_bHideSkillBuffEffect = 1;
 				g_bHideSkillBuffEffect2 = 1;
 			}
 

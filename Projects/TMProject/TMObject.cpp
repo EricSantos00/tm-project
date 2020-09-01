@@ -164,22 +164,20 @@ int TMObject::Render()
 
 	if (m_nAlpha != 0)
 	{
-		if (nAlpha != 0)
+		if (!nAlpha)
 		{
-			if (m_AlphaColor <= 0.75f)
-				m_AlphaColor = 0.69f;
+			if (m_AlphaColor >= 0.94999999f)
+			{
+				m_AlphaColor = 1.0f;
+				m_nAlpha = 0;
+			}
 			else
-				m_AlphaColor = m_AlphaColor - 0.02f;
+				m_AlphaColor += 0.05f;
 		}
-		else if (m_AlphaColor >= 0.94999999f)
-		{
-			m_AlphaColor = 1.0f;
-			m_nAlpha = 0;
-		}
+		else if (m_AlphaColor <= 0.75f)
+			m_AlphaColor = 0.69999999f;
 		else
-		{
-			m_AlphaColor = m_AlphaColor + 0.05f;
-		}
+			m_AlphaColor -= 0.02f;;
 
 		color.b = 0.69f;
 		color.g = 0.69f;
