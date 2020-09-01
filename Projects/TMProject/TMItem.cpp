@@ -252,7 +252,70 @@ int TMItem::IsMouseOver()
 
 int TMItem::FrameMove(unsigned int dwServerTime)
 {
-	return 1;
+    if (!m_stItem.sIndex)
+        return 1;
+
+    m_stGuildMark.pGuildMark->SetVisible(0);
+    m_pNameLabel->SetVisible(0);
+    auto pFocused = (TMHuman*)g_pObjectManager->m_pCamera->GetFocusedObject();
+    if (pFocused && 
+        ((float)(pFocused->m_vecTargetPos.x - 18) > m_vecPosition.x || m_vecPosition.x > (float)(pFocused->m_vecTargetPos.x + 18) || 
+         (float)(pFocused->m_vecTargetPos.y - 18) > m_vecPosition.y || m_vecPosition.y > (float)(pFocused->m_vecTargetPos.y + 18)))
+    {
+        if (g_pCurrentScene->m_pMouseOverItem == this)
+            g_pCurrentScene->m_pMouseOverItem = nullptr;
+
+        if (m_dwObjType != 405 && m_dwObjType != 1607 && (m_dwObjType < 2723 || m_dwObjType > 2727))
+            g_pObjectManager->DeleteObject(this);
+    }
+
+    if (m_bVisible == 1)
+    {
+        LabelPosition();
+        auto pScene = (TMFieldScene*)g_pCurrentScene;
+        auto color = pScene->GroundGetColor(m_vecPosition);
+
+        m_Materials = {};
+        if (IsMouseOver() != 1 || m_stItem.sIndex >= 3145 && m_stItem.sIndex <= 3149)
+        {
+            if (m_nItemType == 3 || m_nItemType == 2 || m_nItemType == 1)
+            {
+                m_Materials.Emissive.r = (float)(color.r * 0.2f) + 0.69999999f;
+                m_Materials.Emissive.g = (float)(color.g * 0.2f) + 0.69999999f;
+                m_Materials.Emissive.b = (float)(color.b * 0.2f) + 0.69999999f;
+            }
+            else
+            {
+                m_Materials.Emissive.r = (float)(color.r * 0.3f) + 0.3f;
+                m_Materials.Emissive.g = (float)(color.g * 0.3f) + 0.3f;
+                m_Materials.Emissive.b = (float)(color.b * 0.3f) + 0.3f;
+            }
+            if (m_stItem.sIndex == 1727)
+            {
+                m_Materials.Emissive.r = (float)(color.r * 0.4f) + 0.6f;
+                m_Materials.Emissive.g = (float)(color.g * 0.4f) + 0.6f;
+                m_Materials.Emissive.b = (float)(color.b * 0.4f) + 0.6f;
+            }
+        }
+        else
+        {
+            m_Materials.Emissive.r = 1.0f;
+            m_Materials.Emissive.g = 1.0f;
+            m_Materials.Emissive.b = 1.0f;
+        }
+
+        m_Materials.Ambient.r = 1.0f;
+        m_Materials.Ambient.g = 1.0f;
+        m_Materials.Ambient.b = 1.0f;
+        m_Materials.Ambient.a = 1.0f;
+        m_Materials.Diffuse = color;
+
+
+        m_Materials.Specular = m_Materials.Diffuse;
+        m_Materials.Power = 0.0f;
+    }
+
+    return 1;
 }
 
 void TMItem::LabelPosition()
