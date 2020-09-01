@@ -10440,6 +10440,80 @@ void TMHuman::FrameMoveEffect_AvatarFoema()
 
 void TMHuman::FrameMoveEffect_AvatarBMaster()
 {
+    if (m_c8thSkill == 1)
+    {
+        for (int i = 0; i < 10; ++i)
+        {
+            auto pJudgement = new TMSkillJudgement({ m_vecPosition.x, (m_fHeight - 2.0f) + ((float)i * 0.5f), m_vecPosition.y }, 7, (float)i * 0.1f);
+            if (!pJudgement)
+                break;
+            g_pCurrentScene->m_pEffectContainer->AddChild(pJudgement);
+        }
+    }
+    else if (m_c8thSkill == 2)
+    {
+        for (int i = 0; i < 5; ++i)
+        {
+            auto pJudgement = new TMSkillJudgement({ m_vecPosition.x, (m_fHeight + 0.5f) - ((float)i * 0.1f), m_vecPosition.y }, 8, (float)i * 0.40000001f);
+            if (!pJudgement)
+                break;
+            g_pCurrentScene->m_pEffectContainer->AddChild(pJudgement);
+           
+            auto pEffect = new TMEffectBillBoard(56, 2300, ((float)i * 1.7f) + 0.30000001f, ((float)i * 0.5f) + 0.30000001f, ((float)i * 1.7f) + 0.30000001f, 0.0f, 1, 80);
+            if (!pEffect)
+                break;
+
+            pEffect->m_vecStartPos = pEffect->m_vecPosition = { m_vecPosition.x, (m_fHeight - 0.5f) + ((float)i * 0.69999999f), m_vecPosition.y };
+            pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            pEffect->m_bStickGround = 1;
+            pEffect->m_nParticleType = 9;
+            pEffect->m_fParticleV = ((float)i * 1.0f) + 1.0f;
+            pEffect->m_fParticleH = ((float)i * 1.0f) + 1.0f;
+            pEffect->SetColor(0x33555555);
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+        }
+    }
+    else if (m_c8thSkill == 3)
+    {
+        for (int i = 0; i < 6; ++i)
+        {
+            auto pEffect = new TMEffectSkinMesh(m_nSkinMeshType, TMVector3{}, TMVector3{}, 0, 0);
+            if (!pEffect)
+                break;
+
+            bool bExpand{ false };
+
+            if (m_nClass == 4 || m_nClass == 8)
+                bExpand = true;
+
+            memcpy(&pEffect->m_stLookInfo, &m_stLookInfo, sizeof(pEffect->m_stLookInfo));
+
+            ECHAR_MOTION eMotion{ ECHAR_MOTION::ECMOTION_ATTACK01 };
+
+            pEffect->m_StartColor.r = ((float)i * 0.80000001f) + 0.30000001f;
+            pEffect->m_StartColor.g = ((float)i * 0.80000001f) + 0.30000001f;
+            pEffect->m_StartColor.b = ((float)i * 0.80000001f) + 0.30000001f;
+            pEffect->InitObject(bExpand);
+            pEffect->m_nFade = 1;
+            pEffect->m_dwLifeTime = 300 * i + 100;
+
+            float fHeight = m_fHeight;
+            if (m_cMount > 0 && m_pMount)
+                fHeight += 0.5f;
+
+            pEffect->InitPosition(m_vecPosition.x, fHeight, m_vecPosition.y);
+            pEffect->m_pSkinMesh->m_vScale.x = 1.9f;
+            pEffect->m_pSkinMesh->m_vScale.y = 1.9f;
+            pEffect->m_pSkinMesh->m_vScale.z = 1.9f;
+            pEffect->m_nMotionType = 12;
+            pEffect->m_fAngle = ((float)i * 1.5f) + m_fAngle;
+            pEffect->m_pSkinMesh->m_dwFPS = m_pSkinMesh->m_dwFPS - 4 * i;
+            pEffect->m_pSkinMesh->SetAnimation(g_MobAniTable[m_nSkinMeshType].dwAniTable[static_cast<int>(eMotion)]);
+            pEffect->m_fStartAngle = 1.0f;
+            pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
+            g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
+        }
+    }
 }
 
 void TMHuman::FrameMoveEffect_AvatarHunter()
