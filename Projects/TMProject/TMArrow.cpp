@@ -210,7 +210,29 @@ int TMArrow::Render()
 
 int TMArrow::IsVisible()
 {
-	return 0;
+    if (g_pCurrentScene->GetSceneType() != ESCENE_TYPE::ESCENE_FIELD)
+    {
+        m_bVisible = 1;
+        return 1;
+    }
+
+    auto pCamera = g_pObjectManager->m_pCamera;
+    if (pCamera->m_nMethod)
+    {
+        if ((float)(fabsf(pCamera->m_fCX - m_vecCurrentPos.x) + fabsf(pCamera->m_fCY - m_vecCurrentPos.z)) < 18.0f)
+        {
+            m_bVisible = TMArrow::IsInView();
+            return m_bVisible;
+        }
+    }
+    else if (m_vecCurrentPos.x > pCamera->m_fX1 && pCamera->m_fX2 > m_vecCurrentPos.x && m_vecCurrentPos.z > pCamera->m_fY1 && pCamera->m_fY2 > m_vecCurrentPos.z)
+    {
+        m_bVisible = TMArrow::IsInView();
+        return m_bVisible;
+    }
+
+    m_bVisible = 0;
+    return 0;
 }
 
 int TMArrow::IsInView()
