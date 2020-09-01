@@ -9,6 +9,8 @@
 #include "TMScene.h"
 #include "SControlContainer.h"
 #include "TMCamera.h"
+#include "TMMesh.h"
+#include "Structures.h"
 
 TMItem::TMItem() 
 	: TMObject()
@@ -171,7 +173,366 @@ void TMItem::InitPosition(float fX, float fY, float fZ)
 
 int TMItem::Render()
 {
-	return 1;
+    if (m_dwObjType == -1)
+        return 1;
+    if (!m_stItem.sIndex)
+        return 1;
+
+    auto pCamera = g_pObjectManager->m_pCamera;
+    if (IsVisible() != 1)
+        return 1;
+
+    int nMeshIndex = g_pItemList[m_stItem.sIndex].nIndexMesh;
+    if (nMeshIndex < 737 || nMeshIndex > 739)
+    {
+        if (m_sMultiTexture > 0 && !g_pDevice->m_bVoodoo)
+        {
+            m_Materials.Diffuse.r = m_Materials.Diffuse.r / 2.0f;
+            m_Materials.Diffuse.g = m_Materials.Diffuse.g / 2.4f;
+            m_Materials.Diffuse.b = m_Materials.Diffuse.b / 2.8f;            
+            m_Materials.Specular = m_Materials.Diffuse;
+        }
+
+        g_pDevice->m_pd3dDevice->SetMaterial(&m_Materials);
+        auto pMesh = g_pMeshManager->GetCommonMesh(m_dwObjType, 0, 180000);
+        if (pMesh)
+        {
+            float fHeight = 0.0f;
+            float fAxisAngle = D3DXToRadian(90);
+            if (m_nItemType == 4 || m_nItemType == 5)
+                fAxisAngle = 0.0f;
+            if (BASE_GetItemAbility(&m_stItem, 38) == 2 || BASE_GetItemAbility(&m_stItem, 38) == 1)
+                fAxisAngle = 0.0f;
+            if (g_pItemList[m_stItem.sIndex].nIndexMesh == 45)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex == 419 || m_stItem.sIndex == 420)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex == 747)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex >= 1701 && m_stItem.sIndex <= 1712)
+                fAxisAngle = -D3DXToRadian(90);
+            else if (m_stItem.sIndex == 1727)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex >= 1733 && m_stItem.sIndex <= 1736)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex == 1752 || m_stItem.sIndex >= 1760 && m_stItem.sIndex <= 1763)
+            {
+                fAxisAngle = 0.0f;
+                fHeight = 0.1f;
+            }
+            else if (m_stItem.sIndex >= 1744 && m_stItem.sIndex <= 1751)
+            {
+                fAxisAngle = 0.0f;
+                fHeight = 0.3f;
+            }
+            else if (m_stItem.sIndex >= 2300 && m_stItem.sIndex <= 2329)
+            {
+                fAxisAngle = 0.0f;
+                fHeight = 0.3f;
+            }
+            else if (m_stItem.sIndex >= 2330 && m_stItem.sIndex <= 2359)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex >= 2360 && m_stItem.sIndex <= 2389)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex >= 2390 && m_stItem.sIndex <= 2449)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex >= 2960 && m_stItem.sIndex <= 2999)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex >= 5110 && m_stItem.sIndex <= 5133)
+                fAxisAngle = -D3DXToRadian(90);
+            else if (m_stItem.sIndex == 3443 || m_stItem.sIndex == 3444 || m_stItem.sIndex == 5135)
+            {
+                fAxisAngle = 0.0f;
+                fHeight = -0.13f;
+            }
+            else if (m_stItem.sIndex >= 3197 && m_stItem.sIndex <= 3199)
+                fAxisAngle = -D3DXToRadian(90);
+            else if (m_stItem.sIndex >= 3500 && m_stItem.sIndex <= 3502)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex >= 3140 && m_stItem.sIndex <= 3550)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex >= 3145 && m_stItem.sIndex <= 3149)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex >= 3980 && m_stItem.sIndex <= 3999)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex == 4013)
+                fAxisAngle = -D3DXToRadian(90);
+            else if (m_stItem.sIndex >= 4106 && m_stItem.sIndex <= 4109)
+                fAxisAngle = 0.0f;
+            else if (m_stItem.sIndex == 5338)
+            {
+                fAxisAngle = 0.0f;
+                fHeight = -0.15f;
+            }
+            else if (m_stItem.sIndex == 5134)
+            {
+                fAxisAngle = 0.0f;
+                fHeight = -0.1f;
+            }
+            else if (m_stItem.sIndex == 3447 || m_stItem.sIndex == 3448)
+                fHeight = -0.1f;
+            else if (m_stItem.sIndex == 5137)
+                fAxisAngle = -D3DXToRadian(90);
+            if (m_dwObjType == 405 || m_dwObjType == 1607)
+                fAxisAngle = 0.0f;
+
+            int nIndexTexture = g_pItemList[m_stItem.sIndex].nIndexTexture;
+            if (nMeshIndex == 27)
+            {
+                if (g_pItemList[m_stItem.sIndex].nIndexTexture >= 6 && g_pItemList[m_stItem.sIndex].nIndexTexture <= 9)
+                    nIndexTexture = g_pItemList[m_stItem.sIndex].nIndexTexture - 1;
+                else if (g_pItemList[m_stItem.sIndex].nIndexTexture >= 11 && g_pItemList[m_stItem.sIndex].nIndexTexture <= 17)
+                    nIndexTexture = g_pItemList[m_stItem.sIndex].nIndexTexture - 2;
+                else if (g_pItemList[m_stItem.sIndex].nIndexTexture == 19)
+                    nIndexTexture = g_pItemList[m_stItem.sIndex].nIndexTexture - 3;
+                else if (g_pItemList[m_stItem.sIndex].nIndexTexture == 21 || g_pItemList[m_stItem.sIndex].nIndexTexture == 22)
+                    nIndexTexture = g_pItemList[m_stItem.sIndex].nIndexTexture - 4;
+            }
+            if (m_sMultiTexture > 0 || m_sLegendType >= 4 && m_sLegendType <= 8)
+            {
+                if (m_sLegendType == 4)
+                {
+                    int nBaseIndex = 179;
+                    g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(m_sMultiTexture + 179, 5000));
+                    g_pDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+                    if (g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400)
+                    {
+                        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+                        g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 4u);
+                    }
+                    else
+                    {
+                        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 5u);
+                        g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 4u);
+                    }
+
+                    pMesh->Render(
+                        m_vecPosition.x,
+                        m_fHeight + fHeight,
+                        m_vecPosition.y,
+                        m_fAngle,
+                        fAxisAngle,
+                        0,
+                        1,
+                        nIndexTexture);
+                }
+                else if (m_sLegendType > 4 && m_sLegendType <= 8)
+                {
+                    int nBaseIndex = 153;
+                    if (m_sLegendType == 6)
+                        nBaseIndex = 166;
+                    if (m_sLegendType == 7)
+                        nBaseIndex = 246;
+                    if (m_sLegendType == 8)
+                        nBaseIndex = 260;
+
+                    g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(m_sMultiTexture + nBaseIndex, 5000));
+                    if (g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400)
+                    {
+                        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+                        g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 7u);
+                    }
+                    else
+                    {
+                        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+                        g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 0xBu);
+                    }
+
+                    pMesh->Render(
+                        m_vecPosition.x,
+                        m_fHeight + fHeight,
+                        m_vecPosition.y,
+                        m_fAngle,
+                        fAxisAngle,
+                        0,
+                        1,
+                        nIndexTexture);
+                }
+                else if (m_sLegendType >= 9 && m_sLegendType <= 12)
+                {
+                    int nBaseIndex = 153;
+                    if (m_sLegendType == 10)
+                        nBaseIndex = 166;
+                    if (m_sLegendType == 11)
+                        nBaseIndex = 246;
+                    if (m_sLegendType == 12)
+                        nBaseIndex = 260;
+
+                    g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(m_sMultiTexture + nBaseIndex, 5000));
+                    if (g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400)
+                    {
+                        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+                        g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 7u);
+                    }
+                    else
+                    {
+                        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 5u);
+                        g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 0xBu);
+                    }
+
+                    pMesh->Render(
+                        m_vecPosition.x,
+                        m_fHeight + fHeight,
+                        m_vecPosition.y,
+                        m_fAngle,
+                        fAxisAngle,
+                        0,
+                        1,
+                        nIndexTexture);
+                }
+                else if (m_sLegendType >= 116 && m_sLegendType <= 125 && m_sMultiTexture > 0)
+                {
+                    int nBaseIndex = 275;
+                    if (m_sLegendType == 116)
+                        nBaseIndex = 275;
+                    if (m_sLegendType == 117)
+                        nBaseIndex = 288;
+                    if (m_sLegendType == 118)
+                        nBaseIndex = 301;
+                    if (m_sLegendType == 119)
+                        nBaseIndex = 314;
+                    if (m_sLegendType == 120)
+                        nBaseIndex = 327;
+                    if (m_sLegendType == 121)
+                        nBaseIndex = 340;
+                    if (m_sLegendType == 122)
+                        nBaseIndex = 353;
+                    if (m_sLegendType == 123)
+                        nBaseIndex = 366;
+                    if (m_sLegendType == 124)
+                        nBaseIndex = 425;
+                    if (m_sLegendType == 125)
+                        nBaseIndex = 392;
+
+                    g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(nBaseIndex + m_sMultiTexture - 1, 5000));
+                    if (g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400 || g_pDevice->m_bTNT)
+                    {
+                        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+                        g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 7u);
+                    }
+                    else
+                    {
+                        g_pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, 1u);
+                        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 0x18u);
+                        if (m_sLegendType == 120)
+                            g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 4u);
+                        else if (m_sLegendType == 119)
+                            g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 8u);
+                        else
+                            g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 6u);
+                    }
+
+                    pMesh->Render(
+                        m_vecPosition.x,
+                        m_fHeight + fHeight,
+                        m_vecPosition.y,
+                        m_fAngle,
+                        fAxisAngle,
+                        0,
+                        1,
+                        nIndexTexture);
+                }
+                else
+                {
+                    g_pDevice->SetTexture(1, g_pTextureManager->GetEffectTexture(m_sMultiTexture + 233, 5000));
+                    g_pDevice->SetTextureStageState(1u, D3DTSS_TEXCOORDINDEX, 1u);
+                    if (g_pDevice->m_bVoodoo || g_pDevice->m_bIntel || g_pDevice->m_bG400)
+                    {
+                        g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+                        g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 7u);
+                    }
+                    else
+                    {
+                        if (m_sMultiTexture < 7)
+                            g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+                        else
+                            g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 5u);
+                        g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 0xBu);
+                    }
+
+                    pMesh->Render(
+                        m_vecPosition.x,
+                        m_fHeight + fHeight,
+                        m_vecPosition.y,
+                        m_fAngle,
+                        fAxisAngle,
+                        0,
+                        1,
+                        nIndexTexture);
+                }
+                g_pDevice->SetTexture(1u, nullptr);
+                g_pDevice->SetTextureStageState(1u, D3DTSS_TEXCOORDINDEX, 1u);
+                g_pDevice->SetTextureStageState(0, D3DTSS_COLOROP, 4u);
+                g_pDevice->SetTextureStageState(1u, D3DTSS_COLOROP, 1u);
+            }
+            else
+            {
+                g_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, 0);
+                if (m_stItem.sIndex == 169)
+                {
+                     pMesh->Render(
+                        m_vecPosition.x,
+                        m_fHeight + fHeight,
+                        m_vecPosition.y,
+                        m_fAngle,
+                        fAxisAngle,
+                        0,
+                        0,
+                        -4);
+                }
+                else
+                {
+                    pMesh->Render(
+                        m_vecPosition.x,
+                        m_fHeight + fHeight,
+                        m_vecPosition.y,
+                        m_fAngle,
+                        fAxisAngle,
+                        0,
+                        0,
+                        nIndexTexture);
+                }
+            }
+        }
+        return 1;
+    }
+
+    g_pDevice->SetRenderState(D3DRS_LIGHTING, 0);
+    g_pDevice->SetRenderState(D3DRS_DESTBLEND, 2u);
+    g_pDevice->SetRenderState(D3DRS_SRCBLEND, 5u);
+    g_pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, 2u);
+    g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
+
+    auto pMesh = g_pMeshManager->GetCommonMesh(nMeshIndex, 1, 180000);
+    if (pMesh)
+    {
+        const static unsigned int dwColor[3]{ 0xFFFF4400, 0xFF3366FF, 0xFF00FF00 };
+
+        D3DVERTEXBUFFER_DESC vDesc;
+        pMesh->m_pVB->GetDesc(&vDesc);
+        RDLVERTEX* pVertex;
+        pMesh->m_pVB->Lock(0, 0, (void**)&pVertex, 0);
+
+        int nCount = vDesc.Size / sizeof(RDLVERTEX);
+        // TODO: review this loops, very strange
+        for (int i = 0; i < nCount; ++i)
+            pVertex[i].diffuse = dwColor[nMeshIndex - 2980];
+
+        pMesh->m_pVB->Unlock();
+        pMesh->m_nTextureIndex[0] = 204;
+        pMesh->Render(
+            m_vecPosition.x,
+            m_fHeight,
+            m_vecPosition.y,
+            m_fAngle,
+            0,
+            0,
+            0,
+            0);
+    }
+
+    g_pDevice->SetRenderState(D3DRS_LIGHTING, 1u);
+    return 1;
 }
 
 int TMItem::IsMouseOver()
