@@ -2351,13 +2351,13 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 			m_pControlContainer->SetFocusedControl(0);
 			return 1;
 		}
-		if (!strcmp(pEditChat->GetText(), "/help"))
+		else if (!strcmp(pEditChat->GetText(), "/help"))
 		{
 			OnKeyHelp(104, 0);
 			pEditChat->SetText((char*)"");
 			return 1;
 		}
-		if (!strcmp(pEditChat->GetText(), "effects"))
+		else if (!strcmp(pEditChat->GetText(), "effects"))
 		{
 			if (g_bHideEffect)
 			{
@@ -2376,7 +2376,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 			m_pControlContainer->SetFocusedControl(0);
 			return 1;
 		}
-		if (!strcmp(pEditChat->GetText(), "fps"))
+		else if (!strcmp(pEditChat->GetText(), "fps"))
 		{
 			g_pDevice->m_bDrawFPS = g_pDevice->m_bDrawFPS == 0;
 			pEditChat->SetText((char*)"");
@@ -2384,14 +2384,21 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 			UpdateScoreUI(0);
 			return 1;
 		}
-		if (!strcmp(pEditChat->GetText(), "effect"))
+		else if (!strcmp(pEditChat->GetText(), "effect"))
 		{
 			g_pDevice->m_bShowEffects = g_pDevice->m_bShowEffects == 0;
 			pEditChat->SetText((char*)"");
 			m_pControlContainer->SetFocusedControl(0);
 			return 1;
 		}
-		if (!strcmp(pEditChat->GetText(), "exp"))
+		else if (!strcmp(pEditChat->GetText(), "effectold"))
+		{
+			g_bHideSkillBuffEffect = !g_bHideSkillBuffEffect;
+			pEditChat->SetText((char*)"");
+			m_pControlContainer->SetFocusedControl(0);
+			return 1;
+		}
+		else if (!strcmp(pEditChat->GetText(), "exp"))
 		{
 			m_bShowExp = m_bShowExp == 0;
 			char str[128]{};
