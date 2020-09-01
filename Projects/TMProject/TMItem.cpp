@@ -8,6 +8,7 @@
 #include "Basedef.h"
 #include "TMScene.h"
 #include "SControlContainer.h"
+#include "TMCamera.h"
 
 TMItem::TMItem() 
 	: TMObject()
@@ -153,6 +154,19 @@ int TMItem::InitObject()
 
 void TMItem::InitPosition(float fX, float fY, float fZ)
 {
+    TMObject::InitPosition(fX, fY, fZ);
+    if (m_stItem.sIndex == 1727)
+    {
+        for (int i = 0; i < 28; ++i)
+        {
+            if (m_pEffectBill[i])
+            {
+                m_pEffectBill[i]->m_vecPosition.x = g_vecItemBillPos[i].x + m_vecPosition.x;
+                m_pEffectBill[i]->m_vecPosition.y = g_vecItemBillPos[i].y + m_fHeight;
+                m_pEffectBill[i]->m_vecPosition.z = g_vecItemBillPos[i].z + m_vecPosition.y;
+            }
+        }
+    }
 }
 
 int TMItem::Render()
@@ -162,7 +176,78 @@ int TMItem::Render()
 
 int TMItem::IsMouseOver()
 {
-	return 1;
+    if (!m_stItem.sIndex)
+    {
+        m_bMouseOver = 0;
+        return 0;
+    }
+    if (m_dwObjType == 405)
+    {
+        m_bMouseOver = 0;
+        return 0;
+    }
+
+    D3DXVECTOR3 vPickRayDir;
+    D3DXVECTOR3 vPickRayOrig;
+    g_pDevice->GetPickRayVector(&vPickRayOrig, &vPickRayDir);
+
+    auto vecCam = g_pObjectManager->m_pCamera->m_cameraPos;
+    auto pOldOverItem = g_pCurrentScene->m_pMouseOverItem;
+    auto pFocusedObject = (TMObject*)g_pCurrentScene->m_pMyHuman;
+
+    bool bMouseOver = false;
+    float fRadius = 0.60000002f;
+    float fRadius2 = 0.69999999f;
+
+    if (m_dwObjType == 1607)
+        fRadius = 1.0f;
+    if (m_stItem.sIndex >= 3145 && m_stItem.sIndex <= 3149)
+    {
+        fRadius = 3.0f;
+        fRadius2 = 3.0f;
+    }
+
+    D3DXVECTOR3 v0{ m_vecPosition.x - fRadius, m_fHeight + fRadius2, m_vecPosition.y };
+    D3DXVECTOR3 v1{ m_vecPosition.x + fRadius, m_fHeight + fRadius2, m_vecPosition.y };
+    D3DXVECTOR3 v2( m_vecPosition.x - fRadius, m_fHeight, m_vecPosition.y);
+    D3DXVECTOR3 v3{ m_vecPosition.x + fRadius, m_fHeight, m_vecPosition.y };
+
+    if (D3DXIntersectTri(&v0, &v2, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+    {
+        if (!pFocusedObject)
+            g_pCurrentScene->m_pMouseOverItem = this;
+        bMouseOver = 1;
+    }
+    if (!bMouseOver && D3DXIntersectTri(&v2, &v3, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+    {
+        if (!pFocusedObject)
+            g_pCurrentScene->m_pMouseOverItem = this;
+        bMouseOver = 1;
+    }
+
+    v0 = { m_vecPosition.x, m_fHeight + fRadius2, m_vecPosition.y - fRadius };
+    v1 = { m_vecPosition.x, m_fHeight + fRadius2, m_vecPosition.y + fRadius };
+    v2 = { m_vecPosition.x, m_fHeight, m_vecPosition.y - fRadius };
+    v3 = { m_vecPosition.x, m_fHeight, m_vecPosition.y + fRadius };
+
+    if (!bMouseOver && D3DXIntersectTri(&v0, &v2, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+    {
+        if (!pFocusedObject)
+            g_pCurrentScene->m_pMouseOverItem = this;
+        bMouseOver = 1;
+    }
+    if (!bMouseOver && D3DXIntersectTri(&v2, &v3, &v1, &vPickRayOrig, &vPickRayDir, 0, 0, 0) == 1)
+    {
+        if (!pFocusedObject)
+            g_pCurrentScene->m_pMouseOverItem = this;
+        bMouseOver = 1;
+    }
+
+    if (pFocusedObject && bMouseOver == 1 && !pOldOverItem)
+        g_pCurrentScene->m_pMouseOverItem = this;
+
+    m_bMouseOver = bMouseOver;
+    return bMouseOver;
 }
 
 int TMItem::FrameMove(unsigned int dwServerTime)
