@@ -3106,6 +3106,80 @@ int BASE_UpdateItem2(int maskidx, int CurrentState, int NextState, int xx, int y
     return 1;
 }
 
+int BASE_GetMeshIndex(short sIndex)
+{
+    STRUCT_ITEM item{};
+    item.sIndex = sIndex;
+    int nPos = BASE_GetItemAbility(&item, 17);
+    int nClassType = BASE_GetItemAbility(&item, 18);
+    int nClassIndex = 0;
+    if (g_pItemList[sIndex].nIndexMesh >= 40 && g_pItemList[sIndex].nIndexMesh < 50
+        && (nPos & 4 || nPos & 8 || nPos & 0x10 || nPos & 0x20))
+    {
+        if (g_pItemList[sIndex].nIndexMesh == 40)
+            return 0;
+
+        switch (nClassType)
+        {
+        case 1:
+            nClassIndex = 0;
+            break;
+        case 4:
+            nClassIndex = 1;
+            break;
+        case 2:
+            nClassIndex = 2;
+            break;
+        case 8:
+            nClassIndex = 3;
+            break;
+        }
+
+        if (nPos & 4)
+            nPos = 0;
+        else if (nPos & 8)
+            nPos = 1;
+        else if (nPos & 0x10)
+            nPos = 2;
+        else if (nPos & 0x20)
+            nPos = 3;
+
+        return nPos + 4 * (g_pItemList[sIndex].nIndexMesh + nClassIndex - 41) + 1401;
+    }
+
+    switch (nClassType)
+    {
+    case 1:
+        nClassIndex = 0;
+        break;
+    case 2:
+        nClassIndex = 200;
+        break;
+    case 4:
+        nClassIndex = 20;
+        break;
+    case 8:
+        nClassIndex = 220;
+        break;
+    }
+
+    if (nClassType <= 8)
+    {
+        if (nPos & 2)
+            return g_pItemList[sIndex].nIndexMesh + nClassIndex + 1001;
+        if (nPos & 4)
+            return g_pItemList[sIndex].nIndexMesh + nClassIndex + 1041;
+        if (nPos & 8)
+            return g_pItemList[sIndex].nIndexMesh + nClassIndex + 1081;
+        if (nPos & 0x10)
+            return g_pItemList[sIndex].nIndexMesh + nClassIndex + 1121;
+        if (nPos & 0x20)
+            return g_pItemList[sIndex].nIndexMesh + nClassIndex + 1161;
+    }
+
+    return g_pItemList[sIndex].nIndexMesh;
+}
+
 int IsPassiveSkill(int nSkillIndex)
 {
     if (nSkillIndex >= 5400)

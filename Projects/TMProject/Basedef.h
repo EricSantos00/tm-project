@@ -2913,6 +2913,7 @@ int BASE_GetDoubleCritical(STRUCT_MOB* mob, unsigned short* sProgress, unsigned 
 void BASE_GetHitPosition2(int sx, int sy, int* tx, int* ty, char* pHeight, int MH);
 void BASE_SetBit(char* byte, int pos);
 int BASE_UpdateItem2(int maskidx, int CurrentState, int NextState, int xx, int yy, char* pHeight, int rotate, int height);
+int BASE_GetMeshIndex(short sIndex);
 
 int IsPassiveSkill(int nSkillIndex);
 

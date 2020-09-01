@@ -14994,7 +14994,7 @@ int TMHuman::MAutoAttack(TMHuman* pTarget, int mode)
 {
     if (_dwAttackDelay)
     {
-        if ((int)(g_pTimerManager->GetServerTime() - _dwAttackDelay) > 2000)
+        if (g_pTimerManager->GetServerTime() - _dwAttackDelay > 2000)
             _dwAttackDelay = 0;
         return 0;
     }
