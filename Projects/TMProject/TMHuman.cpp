@@ -15679,7 +15679,7 @@ void TMHuman::RenderEffect_RudolphCostume(unsigned int dwServerTime)
             pEffect->m_nFade = 0;
             pEffect->SetColor(0xFFFF5500);
             pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
-            pEffect->m_vecPosition = TMVector3{ m_AlphaColor, *(float*)&m_nAlpha, *(float*)&m_bAlphaObj };
+            pEffect->m_vecPosition = TMVector3{ m_vecTempPos[10].x, m_vecTempPos[10].y, m_vecTempPos[10].z };
             g_pCurrentScene->m_pEffectContainer->AddChild(pEffect);
         }
 
@@ -15772,7 +15772,7 @@ void TMHuman::RenderEffect_LegendBerielKeeper(unsigned int dwServerTime)
 
     if (mpBill != nullptr)
     {
-        mpBill->m_vecPosition = TMVector3{ ((float)(rand() % 6 - 3) * 0.02f) + m_AlphaColor, *(float*)&m_nAlpha, ((float)(rand() % 40 - 20) * 0.02f) + *(float*)&m_bAlphaObj };
+        mpBill->m_vecPosition = TMVector3{ ((float)(rand() % 6 - 3) * 0.02f) + m_vecTempPos[10].x, m_vecTempPos[10].y, ((float)(rand() % 40 - 20) * 0.02f) + m_vecTempPos[10].z };
         mpBill->m_vecStartPos = mpBill->m_vecPosition;
         mpBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
         mpBill->m_bStickGround = 0;
@@ -15890,7 +15890,7 @@ void TMHuman::RenderEffect_LegendBeriel(unsigned int dwServerTime)
 
     if (mpBill5 != nullptr)
     {
-        mpBill5->m_vecPosition = TMVector3{ ((float)(rand() % 6 - 3) * 0.02f) + m_AlphaColor, *(float*)&m_nAlpha, ((float)(rand() % 40 - 20) * 0.02f) + *(float*)&m_bAlphaObj };
+        mpBill5->m_vecPosition = TMVector3{ ((float)(rand() % 6 - 3) * 0.02f) + m_vecTempPos[10].x, m_vecTempPos[10].y, ((float)(rand() % 40 - 20) * 0.02f) + m_vecTempPos[10].z };
         mpBill5->m_vecStartPos = mpBill5->m_vecPosition;
         mpBill5->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
         mpBill5->m_bStickGround = 0;

@@ -308,10 +308,9 @@ void CFrame::UpdateFrames(D3DXMATRIX* matCur)
 				m_pParentSkin->m_pOwner->m_vecTempPos[9].y = vecOut2.y;
 				m_pParentSkin->m_pOwner->m_vecTempPos[9].z = vecOut2.z;
 
-				// wyd error
-				//vecIn2 = D3DXVECTOR3(0.05f, 0.37f, -0.1f);
-				//D3DXVec3Transform(&vecOut3, &vecIn2, &m_matCombined);
-				//m_pParentSkin->m_pOwner->m_vecTempPos[10] = vecOut1;
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].x = vecOut3.x;
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].y = vecOut3.y;
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].z = vecOut3.z;
 			}
 			else if (m_dwID == 9)
 				nIndex = 1;
@@ -354,6 +353,7 @@ void CFrame::UpdateFrames(D3DXMATRIX* matCur)
 			{
 				D3DXVECTOR4 vecOut1;
 				D3DXVECTOR4 vecOut2;
+				D3DXVECTOR4 vecOut3;
 				D3DXVECTOR3 vecIn1(0.16f, 0.079f, 0.035f);
 				D3DXVECTOR3 vecIn2(0.16f, 0.079f, -0.035f);
 
@@ -367,6 +367,12 @@ void CFrame::UpdateFrames(D3DXMATRIX* matCur)
 				m_pParentSkin->m_pOwner->m_vecTempPos[9].x = vecOut2.x;
 				m_pParentSkin->m_pOwner->m_vecTempPos[9].y = vecOut2.y;
 				m_pParentSkin->m_pOwner->m_vecTempPos[9].z = vecOut2.z;
+
+				D3DXVECTOR3 vecIn3{ 0.07f, 0.1f, 0.0f };
+				D3DXVec3Transform(&vecOut3, &vecIn3, &m_matCombined);
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].x = vecOut3.x;
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].y = vecOut3.y;
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].z = vecOut3.z;
 
 				vecIn = D3DXVECTOR3(0.40f, 0.2f, 0.0f);
 				nIndex = 0;
@@ -427,7 +433,10 @@ void CFrame::UpdateFrames(D3DXMATRIX* matCur)
 				D3DXVECTOR4 vecOut1;
 				D3DXVECTOR3 vecIn1(-0.11f, 0.02f, -0.15f);
 				D3DXVec3Transform(&vecOut1, &vecIn1, &m_matCombined);
-				// is setted on m_vecTempPos[10]
+
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].x = vecOut1.x;
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].y = vecOut1.y;
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].z = vecOut1.z;
 			}
 		}
 		else if (m_pParentSkin->m_nBoneAniIndex == 45)
@@ -460,7 +469,9 @@ void CFrame::UpdateFrames(D3DXMATRIX* matCur)
 				D3DXVECTOR3 vecIn1(-0.1f, 0.0f, -0.1f);
 				D3DXVec3Transform(&vecOut1, &vecIn1, &m_matCombined);
 
-				// is setted on m_vecTempPos[10]
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].x = vecOut1.x;
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].y = vecOut1.y;
+				m_pParentSkin->m_pOwner->m_vecTempPos[10].z = vecOut1.z;
 			}
 		}
 		else if (m_pParentSkin->m_nBoneAniIndex == 56 || m_pParentSkin->m_nBoneAniIndex == 57 || m_pParentSkin->m_nBoneAniIndex == 54)

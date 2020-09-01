@@ -51,7 +51,7 @@ public:
 	TMVector3 m_vecSkinPos;
 	int m_nSkinMeshType;
 	TMSkinMesh* m_pSkinMesh;
-	TMVector3 m_vecTempPos[10];
+	TMVector3 m_vecTempPos[11];
 	float m_AlphaColor;
 	int m_nAlpha;
 	int m_bAlphaObj;

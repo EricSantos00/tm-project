@@ -1216,7 +1216,664 @@ void TMSkinMesh::SetRenewOldCostume(int costype, char* szTexture, char* szName)
 
 void TMSkinMesh::SetCostume(int Costype, char* szTexture, char* szName)
 {
-	// TODO
+	if (Costype == 8 || Costype == 9)
+	{
+		if (Costype == 9)
+			strcpy(szTexture, "mesh\\WhiteSanta.wyt");
+		else
+			strcpy(szTexture, "mesh\\RedSanta.wyt");
+		switch (m_Cos)
+		{
+		case 1:
+			strcpy(szName, "mesh\\ch020196.msh");
+			m_Cos = 2;
+			break;
+		case 2:
+			strcpy(szName, "mesh\\ch020296.msh");
+			m_Cos = 3;
+			break;
+		case 3:
+			strcpy(szName, "mesh\\ch020396.msh");
+			m_Cos = 4;
+			break;
+		case 4:
+			strcpy(szName, "mesh\\ch020496.msh");
+			m_Cos = 5;
+			break;
+		case 5:
+			strcpy(szName, "mesh\\ch020596.msh");
+			m_Cos = 6;
+			break;
+		case 6:
+			strcpy(szName, "mesh\\ch020696.msh");
+			m_Cos = 1;
+			break;
+		}
+	}
+	else if (Costype == 10 || Costype == 11)
+	{
+		if (Costype == 11)
+			strcpy(szTexture, "mesh\\BlueRudol.wyt");
+		else
+			strcpy(szTexture, "mesh\\PurpleRudol.wyt");
+		switch (m_Cos)
+		{
+		case 1:
+			strcpy(szName, "mesh\\ch020194.msh");
+			m_Cos = 2;
+			break;
+		case 2:
+			strcpy(szName, "mesh\\ch020294.msh");
+			m_Cos = 3;
+			break;
+		case 3:
+			strcpy(szName, "mesh\\ch020394.msh");
+			m_Cos = 4;
+			break;
+		case 4:
+			strcpy(szName, "mesh\\ch020494.msh");
+			m_Cos = 5;
+			break;
+		case 5:
+			strcpy(szName, "mesh\\ch020594.msh");
+			m_Cos = 6;
+			break;
+		case 6:
+			strcpy(szName, "mesh\\ch020694.msh");
+			m_Cos = 1;
+			break;
+		}
+	}
+	else if (Costype == 12 || Costype == 13 || Costype == 34)
+	{
+		if (Costype == 13)
+			strcpy(szTexture, "mesh\\WhitePolice.wys");
+		else if (Costype == 34)
+			strcpy(szTexture, "mesh\\GreenPolice.wys");
+		else
+			strcpy(szTexture, "mesh\\BlackPolice.wys");
+		switch (m_Cos)
+		{
+		case 1:
+			strcpy(szName, "mesh\\ch020195.msh");
+			m_Cos = 2;
+			break;
+		case 2:
+			strcpy(szName, "mesh\\ch020295.msh");
+			m_Cos = 3;
+			break;
+		case 3:
+			strcpy(szName, "mesh\\ch020395.msh");
+			m_Cos = 4;
+			break;
+		case 4:
+			strcpy(szName, "mesh\\ch020495.msh");
+			m_Cos = 5;
+			break;
+		case 5:
+			strcpy(szName, "mesh\\ch020595.msh");
+			m_Cos = 6;
+			break;
+		case 6:
+			strcpy(szName, "mesh\\ch020695.msh");
+			m_Cos = 1;
+			break;
+		}
+	}
+	else if (Costype == 19 || Costype == 20)
+	{
+		if (Costype == 19)
+			strcpy(szTexture, "mesh\\ch0101103.wys");
+		else
+			strcpy(szTexture, "mesh\\ch0102103.wys");
+		switch (m_Cos)
+		{
+		case 1:
+			strcpy(szName, "mesh\\ch0101103.msh");
+			m_Cos = 2;
+			break;
+		case 2:
+			strcpy(szName, "mesh\\ch0102103.msh");
+			m_Cos = 3;
+			break;
+		case 3:
+			strcpy(szName, "mesh\\ch0103103.msh");
+			m_Cos = 4;
+			break;
+		case 4:
+			strcpy(szName, "mesh\\ch0104103.msh");
+			m_Cos = 5;
+			break;
+		case 5:
+			strcpy(szName, "mesh\\ch0105103.msh");
+			m_Cos = 6;
+			break;
+		case 6:
+			strcpy(szName, "mesh\\ch0106103.msh");
+			m_Cos = 1;
+			break;
+		}
+	}
+	else if (Costype == 21 || Costype == 22)
+	{
+		strcpy(szTexture, "mesh\\ch0101102.wys");
+		switch (m_Cos)
+		{
+		case 1:
+			strcpy(szName, "mesh\\ch0101102.msh");
+			m_Cos = 2;
+			break;
+		case 2:
+			strcpy(szName, "mesh\\ch0102102.msh");
+			m_Cos = 3;
+			break;
+		case 3:
+			strcpy(szName, "mesh\\ch0103102.msh");
+			m_Cos = 4;
+			break;
+		case 4:
+			strcpy(szName, "mesh\\ch0104102.msh");
+			m_Cos = 5;
+			break;
+		case 5:
+			strcpy(szName, "mesh\\ch0105102.msh");
+			m_Cos = 6;
+			break;
+		case 6:
+			strcpy(szName, "mesh\\ch0106102.msh");
+			m_Cos = 1;
+			break;
+		}
+	}
+	else
+	{
+		switch (Costype)
+		{
+		case 14:
+			strcpy(szTexture, "mesh\\DeathCos2.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch010189.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch010289.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch010389.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch010489.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch010589.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch010689.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 15:
+			strcpy(szTexture, "mesh\\DeathCos.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch020189.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch020289.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch020389.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch020489.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch020589.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch020689.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 16:
+			strcpy(szTexture, "mesh\\ch010199.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch010199.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch010299.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch010399.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch010499.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch010599.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch010699.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 17:
+			strcpy(szTexture, "mesh\\ch0101100.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101100.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102100.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103100.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104100.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105100.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106100.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 18:
+			strcpy(szTexture, "mesh\\ch0101101.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101101.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102101.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103101.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104101.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105101.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106101.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 23:
+			strcpy(szTexture, "mesh\\ch0101104.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101104.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102104.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103104.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104104.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105104.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106104.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 24:
+			strcpy(szTexture, "mesh\\ch0101106.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101106.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102106.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103106.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104106.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105106.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106106.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 25:
+			strcpy(szTexture, "mesh\\ch0101105.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101105.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102105.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103105.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104105.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105105.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106105.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 26:
+			strcpy(szTexture, "mesh\\ch0101107.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101107.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102107.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103107.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104107.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105107.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106107.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 27:
+			strcpy(szTexture, "mesh\\ch0101108.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101108.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102108.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103108.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104108.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105108.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106108.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 28:
+			strcpy(szTexture, "mesh\\ch0101109.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101109.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102109.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103109.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104109.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105109.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106109.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 29:
+			strcpy(szTexture, "mesh\\ch0101110.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101110.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102110.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103110.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104110.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105110.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106110.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 30:
+			strcpy(szTexture, "mesh\\ch0101111.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101111.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102111.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103111.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104111.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105111.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106111.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 31:
+			strcpy(szTexture, "mesh\\ch0101112.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101112.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102112.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103112.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104112.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105112.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106112.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 32:
+			strcpy(szTexture, "mesh\\ch0101113.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101113.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102113.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103113.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104113.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105113.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106113.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		case 33:
+			strcpy(szTexture, "mesh\\ch0101114.wys");
+			switch (m_Cos)
+			{
+			case 1:
+				strcpy(szName, "mesh\\ch0101114.msh");
+				m_Cos = 2;
+				break;
+			case 2:
+				strcpy(szName, "mesh\\ch0102114.msh");
+				m_Cos = 3;
+				break;
+			case 3:
+				strcpy(szName, "mesh\\ch0103114.msh");
+				m_Cos = 4;
+				break;
+			case 4:
+				strcpy(szName, "mesh\\ch0104114.msh");
+				m_Cos = 5;
+				break;
+			case 5:
+				strcpy(szName, "mesh\\ch0105114.msh");
+				m_Cos = 6;
+				break;
+			case 6:
+				strcpy(szName, "mesh\\ch0106114.msh");
+				m_Cos = 1;
+				break;
+			}
+			break;
+		default:
+			SetOldCostume(Costype, szTexture, szName);
+			break;
+		}
+	}
 }
 
 int TMSkinMesh::MantleException(char* texture)
