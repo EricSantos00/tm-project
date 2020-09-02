@@ -7606,7 +7606,10 @@ int TMFieldScene::FrameMove(unsigned int dwServerTime)
 
 			if (fTime > 0.0f && fTime < 1.0f)
 			{
-				auto pItem2 = nShort >= 10 ? pGridSkillBelt3->m_pItemList[nSkill3] : pGridSkillBelt2->m_pItemList[nSkill2];
+				auto pItem2 = pGridSkillBelt2->GetItem(nSkill2, 0);
+				if (nShort >= 10)
+					pItem2 = pGridSkillBelt3->GetItem(nSkill3, 0);
+				
 				if (pItem2)
 				{
 					int idx = (unsigned char)cSkillIndex < 200 ? (unsigned char)cSkillIndex + 5000 : (unsigned char)cSkillIndex + 5200;
