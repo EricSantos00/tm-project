@@ -1788,11 +1788,11 @@ int TMFieldScene::InitializeScene()
 	m_pEffectContainer->AddChild(m_pRain);
 
 	m_pSnow = new TMSnow(1.0f);
-	m_pSnow->m_bVisible = 0;
+	m_pSnow->m_bVisible = 1;
 	m_pEffectContainer->AddChild(m_pSnow);
 
 	m_pSnow2 = new TMSnow(2.0f);
-	m_pSnow2->m_bVisible = 0;
+	m_pSnow2->m_bVisible = 1;
 	m_pEffectContainer->AddChild(m_pSnow2);
 
 	m_pTarget1 = new TMEffectMesh(316, 0xFF111188, 0.0f, 0);

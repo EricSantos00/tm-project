@@ -53,15 +53,16 @@ int TMRain::Render()
     {
         if (g_pSoundManager && g_pSoundManager->GetSoundData(101))
         {
-            auto pSounData = g_pSoundManager->GetSoundData(101);
-            if (pSounData->IsSoundPlaying())
-                pSounData->Stop();
+            auto pSoundData = g_pSoundManager->GetSoundData(101);
+            if (pSoundData->IsSoundPlaying())
+                pSoundData->Stop();
         }
 
         return 1;
     }
 
     GetSoundAndPlayIfNot(101, 0, 0);
+
     g_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, 1u);
     g_pDevice->SetRenderState(D3DRS_FOGENABLE, 0);
     g_pDevice->SetRenderState(D3DRS_DESTBLEND, 2u);
@@ -71,8 +72,8 @@ int TMRain::Render()
     g_pDevice->SetRenderState(D3DRS_ZWRITEENABLE, 0);
     g_pDevice->SetRenderState(D3DRS_LIGHTING, 0);
     g_pDevice->SetRenderState(D3DRS_CULLMODE, 1u);
-    TMVector2 vecCam{ 0.0f, 0.0f };
 
+    TMVector2 vecCam{ 0.0f, 0.0f };
     auto* pObj = g_pObjectManager->m_pCamera->GetFocusedObject();
     if (pObj)
     {
