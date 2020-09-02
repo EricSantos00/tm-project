@@ -24,4 +24,7 @@ public:
     float m_fAngle;
     float m_fProgress;
     int m_nType;
+
+private:
+    unsigned int m_dwRand;
 };
