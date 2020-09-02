@@ -246,7 +246,7 @@ int TMObjectContainer::Load(const char* szFileName)
 					pFish[nFish]->InitPosition(
 						m_fOffsetX + vecPosition.x + ((float)(rand() % 5) * 0.05f),
 						((float)(rand() % 10) * 0.02f) + fHeight,
-						((float)(rand() % 5) * 0.05f));
+						m_fOffsetY + vecPosition.y + ((float)(rand() % 5) * 0.05f));
 
 					AddChildWithKey(pFish[nFish], Key);
 				}
@@ -266,7 +266,7 @@ int TMObjectContainer::Load(const char* szFileName)
 					pFish[nFish]->InitPosition(
 						m_fOffsetX + vecPosition.x + ((float)(rand() % 5) * 0.05f),
 						((float)(rand() % 10) * 0.02f) + fHeight,
-						((float)(rand() % 5) * 0.05f));
+						m_fOffsetY + vecPosition.y + ((float)(rand() % 5) * 0.05f));
 
 					AddChildWithKey(pFish[nFish], Key);
 				}
