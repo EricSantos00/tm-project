@@ -12,3 +12,6 @@ void GetSoundAndPlay(int soundId, int priority, int flag);
 void GetSoundAndPause(int soundId, int priority, int flag);
 void GetSoundAndPlayIfNot(int soundId, int priority, int flag);
 void GetSoundAndPauseIfNot(int soundId, int priority, int flag);
+
+// This func need's to be here because of the TMVector3 argument.
+int BASE_IsInView(TMVector3 vec, float fRadius);

@@ -1788,11 +1788,11 @@ int TMFieldScene::InitializeScene()
 	m_pEffectContainer->AddChild(m_pRain);
 
 	m_pSnow = new TMSnow(1.0f);
-	m_pSnow->m_bVisible = 1;
+	m_pSnow->m_bVisible = 0;
 	m_pEffectContainer->AddChild(m_pSnow);
 
 	m_pSnow2 = new TMSnow(2.0f);
-	m_pSnow2->m_bVisible = 1;
+	m_pSnow2->m_bVisible = 0;
 	m_pEffectContainer->AddChild(m_pSnow2);
 
 	m_pTarget1 = new TMEffectMesh(316, 0xFF111188, 0.0f, 0);
@@ -4406,7 +4406,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 		m_pQuizBG->SetVisible(0);
 		MSG_STANDARDPARM stParm{};
 		stParm.Header.ID = g_pObjectManager->m_dwCharID;
-		stParm.Header.Tick = 0x2C7;
+		stParm.Header.Type = 0x2C7;
 		stParm.Parm = idwControlID - 897;
 		SendOneMessage((char*)&stParm, sizeof(stParm));
 		return 1;
@@ -8439,7 +8439,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 					break;
 			};
 		}
-		if (g_pSpell[(unsigned char)cSkillIndex].TargetType == 3 || g_pSpell[(unsigned char)cSkillIndex].TargetType == 4 || g_pSpell[(unsigned char)cSkillIndex].TargetType == 6)
+		else if (g_pSpell[(unsigned char)cSkillIndex].TargetType == 3 || g_pSpell[(unsigned char)cSkillIndex].TargetType == 4 || g_pSpell[(unsigned char)cSkillIndex].TargetType == 6)
 		{
 			stAttack.FlagLocal = 0;
 			int nTargetIndex = 0;
@@ -8971,55 +8971,56 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 				stAttack.Dam[0].Damage = -1;
 			}
 		}
-		else if (cSkillIndex == 42)
-		{
-			if (m_pMyHuman->m_bParty == 1)
-				m_pMessagePanel->SetMessage(g_pMessageStringTable[31], 1000);
-			else
-				m_pMessagePanel->SetMessage(g_pMessageStringTable[32], 1000);
-
-			m_pMessagePanel->SetVisible(1, 1);
-			return 1;
-		}
-		else if (cSkillIndex == 73)
-		{
-			if (g_pObjectManager->m_stMobData.CurrentScore.Mp < g_pSpell[73].ManaSpent)
-				return 1;
-
-			if (dwServerTime - m_pMyHuman->m_dwOldMovePacketTime > 1000)
-			{
-				int targetx = (signed int)vec.x;
-				int targety = (int)vec.z;
-				int x = (int)m_pMyHuman->m_vecPosition.x;
-				int y = (int)m_pMyHuman->m_vecPosition.y;
-
-				char cRouteBuffer[48]{};
-				BASE_GetRoute(x, y, &targetx, &targety, cRouteBuffer, 8, (char*)m_HeightMapData, 8);
-				if (!strlen(cRouteBuffer))
-					return 1;
-
-				MSG_Action stAction{};
-				stAction.Header.ID = m_pMyHuman->m_dwID;
-				stAction.PosX = x;
-				stAction.PosY = y;
-				stAction.Effect = 6;
-				stAction.Header.Type = MSG_Action2_Opcode;
-				stAction.Speed = g_nMyHumanSpeed;
-				stAction.TargetX = targetx;
-				stAction.TargetY = targety;
-				m_stMoveStop.LastX = x;
-				m_stMoveStop.LastY = stAction.PosY;
-				m_stMoveStop.NextX = stAction.TargetX;
-				m_stMoveStop.NextY = stAction.TargetY;
-				SendOneMessage((char*)&stAction, sizeof(stAction));
-				IncSkillSel();
-				m_dwSkillLastTime[(unsigned char)cSkillIndex] = dwServerTime;
-				m_pMyHuman->m_dwOldMovePacketTime = dwServerTime;
-			}
-			return 1;
-		}
 		else
 		{
+			if (cSkillIndex == 42)
+			{
+				if (m_pMyHuman->m_bParty == 1)
+					m_pMessagePanel->SetMessage(g_pMessageStringTable[31], 1000);
+				else
+					m_pMessagePanel->SetMessage(g_pMessageStringTable[32], 1000);
+
+				m_pMessagePanel->SetVisible(1, 1);
+				return 1;
+			}
+			if (cSkillIndex == 73)
+			{
+				if (g_pObjectManager->m_stMobData.CurrentScore.Mp < g_pSpell[73].ManaSpent)
+					return 1;
+
+				if (dwServerTime - m_pMyHuman->m_dwOldMovePacketTime > 1000)
+				{
+					int targetx = (signed int)vec.x;
+					int targety = (int)vec.z;
+					int x = (int)m_pMyHuman->m_vecPosition.x;
+					int y = (int)m_pMyHuman->m_vecPosition.y;
+
+					char cRouteBuffer[48]{};
+					BASE_GetRoute(x, y, &targetx, &targety, cRouteBuffer, 8, (char*)m_HeightMapData, 8);
+					if (!strlen(cRouteBuffer))
+						return 1;
+
+					MSG_Action stAction{};
+					stAction.Header.ID = m_pMyHuman->m_dwID;
+					stAction.PosX = x;
+					stAction.PosY = y;
+					stAction.Effect = 6;
+					stAction.Header.Type = MSG_Action2_Opcode;
+					stAction.Speed = g_nMyHumanSpeed;
+					stAction.TargetX = targetx;
+					stAction.TargetY = targety;
+					m_stMoveStop.LastX = x;
+					m_stMoveStop.LastY = stAction.PosY;
+					m_stMoveStop.NextX = stAction.TargetX;
+					m_stMoveStop.NextY = stAction.TargetY;
+					SendOneMessage((char*)&stAction, sizeof(stAction));
+					IncSkillSel();
+					m_dwSkillLastTime[(unsigned char)cSkillIndex] = dwServerTime;
+					m_pMyHuman->m_dwOldMovePacketTime = dwServerTime;
+				}
+				return 1;
+			}
+
 			stAttack.Dam[0].TargetID = m_pMyHuman->m_dwID;
 			stAttack.Dam[0].Damage = -1;
 			stAttack.TargetX = (int)m_pMyHuman->m_vecPosition.x;
@@ -9045,7 +9046,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 				m_pMyHuman->m_dwOldMovePacketTime = dwServerTime;
 			}
 		}
-
+		
 		if (cSkillIndex == 98)
 		{
 			int nTX = (int)vec.x;
@@ -9130,7 +9131,7 @@ int TMFieldScene::SkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwServe
 			m_dwSkillLastTime[(unsigned char)cSkillIndex] = dwServerTime;
 		}
 		if (cSkillIndex != 85)
-			return 1;
+			return 1;			
 	}
 
 	if (g_pSpell[(unsigned char)cSkillIndex].TargetType == 2 && !pOver)
@@ -9741,7 +9742,7 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 
 				if (pNode == m_pMyHuman)
 				{
-					pNode = static_cast<TMHuman*>(m_pNextLink);
+					pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
 					continue;
 				}
 
@@ -9781,18 +9782,18 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 
 						if (nDTX != nDX || nDTY != nDY)
 						{
-							pNode = static_cast<TMHuman*>(m_pNextLink);
+							pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
 							continue;
 						}
 						if (pNode->m_cDie == 1)
 						{
-							pNode = static_cast<TMHuman*>(m_pNextLink);
+							pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
 							continue;
 						}
 
 						if (!TMFieldScene::m_bPK && pNode->m_dwID > 0 && pNode->m_dwID < 1000)
 						{
-							pNode = static_cast<TMHuman*>(m_pNextLink);
+							pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
 							continue;
 						}
 
@@ -9803,7 +9804,7 @@ int TMFieldScene::AutoSkillUse(int nX, int nY, D3DXVECTOR3 vec, unsigned int dwS
 					}
 				}
 
-				pNode = static_cast<TMHuman*>(m_pNextLink);
+				pNode = static_cast<TMHuman*>(pNode->m_pNextLink);
 				if (g_pSpell[(unsigned char)cSkillIndex].MaxTarget <= nTargetIndex || nTargetIndex >= 13)
 					break;
 			}
@@ -13845,13 +13846,13 @@ void TMFieldScene::UpdateSkillBelt()
 	for (int i = 0; i < 10; ++i)
 	{
 		auto pReturnItem2 = pSkillBelt2->PickupItem(i, 0);
-		if (g_pObjectManager->m_cShortSkill[i] < 248)
+		if ((unsigned char)g_pObjectManager->m_cShortSkill[i] < 248)
 		{
 			auto pStructItem2 = new STRUCT_ITEM;
 			memset(pStructItem2, 0, sizeof(STRUCT_ITEM));
 
-			pStructItem2->sIndex = g_pObjectManager->m_cShortSkill[i] < 105 ? g_pObjectManager->m_cShortSkill[i] + 5000 :
-				g_pObjectManager->m_cShortSkill[i] + 5295;
+			pStructItem2->sIndex = (unsigned char)g_pObjectManager->m_cShortSkill[i] < 105 ? (unsigned char)g_pObjectManager->m_cShortSkill[i] + 5000 :
+				(unsigned char)g_pObjectManager->m_cShortSkill[i] + 5295;
 			
 			auto pSkillItem = new SGridControlItem(0, pStructItem2, 0.0f, 0.0f);
 
@@ -13871,13 +13872,13 @@ void TMFieldScene::UpdateSkillBelt()
 	for (int i = 0; i < 10; ++i)
 	{
 		auto pReturnItem3 = pSkillBelt3->PickupItem(i, 0);
-		if (g_pObjectManager->m_cShortSkill[i + 10] < 248)
+		if ((unsigned char)g_pObjectManager->m_cShortSkill[i + 10] < 248)
 		{
 			auto pStructItem3 = new STRUCT_ITEM;
 			memset(pStructItem3, 0, sizeof(STRUCT_ITEM));
 
-			pStructItem3->sIndex = g_pObjectManager->m_cShortSkill[i + 10] < 105 ? g_pObjectManager->m_cShortSkill[i + 10] + 5000 :
-				g_pObjectManager->m_cShortSkill[i + 10] + 5295;
+			pStructItem3->sIndex = (unsigned char)g_pObjectManager->m_cShortSkill[i + 10] < 105 ? (unsigned char)g_pObjectManager->m_cShortSkill[i + 10] + 5000 :
+				(unsigned char)g_pObjectManager->m_cShortSkill[i + 10] + 5295;
 
 			auto pSkillItem = new SGridControlItem(0, pStructItem3, 0.0f, 0.0f);
 
@@ -20412,7 +20413,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 					if (pAttack->Header.Type == MSG_Attack_One_Opcode && i >= 1)
 						break;
 
-					if (pAttack->Header.Tick == MSG_Attack_Two_Opcode && i >= 2)
+					if (pAttack->Header.Type == MSG_Attack_Two_Opcode && i >= 2)
 						break;
 
 					auto pOwner = g_pObjectManager->GetHumanByID(pAttack->Dam[i].TargetID);
@@ -20485,7 +20486,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 						if (pAttack->Header.Type == MSG_Attack_One_Opcode && i >= 1)
 							break;
 
-						if (pAttack->Header.Tick == MSG_Attack_Two_Opcode && i >= 2)
+						if (pAttack->Header.Type == MSG_Attack_Two_Opcode && i >= 2)
 							break;
 
 						auto pOwner = g_pObjectManager->GetHumanByID(pAttack->Dam[i].TargetID);
@@ -20497,7 +20498,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 							vecSum.y += pOwner->m_vecPosition.y;
 							++nCount;
 
-							auto pArrow = new TMArrow(vecDest, vecPos, 2, 152, 0, 0, 0);
+							auto pArrow = new TMArrow(vecPos, vecDest, 2, 152, 0, 0, 0);
 
 							m_pEffectContainer->AddChild(pArrow);
 						}
@@ -20705,7 +20706,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 					if (pAttack->Header.Type == MSG_Attack_One_Opcode && i >= 1)
 						break;
 
-					if (pAttack->Header.Tick == MSG_Attack_Two_Opcode && i >= 2)
+					if (pAttack->Header.Type == MSG_Attack_Two_Opcode && i >= 2)
 						break;
 
 					int rndx = rand() % 18;
@@ -20875,7 +20876,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 					if (pAttack->Header.Type == MSG_Attack_One_Opcode && i >= 1)
 						break;
 
-					if (pAttack->Header.Tick == MSG_Attack_Two_Opcode && i >= 2)
+					if (pAttack->Header.Type == MSG_Attack_Two_Opcode && i >= 2)
 						break;
 
 					int rndx = rand() % 18;
@@ -20913,7 +20914,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 					if (pAttack->Header.Type == MSG_Attack_One_Opcode && i >= 1)
 						break;
 
-					if (pAttack->Header.Tick == MSG_Attack_Two_Opcode && i >= 2)
+					if (pAttack->Header.Type == MSG_Attack_Two_Opcode && i >= 2)
 						break;
 
 					int rndx = rand() % 18;
@@ -21180,7 +21181,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 			if (pAttack->Header.Type == MSG_Attack_One_Opcode && i >= 1)
 				break;
 
-			if (pAttack->Header.Tick == MSG_Attack_Two_Opcode && i >= 2)
+			if (pAttack->Header.Type == MSG_Attack_Two_Opcode && i >= 2)
 				break;
 
 			if (pAttack->Dam[i].TargetID = m_pMyHuman->m_dwID)
@@ -21222,7 +21223,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 			if (pAttack->Header.Type == MSG_Attack_One_Opcode && i >= 1)
 				break;
 
-			if (pAttack->Header.Tick == MSG_Attack_Two_Opcode && i >= 2)
+			if (pAttack->Header.Type == MSG_Attack_Two_Opcode && i >= 2)
 				break;
 
 			auto pTargetHuman = g_pObjectManager->GetHumanByID(pAttack->Dam[i].TargetID);
@@ -21710,7 +21711,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 				if (pAttack->Header.Type == MSG_Attack_One_Opcode && i >= 1)
 					break;
 
-				if (pAttack->Header.Tick == MSG_Attack_Two_Opcode && i >= 2)
+				if (pAttack->Header.Type == MSG_Attack_Two_Opcode && i >= 2)
 					break;
 
 				auto pTargetHuman = g_pObjectManager->GetHumanByID(pAttack->Dam[i].TargetID);
@@ -22091,7 +22092,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 					if (pAttack->Header.Type == MSG_Attack_One_Opcode && i >= 1)
 						break;
 
-					if (pAttack->Header.Tick == MSG_Attack_Two_Opcode && i >= 2)
+					if (pAttack->Header.Type == MSG_Attack_Two_Opcode && i >= 2)
 						break;
 
 					auto pTargetHuman = g_pObjectManager->GetHumanByID(pAttack->Dam[i].TargetID);
@@ -23668,12 +23669,12 @@ void TMFieldScene::GameAuto()
 		if (idxSkill == -1)
 			continue;
 
-		int useSkill = 1;
 		if (idxSkill == 3 || idxSkill == 5 || idxSkill == 53 || idxSkill == 54 || idxSkill == 9 || idxSkill == 11 || idxSkill == 37 ||
 			idxSkill == 41 || idxSkill == 43 || idxSkill == 44 || idxSkill == 45 || idxSkill == 46 || idxSkill == 64 || idxSkill == 66 ||
 			idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 87 || idxSkill == 75 || idxSkill == 76 || idxSkill == 77 ||
 			idxSkill == 81 || idxSkill == 85 || idxSkill == 89 || idxSkill == 92)
 		{
+			int useSkill = 1;
 			for (int j = 0; j < 32; ++j)
 			{
 				if ((unsigned char)m_pMyHuman->m_stAffect[j].Type <= 0)
@@ -23692,39 +23693,35 @@ void TMFieldScene::GameAuto()
 					useSkill = 0;
 					break;
 				}
-			}	
-
-			int DelayTime = 0;
-			if (idxSkill == 3 || idxSkill == 5 || idxSkill == 53 || idxSkill == 54 || idxSkill == 74 || idxSkill == 76 || idxSkill == 77)
-				DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[1];
-			else if (idxSkill == 9 || idxSkill == 11 || idxSkill == 13 || idxSkill == 15 || idxSkill == 37 || idxSkill == 86 || idxSkill == 87)
-				DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[2];
-			else if (idxSkill == 41 || idxSkill == 43 || idxSkill == 44 || idxSkill == 45 || idxSkill == 46 || idxSkill == 64 || idxSkill == 66 ||
-				idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 89 || idxSkill == 90)
-			{
-				DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[3];
 			}
-
-			if (DelayTime + m_dwSkillLastTime[idxSkill] <= dwServerTime)
+			if (useSkill)
 			{
-				g_pObjectManager->m_cSelectShortSkill = i;
-				if (SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0) == 1)
-					return;
-			}
+				int DelayTime = 0;
+				if (idxSkill == 3 || idxSkill == 5 || idxSkill == 53 || idxSkill == 54 || idxSkill == 74 || idxSkill == 76 || idxSkill == 77)
+					DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[1];
+				else if (idxSkill == 9 || idxSkill == 11 || idxSkill == 13 || idxSkill == 15 || idxSkill == 37 || idxSkill == 86 || idxSkill == 87)
+					DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[2];
+				else if (idxSkill == 41 || idxSkill == 43 || idxSkill == 44 || idxSkill == 45 || idxSkill == 46 || idxSkill == 64 || idxSkill == 66 ||
+					idxSkill == 68 || idxSkill == 70 || idxSkill == 71 || idxSkill == 89 || idxSkill == 90)
+				{
+					DelayTime = 100 * g_pSpell[idxSkill].AffectTime * g_pObjectManager->m_stMobData.CurrentScore.Special[3];
+				}
 
+				if (DelayTime + m_dwSkillLastTime[idxSkill] <= dwServerTime)
+				{
+					g_pObjectManager->m_cSelectShortSkill = i;
+					if (SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0) == 1)
+						return;
+				}
+			}
 			continue;
 		}
-
-		if (!useSkill)
+		if ((idxSkill == 56 || idxSkill == 57 || idxSkill == 58 || idxSkill == 59 || idxSkill == 60 || idxSkill == 61 || idxSkill == 62 || idxSkill == 63) &&
+			m_dwSkillLastTime[idxSkill] + 80000 <= dwServerTime)
 		{
-			if ((idxSkill == 56 || idxSkill == 57 || idxSkill == 58 || idxSkill == 59 || idxSkill == 60 || idxSkill == 61 || idxSkill == 62 || idxSkill == 63) &&
-				m_dwSkillLastTime[idxSkill] + 80000 <= dwServerTime)
-			{
-				g_pObjectManager->m_cSelectShortSkill = i;
-				SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0);
-				return;
-			}
-			continue;
+			g_pObjectManager->m_cSelectShortSkill = i;
+			SkillUse(nSX, nSY, GroundGetPickPos(), dwServerTime, 1, 0);
+			return;
 		}
 	}
 
