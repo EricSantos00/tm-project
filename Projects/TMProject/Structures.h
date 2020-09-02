@@ -16,10 +16,9 @@ struct TMVector2
 
 	float DistanceFrom2(const TMVector2& target)
 	{
-		TMVector2 temp = *this;
-		TMVector2 result = temp - target;
+		auto vTemp = *this - target;
 
-		return (float)((float)(temp.x * temp.y) + (float)(temp.y * temp.y));
+		return ((vTemp.x * vTemp.x) + (vTemp.y * vTemp.y));
 	}
 
 	TMVector2(float iX, float iY)
