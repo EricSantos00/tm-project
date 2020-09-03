@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "TMSkillIceSpear.h"
 #include "TMShade.h"
-#include "TMObject.h"
 #include "TMGlobal.h"
 #include "TMUtil.h"
 #include "TMFieldScene.h"
