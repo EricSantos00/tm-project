@@ -476,7 +476,58 @@ void CFrame::UpdateFrames(D3DXMATRIX* matCur)
 		}
 		else if (m_pParentSkin->m_nBoneAniIndex == 56 || m_pParentSkin->m_nBoneAniIndex == 57 || m_pParentSkin->m_nBoneAniIndex == 54)
 		{
-			// TODO:
+			D3DXVECTOR4 v36{};
+			D3DXVECTOR4 v90{};
+			D3DXVECTOR3 vecInFinal{};
+			if (m_dwID == 8)
+			{
+				D3DXVECTOR4 vecOut1;
+				D3DXVECTOR4 vecOut2;
+				D3DXVECTOR4 vecOut3;
+				D3DXVECTOR3 vecIn1{ 0.16f, 0.079999998f, 0.035f };
+				D3DXVECTOR3 vecIn2{ 0.16f, 0.079999998f, -0.035f };
+				D3DXVECTOR3 vecIn3{ 0.07f, 0.1f, 0.0f };
+				D3DXVec3Transform(&vecOut1, &vecIn1, &m_matCombined);
+				D3DXVec3Transform(&vecOut2, &vecIn2, &m_matCombined);
+				D3DXVec3Transform(&vecOut3, &vecIn3, &m_matCombined);
+
+				m_pParentSkin->m_pOwner->m_vecTempPos[8].x = vecOut1.x;
+				m_pParentSkin->m_pOwner->m_vecTempPos[8].y = vecOut1.y;
+				m_pParentSkin->m_pOwner->m_vecTempPos[8].z = vecOut1.z;
+				m_pParentSkin->m_pOwner->m_vecTempPos[9].x = vecOut2.x;
+				m_pParentSkin->m_pOwner->m_vecTempPos[9].y = vecOut2.y;
+				m_pParentSkin->m_pOwner->m_vecTempPos[9].z = vecOut2.z;
+
+				m_pParentSkin->m_pOwner->m_AlphaColor = vecOut3.x;
+				m_pParentSkin->m_pOwner->m_nAlpha = vecOut3.x;
+				m_pParentSkin->m_pOwner->m_bAlphaObj = vecOut3.z;
+
+				vecInFinal = { 0.40000001f, 0.2f, 0.0f };
+
+				nIndex = 0;
+			}
+			else if (m_dwID == 7)
+				nIndex = 1;
+			else if (m_dwID == 6)
+				memcpy(m_pParentSkin->m_OutMatrix, m_matCombined, sizeof m_pParentSkin->m_OutMatrix);
+			else
+			{
+				if (m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][0])
+					nIndex = 6;
+				else if (m_dwID == g_dwHandIndex[m_pParentSkin->m_nBoneAniIndex][1])
+					nIndex = 7;
+				else if (m_dwID == 29)
+					nIndex = 2;
+				else if (m_dwID == 34)
+					nIndex = 3;
+			}
+
+			if (nIndex >= 0 && nIndex < 10)
+			{
+				m_pParentSkin->m_pOwner->m_vecTempPos[nIndex].x = vecInFinal.x;
+				m_pParentSkin->m_pOwner->m_vecTempPos[nIndex].y = vecInFinal.y;
+				m_pParentSkin->m_pOwner->m_vecTempPos[nIndex].z = vecInFinal.z;
+			}
 		}
 		else if (m_pParentSkin->m_nBoneAniIndex == 3)
 		{
@@ -770,20 +821,23 @@ void CFrame::UpdateFrames(D3DXMATRIX* matCur)
 		}
 		else if (m_pParentSkin->m_nBoneAniIndex == 48)
 		{
-			m_pParentSkin->m_OutMatrix = m_matCombined;
-			
-			m_pParentSkin->m_OutMatrix.m[0][0] = m_matCombined.m[1][0];
-			m_pParentSkin->m_OutMatrix.m[0][1] = m_matCombined.m[1][1];
-			m_pParentSkin->m_OutMatrix.m[0][2] = m_matCombined.m[1][2];
-			m_pParentSkin->m_OutMatrix.m[0][3] = m_matCombined.m[1][3];
-			m_pParentSkin->m_OutMatrix.m[1][0] = m_matCombined.m[2][0] * -1.0f;
-			m_pParentSkin->m_OutMatrix.m[1][1] = m_matCombined.m[2][1] * -1.0f;
-			m_pParentSkin->m_OutMatrix.m[1][2] = m_matCombined.m[2][2] * -1.0f;
-			m_pParentSkin->m_OutMatrix.m[1][3] = m_matCombined.m[2][3] * -1.0f;
-			m_pParentSkin->m_OutMatrix.m[2][0] = m_matCombined.m[0][0];
-			m_pParentSkin->m_OutMatrix.m[2][1] = m_matCombined.m[0][1];
-			m_pParentSkin->m_OutMatrix.m[2][2] = m_matCombined.m[0][2];
-			m_pParentSkin->m_OutMatrix.m[2][3] = m_matCombined.m[0][3];
+			if (m_dwID == 1)
+			{
+				m_pParentSkin->m_OutMatrix = m_matCombined;
+
+				m_pParentSkin->m_OutMatrix.m[0][0] = m_matCombined.m[1][0];
+				m_pParentSkin->m_OutMatrix.m[0][1] = m_matCombined.m[1][1];
+				m_pParentSkin->m_OutMatrix.m[0][2] = m_matCombined.m[1][2];
+				m_pParentSkin->m_OutMatrix.m[0][3] = m_matCombined.m[1][3];
+				m_pParentSkin->m_OutMatrix.m[1][0] = m_matCombined.m[2][0] * -1.0f;
+				m_pParentSkin->m_OutMatrix.m[1][1] = m_matCombined.m[2][1] * -1.0f;
+				m_pParentSkin->m_OutMatrix.m[1][2] = m_matCombined.m[2][2] * -1.0f;
+				m_pParentSkin->m_OutMatrix.m[1][3] = m_matCombined.m[2][3] * -1.0f;
+				m_pParentSkin->m_OutMatrix.m[2][0] = m_matCombined.m[0][0];
+				m_pParentSkin->m_OutMatrix.m[2][1] = m_matCombined.m[0][1];
+				m_pParentSkin->m_OutMatrix.m[2][2] = m_matCombined.m[0][2];
+				m_pParentSkin->m_OutMatrix.m[2][3] = m_matCombined.m[0][3];
+			}
 		}
 		else if (m_pParentSkin->m_nBoneAniIndex == 49 || m_pParentSkin->m_nBoneAniIndex == 52)
 		{
