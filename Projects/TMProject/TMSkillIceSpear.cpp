@@ -45,7 +45,7 @@ TMSkillIceSpear::~TMSkillIceSpear()
     SAFE_DELETE(m_pLightMap);
 
     if (!g_bHideEffect)
-        g_pCurrentScene->AddChild(new TMSkillFreezeBlade({ m_vecPosition.x, m_vecPosition.y - 1.0f, m_vecPosition.z }, 1, 0, 0));
+        g_pCurrentScene->m_pEffectContainer->AddChild(new TMSkillFreezeBlade({ m_vecPosition.x, m_vecPosition.y - 1.0f, m_vecPosition.z }, 1, 0, 0));
 }
 
 int TMSkillIceSpear::Render()
