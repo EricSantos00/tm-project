@@ -22106,12 +22106,12 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 							fTarget = pAttacker->m_fHeight;
 
 						vecStart = TMVector3(pTargetHuman->m_vecPosition.x,
-							pTargetHuman->m_fHeight - 5.0f,
+							fTarget + 0.5f,
 							pTargetHuman->m_vecPosition.y);
 
 						vecTarget = TMVector3(vecStart.x + 3.0f, vecStart.y + 5.0f, vecStart.z - 3.0f);
 
-						auto pArrow = new TMArrow(vecStart, vecTarget, 0, 10001, 0, 0, 0);
+						auto pArrow = new TMArrow(vecTarget, vecStart, 0, 10001, 0, 0, 0);
 
 						m_pEffectContainer->AddChild(pArrow);
 					}
