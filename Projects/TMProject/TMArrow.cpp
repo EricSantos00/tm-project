@@ -665,7 +665,7 @@ void TMArrow::ReleaseEffect()
         auto pLightMap = new TMShade(4, 7, 1.0f);
         pLightMap->SetColor(0xFF7777FF);
         pLightMap->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
-        pLightMap->SetPosition({ m_vecCurrentPos.x, m_vecCurrentPos.z });
+        pLightMap->SetPosition({ m_vecTargetPos.x, m_vecTargetPos.z });
         pLightMap->m_dwLifeTime = 800;
         g_pCurrentScene->m_pEffectContainer->AddChild(pLightMap);
     }
