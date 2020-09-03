@@ -2349,7 +2349,7 @@ int TMHuman::FrameMove(unsigned int dwServerTime)
             m_bSliding = 0;
         }
     }
-    else if ((m_eMotion != ECHAR_MOTION::ECMOTION_WALK && m_eMotion != ECHAR_MOTION::ECMOTION_RUN || ((int)m_eMotion < 4 && (int)m_eMotion > 9))
+    else if ((m_eMotion != ECHAR_MOTION::ECMOTION_WALK || m_eMotion != ECHAR_MOTION::ECMOTION_RUN || ((int)m_eMotion < 4 && (int)m_eMotion > 9))
         && !m_bSliding)
     {
         int nWalk = 2;
