@@ -115,14 +115,41 @@ int CItemMix::IsItemOption_Satisfaction(int index, STRUCT_ITEM* item)
 
 void CItemMix::Read_MixListFile()
 {
+	BASE_ReadMixList();
 }
 
 void CItemMix::BASE_ReadMixList()
 {
+	FILE* fp{ nullptr };
+
+	fopen_s(&fp, ".\\Mixlist.bin", "rb");
+
+	if (fp == nullptr)
+	{
+		MessageBoxA(0, "Can't read Mixlist.bin", "ERROR", 0);
+		return;
+	}
+
+	fread(stResult_itemList, sizeof(stResult_itemList), 1, fp);
+	fread(stNeed_itemList, sizeof(stNeed_itemList), 1, fp);
+	fclose(fp);
 }
 
 void CItemMix::BASE_WriteMixItemList()
 {
+	FILE* fp{ nullptr };
+
+	fopen_s(&fp, ".\\Mixlist.bin", "wb");
+
+	if (fp == nullptr)
+	{
+		MessageBoxA(0, "Can't generate Mixlist.bin file", "ERROR", 0);
+		return;
+	}
+
+	fwrite(stResult_itemList, sizeof(stResult_itemList), 1, fp);
+	fwrite(stNeed_itemList, sizeof(stNeed_itemList), 1, fp);
+	fclose(fp);
 }
 
 int CItemMix::MYGetItemSanc(STRUCT_ITEM* item)
