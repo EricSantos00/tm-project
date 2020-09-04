@@ -60,6 +60,58 @@ void CItemMix::TakeItResource(SControlContainer* ControlContainer, unsigned shor
 
 void CItemMix::ResultItemListSet(unsigned int Head, int X, int Y)
 {
+    m_NPCHead = Head;
+    m_dNPCX = X;
+    m_dNPCY = Y;
+
+    ClearGridList();
+
+    for (int i = 0; i < 24; ++i)
+        m_dResultIndexList[i] = 0;
+
+    int count = 0;
+
+    for (int i = 0; i < 100; ++i)
+    {
+        if (stResult_itemList[i].dNPCHead == Head && stResult_itemList[i].pxy.X == X && stResult_itemList[i].pxy.Y == Y)
+        {
+            if (Head)
+            {
+                m_dResultIndexList[count++] = i;
+            }
+            else if (i < 39 || IsValidSkill(87) == 1)
+            {
+                m_dResultIndexList[count++] = i;
+            }
+        }
+    }
+
+    count = 0;
+
+    for (int i = 0; i < 24; ++i)
+    {
+        if (m_dResultIndexList[i])
+        {
+            auto pstItem = new STRUCT_ITEM();
+
+            pstItem->sIndex = stResult_itemList[m_dResultIndexList[i]].stItemInfor.sIndex;
+
+            for (int j = 0; j < 3; ++j)
+            {
+                pstItem->stEffect[j].cEffect = stResult_itemList[m_dResultIndexList[i]].stItemInfor.stEffect[j].cEffect;
+                pstItem->stEffect[j].cValue = stResult_itemList[m_dResultIndexList[i]].stItemInfor.stEffect[j].cValue;
+                pstItem->stEffect[j].sValue = stResult_itemList[m_dResultIndexList[i]].stItemInfor.stEffect[j].sValue;
+            }
+
+            m_pGridResultItem[count]->m_eGridType = TMEGRIDTYPE::GRID_ITEMMIXRESULT;
+            m_pGridResultItem[count++]->AddItem(new SGridControlItem(0, pstItem, 0.0f, 0.0f), 0, 0);
+        }
+    }
+
+    memset(&m_stCombineItem, 0, sizeof(m_stCombineItem));
+
+    for (int i = 0; i < 8; ++i)
+        m_stCombineItem.CarryPos[i] = -1;
 }
 
 void CItemMix::Set_NeedItemList(int Index)
