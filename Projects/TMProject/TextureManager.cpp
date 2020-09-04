@@ -18,11 +18,11 @@ TextureManager::TextureManager()
 	m_szTGAHeader[16] = 46;
 	m_szTGAHeader[17] = 0;
 
-	// TODO : check if we need to remove sprintf or not
 	for (int nIndex = 0; nIndex < MAX_UI_TEXTURE; ++nIndex)
 	{
 		m_ppUITexture[nIndex] = nullptr;
-		sprintf(m_stUITextureList[nIndex].szFileName, "\0");
+		m_stUITextureList[nIndex].szFileName[0] = '\0';
+		//sprintf(m_stUITextureList[nIndex].szFileName, "\0");
 
 		m_stUITextureList[nIndex].cAlpha = 78;
 		m_stUITextureList[nIndex].dwLastUsedTime = 0;
