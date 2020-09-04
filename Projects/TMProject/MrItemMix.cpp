@@ -2,8 +2,10 @@
 #include "SControlContainer.h"
 #include "SControl.h"
 #include "MrItemMix.h"
+#include "TMFieldScene.h"
 #include "TMGlobal.h"
 #include "SGrid.h"
+#include "ItemEffect.h"
 
 CItemMix::CItemMix()
 {
@@ -116,6 +118,67 @@ void CItemMix::ResultItemListSet(unsigned int Head, int X, int Y)
 
 void CItemMix::Set_NeedItemList(int Index)
 {
+    ClearNeedGridList();
+
+    if (Index < 0 || Index > 13000)
+        return;
+
+    for (int i = 0; i < 100; ++i)
+    {
+        if (stResult_itemList[i].dNPCHead == m_NPCHead &&
+            stResult_itemList[i].pxy.X == m_dNPCX &&
+            stResult_itemList[i].pxy.Y == m_dNPCY &&
+            stResult_itemList[i].stItemInfor.sIndex == Index)
+        {
+            m_dResultIndex = i;
+
+            for (int j = 0; j < 8; ++j)
+            {
+                int index = stResult_itemList[i].dNeedItemList[j].dINDEX;
+                if (index <= 0 || index >= 13000)
+                    return;
+
+                m_dNeedRefer[j].dindex = index;
+
+                if (stResult_itemList[i].dNeedItemList[j].Access)
+                {
+                    if (stResult_itemList[i].dNeedItemList[j].Access == 2)
+                    {
+                        auto pFScene = static_cast<TMFieldScene*>(g_pCurrentScene);
+
+                        if (pFScene != nullptr)
+                        {
+                            pFScene->SetVisibleMixPanel(pFScene->m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+                            pFScene->m_ItemMixClass.ResultItemListSet(stResult_itemList[i].dNeedItemList[j].dINDEX, 0, 0);
+                            pFScene->SetVisibleMixPanel(pFScene->m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+                        }
+                    }
+                    else if (stNeed_itemList[index].stGridItem.sIndex > 0)
+                    {
+                        m_dNeedRefer[j].bItemListrefer = 0;
+
+                        auto pstItem = new STRUCT_ITEM();
+
+                        memcpy(pstItem, &stNeed_itemList[index].stGridItem, sizeof(pstItem));
+
+                        m_pGridNeedItem[j]->AddItem(new SGridControlItem(0, pstItem, 0.0f, 0.0f), 0, 0);
+                        m_pGridNeedItem[j]->m_eGridType = TMEGRIDTYPE::GRID_ITEMMIXNEED;
+                    }
+                }
+                else
+                {
+                    m_dNeedRefer[j].bItemListrefer = 1;
+
+                    auto pstItem = new STRUCT_ITEM();
+
+                    pstItem->sIndex = index;
+
+                    m_pGridNeedItem[j]->AddItem(new SGridControlItem(0, pstItem, 0.0f, 0.0f), 0, 0);
+                    m_pGridNeedItem[j]->m_eGridType = TMEGRIDTYPE::GRID_ITEMMIXNEED;
+                }
+            }
+        }
+    }
 }
 
 void CItemMix::ClearGridList()
@@ -366,7 +429,30 @@ int CItemMix::IsSameItem(STRUCT_MYITEM* Item1, STRUCT_ITEM* Item2, short deep)
 
 int CItemMix::IsSameItem(STRUCT_ITEM* Item1, STRUCT_ITEM* Item2, short deep)
 {
-	return 0;
+    if (deep > 3)
+    {
+        if (Item1->sIndex != Item2->sIndex)
+            return 0;
+
+        deep = 3;
+    }
+    for (int i = 0; i < deep; ++i)
+    {
+        if (Item1->stEffect[i].cEffect == EF_SANC)
+        {
+            if (BASE_GetItemSanc(Item1) > BASE_GetItemSanc(Item2))
+                return 0;
+        }
+        else if (Item1->stEffect[i].cEffect == EF_AMOUNT)
+        {
+            if (Item2->stEffect[i].cEffect != EF_AMOUNT)
+                return 0;
+
+            if (Item1->stEffect[i].cValue != Item2->stEffect[i].cValue)
+                return 0;
+        }
+    }
+    return 1;
 }
 
 int CItemMix::IsItemOption_Satisfaction(int index, STRUCT_ITEM* item)
