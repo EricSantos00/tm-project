@@ -177,6 +177,126 @@ void CItemMix::CheckInv(SGridControl** GridInvList)
 
 void CItemMix::SetTextList()
 {
+    for (int i = 0; i < 8; ++i)
+    {
+        auto s_pName = static_cast<SText*>(m_pControlContainer->FindControl(i + T_ITEM_MIX_NAME_1));
+        auto s_pVolume = static_cast<SText*>(m_pControlContainer->FindControl(i + T_ITEM_MIX_VOLUME_1));
+
+        if (s_pName != nullptr)
+        {
+            s_pName->SetText((char*)"", 0);
+            s_pName->SetTextColor(0xFFAA0000);
+        }
+
+        if (s_pVolume != nullptr)
+        {
+            s_pVolume->SetText((char*)"", 0);
+            s_pVolume->SetTextColor(0xFFAA0000);
+        }
+    }
+
+    auto Cost = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_MONEY));
+
+    char cCost[256]{};
+
+    _itoa(stResult_itemList[m_dResultIndex].dCost, cCost, 10);
+
+    if (Cost != nullptr)
+    {
+        Cost->m_cComma = 1;
+        Cost->SetText(cCost, 0);
+    }
+
+    for (int i = 0; i < 8; ++i)
+    {
+        int index = m_dNeedRefer[i].dindex;
+        if (index <= 0)
+            continue;
+
+        auto s_pName = static_cast<SText*>(m_pControlContainer->FindControl(i + T_ITEM_MIX_NAME_1));
+        auto s_pVolume = static_cast<SText*>(m_pControlContainer->FindControl(i + T_ITEM_MIX_VOLUME_1));
+
+        if (s_pName != nullptr)
+        {
+            if (m_dNeedRefer[i].bItemListrefer)
+                s_pName->SetText(g_pItemList[index].Name, 0);
+            else
+                s_pName->SetText(g_pMessageStringTable[stNeed_itemList[index].Textnum], 0);
+        }
+
+        char temp[64]{};
+        char Have[64]{};
+        char result[128]{};
+
+        strcpy(result, " ");
+        _itoa(m_dNeedRefer[i].dHavevolume, temp, 10);
+        strcpy(Have, temp);
+
+        if (!m_dNeedRefer[i].bItemListrefer && stNeed_itemList[index].dVolume == 1 || m_dNeedRefer[i].bItemListrefer == 1)
+        {
+            char buffer[64]{};
+            char Need[64]{};
+
+            if (!m_dNeedRefer[i].bItemListrefer)
+                _itoa(stNeed_itemList[index].dVolume, buffer, 10);
+
+            strcpy(Need, buffer);
+            strcat(result, Have);
+            strcat(result, " / ");
+
+            if (m_dNeedRefer[i].bItemListrefer)
+                strcat(result, "1");
+            else
+                strcat(result, Need);
+
+            if (m_dNeedRefer[i].bItemListrefer == 1 && m_dNeedRefer[i].dHavevolume)
+            {
+                if (s_pName != nullptr)
+                    s_pName->SetTextColor(0xFFFFFFFF);
+
+                if (s_pVolume != nullptr)
+                    s_pVolume->SetTextColor(0xFFFFFFFF);
+            }
+            else if (!m_dNeedRefer[i].bItemListrefer
+                && m_dNeedRefer[i].dHavevolume
+                && stNeed_itemList[index].dVolume
+                && m_dNeedRefer[i].dHavevolume == stNeed_itemList[index].dVolume)
+            {
+                if (s_pName != nullptr)
+                    s_pName->SetTextColor(0xFFFFFFFF);
+
+                if (s_pVolume != nullptr)
+                    s_pVolume->SetTextColor(0xFFFFFFFF);
+            }
+
+            if (s_pVolume != nullptr)
+                s_pVolume->SetText(result, 0);
+        }
+
+        if (!m_dNeedRefer[i].bItemListrefer && stNeed_itemList[index].dVolume > 1)
+        {
+            char buffer[64]{};
+            char Need[64]{};
+
+            _itoa(stNeed_itemList[index].dVolume, buffer, 10);
+            strcpy(Need, buffer);
+            strcat(result, Have);
+            strcat(result, " / ");
+            strcat(result, Need);
+
+            if (m_dNeedRefer[i].dHavevolume == stNeed_itemList[index].dVolume)
+            {
+                if (s_pName != nullptr)
+                    s_pName->SetTextColor(0xFFFFFFFF);
+
+                if (s_pVolume != nullptr)
+                    s_pVolume->SetTextColor(0xFFFFFFFF);
+            }
+
+            if (s_pVolume != nullptr)
+                s_pVolume->SetText(result, 0);
+        }
+    }
 }
 
 void CItemMix::ClickInvItem(SGridControlItem* pItem, SGridControl** GridInvList, short Sourpage)
