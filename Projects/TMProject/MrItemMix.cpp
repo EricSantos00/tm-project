@@ -84,6 +84,95 @@ void CItemMix::InvClear(SGridControl** GridInvList)
 
 void CItemMix::CheckInv(SGridControl** GridInvList)
 {
+    m_pGridInvList = GridInvList;
+
+    InvClear(m_pGridInvList);
+
+    for (int i = 0; i < 8; ++i)
+    {
+        int index = m_dNeedRefer[i].dindex;
+
+        if (index <= 0)
+            continue;
+
+        for (int j = 0; j < 4; ++j)
+        {
+            for (int nY = 0; nY < 3; ++nY)
+            {
+                for (int nX = 0; nX < 5; ++nX)
+                {
+                    SGridControlItem* pItem = m_pGridInvList[j]->GetItem(nX, nY);
+
+                    if (pItem && pItem->m_GCObj.dwColor == 0xFFFFFFFF)
+                    {
+                        if (m_dNeedRefer[i].bItemListrefer)
+                        {
+                            if ((pItem->m_pItem->sIndex != 413 && pItem->m_pItem->sIndex != 412
+                                || pItem->m_pItem->stEffect[0].cEffect != 61
+                                || pItem->m_pItem->stEffect[0].cValue == 1)
+                                && m_dNeedRefer[i].dindex == pItem->m_pItem->sIndex
+                                && m_dNeedRefer[i].dHavevolume < 1)
+                            {
+                                pItem->m_GCObj.dwColor = 0xFFFF0000;
+
+                                ++m_dNeedRefer[i].dHavevolume;
+
+                                for (int k = i; k < 8; ++k)
+                                {
+                                    if (!m_stCombineItem.Item[k].sIndex)
+                                    {
+                                        memcpy(&m_stCombineItem.Item[k], pItem->m_pItem, sizeof(m_stCombineItem.Item[k]));
+                                        m_stCombineItem.CarryPos[k] = 15 * j + 5 * pItem->m_nCellIndexY + pItem->m_nCellIndexX;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        else if (IsSameItem(&stNeed_itemList[index].stGridItem, pItem->m_pItem, 4))
+                        {
+                            if ((pItem->m_pItem->sIndex == 413 || pItem->m_pItem->sIndex == 412)
+                                && stNeed_itemList[index].stGridItem.stEffect[0].cEffect == 61
+                                && pItem->m_pItem->stEffect[0].cEffect == 61
+                                && stNeed_itemList[index].stGridItem.stEffect[0].cValue == pItem->m_pItem->stEffect[0].cValue
+                                && m_dNeedRefer[i].dHavevolume < stNeed_itemList[index].dVolume)
+                            {
+                                pItem->m_GCObj.dwColor = 0xFFFF0000;
+
+                                ++m_dNeedRefer[i].dHavevolume;
+
+                                for (int k = i; k < 8; ++k)
+                                {
+                                    if (!m_stCombineItem.Item[k].sIndex)
+                                    {
+                                        memcpy(&m_stCombineItem.Item[k], pItem->m_pItem, sizeof(m_stCombineItem.Item[k]));
+                                        m_stCombineItem.CarryPos[k] = 15 * j + 5 * pItem->m_nCellIndexY + pItem->m_nCellIndexX;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (m_dNeedRefer[i].dHavevolume < stNeed_itemList[index].dVolume && (pItem->m_pItem->stEffect[0].cEffect != 61 || pItem->m_pItem->stEffect[0].cValue == 1))
+                            {
+                                pItem->m_GCObj.dwColor = 0xFFFF0000;
+
+                                ++m_dNeedRefer[i].dHavevolume;
+
+                                for (int k = i; k < 8; ++k)
+                                {
+                                    if (!m_stCombineItem.Item[k].sIndex)
+                                    {
+                                        memcpy(&m_stCombineItem.Item[k], pItem->m_pItem, sizeof(m_stCombineItem.Item[k]));
+                                        m_stCombineItem.CarryPos[k] = 15 * j + 5 * pItem->m_nCellIndexY + pItem->m_nCellIndexX;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    SetTextList();
 }
 
 void CItemMix::SetTextList()
