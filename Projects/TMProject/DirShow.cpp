@@ -109,16 +109,14 @@ char DS_SOUND_CHANNEL::CleanGraph()
 	while (SUCCEEDED(pFilterEnum->Skip(1u)))
 		++iFiltCount;
 
-	IBaseFilter** ppFilters = new IBaseFilter * [4 * iFiltCount];
+	IBaseFilter** ppFilters = (IBaseFilter**)_malloca(sizeof(IBaseFilter*) * iFiltCount);
 
 	HRESULT nextFilterHR = S_OK;
 	IBaseFilter** nextFilter = nullptr;
 	pFilterEnum->Reset();
 
-	do
-	{
-		nextFilterHR = pFilterEnum->Next(1u, &ppFilters[iPos++], 0);
-	} while (FAILED(nextFilterHR));
+	while (SUCCEEDED(pFilterEnum->Next(1, &(ppFilters[iPos++]), NULL)))
+		SAFE_RELEASE(pFilterEnum);
 
 	SAFE_RELEASE(pFilterEnum);
 
@@ -135,56 +133,68 @@ char DS_SOUND_CHANNEL::CleanGraph()
 
 bool DS_SOUND_CHANNEL::HasFilter(IBaseFilter* filter)
 {
+	// not used
 	return false;
 }
 
 FILTER_STATE DS_SOUND_CHANNEL::GetState()
 {
+	// not used
 	return FILTER_STATE();
 }
 
 void DS_SOUND_CHANNEL::OnEvent()
 {
+	long lParam1;
+	long lParam2;
+	long lEventCode;
+
+	if (!media_event->GetEvent(&lEventCode, &lParam1, &lParam2, 0) && lEventCode == 1)
+	{
+		Stop();
+		SetPosition(0ll);
+		Run();
+	}
 }
 
 IGraphBuilder* DS_SOUND_CHANNEL::GetGraphBuilder()
 {
-	return nullptr;
+	return graph_builder;
 }
 
-HRESULT DS_SOUND_CHANNEL::GetVolume(int* vol)
+HRESULT DS_SOUND_CHANNEL::GetVolume(long* vol)
 {
-	return E_NOTIMPL;
+	return basic_audio ? basic_audio->get_Volume(vol) : E_FAIL;
 }
 
-HRESULT DS_SOUND_CHANNEL::SetVolume(const int vol)
+HRESULT DS_SOUND_CHANNEL::SetVolume(long vol)
 {
-	return E_NOTIMPL;
+	return basic_audio ? basic_audio->put_Volume(vol) : E_FAIL;
 }
 
-HRESULT DS_SOUND_CHANNEL::SetBalance(const int bal)
+HRESULT DS_SOUND_CHANNEL::SetBalance(long bal)
 {
-	return E_NOTIMPL;
+	return basic_audio ? basic_audio->put_Balance(bal) : E_FAIL;
 }
 
 HRESULT DS_SOUND_CHANNEL::Run()
 {
-	return E_NOTIMPL;
+	return media_control ? media_control->Run() : E_FAIL;
 }
 
 HRESULT DS_SOUND_CHANNEL::Stop()
 {
-	return E_NOTIMPL;
+	return media_control ? media_control->Stop() : E_FAIL;
 }
 
 HRESULT DS_SOUND_CHANNEL::Pause()
 {
-	return E_NOTIMPL;
+	return media_control ? media_control->Pause() : E_FAIL;
 }
 
 HRESULT DS_SOUND_CHANNEL::SetPosition(long long pos)
 {
-	return E_NOTIMPL;
+	return media_seeking ? media_seeking->SetPositions(&pos, 1u, &pos, 0) : E_FAIL;
 }
 
 DS_SOUND_MANAGER::DS_SOUND_MANAGER(int channel_num, int lBGMVolume)

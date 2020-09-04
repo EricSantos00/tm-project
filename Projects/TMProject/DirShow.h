@@ -17,9 +17,9 @@ public:
     void OnEvent();
 
     IGraphBuilder* GetGraphBuilder();
-    HRESULT GetVolume(int* vol);
-    HRESULT SetVolume(const int vol);
-    HRESULT SetBalance(const int bal);
+    HRESULT GetVolume(long* vol);
+    HRESULT SetVolume(long  vol);
+    HRESULT SetBalance(long bal);
 
     HRESULT Run();
     HRESULT Stop();
