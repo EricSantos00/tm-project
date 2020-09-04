@@ -11110,8 +11110,8 @@ int TMFieldScene::CheckMerchant(TMHuman* pOver)
 				}
 
 				if (m_pMyHuman->m_pMantua && 
-					(int)m_pMyHuman->m_pMantua->m_Look.Skin0 < 2 || 
-					((int)m_pMyHuman->m_pMantua->m_Look.Skin0 >= 8 && (int)m_pMyHuman->m_pMantua->m_Look.Skin0 <= 14))
+					((int)m_pMyHuman->m_pMantua->m_Look.Skin0 < 2 || 
+					((int)m_pMyHuman->m_pMantua->m_Look.Skin0 >= 8 && (int)m_pMyHuman->m_pMantua->m_Look.Skin0 <= 14)))
 				{
 					if (g_pObjectManager->m_stMobData.Equip[10].sIndex == 1742
 						&& (g_pObjectManager->m_stMobData.Equip[11].sIndex < 1760 || g_pObjectManager->m_stMobData.Equip[11].sIndex > 1763))
