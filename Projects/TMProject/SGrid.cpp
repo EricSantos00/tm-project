@@ -2104,6 +2104,7 @@ int SGridControl::SellItem(int nCellX, int nCellY, unsigned int dwFlags, unsigne
 					nAmount = 0;
 				if (nAmount <= 1)
 				{
+					pGrid->PickupItem(nCellTempX, nCellTempY);
 					if (g_pCursor->m_pAttachedItem && g_pCursor->m_pAttachedItem == pPickedItem)
 						g_pCursor->m_pAttachedItem = nullptr;
 

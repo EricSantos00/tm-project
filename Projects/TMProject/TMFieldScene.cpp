@@ -20361,12 +20361,12 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 						float fY = (float)GroundGetMask(TMVector2((float)pAttack->TargetX + 0.5f, (float)pAttack->TargetY + 0.5f)) * 0.1f;
 						vecTarget = TMVector3((float)pAttack->TargetX + 0.5f, fY, (float)pAttack->TargetY + 0.5f);
 					}
-
-					vecTarget = vecPos + ((vecTarget - vecPos) / 7.0f);
+					auto result = ((vecTarget - vecPos) / 7.0f);
+					vecTarget = vecPos + result;
 
 					auto pFreeze = new TMSkillFreezeBlade(vecTarget, 2, 0, 0);
 					if (pFreeze)
-						pFreeze->m_vecNextD = TMVector2(vecTarget.x, vecTarget.y);
+						pFreeze->m_vecNextD = TMVector2(result.x, result.z);
 
 					if (m_pEffectContainer && pFreeze)
 						m_pEffectContainer->AddChild(pFreeze);

@@ -222,9 +222,7 @@ int TMSkillFreezeBlade::FrameMove(unsigned int dwServerTime)
     if (!m_bNext && m_nType > 1 && m_nType < 8 && m_fProgress > NextfProgress)
     {
         TMVector3 vecNext;
-        vecNext.x = m_vecPosition.x;
-        vecNext.y = m_vecPosition.y;
-        vecNext.z = m_vecPosition.z;
+        vecNext = m_vecPosition;
         vecNext.x = vecNext.x + m_vecNextD.x;
         vecNext.z = vecNext.z + m_vecNextD.y;
 
