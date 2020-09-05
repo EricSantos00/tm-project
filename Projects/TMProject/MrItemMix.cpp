@@ -45,11 +45,13 @@ CItemMix::~CItemMix()
 
 int CItemMix::Read_RMixListFile(const char* filename)
 {
+    // not used
 	return 0;
 }
 
 int CItemMix::Read_NMixListFile(const char* filename)
 {
+    // not used
 	return 0;
 }
 
@@ -211,14 +213,89 @@ void CItemMix::Set_NeedItemList(int Index)
 
 void CItemMix::ClearGridList()
 {
+    ClearResultGridList();
+    ClearNeedGridList();
+
+    for (int i = 0; i < 8; ++i)
+    {
+        m_dNeedRefer[i].bItemListrefer = 0;
+        m_dNeedRefer[i].dindex = 0;
+        m_dNeedRefer[i].dHavevolume = 0;
+    }
+
+    for (int i = 0; i < 8; ++i)
+        m_stCombineItem.CarryPos[i] = -1;
 }
 
 void CItemMix::ClearResultGridList()
 {
+    m_dResultIndex = -1;
+
+    for (int i = 0; i < 24; ++i)
+    {
+        SGridControlItem* pPickedItem = nullptr;
+        if (m_pGridResultItem[i])
+            pPickedItem = m_pGridResultItem[i]->PickupItem(0, 0);
+
+        if (g_pCursor->m_pAttachedItem && pPickedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+            g_pCursor->m_pAttachedItem = nullptr;
+
+        if (pPickedItem)
+            delete pPickedItem;
+    }
+
+    for (int i = 0; i < 24; ++i)
+    {
+        m_pGridResultItem[i] = static_cast<SGridControl*>(m_pControlContainer->FindControl(i + G_ITEM_MIX_RESULT_1));
+
+        if (m_pGridResultItem[i])
+            m_pGridResultItem[i]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+    }
 }
 
 void CItemMix::ClearNeedGridList()
 {
+    for (int i = 0; i < 8; ++i)
+    {
+        SGridControlItem* pPickedItem = nullptr;
+        if (m_pGridNeedItem[i])
+            pPickedItem = m_pGridNeedItem[i]->PickupItem(0, 0);
+
+        if (g_pCursor->m_pAttachedItem && pPickedItem && g_pCursor->m_pAttachedItem == pPickedItem)
+            g_pCursor->m_pAttachedItem = nullptr;
+
+        if (pPickedItem)
+            delete pPickedItem;
+    }
+
+    for (int i = 0; i < 8; ++i)
+    {
+        m_pGridNeedItem[i] = static_cast<SGridControl*>(m_pControlContainer->FindControl(G_ITEM_MIX_NEED_1 + i));
+
+        if (m_pGridNeedItem[i])
+            m_pGridNeedItem[i]->m_eGridType = TMEGRIDTYPE::GRID_DEFAULT;
+    }
+
+    for (int i = 0; i < 8; ++i)
+    {
+        m_dNeedRefer[i].bItemListrefer = 0;
+        m_dNeedRefer[i].dindex = 0;
+        m_dNeedRefer[i].dHavevolume = 0;
+    }
+
+    for (int i = 0; i < 8; ++i)
+    {
+        auto s_pName = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_NAME_1 + i));
+        auto s_pVolume = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_VOLUME_1 + i));
+        auto Cost = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_MONEY));
+
+        if (s_pName)
+            s_pName->SetText((char*)"0", 0);
+        if (s_pVolume)
+            s_pVolume->SetText((char*)"0", 0);
+        if (Cost)
+            Cost->SetText((char*)"0", 0);
+    }
 }
 
 void CItemMix::InvClear(SGridControl** GridInvList)
