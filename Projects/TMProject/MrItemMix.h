@@ -15,8 +15,8 @@ public:
 	CItemMix();
 	virtual ~CItemMix();
 
-	int Read_RMixListFile(char* filename);
-	int Read_NMixListFile(char* filename);
+	int Read_RMixListFile(const char* filename);
+	int Read_NMixListFile(const char* filename);
 	void TakeItResource(SControlContainer* ControlContainer, unsigned short CharID);
 	void ResultItemListSet(unsigned int Head, int X, int Y);
 	void Set_NeedItemList(int Index);
@@ -34,7 +34,7 @@ public:
 	void Read_MixListFile();
 	void BASE_ReadMixList();
 	void BASE_WriteMixItemList();
-	int MYGetItemSanc(STRUCT_ITEM* item);
+	int MYGetItemSanc(STRUCT_MYITEM* item);
 	int HardCode(SMessagePanel* MessagePanel, SGridControl** GridInvList);
 
 public:
