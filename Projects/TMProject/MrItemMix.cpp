@@ -9,18 +9,46 @@
 
 CItemMix::CItemMix()
 {
+    m_NPCHead = 0;
+    m_dNPCY = 0;
+    m_dNPCX = 0;
+    m_dResultIndex = -1;
+
+    for (int i = 0; i < 8; ++i)
+    {
+        m_dNeedRefer[i].bItemListrefer = 0;
+        m_dNeedRefer[i].dindex= 0;
+        m_dNeedRefer[i].dHavevolume= 0;
+    }
+
+    m_stCombineItem = {};
+
+    for (int i = 0; i < 8; ++i)
+        m_stCombineItem.CarryPos[i] = -1;
+
+    for (int i = 0; i < 100; ++i)
+        stNeed_itemList[i].Textnum = 0;
+
+    // avoid initialization warnings
+    m_dwID = 0;
+    memset(&stResult_itemList, 0, sizeof stResult_itemList);
+    m_pControlContainer = nullptr;
+    m_pGridInvList = nullptr;
+    m_pMixPanel = nullptr;
+    memset(&m_pGridResultItem, 0, sizeof m_pGridResultItem);
+    m_dResultIndex = 0;
 }
 
 CItemMix::~CItemMix()
 {
 }
 
-int CItemMix::Read_RMixListFile(char* filename)
+int CItemMix::Read_RMixListFile(const char* filename)
 {
 	return 0;
 }
 
-int CItemMix::Read_NMixListFile(char* filename)
+int CItemMix::Read_NMixListFile(const char* filename)
 {
 	return 0;
 }

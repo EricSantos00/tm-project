@@ -15,8 +15,8 @@ public:
 	CItemMix();
 	virtual ~CItemMix();
 
-	int Read_RMixListFile(char* filename);
-	int Read_NMixListFile(char* filename);
+	int Read_RMixListFile(const char* filename);
+	int Read_NMixListFile(const char* filename);
 	void TakeItResource(SControlContainer* ControlContainer, unsigned short CharID);
 	void ResultItemListSet(unsigned int Head, int X, int Y);
 	void Set_NeedItemList(int Index);
