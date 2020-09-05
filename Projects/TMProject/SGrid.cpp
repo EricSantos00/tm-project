@@ -1788,7 +1788,7 @@ int SGridControl::TradeItem(int nCellX, int nCellY)
 		m_eGridType == TMEGRIDTYPE::GRID_MISSION_RESULT || m_eGridType == TMEGRIDTYPE::GRID_MISSION_NEED ||
 		m_eGridType == TMEGRIDTYPE::GRID_MISSION_NEEDLIST)
 	{
-		return 1;
+		return 2;
 	}
 
 	auto pItem = SelectItem(nCellX, nCellY);

@@ -544,6 +544,321 @@ void CItemMix::SetTextList()
 
 void CItemMix::ClickInvItem(SGridControlItem* pItem, SGridControl** GridInvList, short Sourpage)
 {
+    if (m_dResultIndex != -1 && pItem)
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            auto pGridInv = m_pGridInvList[i];
+            if (!pGridInv)
+                return;
+
+            for (int nY = 0; nY < 3; ++nY)
+            {
+                for (int nX = 0; nX < 5; ++nX)
+                    if ((int)pGridInv->GetItem(nX, nY) && pItem->m_GCObj.dwColor == -65536)
+                        return;
+            }
+        }
+
+        for (int i = 0; i < 8; ++i)
+        {
+            auto index = m_dNeedRefer[i].dindex;
+
+            if (m_dNeedRefer[i].bItemListrefer)
+            {
+                if (index < 100 && stNeed_itemList[index].stGridItem.sIndex > 0 &&
+                    IsSameItem(&stNeed_itemList[index].stGridItem, pItem->m_pItem, 1) &&
+                    !m_pGridNeedItem[i]->m_pItemList[0])
+                {
+                    auto newItem = new STRUCT_ITEM(); // v52
+                    newItem->sIndex = pItem->m_pItem->sIndex;
+
+                    for (int kh = 0; kh < 3; ++kh)
+                    {
+                        newItem->stEffect[kh].cEffect = pItem->m_pItem->stEffect[kh].cEffect;
+                        newItem->stEffect[kh].cValue = pItem->m_pItem->stEffect[kh].cValue;
+                        newItem->stEffect[kh].sValue = pItem->m_pItem->stEffect[kh].sValue;
+                    }
+
+                    m_pGridNeedItem[i]->AddItem(new SGridControlItem(nullptr, newItem, 0.0f, 0.0f), 0, 0);
+
+                    for (int j = 0; j < 4; ++j)
+                    {
+                        auto grid = m_pGridInvList[j];
+                        for (int nY = 0; nY < 3; ++nY)
+                        {
+                            for (int nX = 0; nX < 5; ++nX)
+                            {
+                                auto item = grid->GetItem(nX, nY);
+                                if (item && IsSameItem(item->m_pItem, pItem->m_pItem, 4))
+                                    break;
+                            }
+                        }
+
+                        for (int ki = i; ki < 8; ++ki)
+                        {
+                            if (!m_stCombineItem.Item[ki].sIndex)
+                            {
+                                pItem->m_GCObj.dwColor = -65536;
+                                memcpy((char*)&m_stCombineItem.Item[ki], pItem->m_pItem, sizeof STRUCT_ITEM);
+
+                                m_stCombineItem.CarryPos[ki] = 15 * Sourpage + 5 * pItem->m_nCellIndexY + pItem->m_nCellIndexX;
+                                break;
+                            }
+                        }
+
+                        auto pName = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_NAME_1 + j));
+                        auto pVolume = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_VOLUME_1 + j));
+
+                        pName->SetTextColor(0xFFFFFFFF);
+                        pVolume->SetTextColor(0xFFFFFFFF);
+                        m_dNeedRefer[i].dHavevolume = 1;
+
+                        SetTextList();
+                        return;
+                    }
+                }
+            }
+            else if (stNeed_itemList[index].stGridItem.sIndex)
+            {
+                if (stNeed_itemList[index].stGridItem.sIndex > 0 &&
+                    stNeed_itemList[index].stGridItem.sIndex == pItem->m_pItem->sIndex &&
+                    IsSameItem(&stNeed_itemList[index].stGridItem, pItem->m_pItem, 4) &&
+                    !m_pGridNeedItem[i]->m_pItemList[0])
+                {
+                    auto newItem = new STRUCT_ITEM(); // v52
+                    newItem->sIndex = pItem->m_pItem->sIndex;
+
+                    for (int kh = 0; kh < 3; ++kh)
+                    {
+                        newItem->stEffect[kh].cEffect = pItem->m_pItem->stEffect[kh].cEffect;
+                        newItem->stEffect[kh].cValue = pItem->m_pItem->stEffect[kh].cValue;
+                        newItem->stEffect[kh].sValue = pItem->m_pItem->stEffect[kh].sValue;
+                    }
+
+                    m_pGridNeedItem[i]->AddItem(new SGridControlItem(nullptr, newItem, 0.0f, 0.0f), 0, 0);
+
+                    for (int j = 0; j < 4; ++j)
+                    {
+                        auto grid = m_pGridInvList[j];
+                        for (int nY = 0; nY < 3; ++nY)
+                        {
+                            for (int nX = 0; nX < 5; ++nX)
+                            {
+                                auto item = grid->GetItem(nX, nY);
+                                if (item && IsSameItem(item->m_pItem, pItem->m_pItem, 4))
+                                    break;
+                            }
+                        }
+
+                        for (int ki = i; ki < 8; ++ki)
+                        {
+                            if (!m_stCombineItem.Item[ki].sIndex)
+                            {
+                                pItem->m_GCObj.dwColor = -65536;
+                                memcpy((char*)&m_stCombineItem.Item[ki], pItem->m_pItem, sizeof STRUCT_ITEM);
+
+                                m_stCombineItem.CarryPos[ki] = 15 * Sourpage + 5 * pItem->m_nCellIndexY + pItem->m_nCellIndexX;
+                                break;
+                            }
+                        }
+
+                        auto pName = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_NAME_1 + j));
+                        auto pVolume = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_VOLUME_1 + j));
+
+                        pName->SetTextColor(0xFFFFFFFF);
+                        pVolume->SetTextColor(0xFFFFFFFF);
+                        m_dNeedRefer[i].dHavevolume = 1;
+
+                        SetTextList();
+                        return;
+                    }
+                }
+            }
+            else if (stNeed_itemList[index].dListIndexArry[0])
+            {
+                if (pItem->m_pItem->sIndex >= stNeed_itemList[index].dListIndexArry[0]
+                    && pItem->m_pItem->sIndex <= stNeed_itemList[index].dListIndexArry[1]
+                    || pItem->m_pItem->sIndex >= stNeed_itemList[index].dListIndexArry[2]
+                    && pItem->m_pItem->sIndex <= stNeed_itemList[index].dListIndexArry[3]
+                    || pItem->m_pItem->sIndex >= stNeed_itemList[index].dListIndexArry[4]
+                    && pItem->m_pItem->sIndex <= stNeed_itemList[index].dListIndexArry[5])
+                {
+                    if (IsSameItem(&stNeed_itemList[index].stGridItem, pItem->m_pItem, 1) &&
+                        IsItemOption_Satisfaction(index, pItem->m_pItem))
+                    {
+                        if (index == 27 && pItem->m_pItem->sIndex == 413 &&
+                            pItem->m_pItem->stEffect[0].cEffect == EF_AMOUNT &&
+                            pItem->m_pItem->stEffect[0].cValue != 10 ||
+                            index == 27 && pItem->m_pItem->sIndex == 413 && pItem->m_pItem->stEffect[0].cEffect != EF_AMOUNT)
+                        {
+                            return;
+                        }
+
+                        if (!m_pGridNeedItem[i]->m_pItemList[0])
+                        {
+                            auto newItem = new STRUCT_ITEM(); // v52
+                            newItem->sIndex = pItem->m_pItem->sIndex;
+
+                            for (int kh = 0; kh < 3; ++kh)
+                            {
+                                newItem->stEffect[kh].cEffect = pItem->m_pItem->stEffect[kh].cEffect;
+                                newItem->stEffect[kh].cValue = pItem->m_pItem->stEffect[kh].cValue;
+                                newItem->stEffect[kh].sValue = pItem->m_pItem->stEffect[kh].sValue;
+                            }
+
+                            m_pGridNeedItem[i]->AddItem(new SGridControlItem(nullptr, newItem, 0.0f, 0.0f), 0, 0);
+
+                            for (int j = 0; j < 4; ++j)
+                            {
+                                auto grid = m_pGridInvList[j];
+                                for (int nY = 0; nY < 3; ++nY)
+                                {
+                                    for (int nX = 0; nX < 5; ++nX)
+                                    {
+                                        auto item = grid->GetItem(nX, nY);
+                                        if (item && IsSameItem(item->m_pItem, pItem->m_pItem, 4))
+                                            break;
+                                    }
+                                }
+
+                                for (int ki = i; ki < 8; ++ki)
+                                {
+                                    if (!m_stCombineItem.Item[ki].sIndex)
+                                    {
+                                        pItem->m_GCObj.dwColor = -65536;
+                                        memcpy((char*)&m_stCombineItem.Item[ki], pItem->m_pItem, sizeof STRUCT_ITEM);
+
+                                        m_stCombineItem.CarryPos[ki] = 15 * Sourpage + 5 * pItem->m_nCellIndexY + pItem->m_nCellIndexX;
+                                        break;
+                                    }
+                                }
+
+                                auto pName = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_NAME_1 + j));
+                                auto pVolume = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_VOLUME_1 + j));
+
+                                pName->SetTextColor(0xFFFFFFFF);
+                                pVolume->SetTextColor(0xFFFFFFFF);
+                                m_dNeedRefer[i].dHavevolume = 1;
+
+                                SetTextList();
+                                return;
+                            }
+                        }
+                    }
+                }
+                else if (stNeed_itemList[index].dListIndexArry[0]
+                    && !stNeed_itemList[index].dListIndexArry[1]
+                    && stNeed_itemList[index].dListIndexArry[0] == pItem->m_pItem->sIndex
+                    && !m_pGridNeedItem[i]->m_pItemList[0]
+                    && IsItemOption_Satisfaction(index, pItem->m_pItem))
+                {
+                    auto newItem = new STRUCT_ITEM(); // v52
+                    newItem->sIndex = pItem->m_pItem->sIndex;
+
+                    for (int kh = 0; kh < 3; ++kh)
+                    {
+                        newItem->stEffect[kh].cEffect = pItem->m_pItem->stEffect[kh].cEffect;
+                        newItem->stEffect[kh].cValue = pItem->m_pItem->stEffect[kh].cValue;
+                        newItem->stEffect[kh].sValue = pItem->m_pItem->stEffect[kh].sValue;
+                    }
+
+                    m_pGridNeedItem[i]->AddItem(new SGridControlItem(nullptr, newItem, 0.0f, 0.0f), 0, 0);
+
+                    for (int j = 0; j < 4; ++j)
+                    {
+                        auto grid = m_pGridInvList[j];
+                        for (int nY = 0; nY < 3; ++nY)
+                        {
+                            for (int nX = 0; nX < 5; ++nX)
+                            {
+                                auto item = grid->GetItem(nX, nY);
+                                if (item && IsSameItem(item->m_pItem, pItem->m_pItem, 4))
+                                    break;
+                            }
+                        }
+
+                        for (int ki = i; ki < 8; ++ki)
+                        {
+                            if (!m_stCombineItem.Item[ki].sIndex)
+                            {
+                                pItem->m_GCObj.dwColor = -65536;
+                                memcpy((char*)&m_stCombineItem.Item[ki], pItem->m_pItem, sizeof STRUCT_ITEM);
+
+                                m_stCombineItem.CarryPos[ki] = 15 * Sourpage + 5 * pItem->m_nCellIndexY + pItem->m_nCellIndexX;
+                                break;
+                            }
+                        }
+
+                        auto pName = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_NAME_1 + j));
+                        auto pVolume = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_VOLUME_1 + j));
+
+                        pName->SetTextColor(0xFFFFFFFF);
+                        pVolume->SetTextColor(0xFFFFFFFF);
+                        m_dNeedRefer[i].dHavevolume = 1;
+
+                        SetTextList();
+                        return;
+                    }
+                }
+            }
+            else if (
+                IsSameItem(&stNeed_itemList[index].stGridItem, pItem->m_pItem, 1) &&
+                IsItemOption_Satisfaction(index, pItem->m_pItem) &&
+                !m_pGridNeedItem[i]->m_pItemList[0]
+            )
+            {
+            auto newItem = new STRUCT_ITEM(); // v52
+            newItem->sIndex = pItem->m_pItem->sIndex;
+
+            for (int kh = 0; kh < 3; ++kh)
+            {
+                newItem->stEffect[kh].cEffect = pItem->m_pItem->stEffect[kh].cEffect;
+                newItem->stEffect[kh].cValue = pItem->m_pItem->stEffect[kh].cValue;
+                newItem->stEffect[kh].sValue = pItem->m_pItem->stEffect[kh].sValue;
+            }
+
+            m_pGridNeedItem[i]->AddItem(new SGridControlItem(nullptr, newItem, 0.0f, 0.0f), 0, 0);
+
+            for (int j = 0; j < 4; ++j)
+            {
+                auto grid = m_pGridInvList[j];
+                for (int nY = 0; nY < 3; ++nY)
+                {
+                    for (int nX = 0; nX < 5; ++nX)
+                    {
+                        auto item = grid->GetItem(nX, nY);
+                        if (item && IsSameItem(item->m_pItem, pItem->m_pItem, 4))
+                            break;
+                    }
+                }
+
+                for (int ki = i; ki < 8; ++ki)
+                {
+                    if (!m_stCombineItem.Item[ki].sIndex)
+                    {
+                        pItem->m_GCObj.dwColor = -65536;
+                        memcpy((char*)&m_stCombineItem.Item[ki], pItem->m_pItem, sizeof STRUCT_ITEM);
+
+                        m_stCombineItem.CarryPos[ki] = 15 * Sourpage + 5 * pItem->m_nCellIndexY + pItem->m_nCellIndexX;
+                        break;
+                    }
+                }
+
+                auto pName = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_NAME_1 + j));
+                auto pVolume = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_VOLUME_1 + j));
+
+                pName->SetTextColor(0xFFFFFFFF);
+                pVolume->SetTextColor(0xFFFFFFFF);
+                m_dNeedRefer[i].dHavevolume = 1;
+
+                SetTextList();
+                return;
+            }
+            }
+
+        }
+    }
 }
 
 void CItemMix::DoCombine(SMessagePanel* MessagePanel, SGridControl** GridInvList, int Coin)
