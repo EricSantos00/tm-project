@@ -4169,7 +4169,7 @@ void SGridControl::RButton(int nCellX, int nCellY, int bPtInRect)
 	auto pMyHuman = pFScene->m_pMyHuman;
 
 	if (g_pCursor->GetStyle() == ECursorStyle::TMC_CURSOR_HAND && bPtInRect == 1 &&
-		m_dwControlID >= 65574 && m_dwControlID <= 65597 &&
+		m_dwControlID >= G_SKILL_SEC1_1 && m_dwControlID <= G_SKILL_SEC3_8 &&
 		pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_WALK &&
 		pMyHuman->m_eMotion != ECHAR_MOTION::ECMOTION_RUN)
 	{
@@ -4179,7 +4179,7 @@ void SGridControl::RButton(int nCellX, int nCellY, int bPtInRect)
 
 		unsigned int dwServerTime = g_pTimerManager->GetServerTime();
 
-		int cSkillIndex = pItem->m_pItem->sIndex + 120;
+		int cSkillIndex = pItem->m_pItem->sIndex - 0x1388;
 		if (cSkillIndex >= 0 && cSkillIndex < 248 &&
 			IsValidClassSkill(cSkillIndex) &&
 			(!g_pSpell[cSkillIndex].TargetType || g_pSpell[cSkillIndex].TargetType == 2) &&
