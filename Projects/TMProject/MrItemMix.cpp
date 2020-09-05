@@ -677,12 +677,12 @@ void CItemMix::ClickInvItem(SGridControlItem* pItem, SGridControl** GridInvList,
             }
             else if (stNeed_itemList[index].dListIndexArry[0])
             {
-                if (pItem->m_pItem->sIndex >= stNeed_itemList[index].dListIndexArry[0]
-                    && pItem->m_pItem->sIndex <= stNeed_itemList[index].dListIndexArry[1]
-                    || pItem->m_pItem->sIndex >= stNeed_itemList[index].dListIndexArry[2]
-                    && pItem->m_pItem->sIndex <= stNeed_itemList[index].dListIndexArry[3]
-                    || pItem->m_pItem->sIndex >= stNeed_itemList[index].dListIndexArry[4]
-                    && pItem->m_pItem->sIndex <= stNeed_itemList[index].dListIndexArry[5])
+                if ((unsigned int)pItem->m_pItem->sIndex >= stNeed_itemList[index].dListIndexArry[0]
+                    && (unsigned int)pItem->m_pItem->sIndex <= stNeed_itemList[index].dListIndexArry[1]
+                    || (unsigned int)pItem->m_pItem->sIndex >= stNeed_itemList[index].dListIndexArry[2]
+                    && (unsigned int)pItem->m_pItem->sIndex <= stNeed_itemList[index].dListIndexArry[3]
+                    || (unsigned int)pItem->m_pItem->sIndex >= stNeed_itemList[index].dListIndexArry[4]
+                    && (unsigned int)pItem->m_pItem->sIndex <= stNeed_itemList[index].dListIndexArry[5])
                 {
                     if (IsSameItem(&stNeed_itemList[index].stGridItem, pItem->m_pItem, 1) &&
                         IsItemOption_Satisfaction(index, pItem->m_pItem))
@@ -886,7 +886,7 @@ void CItemMix::DoCombine(SMessagePanel* MessagePanel, SGridControl** GridInvList
                 }
             }
 
-            if (stResult_itemList[m_dResultIndex].dCost <= Coin)
+            if (stResult_itemList[m_dResultIndex].dCost <= (unsigned int)Coin)
             {
                 if (HardCode(MessagePanel, GridInvList))
                 {
@@ -1049,8 +1049,8 @@ int CItemMix::IsItemOption_Satisfaction(int index, STRUCT_ITEM* item)
     }
     if (stNeed_itemList[index].stOption.dClass[0])
     {
-        if (stNeed_itemList[index].stOption.dClass[0] > BASE_GetItemAbility(item, 112)
-            || stNeed_itemList[index].stOption.dClass[1] < BASE_GetItemAbility(item, 112))
+        if (stNeed_itemList[index].stOption.dClass[0] > (unsigned int)BASE_GetItemAbility(item, 112)
+            || stNeed_itemList[index].stOption.dClass[1] < (unsigned int)BASE_GetItemAbility(item, 112))
         {
             return 0;
         }
@@ -1071,7 +1071,7 @@ int CItemMix::IsItemOption_Satisfaction(int index, STRUCT_ITEM* item)
     }
     if (stNeed_itemList[index].stOption.dPOS[0])
     {
-        if (stNeed_itemList[index].stOption.dPOS[0] > g_pItemList[item->sIndex].nPos || stNeed_itemList[index].stOption.dPOS[1] < g_pItemList[item->sIndex].nPos)
+        if (stNeed_itemList[index].stOption.dPOS[0] > (unsigned int)g_pItemList[item->sIndex].nPos || stNeed_itemList[index].stOption.dPOS[1] < (unsigned int)g_pItemList[item->sIndex].nPos)
             return 0;
 
         Return = 1;

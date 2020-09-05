@@ -91,8 +91,8 @@ int TMSnow::Render()
     }
     else
     {
-        vecCam.x = g_pObjectManager->m_pCamera->m_vecCamPos.x + 2.5;
-        vecCam.y = g_pObjectManager->m_pCamera->m_vecCamPos.y + 2.5;
+        vecCam.x = g_pObjectManager->m_pCamera->m_vecCamPos.x + 2.5f;
+        vecCam.y = g_pObjectManager->m_pCamera->m_vecCamPos.y + 2.5f;
     }
 
     g_pDevice->SetTexture(0, g_pTextureManager->GetEffectTexture(2, 5000));
@@ -110,7 +110,7 @@ int TMSnow::Render()
 
     float fCamHeight = 0.0f;
     if (g_pCurrentScene && g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_SELECT_SERVER)
-        fCamHeight = g_pObjectManager->m_pCamera->m_cameraPos.y - 2.0;
+        fCamHeight = g_pObjectManager->m_pCamera->m_cameraPos.y - 2.0f;
     else if (pObj)
         fCamHeight = pObj->m_fHeight;
 
@@ -166,8 +166,8 @@ int TMSnow::FrameMove(unsigned int dwServerTime)
     auto pObj = g_pObjectManager->m_pCamera->GetFocusedObject();
     if (g_pCurrentScene && g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_SELECT_SERVER)
     {
-        vecCam.x = g_pObjectManager->m_pCamera->m_cameraPos.x - 0.5;
-        vecCam.y = g_pObjectManager->m_pCamera->m_cameraPos.z + 4.5;
+        vecCam.x = g_pObjectManager->m_pCamera->m_cameraPos.x - 0.5f;
+        vecCam.y = g_pObjectManager->m_pCamera->m_cameraPos.z + 4.5f;
     }
     else if (pObj)
     {
@@ -176,8 +176,8 @@ int TMSnow::FrameMove(unsigned int dwServerTime)
     }
     else
     {
-        vecCam.x = g_pObjectManager->m_pCamera->m_vecCamPos.x + 2.5;
-        vecCam.y = g_pObjectManager->m_pCamera->m_vecCamPos.y + 2.5;
+        vecCam.x = g_pObjectManager->m_pCamera->m_vecCamPos.x + 2.5f;
+        vecCam.y = g_pObjectManager->m_pCamera->m_vecCamPos.y + 2.5f;
     }
 
     float fCamHeight = 0.0f;

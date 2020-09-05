@@ -499,7 +499,7 @@ void CFrame::UpdateFrames(D3DXMATRIX* matCur)
 				m_pParentSkin->m_pOwner->m_vecTempPos[9].z = vecOut2.z;
 
 				m_pParentSkin->m_pOwner->m_AlphaColor = vecOut3.x;
-				m_pParentSkin->m_pOwner->m_nAlpha = vecOut3.x;
+				m_pParentSkin->m_pOwner->m_nAlpha = (int)vecOut3.x;
 				m_pParentSkin->m_pOwner->m_bAlphaObj = static_cast<int>(vecOut3.z);
 
 				vecInFinal = { 0.40000001f, 0.2f, 0.0f };
