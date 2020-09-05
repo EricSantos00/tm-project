@@ -1341,8 +1341,8 @@ int TextureManager::GenerateTexture(int nDestUIIndex, int nSrcUIIndex, int nDest
 	}
 	else
 	{
-		unsigned short* pSrc = (unsigned short*)srcRect3d.pBits;
-		unsigned short* pDst = (unsigned short*)destRect3d.pBits;
+		unsigned int* pSrc = (unsigned int*)srcRect3d.pBits;
+		unsigned int* pDst = (unsigned int*)destRect3d.pBits;
 		if (nWidth + nDestX >= TextureManager::DYNAMIC_TEXTURE_WIDTH)
 			nWidth = TextureManager::DYNAMIC_TEXTURE_WIDTH - nDestX;
 		if (nHeight + nDestY >= TextureManager::DYNAMIC_TEXTURE_HEIGHT)
