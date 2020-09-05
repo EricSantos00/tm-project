@@ -34,7 +34,7 @@ public:
 	void Read_MixListFile();
 	void BASE_ReadMixList();
 	void BASE_WriteMixItemList();
-	int MYGetItemSanc(STRUCT_ITEM* item);
+	int MYGetItemSanc(STRUCT_MYITEM* item);
 	int HardCode(SMessagePanel* MessagePanel, SGridControl** GridInvList);
 
 public:

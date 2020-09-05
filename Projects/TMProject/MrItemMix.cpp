@@ -6,6 +6,7 @@
 #include "TMGlobal.h"
 #include "SGrid.h"
 #include "ItemEffect.h"
+#include "TMUtil.h"
 
 CItemMix::CItemMix()
 {
@@ -300,6 +301,28 @@ void CItemMix::ClearNeedGridList()
 
 void CItemMix::InvClear(SGridControl** GridInvList)
 {
+    m_pGridInvList = GridInvList;
+    memset(&m_stCombineItem, 0, sizeof m_stCombineItem);
+
+    for (int i = 0; i < 8; ++i)
+        m_stCombineItem.CarryPos[i] = -1;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        auto pGridInv = m_pGridInvList[i];
+        if (!pGridInv)
+            break;
+
+        for (int nY = 0; nY < 3; ++nY)
+        {
+            for (int nX = 0; nX < 5; ++nX)
+            {
+                auto pItem = pGridInv->GetItem(nX, nY);
+                if (pItem)
+                    pItem->m_GCObj.dwColor = -1;
+            }
+        }
+    }
 }
 
 void CItemMix::CheckInv(SGridControl** GridInvList)
@@ -525,11 +548,87 @@ void CItemMix::ClickInvItem(SGridControlItem* pItem, SGridControl** GridInvList,
 
 void CItemMix::DoCombine(SMessagePanel* MessagePanel, SGridControl** GridInvList, int Coin)
 {
+    int count = 0;
+
+    for (int i = 0; i < 8; ++i)
+    {
+        if (m_dNeedRefer[i].dindex)
+            ++count;
+    }
+
+    if (count)
+    {
+        if (count != 1 || m_dNeedRefer[0].dHavevolume >= stNeed_itemList[m_dNeedRefer[0].dindex].dVolume)
+        {
+            for (int i = 0; i < count; ++i)
+            {
+                if (m_stCombineItem.CarryPos[i] < 0 && m_NPCHead != 54)
+                {
+                    MessagePanel->SetMessage(g_pMessageStringTable[412], 2000u);
+                    MessagePanel->SetVisible(1, 1);
+
+                    return;
+                }
+            }
+
+            if (stResult_itemList[m_dResultIndex].dCost <= Coin)
+            {
+                if (HardCode(MessagePanel, GridInvList))
+                {
+                    m_stCombineItem.Header.Type = stResult_itemList[m_dResultIndex].sMSG;
+
+                    SendOneMessage((char*)&m_stCombineItem, sizeof m_stCombineItem);
+                }
+            }
+            else
+            {
+                MessagePanel->SetMessage(g_pMessageStringTable[414], 2000u);
+                MessagePanel->SetVisible(1, 1);
+            }
+        }
+        else
+        {
+            MessagePanel->SetMessage(g_pMessageStringTable[413], 2000u);
+            MessagePanel->SetVisible(1, 1);
+        }
+    }
+    else
+    {
+        MessagePanel->SetMessage(g_pMessageStringTable[412], 2000u);
+        MessagePanel->SetVisible(1, 1);
+    }
 }
 
 int CItemMix::IsSameItem(STRUCT_MYITEM* Item1, STRUCT_ITEM* Item2, short deep)
 {
-	return 0;
+    if (deep > 3)
+    {
+        if (Item1->sIndex != Item2->sIndex)
+            return 0;
+
+        deep = 3;
+    }
+
+    for (int i = 0; i < deep; ++i)
+    {
+        auto value = Item1->stEffect[i].cEffect;
+        if (value == EF_SANC)
+        {
+            auto nItemSanc = MYGetItemSanc(Item1);
+            if (nItemSanc > BASE_GetItemSanc(Item2))
+                return 0;
+        }
+        else if (value == EF_AMOUNT)
+        {
+            if (Item2->stEffect[i].cEffect != EF_AMOUNT)
+                return 0;
+
+            if (Item1->stEffect[i].cValue != Item2->stEffect[i].cValue)
+                return 0;
+        }
+    }
+
+    return 1;
 }
 
 int CItemMix::IsSameItem(STRUCT_ITEM* Item1, STRUCT_ITEM* Item2, short deep)
@@ -562,7 +661,118 @@ int CItemMix::IsSameItem(STRUCT_ITEM* Item1, STRUCT_ITEM* Item2, short deep)
 
 int CItemMix::IsItemOption_Satisfaction(int index, STRUCT_ITEM* item)
 {
-	return 0;
+    auto Return = 0;
+    if (index == 15)
+    {
+        if (item->sIndex >= 1901 && item->sIndex <= 1910)
+            Return = 1;
+        if (item->sIndex >= 1234 && item->sIndex <= 1237)
+            Return = 1;
+        if (item->sIndex >= 1369 && item->sIndex <= 1372)
+            Return = 1;
+        if (item->sIndex >= 1519 && item->sIndex <= 1522)
+            Return = 1;
+        if (item->sIndex >= 1669 && item->sIndex <= 1672)
+            Return = 1;
+        if (item->sIndex == 1714)
+            Return = 1;
+
+        if (!Return)
+            return 0;
+    }
+
+    if (index == 16)
+    {
+        if (item->sIndex >= 2491 && item->sIndex <= 2494)
+            Return = 1;
+        else if (item->sIndex >= 2551 && item->sIndex <= 2554)
+            Return = 1;
+        else if (item->sIndex >= 2611 && item->sIndex <= 2614)
+            Return = 1;
+        else if (item->sIndex >= 2671 && item->sIndex <= 2674)
+            Return = 1;
+        else if (item->sIndex >= 2731 && item->sIndex <= 2734)
+            Return = 1;
+        else if (item->sIndex >= 2791 && item->sIndex <= 2794)
+            Return = 1;
+        else if (item->sIndex >= 2859 && item->sIndex <= 2862)
+            Return = 1;
+        else if (item->sIndex >= 2863 && item->sIndex <= 2866)
+            Return = 1;
+        else if (item->sIndex >= 2895 && item->sIndex <= 2898)
+            Return = 1;
+        else if (item->sIndex >= 2935 && item->sIndex <= 2938)
+            Return = 1;
+        else
+        {
+            switch (item->sIndex)
+            {
+            case 1221:
+            case 1222:
+            case 1223:
+            case 1224:
+            case 1356:
+            case 1357:
+            case 1358:
+            case 1359:
+            case 1506:
+            case 1507:
+            case 1508:
+            case 1509:
+            case 1656:
+            case 1657:
+            case 1658:
+            case 1659:
+            case 1711:
+                Return = 1;
+                break;
+            }
+        }
+
+        if (!Return)
+            return 0;
+    }
+    if (stNeed_itemList[index].stOption.dClass[0])
+    {
+        if (stNeed_itemList[index].stOption.dClass[0] > BASE_GetItemAbility(item, 112)
+            || stNeed_itemList[index].stOption.dClass[1] < BASE_GetItemAbility(item, 112))
+        {
+            return 0;
+        }
+        Return = 1;
+    }
+
+    if (index == 20)
+    {
+        auto target2grade = g_pItemList[item->sIndex].nUnique % 10;
+        auto target2pos = g_pItemList[item->sIndex].nPos;
+        auto target2look = BASE_GetItemAbility(item, 18);
+        if (!g_pItemList[item->sIndex].nUnique)
+            return 0;
+        if (target2look == 1 && target2grade <= 6 && target2grade)
+            return 0;
+        if (target2look != 1 && target2grade <= 5 && target2grade)
+            return 0;
+    }
+    if (stNeed_itemList[index].stOption.dPOS[0])
+    {
+        if (stNeed_itemList[index].stOption.dPOS[0] > g_pItemList[item->sIndex].nPos || stNeed_itemList[index].stOption.dPOS[1] < g_pItemList[item->sIndex].nPos)
+            return 0;
+
+        Return = 1;
+    }
+
+    auto test = 0;
+    for (int i = 0; i < 2; ++i)
+    {
+        if (!stNeed_itemList[index].stOption.dPOS[i] && !stNeed_itemList[index].stOption.dClass[i])
+            ++test;
+    }
+
+    if (test >= 2)
+        Return = 1;
+
+    return Return;
 }
 
 void CItemMix::Read_MixListFile()
@@ -604,12 +814,357 @@ void CItemMix::BASE_WriteMixItemList()
 	fclose(fp);
 }
 
-int CItemMix::MYGetItemSanc(STRUCT_ITEM* item)
+int CItemMix::MYGetItemSanc(STRUCT_MYITEM* item)
 {
-	return 0;
+    if (item->sIndex >= 2330 && item->sIndex < 2390)
+        return 0;
+    if (item->sIndex >= 3200 && item->sIndex < 3300)
+        return 0;
+    if (item->sIndex >= 3980 && item->sIndex < 4000)
+        return 0;
+    
+    auto sanc = 0;
+    if (item->stEffect[0].cEffect != EF_SANC && item->stEffect[1].cEffect != EF_SANC && item->stEffect[2].cEffect != EF_SANC)
+    {
+        bool isPainted = item->stEffect[0].cEffect >= EF_STARTCOL && item->stEffect[0].cEffect <= EF_MAXCOL;
+        if (isPainted)
+            sanc = item->stEffect[0].cValue;
+        else
+        {
+            isPainted = item->stEffect[1].cEffect >= EF_STARTCOL && item->stEffect[1].cEffect <= EF_MAXCOL;
+            if (isPainted)
+                sanc = item->stEffect[1].cValue;
+            else
+            {
+                isPainted = item->stEffect[2].cEffect >= EF_STARTCOL && item->stEffect[2].cEffect <= EF_MAXCOL;
+                if (isPainted)
+                    sanc = item->stEffect[2].cValue;
+            }
+        }
+    }
+    else if (item->stEffect[0].cEffect == 43)
+        sanc = item->stEffect[0].cValue;
+    else if (item->stEffect[1].cEffect == 43)
+        sanc = item->stEffect[1].cValue;
+    else
+        sanc = item->stEffect[2].cValue;
+
+    auto isanc = sanc;
+    if (item->sIndex != 786 && item->sIndex != 1936 && item->sIndex != 1937)
+    {
+        if ((signed int)sanc < 230)
+            isanc = sanc % 10;
+        else
+            isanc = sanc - 220;
+        if (isanc >= 10 && isanc <= 35)
+            isanc = (isanc - 10) / 4 + 10;
+    }
+
+    return isanc;
 }
 
 int CItemMix::HardCode(SMessagePanel* MessagePanel, SGridControl** GridInvList)
 {
-	return 0;
+    if (m_NPCHead == 54 && m_dNPCX == 19 && m_dNPCY == 13)
+    {
+        auto Item = GridInvList[m_stCombineItem.CarryPos[0] / 15]->GetItem(
+            m_stCombineItem.CarryPos[0] % 15 % 5,
+            m_stCombineItem.CarryPos[0] % 15 / 5
+        );
+        
+        auto Item2 = GridInvList[m_stCombineItem.CarryPos[1] / 15]->GetItem(
+            m_stCombineItem.CarryPos[1] % 15 % 5,
+            m_stCombineItem.CarryPos[1] % 15 / 5
+        );
+        if (Item
+            && (Item->m_pItem->sIndex >= 1901 && Item->m_pItem->sIndex <= 1910
+                || Item->m_pItem->sIndex >= 1234 && Item->m_pItem->sIndex <= 1237
+                || Item->m_pItem->sIndex >= 1369 && Item->m_pItem->sIndex <= 1372
+                || Item->m_pItem->sIndex >= 1519 && Item->m_pItem->sIndex <= 1522
+                || Item->m_pItem->sIndex >= 1669 && Item->m_pItem->sIndex <= 1672
+                || Item->m_pItem->sIndex == 1714))
+        {
+            MessagePanel->SetMessage(g_pMessageStringTable[274], 2000u);
+            MessagePanel->SetVisible(1, 1);
+            return 0;
+        }
+
+        if (!Item2)
+        {
+            MessagePanel->SetMessage(g_pMessageStringTable[274], 2000u);
+            MessagePanel->SetVisible(1, 1);
+
+            return 0;
+        }
+    }
+    else if (m_NPCHead == 55)
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            auto Item = GridInvList[m_stCombineItem.CarryPos[i] / 15]->GetItem(
+                m_stCombineItem.CarryPos[0] % 15 % 5,
+                m_stCombineItem.CarryPos[0] % 15 / 5
+            ); // v22
+
+            if (Item)
+            {
+                if (Item->m_pItem->sIndex >= 1901 && Item->m_pItem->sIndex <= 1910
+                    || Item->m_pItem->sIndex >= 1234 && Item->m_pItem->sIndex <= 1237
+                    || Item->m_pItem->sIndex >= 1369 && Item->m_pItem->sIndex <= 1372
+                    || Item->m_pItem->sIndex >= 1519 && Item->m_pItem->sIndex <= 1522
+                    || Item->m_pItem->sIndex >= 1669 && Item->m_pItem->sIndex <= 1672
+                    || Item->m_pItem->sIndex == 1714)
+                {
+                    MessagePanel->SetMessage(g_pMessageStringTable[274], 2000u);
+                    MessagePanel->SetVisible(1, 1);
+                    return 0;
+                }
+
+                if (BASE_GetItemAbility(Item->m_pItem, EF_TRANS) == 3)
+                {
+                    MessagePanel->SetMessage(g_pMessageStringTable[359], 2000u);
+                    MessagePanel->SetVisible(1, 1);
+                    return 0;
+                }
+            }
+        }
+
+        auto Item1 = GridInvList[m_stCombineItem.CarryPos[0] / 15]->GetItem(
+            m_stCombineItem.CarryPos[0] % 15 % 5,
+            m_stCombineItem.CarryPos[0] % 15 / 5
+        ); // v22
+
+        auto Item2 = GridInvList[m_stCombineItem.CarryPos[1] / 15]->GetItem(
+            m_stCombineItem.CarryPos[1] % 15 % 5,
+            m_stCombineItem.CarryPos[1] % 15 / 5
+        ); // v22
+
+        if (strcmp(g_pItemList[Item1->m_pItem->sIndex].Name, g_pItemList[Item2->m_pItem->sIndex].Name))
+        {
+            MessagePanel->SetMessage(g_pMessageStringTable[262], 2000u);
+            MessagePanel->SetVisible(1, 1);
+
+            return 0;
+        }
+    }
+    else if (m_NPCHead == 56)
+    {
+        auto Item = GridInvList[m_stCombineItem.CarryPos[0] / 15]->GetItem(
+            m_stCombineItem.CarryPos[0] % 15 % 5,
+            m_stCombineItem.CarryPos[0] % 15 / 5
+        ); // v7
+
+        auto target1grade = g_pItemList[Item->m_pItem->sIndex].nUnique % 10;
+        auto target1pos = g_pItemList[Item->m_pItem->sIndex].nPos;
+        auto target1look = BASE_GetItemAbility(Item->m_pItem, EF_CLASS);
+
+        bool bOK = true;
+        if (target1look == 1 && target1grade != 9)
+            bOK = false;
+
+        if (target1look != 1 && target1grade != 9)
+            bOK = 0;
+
+        if (!bOK)
+        {
+            MessagePanel->SetMessage(g_pMessageStringTable[273], 2000u);
+            MessagePanel->SetVisible(1, 1);
+
+            return 0;
+        }
+
+        if (!(target1pos & 63))
+        {
+            MessagePanel->SetMessage(g_pMessageStringTable[276], 2000u);
+            MessagePanel->SetVisible(1, 1);
+
+            return 0;
+        }
+
+        auto Item2 = GridInvList[m_stCombineItem.CarryPos[1] / 15]->GetItem(
+            m_stCombineItem.CarryPos[1] % 15 % 5,
+            m_stCombineItem.CarryPos[1] % 15 / 5
+        ); // v8
+
+        auto target2grade = g_pItemList[Item2->m_pItem->sIndex].nUnique % 10;
+        auto target2pos = g_pItemList[Item2->m_pItem->sIndex].nPos;
+        auto target2look = BASE_GetItemAbility(Item2->m_pItem, EF_CLASS);
+
+        bool bOKa = true;
+        if (g_pItemList[Item2->m_pItem->sIndex].nUnique)
+        {
+            if (target2look == 1 && target2grade <= 6 && target2grade)
+                bOKa = false;
+
+            if (target2look != 1 && target2grade <= 5 && target2grade)
+                bOKa = false;
+        }
+        else
+            bOKa = false;
+
+        if (target2look == 1 && target2grade == 9)
+            bOKa = false;
+        if (target2look != 1 && target2grade == 9)
+            bOKa = false;
+
+        if (!bOKa)
+        {
+            MessagePanel->SetMessage(g_pMessageStringTable[275], 2000u);
+            MessagePanel->SetVisible(1, 1);
+
+            return 0;
+        }
+
+        if (target1look != target2look)
+            bOKa = false;
+        if (target1pos != target2pos)
+            bOKa = false;
+
+        if (!bOKa)
+        {
+            MessagePanel->SetMessage(g_pMessageStringTable[276], 2000u);
+            MessagePanel->SetVisible(1, 1);
+
+            return 0;
+        }
+    }
+    else if (m_NPCHead == 67 && m_dNPCX == 25 && m_dNPCY == 13)
+    {
+        auto Item = GridInvList[m_stCombineItem.CarryPos[0] / 15]->GetItem(
+            m_stCombineItem.CarryPos[0] % 15 % 5,
+            m_stCombineItem.CarryPos[0] % 15 / 5
+        ); // v27
+
+        auto Item2 = GridInvList[m_stCombineItem.CarryPos[1] / 15]->GetItem(
+            m_stCombineItem.CarryPos[1] % 15 % 5,
+            m_stCombineItem.CarryPos[1] % 15 / 5
+        ); // v25
+
+        auto nItemSanc = BASE_GetItemSanc(Item->m_pItem);
+
+        if (Item->m_pItem->sIndex != 413
+            && Item->m_pItem->sIndex != 4127
+            && (Item->m_pItem->sIndex < 5110 || Item->m_pItem->sIndex > 5133)
+            && Item->m_pItem->sIndex != 421
+            && Item->m_pItem->sIndex != 4127
+            && Item->m_pItem->sIndex != 3448
+            && Item->m_pItem->sIndex != 4043
+            && ((Item->m_pItem->sIndex < 1901 || Item->m_pItem->sIndex > 1910)
+                && (Item->m_pItem->sIndex < 1234 || Item->m_pItem->sIndex > 1237)
+                && (Item->m_pItem->sIndex < 1369 || Item->m_pItem->sIndex > 1372)
+                && (Item->m_pItem->sIndex < 1519 || Item->m_pItem->sIndex > 1522)
+                && (Item->m_pItem->sIndex < 1669 || Item->m_pItem->sIndex > 1672)
+                && Item->m_pItem->sIndex != 1714
+                || nItemSanc != 9))
+        {
+            MessagePanel->SetMessage(g_pMessageStringTable[274], 2000u);
+            MessagePanel->SetVisible(1, 1);
+
+            return 0;
+        }
+
+        if (Item->m_pItem->sIndex >= 1901 && Item->m_pItem->sIndex <= 1910
+            || Item->m_pItem->sIndex >= 1234 && Item->m_pItem->sIndex <= 1237
+            || Item->m_pItem->sIndex >= 1369 && Item->m_pItem->sIndex <= 1372
+            || Item->m_pItem->sIndex >= 1519 && Item->m_pItem->sIndex <= 1522
+            || Item->m_pItem->sIndex >= 1669 && Item->m_pItem->sIndex <= 1672
+            || Item->m_pItem->sIndex == 1714)
+        {
+            bool check = false;
+            if (BASE_GetItemSanc(Item2->m_pItem) >= 15)
+            {
+                if (Item->m_pItem->sIndex == 1901 && Item2->m_pItem->sIndex >= 2491 && Item2->m_pItem->sIndex <= 2494)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1902 && Item2->m_pItem->sIndex >= 2551 && Item2->m_pItem->sIndex <= 2554)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1903 && Item2->m_pItem->sIndex >= 2611 && Item2->m_pItem->sIndex <= 2614)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1904 && Item2->m_pItem->sIndex >= 2671 && Item2->m_pItem->sIndex <= 2674)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1905 && Item2->m_pItem->sIndex >= 2731 && Item2->m_pItem->sIndex <= 2734)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1906 && Item2->m_pItem->sIndex >= 2791 && Item2->m_pItem->sIndex <= 2794)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1907 && Item2->m_pItem->sIndex >= 2859 && Item2->m_pItem->sIndex <= 2862)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1908 && Item2->m_pItem->sIndex >= 2863 && Item2->m_pItem->sIndex <= 2866)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1909 && Item2->m_pItem->sIndex >= 2895 && Item2->m_pItem->sIndex <= 2898)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1910 && Item2->m_pItem->sIndex >= 2935 && Item2->m_pItem->sIndex <= 2938)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1234 && Item2->m_pItem->sIndex == 1221)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1235 && Item2->m_pItem->sIndex == 1222)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1236 && Item2->m_pItem->sIndex == 1223)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1237 && Item2->m_pItem->sIndex == 1224)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1369 && Item2->m_pItem->sIndex == 1356)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1370 && Item2->m_pItem->sIndex == 1357)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1371 && Item2->m_pItem->sIndex == 1358)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1372 && Item2->m_pItem->sIndex == 1359)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1519 && Item2->m_pItem->sIndex == 1506)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1520 && Item2->m_pItem->sIndex == 1507)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1521 && Item2->m_pItem->sIndex == 1508)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1522 && Item2->m_pItem->sIndex == 1509)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1669 && Item2->m_pItem->sIndex == 1656)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1670 && Item2->m_pItem->sIndex == 1657)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1671 && Item2->m_pItem->sIndex == 1658)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1672 && Item2->m_pItem->sIndex == 1659)
+                    check = true;
+                else if (Item->m_pItem->sIndex == 1714 && Item2->m_pItem->sIndex == 1711)
+                    check = true;
+            }
+            else
+                check = false;
+
+            if (!check)
+            {
+                MessagePanel->SetMessage(g_pMessageStringTable[274], 2000u);
+                MessagePanel->SetVisible(1, 1);
+
+                return 0;
+            }
+
+            auto Item3 = GridInvList[m_stCombineItem.CarryPos[2] / 15]->GetItem(
+                m_stCombineItem.CarryPos[2] % 15 % 5,
+                m_stCombineItem.CarryPos[2] % 15 / 5);
+
+            bool checka = false;
+            if (Item->m_pItem->sIndex >= 1901 && Item->m_pItem->sIndex <= 1910 && Item3->m_pItem->sIndex == 772)
+                checka = true;
+            else if (Item->m_pItem->sIndex >= 1234 && Item->m_pItem->sIndex <= 1237 && Item3->m_pItem->sIndex == 542)
+                checka = true;
+            else if (Item->m_pItem->sIndex >= 1369 && Item->m_pItem->sIndex <= 1372 && Item3->m_pItem->sIndex == 542)
+                checka = true;
+            else if (Item->m_pItem->sIndex >= 1519 && Item->m_pItem->sIndex <= 1522 && Item3->m_pItem->sIndex == 542)
+                checka = true;
+            else if (Item->m_pItem->sIndex >= 1669 && Item->m_pItem->sIndex <= 1672 && Item3->m_pItem->sIndex == 542)
+                checka = true;
+            else if (Item->m_pItem->sIndex == 1714 && Item3->m_pItem->sIndex == 772)
+                checka = true;
+
+            if (!checka)
+            {
+                MessagePanel->SetMessage(g_pMessageStringTable[274], 2000u);
+                MessagePanel->SetVisible(1, 1);
+                return 0;
+            }
+        }
+    }
+
+    return 1;
 }
