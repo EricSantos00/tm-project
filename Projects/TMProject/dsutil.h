@@ -16,7 +16,10 @@ class CWaveFile;
 
 constexpr auto MAX_SOUNDLIST = 512;
 
+#if !defined DDERR_NOTINITIALIZED
 #define DDERR_NOTINITIALIZED 0x800401F0
+#endif
+
 //----------------------------------------------------------------------------- 
 // Typing macros  
 //----------------------------------------------------------------------------- 
