@@ -2315,15 +2315,19 @@ int BASE_CanEquip_RecvRes(STRUCT_REQ* req, STRUCT_ITEM* item, STRUCT_SCORE* scor
 
 int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type)
 {
+    if (item->sIndex <= 0 || item->sIndex > MAX_ITEMLIST)
+        return 0;
+
+    if (item->sIndex >= 3200 && item->sIndex <= 3300)
+        return 0;
+
     if (item->sIndex >= 2330 && item->sIndex < 2390)
-        return FALSE;
+        return 0;
+
+    if (item->sIndex >= 3980 && item->sIndex < 4000)
+        return 0;
 
     int value = 0;
-
-    int idx = item->sIndex;
-
-    if (idx <= 0 || idx > MAX_ITEMLIST)
-        return value;
 
     for (int i = 0; i < 3; i++)
     {
@@ -2343,45 +2347,87 @@ int BASE_GetBonusItemAbilityNosanc(STRUCT_ITEM* item, char Type)
 
 int BASE_GetBonusItemAbility(STRUCT_ITEM* item, char Type)
 {
+    if (item->sIndex <= 0 || item->sIndex > 6500)
+        return 0;
+
+    if (item->sIndex >= 3200 && item->sIndex <= 3300)
+        return 0;
+
     if (item->sIndex >= 2330 && item->sIndex < 2390)
-        return FALSE;
+        return 0;
+
+    if (item->sIndex >= 3980 && item->sIndex < 4000)
+        return 0;
 
     int value = 0;
 
-    int idx = item->sIndex;
+    int nPos = g_pItemList[item->sIndex].nPos;
 
-    if (idx <= 0 || idx > MAX_ITEMLIST)
-        return value;
-
-    int nPos = g_pItemList[idx].nPos;
-
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; ++i)
     {
-        if (item->stEffect[i].cEffect != Type)
-            continue;
+        if (item->stEffect[i].cEffect == Type)
+        {
+            int tvalue = item->stEffect[i].cValue;
 
-        int tvalue = item->stEffect[i].cValue;
+            if (Type == EF_ATTSPEED && tvalue == 1)
+                tvalue = 10;
 
-        if (Type == EF_ATTSPEED && tvalue == 1)
-            tvalue = 10;
-
-        value += tvalue;
+            value += tvalue;
+        }
     }
 
     int sanc = BASE_GetItemSanc(item);
 
-    if (sanc == 9 && (nPos & 0xF00) != 0)
-        sanc = 10;
+    if (sanc >= 9 && nPos & 0xF00)
+        sanc++;
 
-    if (sanc == 0)
-        return value;
-
-    if (Type != EF_GRID && Type != EF_CLASS && Type != EF_POS && Type != EF_WTYPE && Type != EF_RANGE && Type != EF_LEVEL && Type != EF_REQ_STR && Type != EF_REQ_INT && Type != EF_REQ_DEX && Type != EF_REQ_CON && Type != EF_VOLATILE && Type != EF_INCUBATE && Type != EF_INCUDELAY)
+    if (sanc
+        && Type != EF_GRID
+        && Type != EF_CLASS
+        && Type != EF_POS
+        && Type != EF_WTYPE
+        && Type != EF_RANGE
+        && Type != EF_LEVEL
+        && Type != EF_REQ_STR
+        && Type != EF_REQ_INT
+        && Type != EF_REQ_DEX
+        && Type != EF_REQ_CON
+        && Type != EF_VOLATILE
+        && Type != EF_INCUBATE
+        && Type != EF_INCUDELAY
+        && Type != EF_PREVBONUS)
     {
-        value *= sanc + 10;
-        value /= 10;
+        if (sanc > 10)
+        {
+            int UpSanc = sanc - 10;
+            switch (UpSanc)
+            {
+            case 1:
+                UpSanc = 220;
+                break;
+            case 2:
+                UpSanc = 250;
+                break;
+            case 3:
+                UpSanc = 280;
+                break;
+            case 4:
+                UpSanc = 320;
+                break;
+            case 5:
+                UpSanc = 370;
+                break;
+            case 6:
+                UpSanc = 400;
+                break;
+            }
+            value = UpSanc * 10 * value / 100 / 10;
+        }
+        else
+        {
+            value = value * (sanc + 10) / 10;
+        }
     }
-
     return value;
 }
 
