@@ -6704,9 +6704,9 @@ int TMFieldScene::FrameMove(unsigned int dwServerTime)
 
 					// TODO: confirm this "-" latter.
 					fX2 = ((-((0.70710701f * fX) + (-0.70710701f * fY))	* 2.0f) + 78.0f)
-						+ (TMGround::m_fMiniMapScale * 128.0f);
+						+ ((signed int)TMGround::m_fMiniMapScale * 128.0f);
 					fY2 = ((((0.70710701f * fX) + (0.70710701f * fY)) * 2.0f) + 78.0f)
-						+ (TMGround::m_fMiniMapScale * 128.0f);
+						+ ((signed int)TMGround::m_fMiniMapScale * 128.0f);
 
 					if (fX2 >= 0.0 && fX2 <= (float)nCullSize && fY2 >= 0.0 && fY2 <= (float)nCullSize)
 						m_pInMiniMapPosPanel[l]->SetVisible(1);
