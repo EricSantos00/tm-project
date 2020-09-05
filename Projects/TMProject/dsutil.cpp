@@ -119,10 +119,10 @@ HRESULT CSoundManager::SetPrimaryBufferFormat(DWORD dwPrimaryChannels, DWORD dwP
 	tWAVEFORMATEX wfx{};
 	memset(&wfx, 0, sizeof wfx);
 	wfx.wFormatTag = 1;
-	wfx.nChannels = dwPrimaryChannels;
+	wfx.nChannels = (WORD)dwPrimaryChannels;
 	wfx.nSamplesPerSec = dwPrimaryFreq;
-	wfx.wBitsPerSample = dwPrimaryBitRate;
-	wfx.nBlockAlign = dwPrimaryChannels * (signed int)(dwPrimaryBitRate >> 3);
+	wfx.wBitsPerSample = (WORD)dwPrimaryBitRate;
+	wfx.nBlockAlign = (WORD)dwPrimaryChannels * (signed int)((WORD)dwPrimaryBitRate >> 3);
 	wfx.nAvgBytesPerSec = dwPrimaryFreq * wfx.nBlockAlign;
 
 	HRESULT hra = pDSBPrimary->SetFormat(&wfx);
@@ -222,7 +222,7 @@ HRESULT CSoundManager::Create(CSound** ppSound, LPTSTR strWaveFileName, DWORD dw
 
 	if (SUCCEEDED(hra) || hra == DSERR_BUFFERTOOSMALL)
 	{
-		for (int i = 1; i < dwNumBuffers; ++i)
+		for (DWORD i = 1; i < dwNumBuffers; ++i)
 		{
 			hrb = m_pDS->DuplicateSoundBuffer(*apDSBuffer, &apDSBuffer[i]);
 			if (FAILED(hrb))
@@ -363,7 +363,7 @@ CSound::CSound(LPDIRECTSOUNDBUFFER* apDSBuffer, DWORD dwDSBufferSize, DWORD dwNu
 {
 	m_apDSBuffer = new IDirectSoundBuffer*[4 * dwNumBuffers];
 
-	for (int i = 0; i < dwNumBuffers; ++i)
+	for (DWORD i = 0; i < dwNumBuffers; ++i)
 		m_apDSBuffer[i] = apDSBuffer[i];
 
 	m_dwDSBufferSize = dwDSBufferSize;
@@ -372,13 +372,13 @@ CSound::CSound(LPDIRECTSOUNDBUFFER* apDSBuffer, DWORD dwDSBufferSize, DWORD dwNu
 
 	FillBufferWithSound(m_apDSBuffer[0], false);
 
-	for (int ia = 0; ia < dwNumBuffers; ++ia)
+	for (DWORD ia = 0; ia < dwNumBuffers; ++ia)
 		m_apDSBuffer[ia]->SetCurrentPosition(0);
 }
 
 CSound::~CSound()
 {
-	for (int i = 0; i < m_dwNumBuffers; ++i)
+	for (DWORD i = 0; i < m_dwNumBuffers; ++i)
 		SAFE_RELEASE(m_apDSBuffer[i]);
 
 	SAFE_DELETE(m_apDSBuffer);
@@ -441,7 +441,7 @@ HRESULT CSound::FillBufferWithSound(LPDIRECTSOUNDBUFFER pDSB, BOOL bRepeatWavIfB
 		}
 		else
 		{
-			for (int dwReadSoFar = dwWavDataRead; dwReadSoFar < dwDSLockedBufferSize; dwReadSoFar += dwWavDataRead)
+			for (DWORD dwReadSoFar = dwWavDataRead; dwReadSoFar < dwDSLockedBufferSize; dwReadSoFar += dwWavDataRead)
 			{
 				hr = m_pWaveFile->ResetFile();
 				if (FAILED(hr))
@@ -466,7 +466,7 @@ LPDIRECTSOUNDBUFFER CSound::GetFreeBuffer()
 	if (!m_apDSBuffer)
 		return nullptr;
 
-	int i = 0;
+	DWORD i = 0;
 	for (; i < m_dwNumBuffers; ++i)
 	{
 		if (m_apDSBuffer[i])
@@ -539,7 +539,7 @@ HRESULT CSound::Stop()
 
 	HRESULT hr = S_OK;
 
-	for (int i = 0; i < m_dwNumBuffers; ++i)
+	for (DWORD i = 0; i < m_dwNumBuffers; ++i)
 		hr |= m_apDSBuffer[i]->Stop();
 
 	return hr;
@@ -552,7 +552,7 @@ HRESULT CSound::Reset()
 
 	HRESULT hr = S_OK;
 
-	for (int i = 0; i < m_dwNumBuffers; ++i)
+	for (DWORD i = 0; i < m_dwNumBuffers; ++i)
 		hr |= m_apDSBuffer[i]->SetCurrentPosition(0);
 
 	return hr;
@@ -564,7 +564,7 @@ BOOL CSound::IsSoundPlaying()
 		return DDERR_NOTINITIALIZED;
 
 	int bIsPlaying = 0;
-	for (int i = 0; i < m_dwNumBuffers; ++i)
+	for (DWORD i = 0; i < m_dwNumBuffers; ++i)
 	{
 		if (m_apDSBuffer[i])
 		{
@@ -638,7 +638,7 @@ HRESULT CStreamingSound::HandleWaveStreamNotification(BOOL bLoopedPlay)
 	{
 		if (bLoopedPlay)
 		{
-			for (int dwReadSoFar = dwBytesWrittenToBuffer; dwReadSoFar < dwDSLockedBufferSize; dwReadSoFar += dwBytesWrittenToBuffer)
+			for (DWORD dwReadSoFar = dwBytesWrittenToBuffer; dwReadSoFar < dwDSLockedBufferSize; dwReadSoFar += dwBytesWrittenToBuffer)
 			{
 				hr = m_pWaveFile->ResetFile();
 				if (FAILED(hr))
@@ -975,7 +975,7 @@ HRESULT CWaveFile::Read(BYTE* pBuffer, DWORD dwSizeToRead, DWORD* pdwSizeRead)
 
 			m_ck.cksize -= cbDataIn;
 
-			for (int cT = 0; cT < cbDataIn; ++cT)
+			for (DWORD cT = 0; cT < cbDataIn; ++cT)
 			{
 				if (mmioinfoIn.pchNext == mmioinfoIn.pchEndRead)
 				{
@@ -1018,7 +1018,7 @@ HRESULT CWaveFile::Write(UINT nSizeToWrite, BYTE* pbSrcData, UINT* pnSizeWrote)
 
 	*pnSizeWrote = 0;
 
-	for (int cT = 0; cT < nSizeToWrite; ++cT)
+	for (DWORD cT = 0; cT < nSizeToWrite; ++cT)
 	{
 		if (m_mmioinfoOut.pchNext == m_mmioinfoOut.pchEndWrite)
 		{

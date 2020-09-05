@@ -82,8 +82,8 @@ int TMRain::Render()
     }
     else
     {
-        vecCam.x = g_pObjectManager->m_pCamera->m_vecCamPos.x + 2.5;
-        vecCam.y = g_pObjectManager->m_pCamera->m_vecCamPos.y + 2.5;
+        vecCam.x = g_pObjectManager->m_pCamera->m_vecCamPos.x + 2.5f;
+        vecCam.y = g_pObjectManager->m_pCamera->m_vecCamPos.y + 2.5f;
     }
 
     auto matView = g_pDevice->m_matView;
