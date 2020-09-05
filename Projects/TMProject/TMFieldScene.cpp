@@ -575,10 +575,10 @@ void SetMinimapPos()
 		int Color = 0; 
 		for (int index = 0; index < 256; ++index)
 		{
-			if (fscanf(fpMinimap, "%d %d %d %d %d %s", &g_MinimapPos[index].nX, &g_MinimapPos[index].nY, &Color, &g_MinimapPos[index].nCX, &g_MinimapPos[index].nCY, g_MinimapPos[index].szTarget) != -1)
+			if (fscanf(fpMinimap, "%d %d %d %d %d %s", &g_MinimapPos[index].nX, &g_MinimapPos[index].nY, &Color, &g_MinimapPos[index].nCX, &g_MinimapPos[index].nCY, g_MinimapPos[index].szTarget) == -1)
 				break;
 
-			switch (Color - 1)
+			switch (Color)
 			{
 			case 1:
 				g_MinimapPos[index].dwColor = 0xFFFFFFFF;
