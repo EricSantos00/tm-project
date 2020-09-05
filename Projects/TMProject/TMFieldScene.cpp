@@ -22592,7 +22592,7 @@ int TMFieldScene::Guildmark_Create(stGuildMarkInfo* pMark)
 		strcpy(pMark->strMarkFileName, strFileName);
 		g_pTextureManager->m_stGuildMark[pMark->nMarkIndex].nGuild = pMark->nGuild + (pMark->nGuildChannel << 16);
 		
-		CreateThread(NULL, 0, Guildmark_Download, &pMark, 0, NULL);
+		CreateThread(NULL, 0, Guildmark_Download, pMark, 0, NULL);
 		return 1;
 	}
 

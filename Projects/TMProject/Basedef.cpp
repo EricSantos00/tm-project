@@ -2878,14 +2878,34 @@ int BASE_GetMaxAbility(STRUCT_MOB* mob, char Type)
     return value;
 }
 
-char BASE_CheckChatValid(char* Chat)
+char BASE_CheckChatValid(const char* Chat)
 {
     return 1;
 }
 
-char CheckGuildName(char* GuildName, bool bSubguild)
+char CheckGuildName(const char* GuildName, bool bSubguild)
 {
-    return 0;
+    int nLen = strlen(GuildName);
+    if (!bSubguild)
+    {
+        for (int i = 0; i < nLen; ++i)
+        {
+            if (GuildName[i] == ' ')
+                return 0;
+
+            if (GuildName[i] == '_')
+                return 0;
+        }
+    }
+
+    if (nLen < 2)
+        return 1;
+
+    for (int i = 1; i < nLen; ++i)
+        if (GuildName[i] == -95 && GuildName[i - 1] == -95)
+            return 0;
+
+    return 1;
 }
 
 void BASE_GetHitPosition(int sx, int sy, int* tx, int* ty, char* pHeight, int MH)
