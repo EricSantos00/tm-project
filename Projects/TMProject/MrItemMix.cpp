@@ -291,11 +291,11 @@ void CItemMix::ClearNeedGridList()
         auto Cost = static_cast<SText*>(m_pControlContainer->FindControl(T_ITEM_MIX_MONEY));
 
         if (s_pName)
-            s_pName->SetText((char*)"0", 0);
+            s_pName->SetText((char*)"", 0);
         if (s_pVolume)
-            s_pVolume->SetText((char*)"0", 0);
+            s_pVolume->SetText((char*)"", 0);
         if (Cost)
-            Cost->SetText((char*)"0", 0);
+            Cost->SetText((char*)"", 0);
     }
 }
 
