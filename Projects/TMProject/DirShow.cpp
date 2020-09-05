@@ -40,6 +40,49 @@ char DS_SOUND_MANAGER::m_szMusicPath[15][256] = {
 	""
 };
 
+void ConvertBGM(const char* szFileName)
+{
+	static char byte_801BB0[172] =
+	{
+	  '±', 'Ý', '°', '­', '»', 'ê', 'Ã', '£', '¾', 'Æ', '°', '¡', 'À', 'Ú', 'À', 'Ï', '¸', '¸', 'À', 'Ì', 'Ã', 'µ', 'º',
+	  'À', 'º', '¼', '¼', 'ö', '·', 'Ï', '¾', 'Æ', '¸', '§', '´', 'ä', '°', 'í', '½', 'Å', 'º', 'ñ', 'Ç', 'Ï', '±', '¸',
+	  '³', 'ª', '¿', 'ì', '¸', '®', '³', 'ª', '¶', 'ó', 'Á', 'Á', 'À', 'º', '³', 'ª', '¶', 'ó', '»', 'õ', '³', 'ª', '¶',
+	  'ó', 'À', 'Ç', '¾', 'î', '¸', '°', 'À', 'Ì', '´', 'Â', 'À', 'Ï', 'Â', 'ï', 'À', 'Ï', '¾', 'î', '³', '³', '´', 'Ï',
+	  '´', 'Ù', 'À', 'á', '²', 'Ù', '·', '¯', '±', 'â', '¾', 'ø', '´', 'Â', '³', 'ª', '¶', 'ó', '¿', 'ì', '¸', '®', '³',
+	  'ª', '¶', 'ó', 'Á', 'Á', 'À', 'º', '³', 'ª', '¶', 'ó', '¹', '«', '±', 'Ã', 'È', '­', '¹', '«', '±', 'Ã', 'È', '­',
+	  '¿', 'ì', '¸', '®', '³', 'ª', '¶', 'ó', '²', 'É', '»', 'ï', 'Ã', 'µ', '¸', '®', '°', '­', '»', 'ê', '¿', '¡', '¿',
+	  'ì', '¸', '®', '³', 'ª', '¶', 'ó', '²', 'É', '\0' 
+	};
+
+	auto nLenF = strlen(szFileName);
+	char szTemp[MAX_PATH];
+	sprintf_s(szTemp, szFileName);
+	sprintf_s((char*)szTemp[nLenF + 3], 256, "bon");
+
+	auto handle = _open(szTemp, 0x8000, 0);
+	if (handle != -1)
+	{
+		auto sz = _filelength(handle);
+		auto pBuffer = (char*)malloc(sz);
+
+		_read(handle, pBuffer, sz);
+		_close(handle);
+
+		int nLen2 = strlen(byte_801BB0);
+		for (int i = 0; i < sz; ++i)
+			pBuffer[i] -= byte_801BB0[i % nLen2];
+
+		auto fp = fopen(szFileName, "wb");
+		if (fp)
+		{
+			fwrite(pBuffer, sz, 1, fp);
+			fclose(fp);
+		}
+
+		free(pBuffer);
+	}
+}
+
 DS_SOUND_CHANNEL::DS_SOUND_CHANNEL()
 {
 	basic_audio = nullptr;
@@ -115,8 +158,8 @@ char DS_SOUND_CHANNEL::CleanGraph()
 	IBaseFilter** nextFilter = nullptr;
 	pFilterEnum->Reset();
 
-	while (SUCCEEDED(pFilterEnum->Next(1, &(ppFilters[iPos++]), NULL)))
-		SAFE_RELEASE(pFilterEnum);
+	while (pFilterEnum->Next(1, &(ppFilters[iPos++]), NULL) == S_OK)
+		;
 
 	SAFE_RELEASE(pFilterEnum);
 
@@ -199,68 +242,205 @@ HRESULT DS_SOUND_CHANNEL::SetPosition(long long pos)
 
 DS_SOUND_MANAGER::DS_SOUND_MANAGER(int channel_num, int lBGMVolume)
 {
+	m_hwndASFPlayer = NULL;
+
+//	int* block = new int[24 * channel_num | -((24 * channel_num >> 32) != 0) + 4];
+	channels = new DS_SOUND_CHANNEL[channel_num];
+
+	if (channels && channel_num >= 1)
+	{
+		this->channel_num = channel_num;
+		cur_channel = 1;
+		init_flag = 1;
+		m_lBGMVolume = lBGMVolume;
+	}
+	else
+		init_flag = 0;
 }
 
 DS_SOUND_MANAGER::~DS_SOUND_MANAGER()
 {
+	if (channels)
+		delete[] channels;
+
+	if (m_szMusicPathOrigin[13][0])
+		DeleteFileA(m_szMusicPathOrigin[13]);
+	if (m_szMusicPathOrigin[14][0])
+		DeleteFileA(m_szMusicPathOrigin[14]);
 }
 
 void DS_SOUND_MANAGER::InitClass(int channel_num)
 {
+	// not used
+	if (channels)
+	{
+		delete[] channels;
+
+		channels = nullptr;
+	}
 }
 
 int DS_SOUND_MANAGER::PlaySoundA(const char* path, const bool BGM_flag)
 {
-	return 0;
+	auto patha = path;
+	if (!init_flag)
+		return -1;
+
+	int channel = 0;
+	if (BGM_flag == 1)
+		channel = 0;
+	else
+	{
+		if (channel_num < 2)
+			return -1;
+
+		channel = cur_channel;
+	}
+
+	auto graph_builder = channels[channel].GetGraphBuilder();
+	if (!graph_builder)
+		return -1;
+
+	struct _stat64i32 temp;
+	if (_stat64i32(patha, &temp))
+		return -1;
+
+	wchar_t wFileName[260];
+	MultiByteToWideChar(0, 0, patha, -1, wFileName, sizeof(wFileName) / 2);
+
+	if (channel && channels[channel].Stop())
+		return -1;
+
+	if (!channels[channel].CleanGraph())
+		return -1;
+
+	IBaseFilter* temp_filter;
+	if(FAILED(graph_builder->AddSourceFilter(wFileName, wFileName, &temp_filter)))
+		return -1;
+
+	IPin* pPin;
+	if (FAILED(temp_filter->FindPin(L"Output", &pPin)))
+		return -1;
+
+	if (graph_builder->Render(pPin))
+	{
+		SAFE_RELEASE(pPin);
+		return -1;
+	}
+
+	SAFE_RELEASE(pPin);
+	SAFE_RELEASE(temp_filter);
+
+	channels[channel].SetPosition(0ll);
+	channels[channel].Run();
+
+	if (BGM_flag == 1)
+		return 0;
+	
+	auto play_channel = cur_channel;
+	if (cur_channel + 1 == channel_num)
+		cur_channel = 1;
+	else
+		++cur_channel;
+
+	return play_channel;
 }
 
 int DS_SOUND_MANAGER::PlayBGM(const char* path)
 {
-	return 0;
+	return PlaySoundA(path, 1);
 }
 
 void DS_SOUND_MANAGER::PlayMusic(int nIndex)
 {
+	m_nMusicIndex = nIndex;
+
+	if (nIndex >= 0 && nIndex < 15)
+	{
+		StopBGM();
+
+		if (nIndex == 13)
+			ConvertBGM(m_szMusicPathOrigin[13]);
+		else if (nIndex == 14)
+			ConvertBGM(m_szMusicPathOrigin[14]);
+
+		struct _stat64i32 temp;
+		if (_stat64i32(m_szMusicPath[nIndex], &temp))
+			PlayBGM(m_szMusicPathOrigin[nIndex]);
+		else
+			PlayBGM(m_szMusicPath[nIndex]);
+
+		if (GetVolume(0) != -10000)
+			SetVolume(0, m_lBGMVolume);
+	}
 }
 
 void DS_SOUND_MANAGER::PlayMusic2(int nIndex)
 {
+	m_nCastleIndex = nIndex;
+
+	if (nIndex >= 0 && nIndex < 15)
+	{
+		StopBGM();
+
+		if (nIndex == 13)
+			ConvertBGM(m_szMusicPathOrigin[13]);
+		else if (nIndex == 14)
+			ConvertBGM(m_szMusicPathOrigin[14]);
+
+		struct _stat64i32 temp;
+		if (_stat64i32(m_szMusicPath[nIndex], &temp))
+			PlayBGM(m_szMusicPathOrigin[nIndex]);
+		else
+			PlayBGM(m_szMusicPath[nIndex]);
+
+		if (GetVolume(0) != -10000)
+			SetVolume(0, m_lBGMVolume);
+	}
 }
 
 void DS_SOUND_MANAGER::PlayASF(char* szURL)
 {
+	// not used
 }
 
 void DS_SOUND_MANAGER::StopASF()
 {
+	// not used
 }
 
 void DS_SOUND_MANAGER::OnEvent()
 {
+	channels->OnEvent();
 }
 
 HRESULT DS_SOUND_MANAGER::RunAll()
 {
+	// not used
 	return E_NOTIMPL;
 }
 
 HRESULT DS_SOUND_MANAGER::StopAll()
 {
+	// not used
 	return E_NOTIMPL;
 }
 
 HRESULT DS_SOUND_MANAGER::PauseAll()
 {
+	// not used
 	return E_NOTIMPL;
 }
 
 HRESULT DS_SOUND_MANAGER::RunSounds()
 {
+	// not used
 	return E_NOTIMPL;
 }
 
 HRESULT DS_SOUND_MANAGER::StopSounds()
 {
+	// not used
 	return E_NOTIMPL;
 }
 
@@ -271,7 +451,7 @@ HRESULT DS_SOUND_MANAGER::PauseSounds()
 
 HRESULT DS_SOUND_MANAGER::StopBGM()
 {
-	return E_NOTIMPL;
+	return channels->Stop();
 }
 
 HRESULT DS_SOUND_MANAGER::Run()
@@ -301,10 +481,13 @@ HRESULT DS_SOUND_MANAGER::SetEntBalance()
 
 HRESULT DS_SOUND_MANAGER::SetVolume(const int which, const int vol)
 {
-	return E_NOTIMPL;
+	return channels[which].SetVolume(vol);
 }
 
 int DS_SOUND_MANAGER::GetVolume(const int which)
 {
-	return 0;
+	long vol;
+	channels[which].GetVolume(&vol);
+
+	return vol;
 }
