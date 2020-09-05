@@ -1498,11 +1498,12 @@ int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type)
     if (idx <= 0 || idx > MAX_ITEMLIST)
         return value;
 
+    if (idx >= 3200 && idx <= 3300)
+        return 0;
+
     int nPos = g_pItemList[idx].nPos;
 
-    if (Type == EF_LEVEL && idx >= 2330 && idx < 2360)
-        value = item->stEffect[1].cEffect - 1;
-    else if (Type == EF_LEVEL)
+    if (Type == EF_LEVEL)
         value += g_pItemList[idx].nReqLvl;
 
     if (Type == EF_REQ_STR)
@@ -1594,14 +1595,57 @@ int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type)
 
     int sanc = BASE_GetItemSanc(item);
 
-    if (sanc == 9 && (nPos & 0xF00) != 0)
-        sanc = 10;
+    if (sanc >= 9 && nPos & 0xF00)
+        sanc++;
 
-    if (Type != EF_GRID && Type != EF_CLASS && Type != EF_POS && Type != EF_WTYPE && Type != EF_RANGE && Type != EF_LEVEL &&
-        Type != EF_REQ_STR && Type != EF_REQ_INT && Type != EF_REQ_DEX && Type != EF_REQ_CON && Type != EF_INCUBATE && Type != EF_INCUDELAY)
+    if (sanc
+        && Type != EF_GRID
+        && Type != EF_CLASS
+        && Type != EF_POS
+        && Type != EF_WTYPE
+        && Type != EF_RANGE
+        && Type != EF_LEVEL
+        && Type != EF_REQ_STR
+        && Type != EF_REQ_INT
+        && Type != EF_REQ_DEX
+        && Type != EF_REQ_CON
+        && Type != EF_VOLATILE
+        && Type != EF_INCUBATE
+        && Type != EF_INCUDELAY
+        && Type != EF_PREVBONUS
+        && Type != EF_REGENMP
+        && Type != EF_REGENHP)
     {
-        value *= sanc + 10;
-        value /= 10;
+        if (sanc > 10)
+        {
+            int UpSanc = sanc - 10;
+            switch (UpSanc)
+            {
+            case 1:
+                UpSanc = 220;
+                break;
+            case 2:
+                UpSanc = 250;
+                break;
+            case 3:
+                UpSanc = 280;
+                break;
+            case 4:
+                UpSanc = 320;
+                break;
+            case 5:
+                UpSanc = 370;
+                break;
+            case 6:
+                UpSanc = 400;
+                break;
+            }
+            value = UpSanc * 10 * value / 100 / 10;
+        }
+        else
+        {
+            value = value * (sanc + 10) / 10;
+        }
     }
 
     if (Type == EF_RUNSPEED)
@@ -1609,16 +1653,12 @@ int BASE_GetStaticItemAbility(STRUCT_ITEM* item, char Type)
         if (value >= 3)
             value = 2;
 
-        if (value > 0 && sanc == 9)
+        if (value > 0 && sanc >= 9)
             value++;
     }
 
-    if (Type == EF_HWORDGUILD || Type == EF_LWORDGUILD)
-    {
-        unsigned char v = value;
-
-        value = v;
-    }
+    if ((Type == EF_REGENMP || Type == EF_REGENHP) && sanc > 0)
+        value *= sanc;
 
     return value;
 }
