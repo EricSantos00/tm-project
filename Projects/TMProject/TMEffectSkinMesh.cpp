@@ -316,7 +316,7 @@ int TMEffectSkinMesh::FrameMove(unsigned int dwServerTime)
 			if (m_pOwner)
 				vecDPos = TMVector3{ m_pOwner->m_vecPosition.x, m_pOwner->m_fHeight, m_pOwner->m_vecPosition.y } - m_vecStartPos;
 
-			m_fAngle = atan2f(vecDPos.x, vecDPos.z);
+			m_fAngle = atan2f(vecDPos.x, vecDPos.z) + D3DXToRadian(90);
 
 			auto value = static_cast<float>(dwServerTime - m_dwStartTime) / static_cast<float>(m_dwLifeTime);
 			if (value < 1.0f)
