@@ -844,15 +844,15 @@ void CFrame::UpdateFrames(D3DXMATRIX* matCur)
 			if (m_dwID == 3)
 			{
 				m_pParentSkin->m_OutMatrix = m_matCombined;
+				m_pParentSkin->m_OutMatrix._11 = m_matCombined._11 * -1.0f;
+				m_pParentSkin->m_OutMatrix._12 = m_matCombined._12 * -1.0f;
+				m_pParentSkin->m_OutMatrix._13 = m_matCombined._13 * -1.0f;
+				m_pParentSkin->m_OutMatrix._14 = m_matCombined._14 * -1.0f;
+				m_pParentSkin->m_OutMatrix._21 = m_matCombined._31 * -1.0f;
+				m_pParentSkin->m_OutMatrix._22 = m_matCombined._32 * -1.0f;
+				m_pParentSkin->m_OutMatrix._23 = m_matCombined._33 * -1.0f;
+				m_pParentSkin->m_OutMatrix._24 = m_matCombined._34 * -1.0f;
 
-				m_pParentSkin->m_OutMatrix.m[0][0] = m_matCombined.m[0][0] * -1.0f;			
-				m_pParentSkin->m_OutMatrix.m[0][1] = m_matCombined.m[0][1] * -1.0f;
-				m_pParentSkin->m_OutMatrix.m[0][2] = m_matCombined.m[0][2] * -1.0f;
-				m_pParentSkin->m_OutMatrix.m[0][3] = m_matCombined.m[0][3] * -1.0f;
-				m_pParentSkin->m_OutMatrix.m[1][0] = m_matCombined.m[3][0] * -1.0f;
-				m_pParentSkin->m_OutMatrix.m[1][1] = m_matCombined.m[3][1] * -1.0f;
-				m_pParentSkin->m_OutMatrix.m[1][2] = m_matCombined.m[3][2] * -1.0f;
-				m_pParentSkin->m_OutMatrix.m[1][3] = m_matCombined.m[3][3] * -1.0f;
 				m_pParentSkin->m_OutMatrix.m[2][0] = m_matCombined.m[1][0];
 				m_pParentSkin->m_OutMatrix.m[2][1] = m_matCombined.m[1][1];
 				m_pParentSkin->m_OutMatrix.m[2][2] = m_matCombined.m[1][2];
