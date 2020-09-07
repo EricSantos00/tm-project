@@ -6140,7 +6140,7 @@ void TMHuman::SetAnimation(ECHAR_MOTION eMotion, int nLoop)
                     m_pMount->SetAnimation(g_MobAniTable[m_nMountSkinMeshType].dwAniTable[(int)eMotion]);
                 }
 
-                m_pMount->SetAnimation(g_MobAniTable[m_nSkinMeshType].dwAniTable[(int)eMotion + 28 * m_cMount]);
+                m_pSkinMesh->SetAnimation(g_MobAniTable[m_nSkinMeshType].dwAniTable[(int)eMotion + 28 * m_cMount]);
             }
             else
             {
