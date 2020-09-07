@@ -546,17 +546,17 @@ void SGridControl::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int 
 		{
 			for (int nX = 0; nX < m_nColumnGridCount; ++nX)
 			{
-				if (!m_pbFilled[nX + m_nColumnGridCount * nY])
-				{
-					m_GCGrid[nX + m_nColumnGridCount * nY].nPosX = (float)(ivParentPos.x + m_nPosX)
-						+ (float)((float)nX
-							* m_GCGrid[nX + m_nColumnGridCount * nY].nWidth);
-					m_GCGrid[nX + m_nColumnGridCount * nY].nPosY = (float)(ivParentPos.y + m_nPosY)
-						+ (float)((float)nY
-							* m_GCGrid[nX + m_nColumnGridCount * nY].nHeight);
-					m_GCGrid[nX + m_nColumnGridCount * nY].nLayer = inParentLayer;
-					AddRenderControlItem(pDrawList, &m_GCGrid[nX + m_nColumnGridCount * nY], inParentLayer);
-				}
+				if (m_pbFilled[nX + m_nColumnGridCount * nY])
+					continue;
+
+				m_GCGrid[nX + m_nColumnGridCount * nY].nPosX = (float)(ivParentPos.x + m_nPosX)
+					+ (float)((float)nX
+						* m_GCGrid[nX + m_nColumnGridCount * nY].nWidth);
+				m_GCGrid[nX + m_nColumnGridCount * nY].nPosY = (float)(ivParentPos.y + m_nPosY)
+					+ (float)((float)nY
+						* m_GCGrid[nX + m_nColumnGridCount * nY].nHeight);
+				m_GCGrid[nX + m_nColumnGridCount * nY].nLayer = inParentLayer;
+				AddRenderControlItem(pDrawList, &m_GCGrid[nX + m_nColumnGridCount * nY], inParentLayer);
 			}
 		}
 	}
@@ -565,35 +565,36 @@ void SGridControl::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int 
 		for (int i = 0; i < m_nNumItem; ++i)
 		{
 			auto pGridCurrent = m_pItemList[i];
-			if (pGridCurrent)
-			{
-				TMVector2 vecPos = TMVector2((ivParentPos.x + m_nPosX) + (((float)pGridCurrent->m_nCellIndexX * m_nWidth) / (float)m_nColumnGridCount),
-					(ivParentPos.y + m_nPosY) + (((float)pGridCurrent->m_nCellIndexY * m_nHeight) / (float)m_nRowGridCount));
+			if (!pGridCurrent)
+				continue;
 
-				pGridCurrent->FrameMove2(pDrawList, vecPos, inParentLayer, 0);
+			TMVector2 vecPos = TMVector2((ivParentPos.x + m_nPosX) + (((float)pGridCurrent->m_nCellIndexX * m_nWidth) / (float)m_nColumnGridCount),
+				(ivParentPos.y + m_nPosY) + (((float)pGridCurrent->m_nCellIndexY * m_nHeight) / (float)m_nRowGridCount));
 
-				if (pGridCurrent->m_fTimer > 0.0f && pGridCurrent->m_fTimer < 1.0f)
-				{
-					pGridCurrent->m_GCEnable.nPosX = ivParentPos.x + m_nPosX + (float)((float)pGridCurrent->m_nCellIndexX * BASE_ScreenResize(m_GCGrid->nWidth));
-					pGridCurrent->m_GCEnable.nPosY = ivParentPos.y + m_nPosY + (float)((float)pGridCurrent->m_nCellIndexY * BASE_ScreenResize(m_GCGrid->nHeight));
-					pGridCurrent->m_GCEnable.nWidth = (float)((float)(24 * pGridCurrent->m_nCellWidth)
-						* RenderDevice::m_fWidthRatio)
-						* (float)(1.0f - pGridCurrent->m_fTimer);
+			pGridCurrent->FrameMove2(pDrawList, vecPos, inParentLayer, 0);
 
-					if (pGridCurrent->m_GCEnable.nWidth > 0.0099999998f && pGridCurrent->m_GCEnable.nWidth < 2.0f)
-						pGridCurrent->m_GCEnable.nWidth = 2.0f;
+			if (pGridCurrent->m_fTimer <= 0.0f || pGridCurrent->m_fTimer >= 1.0f)
+				continue;
 
-					pGridCurrent->m_GCEnable.nHeight = (float)(24 * pGridCurrent->m_nCellHeight)
-						* RenderDevice::m_fHeightRatio;
+			pGridCurrent->m_GCEnable.nPosX = ivParentPos.x + m_nPosX + (float)((float)pGridCurrent->m_nCellIndexX * BASE_ScreenResize(m_GCGrid->nWidth));
+			pGridCurrent->m_GCEnable.nPosY = ivParentPos.y + m_nPosY + (float)((float)pGridCurrent->m_nCellIndexY * BASE_ScreenResize(m_GCGrid->nHeight));
+			pGridCurrent->m_GCEnable.nWidth = (float)((float)(24 * pGridCurrent->m_nCellWidth)
+				* RenderDevice::m_fWidthRatio)
+				* (float)(1.0f - pGridCurrent->m_fTimer);
 
-					pGridCurrent->m_GCEnable.nLayer = inParentLayer;
-					pGridCurrent->m_GCEnable.dwColor = 0xAA000000;
-					AddRenderControlItem(pDrawList, &pGridCurrent->m_GCEnable, inParentLayer);
-				}
-			}
+			if (pGridCurrent->m_GCEnable.nWidth > 0.0099999998f && pGridCurrent->m_GCEnable.nWidth < 2.0f)
+				pGridCurrent->m_GCEnable.nWidth = 2.0f;
+
+			pGridCurrent->m_GCEnable.nHeight = (float)(24 * pGridCurrent->m_nCellHeight)
+				* RenderDevice::m_fHeightRatio;
+
+			pGridCurrent->m_GCEnable.nLayer = inParentLayer;
+			pGridCurrent->m_GCEnable.dwColor = 0xAA000000;
+			AddRenderControlItem(pDrawList, &pGridCurrent->m_GCEnable, inParentLayer);
 		}
+		return;
 	}
-	else if(m_eItemType != TMEITEMTYPE::ITEMTYPE_NONE
+	if (m_eItemType != TMEITEMTYPE::ITEMTYPE_NONE
 		&& m_eGridType == TMEGRIDTYPE::GRID_TRADENONE
 		&& m_eGridType == TMEGRIDTYPE::GRID_TRADEOP
 		&& m_eGridType == TMEGRIDTYPE::GRID_TRADEMY
@@ -606,62 +607,61 @@ void SGridControl::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int 
 		&& m_eGridType == TMEGRIDTYPE::GRID_MISSION_NEED
 		&& m_eGridType == TMEGRIDTYPE::GRID_MISSION_NEEDLIST)
 	{
-		if (m_pItemList[0])
-		{
-			if (m_eGridType == TMEGRIDTYPE::GRID_TRADEOP || m_eGridType == TMEGRIDTYPE::GRID_TRADEMY || 
-				m_eGridType == TMEGRIDTYPE::GRID_TRADEMY2)
-			{
-				m_pItemList[0]->m_GCEnable.nPosX = ivParentPos.x + m_nPosX;
-				m_pItemList[0]->m_GCEnable.nPosY = ivParentPos.y + m_nPosY;
-				m_pItemList[0]->m_GCEnable.nWidth = m_nWidth - 4.0f;
-				m_pItemList[0]->m_GCEnable.nHeight = m_nHeight - 3.0f;
-				m_pItemList[0]->m_GCEnable.nLayer = inParentLayer;
-				m_pItemList[0]->m_GCEnable.dwColor = 0x0FF000000;
-				AddRenderControlItem(pDrawList, &m_pItemList[0]->m_GCEnable, inParentLayer);
-			}
-			TMVector2 vecPos = TMVector2((ivParentPos.x + m_nPosX)
-				+ ((float)(m_nWidth - m_pItemList[0]->m_GCObj.nWidth) / 2.0f),
-				(ivParentPos.y + m_nPosY)
-				+ ((float)(m_nHeight - m_pItemList[0]->m_GCObj.nHeight) / 2.0f));
+		if (!m_pItemList[0])
+			return;
 
-			m_pItemList[0]->FrameMove2(pDrawList, vecPos, inParentLayer, 0);
+		if (m_eGridType == TMEGRIDTYPE::GRID_TRADEOP || m_eGridType == TMEGRIDTYPE::GRID_TRADEMY ||
+			m_eGridType == TMEGRIDTYPE::GRID_TRADEMY2)
+		{
+			m_pItemList[0]->m_GCEnable.nPosX = ivParentPos.x + m_nPosX;
+			m_pItemList[0]->m_GCEnable.nPosY = ivParentPos.y + m_nPosY;
+			m_pItemList[0]->m_GCEnable.nWidth = m_nWidth - 4.0f;
+			m_pItemList[0]->m_GCEnable.nHeight = m_nHeight - 3.0f;
+			m_pItemList[0]->m_GCEnable.nLayer = inParentLayer;
+			m_pItemList[0]->m_GCEnable.dwColor = 0x0FF000000;
+			AddRenderControlItem(pDrawList, &m_pItemList[0]->m_GCEnable, inParentLayer);
 		}
+		TMVector2 vecPos = TMVector2((ivParentPos.x + m_nPosX)
+			+ ((float)(m_nWidth - m_pItemList[0]->m_GCObj.nWidth) / 2.0f),
+			(ivParentPos.y + m_nPosY)
+			+ ((float)(m_nHeight - m_pItemList[0]->m_GCObj.nHeight) / 2.0f));
+
+		m_pItemList[0]->FrameMove2(pDrawList, vecPos, inParentLayer, 0);
+		return;
 	}
-	else
+
+	for (int j = 0; j < m_nNumItem; ++j)
 	{
-		for (int j = 0; j < m_nNumItem; ++j)
+		auto pGridCurrent = m_pItemList[j];
+		if (!pGridCurrent)
+			continue;
+
+		TMVector2 vecPos = TMVector2((ivParentPos.x + m_nPosX)
+			+ ((float)((float)pGridCurrent->m_nCellIndexX * m_nWidth) / (float)m_nColumnGridCount),
+			(float)(ivParentPos.y + m_nPosY)
+			+ ((float)((float)pGridCurrent->m_nCellIndexY * m_nHeight) / (float)m_nRowGridCount));
+
+		pGridCurrent->FrameMove2(pDrawList, vecPos, inParentLayer, 0);
+		if (pGridCurrent->m_GCObj.dwColor != 0xFFFF0000)
+			continue;
+
+		pGridCurrent->m_GCEnable.nPosX = (ivParentPos.x + m_nPosX) + (float)((float)pGridCurrent->m_nCellIndexX * BASE_ScreenResize(m_GCGrid->nWidth));
+		pGridCurrent->m_GCEnable.nPosY = (ivParentPos.y + m_nPosY) + (float)((float)pGridCurrent->m_nCellIndexY * BASE_ScreenResize(m_GCGrid->nHeight));
+
+		if (m_bDrawGrid)
 		{
-			auto pGridCurrent = m_pItemList[j];
-			if (pGridCurrent)
-			{
-				TMVector2 vecPos = TMVector2((ivParentPos.x + m_nPosX)
-					+ ((float)((float)pGridCurrent->m_nCellIndexX * m_nWidth) / (float)m_nColumnGridCount),
-					(float)(ivParentPos.y + m_nPosY)
-					+ ((float)((float)pGridCurrent->m_nCellIndexY * m_nHeight) / (float)m_nRowGridCount));
-
-				pGridCurrent->FrameMove2(pDrawList, vecPos, inParentLayer, 0);
-				if (pGridCurrent->m_GCObj.dwColor == 0xFFFF0000)
-				{
-					pGridCurrent->m_GCEnable.nPosX = (ivParentPos.x + m_nPosX) + (float)((float)pGridCurrent->m_nCellIndexX * BASE_ScreenResize(m_GCGrid->nWidth));
-					pGridCurrent->m_GCEnable.nPosY = (ivParentPos.y + m_nPosY) + (float)((float)pGridCurrent->m_nCellIndexY * BASE_ScreenResize(m_GCGrid->nHeight));
-
-					if (m_bDrawGrid)
-					{
-						pGridCurrent->m_GCEnable.nWidth = BASE_ScreenResize((float)(SControl::m_nGridCellSize * pGridCurrent->m_nCellWidth));
-						pGridCurrent->m_GCEnable.nHeight = BASE_ScreenResize((float)(SControl::m_nGridCellSize * pGridCurrent->m_nCellHeight));
-					}
-					else
-					{
-						pGridCurrent->m_GCEnable.nWidth = (float)(SControl::m_nGridCellSize * pGridCurrent->m_nCellWidth);
-						pGridCurrent->m_GCEnable.nHeight = (float)(SControl::m_nGridCellSize * pGridCurrent->m_nCellHeight);
-					}
-
-					pGridCurrent->m_GCEnable.nLayer = inParentLayer;
-					pGridCurrent->m_GCEnable.dwColor = 0x33FF0000;
-					AddRenderControlItem(pDrawList, &pGridCurrent->m_GCEnable, inParentLayer);
-				}
-			}
+			pGridCurrent->m_GCEnable.nWidth = BASE_ScreenResize((float)(SControl::m_nGridCellSize * pGridCurrent->m_nCellWidth));
+			pGridCurrent->m_GCEnable.nHeight = BASE_ScreenResize((float)(SControl::m_nGridCellSize * pGridCurrent->m_nCellHeight));
 		}
+		else
+		{
+			pGridCurrent->m_GCEnable.nWidth = (float)(SControl::m_nGridCellSize * pGridCurrent->m_nCellWidth);
+			pGridCurrent->m_GCEnable.nHeight = (float)(SControl::m_nGridCellSize * pGridCurrent->m_nCellHeight);
+		}
+
+		pGridCurrent->m_GCEnable.nLayer = inParentLayer;
+		pGridCurrent->m_GCEnable.dwColor = 0x33FF0000;
+		AddRenderControlItem(pDrawList, &pGridCurrent->m_GCEnable, inParentLayer);
 	}
 }
 
