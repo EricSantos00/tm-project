@@ -15476,6 +15476,8 @@ int TMHuman::SetHumanCostume()
 {
     int nCos = 0;
     m_nSkinMeshType = 0;
+    memset(&m_stColorInfo, 0, sizeof(m_stColorInfo));
+
     if (m_sCostume <= 6301)
     {
         if (m_sCostume != 6301)
