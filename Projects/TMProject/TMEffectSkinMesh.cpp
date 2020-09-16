@@ -314,8 +314,9 @@ int TMEffectSkinMesh::FrameMove(unsigned int dwServerTime)
 			TMVector3 vecDPos = m_vecTargetPos - m_vecStartPos;
 
 			if (m_pOwner)
-				vecDPos = TMVector3{ m_pOwner->m_vecPosition.x, m_pOwner->m_fHeight, m_pOwner->m_vecPosition.y } - m_vecStartPos;
+				vecDPos = TMVector3{ m_pOwner->m_vecPosition.x, m_pOwner->m_fHeight, m_pOwner->m_vecPosition.y } -m_vecStartPos;
 
+			//Fix angle skill: Fera Flamejante
 			m_fAngle = atan2f(vecDPos.x, vecDPos.z) + D3DXToRadian(90);
 
 			auto value = static_cast<float>(dwServerTime - m_dwStartTime) / static_cast<float>(m_dwLifeTime);
@@ -372,7 +373,7 @@ int TMEffectSkinMesh::FrameMove(unsigned int dwServerTime)
 		{
 			auto deltaPosition = m_vecTargetPos - m_vecStartPos; // v114
 			if (m_pOwner)
-				deltaPosition = TMVector3{ m_pOwner->m_vecPosition.x, m_pOwner->m_fHeight, m_pOwner->m_vecPosition.y } - m_vecStartPos;
+				deltaPosition = TMVector3{ m_pOwner->m_vecPosition.x, m_pOwner->m_fHeight, m_pOwner->m_vecPosition.y } -m_vecStartPos;
 
 			m_fAngle = atan2f(deltaPosition.x, deltaPosition.z) + D3DXToRadian(90);
 			if (fProgress < 1.0f)
@@ -415,8 +416,12 @@ int TMEffectSkinMesh::FrameMove(unsigned int dwServerTime)
 					fOffset = D3DXToRadian(45);
 				}
 
-				m_vecPosition = { cosf(m_pOwner->m_fAngle - D3DXToRadian(180) - fOffset) * 0.30f + m_pOwner->m_vecPosition.x, sinf(m_pOwner->m_fAngle - D3DXToRadian(180) - fOffset) * 0.30f + m_pOwner->m_vecPosition.y };
-				m_fHeight = (fHumanHeight * m_pOwner->m_fScale) + m_pOwner->m_fHeight + (sinf(positionProgress + fOffset) * 0.05f);
+				TMVector2 vec{ (cosf((m_pOwner->m_fAngle - D3DXToRadian(180)) - fOffset) * 0.3f) + m_pOwner->m_vecPosition.x,
+					(sinf((m_pOwner->m_fAngle - D3DXToRadian(180)) - fOffset) * 0.3f) + m_pOwner->m_vecPosition.y };
+
+				m_vecPosition = TMVector2{ (cosf(positionProgress) * 0.1f) + vec.x, (sinf(positionProgress) * 0.1f) + vec.y };
+				//m_vecPosition = { cosf(m_pOwner->m_fAngle - D3DXToRadian(180) - fOffset) * 0.30f + m_pOwner->m_vecPosition.x, sinf(m_pOwner->m_fAngle - D3DXToRadian(180) - fOffset) * 0.30f + m_pOwner->m_vecPosition.y };
+				m_fHeight = ((fHumanHeight * m_pOwner->m_fScale) + m_pOwner->m_fHeight) + (sinf(positionProgress + fOffset) * 0.05f);
 				m_fAngle = m_pOwner->m_fAngle;
 
 				int nRand = rand() % 5;
@@ -457,7 +462,7 @@ int TMEffectSkinMesh::FrameMove(unsigned int dwServerTime)
 							float _Y = m_fHeight;
 							int v45 = rand();
 
-							mpBill->m_vecPosition = { static_cast<float>((rand() % 10 - 5)) * 0.02f + m_vecPosition.x, m_fHeight, static_cast<float>((rand() % 10 - 5)) * 0.02f + m_vecPosition.y };
+							mpBill->m_vecPosition = { (static_cast<float>((rand() % 10 - 5)) * 0.02f) + m_vecPosition.x, m_fHeight, (static_cast<float>((rand() % 10 - 5)) * 0.02f) + m_vecPosition.y };
 							mpBill->m_vecStartPos = mpBill->m_vecPosition;
 							mpBill->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
 							mpBill->m_bStickGround = 0;
@@ -486,7 +491,7 @@ int TMEffectSkinMesh::FrameMove(unsigned int dwServerTime)
 
 					if (!g_bHideEffect)
 					{
-						auto pEffect = new TMEffectBillBoard(0, 1500u, nRand * 0.00999998f + 0.02f, 0.00999998f * 0.1f + 0.2f, nRand * 0.00999998f + 0.02f, 0.00999997f, 1, 80);
+						auto pEffect = new TMEffectBillBoard(0, 1500u, nRand * 0.00999998f + 0.02f, 0.00999998f * 0.1f + 0.2f, nRand * 0.00999998f + 0.02f, 0.000099999997f, 1, 80);
 						if (pEffect)
 						{
 							pEffect->m_vecPosition = { (rand() % 10 - 5) * 0.02f + m_vecPosition.x, m_fHeight, static_cast<float>((rand() % 10 - 5)) * 0.02f + m_vecPosition.y };
@@ -511,7 +516,7 @@ int TMEffectSkinMesh::FrameMove(unsigned int dwServerTime)
 		{
 			auto deltaPosition = m_vecTargetPos - m_vecStartPos; // v111
 			if (m_pOwner)
-				deltaPosition = TMVector3{ m_pOwner->m_vecPosition.x, m_pOwner->m_fHeight, m_vecPosition.y } - m_vecStartPos;
+				deltaPosition = TMVector3{ m_pOwner->m_vecPosition.x, m_pOwner->m_fHeight, m_vecPosition.y } -m_vecStartPos;
 
 			m_fAngle = atan2f(deltaPosition.x, deltaPosition.z) + D3DXToRadian(90);
 
@@ -588,7 +593,7 @@ int TMEffectSkinMesh::FrameMove(unsigned int dwServerTime)
 				m_pSkinMesh->SetAnimation(g_MobAniTable[m_nSkinMeshType].dwAniTable[2]);
 			}
 		}
-		break;		
+		break;
 		}
 	}
 

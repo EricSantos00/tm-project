@@ -161,33 +161,28 @@ int TMButterFly::FrameMove(unsigned int dwServerTime)
 
 	if (m_pSkinMesh)
 	{
-		float v32 = 0.0f;
-		if (sinf((static_cast<float>((dwServerTime - m_dwStartTime) % 0x4E20) / 20000.0f) * D3DXToRadian(180)) <= 0.0f)
-			v32 = -sinf((static_cast<float>((dwServerTime - m_dwStartTime) % 0x4E20) / 20000.0f) * D3DXToRadian(180));
-		else
-			v32 = sinf((static_cast<float>((dwServerTime - m_dwStartTime) % 0x4E20) / 20000.0f) * D3DXToRadian(180));
-
+		float fProgress = fabsf(sinf((static_cast<float>((dwServerTime - m_dwStartTime) % 20000) / 20000.0f) * D3DXToRadian(180)));
 		if (m_nMotionType)
 		{
 			switch (m_nMotionType)
 			{
 			case 1:
 			{
-				float fCos = cosf(v32 * D3DXToRadian(180) * m_fCircleSpeed);
-				float fCos2 = cosf(v32 * 6.0f * D3DXToRadian(180) * m_fCircleSpeed);
+				float fCos = cosf((fProgress * D3DXToRadian(180)) * m_fCircleSpeed);
+				float fCos2 = cosf(((fProgress * 6.0f) * D3DXToRadian(180)) * m_fCircleSpeed);
 
 				float vecPositionY = 0.0f; //v9
 				if (m_pOwner)
 				{
 					m_fHeight = ((fCos2 * m_fParticleV) + m_pOwner->m_fHeight) + 1.5f;
 					m_vecPosition.x = fCos * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.x;
-					vecPositionY = v32 * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.y;
+					vecPositionY = fProgress * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.y;
 				}
 				else
 				{
 					m_fHeight = fCos2 * m_fParticleV + m_vecStartPos.y;
 					m_vecPosition.x = ((fCos * m_fParticleH) * 0.5f) + m_vecStartPos.x;
-					vecPositionY = v32 * m_fParticleH * 0.5f + m_vecStartPos.z;
+					vecPositionY = fProgress * m_fParticleH * 0.5f + m_vecStartPos.z;
 				}
 
 				m_vecPosition.y = vecPositionY;
@@ -195,22 +190,22 @@ int TMButterFly::FrameMove(unsigned int dwServerTime)
 			break;
 			case 2:
 			{
-				float v25 = sinf(v32 * 2.0f * D3DXToRadian(180));
-				float v26 = cosf(v32 * 2.0f * D3DXToRadian(180));
-				float v27 = cosf(v32 * 6.0f * D3DXToRadian(180) * m_fCircleSpeed);
+				float fSin = sinf((fProgress * 2.0f) * D3DXToRadian(180));
+				float fCos2 = cosf((fProgress * 2.0f) * D3DXToRadian(180));
+				float fCos3 = cosf(((fProgress * 6.0f) * D3DXToRadian(180)) * m_fCircleSpeed);
 
 				float vecPositionY = 0.0f; // v10
 				if (m_pOwner)
 				{
-					m_fHeight = v27 * m_fParticleV + m_pOwner->m_fHeight + 2.0f;
-					m_vecPosition.x = v32 * v26 * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.x;
-					vecPositionY = v32 * v25 * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.y;
+					m_fHeight = fCos3 * m_fParticleV + m_pOwner->m_fHeight + 2.0f;
+					m_vecPosition.x = fProgress * fCos2 * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.x;
+					vecPositionY = fProgress * fSin * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.y;
 				}
 				else
 				{
-					m_fHeight = v27 * m_fParticleV + m_vecStartPos.y;
-					m_vecPosition.x = v32 * v26 * m_fParticleH * 0.5f + m_vecStartPos.x;
-					vecPositionY = v32 * v25 * m_fParticleH * 0.5f + m_vecStartPos.z;
+					m_fHeight = fCos3 * m_fParticleV + m_vecStartPos.y;
+					m_vecPosition.x = fProgress * fCos2 * m_fParticleH * 0.5f + m_vecStartPos.x;
+					vecPositionY = fProgress * fSin * m_fParticleH * 0.5f + m_vecStartPos.z;
 				}
 
 				m_vecPosition.y = vecPositionY;
@@ -218,28 +213,27 @@ int TMButterFly::FrameMove(unsigned int dwServerTime)
 			break;
 			case 3:
 			{
-				float fProgressPartial = static_cast<float>((dwServerTime - m_dwStartTime) % 7000); // v11 v20
-				float fProgress = static_cast<float>((dwServerTime - m_dwStartTime) % 7000);
+				float fProgress = static_cast<float>((dwServerTime - m_dwStartTime) % 7000) / 7000.0f;
 				float fDir = 1.0f;
 
-				if (fProgressPartial / 7000.0f < 0.0099999998f && !(rand() % 2))
-					fDir = -1;
+				if (fProgress < 0.0099999998f && !(rand() % 2))
+					fDir = -1.0f;
 
-				float v24 = sinf(fDir * fProgress * 2.0f * D3DXToRadian(180));
-				float v34 = cosf(fDir * fProgress * 2.0f * D3DXToRadian(180));
+				float fSin = sinf(((fDir * fProgress) * 2.0f) * D3DXToRadian(180));
+				float fCos = cosf(((fDir * fProgress) * 2.0f) * D3DXToRadian(180));
 
 				float vecPositionY = 0.0f;
 				if (m_pOwner)
 				{
-					m_fHeight = v34 * m_fParticleV + m_pOwner->m_fHeight + 2.0f;
-					m_vecPosition.x = fProgress * v34 * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.x;
-					vecPositionY = fProgress * v24 * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.y;
+					m_fHeight = fCos * m_fParticleV + m_pOwner->m_fHeight + 2.0f;
+					m_vecPosition.x = fProgress * fCos * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.x;
+					vecPositionY = fProgress * fSin * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.y;
 				}
 				else
 				{
-					m_fHeight = v34 * m_fParticleV * 0.5f + m_vecStartPos.y;
-					m_vecPosition.x = v34 * m_fParticleH * 0.5f + m_vecStartPos.x;
-					vecPositionY = v24 * m_fParticleH * 0.5f + m_vecStartPos.z;
+					m_fHeight = fCos * m_fParticleV * 0.5f + m_vecStartPos.y;
+					m_vecPosition.x = fCos * m_fParticleH * 0.5f + m_vecStartPos.x;
+					vecPositionY = fSin * m_fParticleH * 0.5f + m_vecStartPos.z;
 				}
 
 				m_vecPosition.y = vecPositionY;
@@ -249,20 +243,20 @@ int TMButterFly::FrameMove(unsigned int dwServerTime)
 		}
 		else
 		{
-			float fSin = sinf(v32 * D3DXToRadian(180) * m_fCircleSpeed);
-			float fSin2 = sinf(v32 * 6.0f * D3DXToRadian(180) * m_fCircleSpeed);
+			float fSin = sinf((fProgress * D3DXToRadian(180)) * m_fCircleSpeed);
+			float fSin2 = sinf(((fProgress * 6.0f) * D3DXToRadian(180)) * m_fCircleSpeed);
 
 			float vecPositionY = 0.0f;
 			if (m_pOwner)
 			{
 				m_fHeight = fSin2 * m_fParticleV + m_pOwner->m_fHeight + 1.5f;
-				m_vecPosition.x = v32 * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.x;
+				m_vecPosition.x = fProgress * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.x;
 				vecPositionY = fSin * m_fParticleH * 0.5f + m_pOwner->m_vecPosition.y;
 			}
 			else
 			{
 				m_fHeight = fSin2 * m_fParticleV + m_vecStartPos.y;
-				m_vecPosition.x = v32 * m_fParticleH * 0.5f + m_vecStartPos.x;
+				m_vecPosition.x = fProgress * m_fParticleH * 0.5f + m_vecStartPos.x;
 				vecPositionY = fSin * m_fParticleH * 0.5f + m_vecStartPos.z;
 			}
 

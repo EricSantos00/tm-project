@@ -14519,6 +14519,17 @@ void TMFieldScene::OnESC()
 
 void TMFieldScene::FindAuto()
 {
+	unsigned int dwServerTime = g_pTimerManager->GetServerTime();
+
+	if (dwServerTime - LastSendTime > 250000)
+	{
+		MSG_STANDARD stStandard{};
+		stStandard.ID = g_pObjectManager->m_dwCharID;
+		stStandard.Type = MSG_Ping_Opcode;
+		SendOneMessage((char*)&stStandard, sizeof(stStandard));
+	}
+
+	// TODO: china stuffs here, not needed for now
 }
 
 int TMFieldScene::FindProcess(unsigned int processID)
@@ -15713,7 +15724,7 @@ char TMFieldScene::FeedMount()
 	if (bFind != 1 || !pItem)
 		return 0;
 
-	if (BASE_GetItemAbility(pItem->m_pItem, 38) == 1)
+	if (BASE_GetItemAbility(pItem->m_pItem, EF_VOLATILE) == 15)
 	{
 		unsigned int dwServerTime = g_pTimerManager->GetServerTime();
 
@@ -15734,6 +15745,8 @@ char TMFieldScene::FeedMount()
 		MSG_UseItem stUseItem{};
 		stUseItem.Header.ID = g_pObjectManager->m_dwCharID;
 		stUseItem.Header.Type = MSG_UseItem_Opcode;
+		stUseItem.DestType = 0;
+		stUseItem.DestPos = 14;
 		stUseItem.SourType = 1;
 		stUseItem.SourPos = SourPosa;
 		stUseItem.ItemID = 0;

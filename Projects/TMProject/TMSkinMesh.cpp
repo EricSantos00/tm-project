@@ -155,26 +155,35 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 	char szName[32]{};
 	char szTexture[64]{};
 
-	unsigned short* look = (unsigned short*)&m_Look;
-	unsigned char* sanc = (unsigned char*)&m_Sanc;
+	unsigned short* look = (unsigned short*)& m_Look;
+	unsigned char* sanc = (unsigned char*)& m_Sanc;
 
-	for (size_t i = 0; i < MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numParts; ++i)
+	for (unsigned int i = 0; i < MeshManager::m_BoneAnimationList[m_nBoneAniIndex].numParts; ++i)
 	{
 		bool god2cos = false;
 		if (look[2 * i] == '_' || look[2 * i] == 'a' || look[2 * i] == 'N' || look[2 * i] == 'L')
 			god2cos = true;
 
-		sprintf(szName,	"%s%02d%02d.msh", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName,
+		sprintf(szName, "%s%02d%02d.msh", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName,
 			i + 1,
 			look[2 * i] + 20 * m_bExpand + 1);
 
-		if (m_nBoneAniIndex == 45 || m_nBoneAniIndex == 46 || m_nBoneAniIndex == 53|| m_nBoneAniIndex == 54)
+		if (m_nBoneAniIndex == 45 || m_nBoneAniIndex == 46 || m_nBoneAniIndex == 53 || m_nBoneAniIndex == 54)
 		{
 			sprintf(szName, "%s%02d%02d.msh", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName, i + 1, 1);
 		}
 
+		bool found = false;
+		for (int i = 0; i < MOB_TEXTURE_EXCEPTION_COUNT; i++)
+		{
+			if (strncmp(MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName, MOB_TEXTURE_EXCEPTION[i], 32) == 0)
+			{
+				found = true;
+			}
+		}
+
 		// Meshs that use only one texture must be in God2Exception
-		if (God2Exception(i))
+		if (God2Exception(i) || found)
 		{
 			sprintf(szTexture, "%s%02d%02d.wyt", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName,
 				1, (look[2 * i + 1] & 0xFFF) + look[2 * i] + 20 * m_bExpand + 1);
@@ -187,7 +196,7 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 				i + 1,
 				(look[2 * i + 1] & 0xFFF) + look[2 * i] + 20 * m_bExpand + 1);
 
-			if (m_nBoneAniIndex == 45 || m_nBoneAniIndex == 46 || m_nBoneAniIndex == 53	|| m_nBoneAniIndex == 54)
+			if (m_nBoneAniIndex == 45 || m_nBoneAniIndex == 46 || m_nBoneAniIndex == 53 || m_nBoneAniIndex == 54)
 			{
 				sprintf(szTexture, "%s%02d%02d.wyt", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName, i + 1, 1);
 			}
@@ -205,7 +214,7 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 				sprintf(szName, "mesh\\mt010124.msh");
 			}
 			else if (!strcmp(szTexture, "mesh\\mt010132.wyt") || !strcmp(szTexture, "mesh\\mt010133.wyt") ||
-				!strcmp(szTexture, "mesh\\mt010134.wyt") || !strcmp(szTexture, "mesh\\mt010135.wyt") || 
+				!strcmp(szTexture, "mesh\\mt010134.wyt") || !strcmp(szTexture, "mesh\\mt010135.wyt") ||
 				!strcmp(szTexture, "mesh\\mt010136.wyt") || !strcmp(szTexture, "mesh\\mt010137.wyt"))
 			{
 				sprintf(szName, "mesh\\mt010131.msh");
@@ -217,7 +226,7 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 		if (m_nCosType == 100 && m_nBoneAniIndex == 85)
 			SetHardcoreMantle(szTexture, szName);
 
-		if (szTexture[5] == 'c'	&& szTexture[6] == 'h'	&& szTexture[8] == '2'	&& szTexture[11] == '1'	&& szTexture[12] == '3')
+		if (szTexture[5] == 'c' && szTexture[6] == 'h' && szTexture[8] == '2' && szTexture[11] == '1' && szTexture[12] == '3')
 		{
 			if (szTexture[10] == '1')
 				sprintf(szTexture, "mesh\\ch010130.wyt");
@@ -235,51 +244,51 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 		{
 			sprintf(szTexture, "mesh\\mi010105.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\tr13"))
+		else if (!strncmp(szTexture, "mesh\\tr13", 9))
 		{
 			sprintf(szTexture, "mesh\\tr130101.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\tr14"))
+		else if (!strncmp(szTexture, "mesh\\tr14", 9))
 		{
 			sprintf(szTexture, "mesh\\tr130101.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\tr15"))
+		else if (!strncmp(szTexture, "mesh\\tr15", 9))
 		{
 			sprintf(szTexture, "mesh\\tr130101.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\tr16"))
+		else if (!strncmp(szTexture, "mesh\\tr16", 9))
 		{
 			sprintf(szTexture, "mesh\\tr130101.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\tr17"))
+		else if (!strncmp(szTexture, "mesh\\tr17", 9))
 		{
 			sprintf(szTexture, "mesh\\tr130101.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\tr190101"))
+		else if (!strncmp(szTexture, "mesh\\tr190101", 13))
 		{
 			sprintf(szTexture, "mesh\\tr180101.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\tr190102"))
+		else if (!strncmp(szTexture, "mesh\\tr190102", 13))
 		{
 			sprintf(szTexture, "mesh\\tr180102.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\tr200101"))
+		else if (!strncmp(szTexture, "mesh\\tr200101", 13))
 		{
 			sprintf(szTexture, "mesh\\tr180101.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\tr200102"))
+		else if (!strncmp(szTexture, "mesh\\tr200102", 13))
 		{
 			sprintf(szTexture, "mesh\\tr180102.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\ch010237"))
+		else if (!strncmp(szTexture, "mesh\\ch010237", 13))
 		{
 			sprintf(szTexture, "mesh\\ch010137.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\ch010238"))
+		else if (!strncmp(szTexture, "mesh\\ch010238", 13))
 		{
 			sprintf(szTexture, "mesh\\ch010138.wyt");
 		}
-		else if (!strcmp(szTexture, "mesh\\ch020217"))
+		else if (!strncmp(szTexture, "mesh\\ch020217", 13))
 		{
 			sprintf(szTexture, "mesh\\ch020117.wyt");
 		}
@@ -288,11 +297,11 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 			SetCostume(m_nCosType, szTexture, szName);
 
 
-		if ((int)*look < 90 || !i || look[2 * i])
+		if ((int)* look < 90 || !i || look[2 * i])
 		{
 			CMesh* tmpMesh = new CMesh(this);
 
-			if(tmpMesh == nullptr)
+			if (tmpMesh == nullptr)
 				return 0x80004005;
 
 			unsigned char nSanc = (unsigned char)sanc[i];
@@ -340,7 +349,7 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 			if (god2cos)
 				tmpMesh->m_god2cos = 1;
 
-			unsigned char nColor = *((unsigned char*)&m_Color.Sanc0 + i);
+			unsigned char nColor = *((unsigned char*)& m_Color.Sanc0 + i);
 			if (m_nCosType)
 				tmpMesh->m_bHead = 1;
 
@@ -399,18 +408,20 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 				{
 					LOG_WRITELOG("Can't Find Parent Node in ID : %d, MshName : %s\r\n", tmpMesh->m_dwID, szName);
 				}
-			}		
+			}
 			else if (tmpMesh->LoadMesh(szName) == 1)
 			{
 				CFrame* parent = m_pRoot->FindFrame(tmpMesh->m_dwID);
+
 				if (parent)
 					parent->m_pMesh = tmpMesh;
 				else
 					LOG_WRITELOG("Can't Find Parent Node in ID : %d, MshName : %s\r\n", tmpMesh->m_dwID, szName);
+
 			}
 			else if (tmpMesh)
 			{
-				std::cout << "Can't Load " << szName << " mesh.\n";
+				//std::cout << "Can't Load " << szName << " mesh.\n";
 				delete tmpMesh;
 			}
 		}

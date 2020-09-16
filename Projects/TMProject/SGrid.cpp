@@ -2422,7 +2422,7 @@ void SGridControl::SwapItem(int nCellX, int nCellY, int nCellVWidth, int nCellVH
 				SendOneMessage((char*)&stSwapItem, sizeof(stSwapItem));
 			}
 		}
-		if ((nAtItemPos & (int)m_eItemType) == (int)m_eItemType)
+		else if ((nAtItemPos & (int)m_eItemType) == (int)m_eItemType)
 		{
 			short sSrcType = CheckType(m_eItemType, m_eGridType);
 			short sSrcPos = CheckPos(m_eItemType);

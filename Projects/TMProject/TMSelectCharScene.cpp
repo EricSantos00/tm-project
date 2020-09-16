@@ -1587,7 +1587,7 @@ int TMSelectCharScene::FrameMove(unsigned int dwServerTime)
 		m_pBtnDelete->SetEnable(0);
 	}
 
-	if (dwServerTime - LastSendTime > 300000)
+	if (dwServerTime - LastSendTime > 250000)
 	{
 		MSG_STANDARD stStandard{};
 		stStandard.ID = 0;
