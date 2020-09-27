@@ -5706,7 +5706,7 @@ void TMHuman::UpdateScore(int nGuildLevel)
             else
             {
                 if (m_ucChaosLevel > 150)
-                    m_ucChaosLevel = -106;
+                    m_ucChaosLevel = 150;
                 else if (m_ucChaosLevel < 10)
                     m_ucChaosLevel = 5;
 

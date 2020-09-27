@@ -193,7 +193,7 @@ public:
     char m_szNickName[26];
     short m_nCurrentKill;
     unsigned short m_nTotalKill;
-    char m_ucChaosLevel;
+    unsigned char m_ucChaosLevel;
     TMSkinMesh* m_pMount;
     short m_sMountIndex;
     LOOK_INFO m_stMountLook;
