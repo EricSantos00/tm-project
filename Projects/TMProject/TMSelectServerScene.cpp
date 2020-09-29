@@ -765,8 +765,8 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 			m_pMessageBox->SetMessage(g_pMessageStringTable[9], B_CREATE_ID, g_pMessageStringTable[10]);
 			m_pMessageBox->SetVisible(1);
 			break;
-		case 10152u:
-			m_pMessageBox->SetMessage(g_pMessageStringTable[11], B_CREATE_ID, nullptr);
+		case B_QUIT:
+			m_pMessageBox->SetMessage(g_pMessageStringTable[11], B_QUIT, nullptr);
 			m_pMessageBox->SetVisible(1);
 			break;
 	}
