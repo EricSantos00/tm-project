@@ -6,7 +6,6 @@
 #include "Basedef.h"
 #include "SControlContainer.h"
 #include "TMFieldScene.h"
-#include "Basedef.h"
 
 unsigned int SControl::m_dwStaticID{ 0 };
 int SControl::m_nGridCellSize{ 35 };

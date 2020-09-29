@@ -2914,6 +2914,7 @@ void BASE_GetHitPosition2(int sx, int sy, int* tx, int* ty, char* pHeight, int M
 void BASE_SetBit(char* byte, int pos);
 int BASE_UpdateItem2(int maskidx, int CurrentState, int NextState, int xx, int yy, char* pHeight, int rotate, int height);
 int BASE_GetMeshIndex(short sIndex);
+bool BASE_CanRefine(STRUCT_ITEM* item);
 
 int IsPassiveSkill(int nSkillIndex);
 

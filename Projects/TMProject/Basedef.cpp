@@ -3286,6 +3286,17 @@ int BASE_GetMeshIndex(short sIndex)
     return g_pItemList[sIndex].nIndexMesh;
 }
 
+bool BASE_CanRefine(STRUCT_ITEM* item)
+{
+	for (auto i : item->stEffect)
+	{
+		if (i.cEffect == 0 || i.cEffect == EF_SANC || (i.cEffect >= EF_COLOR0 && i.cEffect <= EF_COLOR9))
+			return true;
+	}
+
+	return false;
+}
+
 int IsPassiveSkill(int nSkillIndex)
 {
     if (nSkillIndex >= 5400)
