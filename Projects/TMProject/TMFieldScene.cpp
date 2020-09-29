@@ -4667,7 +4667,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 		{
 			auto pItem = m_pPotalList->GetSelectedIndex();
 			
-			if (pItem + 1 != -1 && !m_bAirMove)
+			if (pItem + 1 != 0 && !m_bAirMove)
 				AirMove_Start(pItem);
 
 			AirMove_ShowUI(0);
