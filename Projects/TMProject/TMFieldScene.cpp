@@ -5158,12 +5158,12 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 		if (pMobData->ScoreBonus <= 0)
 			return 0;
 
-		MSG_STANDARDPARM2 stParm2{};
-		stParm2.Header.ID = m_pMyHuman->m_dwID;
-		stParm2.Header.Type = 0x277;
-		stParm2.Parm1 = 0;
-		stParm2.Parm2 = 0;
-		SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		MSG_ApplyBonus stApplyBonus{};
+		stApplyBonus.Header.ID = m_pMyHuman->m_dwID;
+		stApplyBonus.Header.Type = MSG_ApplyBonus_Opcode;
+		stApplyBonus.BonusType = 0;
+		stApplyBonus.Detail = 0;
+		SendOneMessage((char*)&stApplyBonus, sizeof(stApplyBonus));
 		return 1;
 	}
 	if (idwControlID == 65719)
@@ -5173,12 +5173,12 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 		if (pMobData->ScoreBonus <= 0)
 			return 0;
 
-		MSG_STANDARDPARM2 stParm2{};
-		stParm2.Header.ID = m_pMyHuman->m_dwID;
-		stParm2.Header.Type = 0x277;
-		stParm2.Parm1 = 0;
-		stParm2.Parm2 = 1;
-		SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		MSG_ApplyBonus stApplyBonus{};
+		stApplyBonus.Header.ID = m_pMyHuman->m_dwID;
+		stApplyBonus.Header.Type = MSG_ApplyBonus_Opcode;
+		stApplyBonus.BonusType = 0;
+		stApplyBonus.Detail = 1;
+		SendOneMessage((char*)&stApplyBonus, sizeof(stApplyBonus));
 		return 1;
 	}
 	if (idwControlID == 65722)
@@ -5188,12 +5188,12 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 		if (pMobData->ScoreBonus <= 0)
 			return 0;
 
-		MSG_STANDARDPARM2 stParm2{};
-		stParm2.Header.ID = m_pMyHuman->m_dwID;
-		stParm2.Header.Type = 0x277;
-		stParm2.Parm1 = 0;
-		stParm2.Parm2 = 2;
-		SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		MSG_ApplyBonus stApplyBonus{};
+		stApplyBonus.Header.ID = m_pMyHuman->m_dwID;
+		stApplyBonus.Header.Type = MSG_ApplyBonus_Opcode;
+		stApplyBonus.BonusType = 0;
+		stApplyBonus.Detail = 2;
+		SendOneMessage((char*)&stApplyBonus, sizeof(stApplyBonus));
 		return 1;
 	}
 	if (idwControlID == 65725)
@@ -5203,12 +5203,12 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 		if (pMobData->ScoreBonus <= 0)
 			return 0;
 
-		MSG_STANDARDPARM2 stParm2{};
-		stParm2.Header.ID = m_pMyHuman->m_dwID;
-		stParm2.Header.Type = 0x277;
-		stParm2.Parm1 = 0;
-		stParm2.Parm2 = 3;
-		SendOneMessage((char*)&stParm2, sizeof(stParm2));
+		MSG_ApplyBonus stApplyBonus{};
+		stApplyBonus.Header.ID = m_pMyHuman->m_dwID;
+		stApplyBonus.Header.Type = MSG_ApplyBonus_Opcode;
+		stApplyBonus.BonusType = 0;
+		stApplyBonus.Detail = 3;
+		SendOneMessage((char*)&stApplyBonus, sizeof(stApplyBonus));
 		return 1;
 	}
 	if (idwControlID == 65754)
@@ -5238,12 +5238,12 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 
 		if (pMobData->CurrentScore.Special[0] < totalSpecial)
 		{
-			MSG_STANDARDPARM2 stParm2{};
-			stParm2.Header.ID = m_pMyHuman->m_dwID;
-			stParm2.Header.Type = 0x277;
-			stParm2.Parm1 = 1;
-			stParm2.Parm2 = 0;
-			SendOneMessage((char*)&stParm2, sizeof(stParm2));
+			MSG_ApplyBonus stApplyBonus{};
+			stApplyBonus.Header.ID = m_pMyHuman->m_dwID;
+			stApplyBonus.Header.Type = MSG_ApplyBonus_Opcode;
+			stApplyBonus.BonusType = 1;
+			stApplyBonus.Detail = 0;
+			SendOneMessage((char*)&stApplyBonus, sizeof(stApplyBonus));
 		}
 		else
 		{
@@ -5283,12 +5283,12 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 
 		if (pMobData->CurrentScore.Special[1] < totalSpecial)
 		{
-			MSG_STANDARDPARM2 stParm2{};
-			stParm2.Header.ID = m_pMyHuman->m_dwID;
-			stParm2.Header.Type = 0x277;
-			stParm2.Parm1 = 1;
-			stParm2.Parm2 = 1;
-			SendOneMessage((char*)&stParm2, sizeof(stParm2));
+			MSG_ApplyBonus stApplyBonus{};
+			stApplyBonus.Header.ID = m_pMyHuman->m_dwID;
+			stApplyBonus.Header.Type = MSG_ApplyBonus_Opcode;
+			stApplyBonus.BonusType = 1;
+			stApplyBonus.Detail = 1;
+			SendOneMessage((char*)&stApplyBonus, sizeof(stApplyBonus));
 		}
 		else
 		{
@@ -5324,12 +5324,12 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 
 		if (pMobData->CurrentScore.Special[2] < totalSpecial)
 		{
-			MSG_STANDARDPARM2 stParm2{};
-			stParm2.Header.ID = m_pMyHuman->m_dwID;
-			stParm2.Header.Type = 0x277;
-			stParm2.Parm1 = 1;
-			stParm2.Parm2 = 2;
-			SendOneMessage((char*)&stParm2, sizeof(stParm2));
+			MSG_ApplyBonus stApplyBonus{};
+			stApplyBonus.Header.ID = m_pMyHuman->m_dwID;
+			stApplyBonus.Header.Type = MSG_ApplyBonus_Opcode;
+			stApplyBonus.BonusType = 1;
+			stApplyBonus.Detail = 2;
+			SendOneMessage((char*)&stApplyBonus, sizeof(stApplyBonus));
 		}
 		else
 		{
@@ -5363,12 +5363,12 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 
 		if (pMobData->CurrentScore.Special[3] < totalSpecial)
 		{
-			MSG_STANDARDPARM2 stParm2{};
-			stParm2.Header.ID = m_pMyHuman->m_dwID;
-			stParm2.Header.Type = 0x277;
-			stParm2.Parm1 = 1;
-			stParm2.Parm2 = 3;
-			SendOneMessage((char*)&stParm2, sizeof(stParm2));
+			MSG_ApplyBonus stApplyBonus{};
+			stApplyBonus.Header.ID = m_pMyHuman->m_dwID;
+			stApplyBonus.Header.Type = MSG_ApplyBonus_Opcode;
+			stApplyBonus.BonusType = 1;
+			stApplyBonus.Detail = 3;
+			SendOneMessage((char*)&stApplyBonus, sizeof(stApplyBonus));
 		}
 		else
 		{
