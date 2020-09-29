@@ -866,7 +866,7 @@ int TMObjectContainer::Load(const char* szFileName)
 				{
 					pEffect->m_nFade = 0;
 					pEffect->SetColor(0x55553300);
-					pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_ALPHA;
+					pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
 
 					pEffect->m_vecPosition = TMVector3((float)(m_fOffsetX + vecPosition.x) + 0.5f + (float)(cosf((float)((float)((float)i * 3.1415927f) * 2.0f) / 12.0f) * 3.0f),
 						fHeight + 2.9000001f, m_fOffsetY + vecPosition.y + +(float)(sinf((float)((float)((float)i * 3.1415927f) * 2.0f) / 12.0f) * 3.0f));
@@ -880,7 +880,7 @@ int TMObjectContainer::Load(const char* szFileName)
 				{
 					pEffect2->SetColor(0x0EEEECC00);
 					pEffect2->m_nFade = 0;
-					pEffect2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_ALPHA;
+					pEffect2->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
 
 					pEffect2->m_vecPosition = TMVector3((float)(m_fOffsetX + vecPosition.x) + 0.5f + (float)(cosf((float)((float)((float)i * 3.1415927f) * 2.0f) / 12.0f) * 3.0f),
 						fHeight + 2.9000001f, m_fOffsetY + vecPosition.y + (float)(sinf((float)((float)((float)i * 3.1415927f) * 2.0f) / 12.0f) * 3.0f));
@@ -897,7 +897,7 @@ int TMObjectContainer::Load(const char* szFileName)
 				{
 					pEffect->m_nFade = 0;
 					pEffect->SetColor(0x55553300);
-					pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_ALPHA;
+					pEffect->m_efAlphaType = EEFFECT_ALPHATYPE::EF_BRIGHT;
 
 					pEffect->m_vecPosition = TMVector3((float)(m_fOffsetX + vecPosition.x) + 0.5f + (float)(cosf((float)((float)((float)i * 3.1415927f) * 2.0f) / 8.0f) * 2.25f),
 						fHeight + 4.6500001f, m_fOffsetY + vecPosition.y + (float)(sinf((float)((float)((float)i * 3.1415927f) * 2.0f) / 8.0f) * 2.25f));
