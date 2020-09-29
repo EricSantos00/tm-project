@@ -73,7 +73,7 @@ public:
     int OnPacketMove(MSG_Action* pAction);
     int OnPacketChaosCube(MSG_Action* pAction);
     int OnPacketIllusion(MSG_STANDARD* pStd);
-    int OnPacketFireWork(MSG_STANDARD* pStd);
+    int OnPacketFireWork(MSG_Motion* pStd);
     int OnPacketPremiumFireWork(MSG_STANDARD* pStd);
     int OnPacketRemoveMob(MSG_STANDARD* pStd);
     int OnPacketSendItem(MSG_STANDARD* pStd);

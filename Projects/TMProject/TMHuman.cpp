@@ -54,6 +54,7 @@
 #include "TMArrow.h"
 #include "TMSkillThunderBolt.h"
 #include "TMEffectDust.h"
+#include "TMEffectFirework.h"
 
 TMVector2 TMHuman::m_vecPickSize[100] = {
   { 0.40000001f, 2.0f },
@@ -3436,7 +3437,7 @@ int TMHuman::OnPacketEvent(unsigned int dwCode, char* buf)
         return OnPacketPremiumFireWork((MSG_STANDARD*)buf);
         break;
     case 0x36A:
-        return OnPacketFireWork((MSG_STANDARD*)buf);
+        return OnPacketFireWork(reinterpret_cast<MSG_Motion*>(buf));
         break;
     case 0x165:
         return OnPacketRemoveMob((MSG_STANDARD*)buf);
@@ -3896,10 +3897,75 @@ int TMHuman::OnPacketIllusion(MSG_STANDARD* pStd)
     return 1;
 }
 
-int TMHuman::OnPacketFireWork(MSG_STANDARD* pStd)
+int TMHuman::OnPacketFireWork(MSG_Motion* pStd)
 {
-	return 0;
+	if (pStd->Motion == 100)
+	{
+		auto pFireWork = new TMEffectFireWork({ m_vecPosition.x, m_fHeight + 5.0f, m_vecPosition.y }, pStd->Parm);
+		if (g_pCurrentScene->m_pEffectContainer)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pFireWork);
+		return 1;
+	}
+	else if (pStd->Parm == 1)
+	{
+		if (m_nClass == 36 || m_nClass == 37)
+			return 1;
+		if (m_nClass == 39)
+		{
+			if (!(rand() % 2))
+			{
+				pStd->Motion = 16;
+				if (m_bVisible == 1)
+					GetSoundAndPlay(267, 0, 0);
+			}
+
+			SetMotion((ECHAR_MOTION)pStd->Motion, pStd->Direction);
+			return 1;
+		}
+		if (m_nClass == 56 && !m_stLookInfo.FaceMesh)
+		{
+			SetMotion((ECHAR_MOTION)pStd->Motion, pStd->Direction);
+			return 1;
+		}
+		if (m_nSkinMeshType == 0 || m_nSkinMeshType == 1 || m_nSkinMeshType == 21 || m_nSkinMeshType == 3)
+		{
+			SetMotion((ECHAR_MOTION)pStd->Motion, pStd->Direction);
+			if (m_nClass == 4 && m_stLookInfo.FaceMesh == 15 && m_bVisible == 1)
+				GetSoundAndPlay(300, 0, 0);
+
+			return 1;
+		}
+
+		return 1;
+	}
+
+	if (pStd->Parm == 2)
+		m_cDie = 0;
+	if (pStd->Parm == 3)
+	{
+		auto pLevelUp = new TMEffectLevelUp({ m_vecPosition.x, m_fHeight, m_vecPosition.y }, 0);
+		if (g_pCurrentScene->m_pEffectContainer)
+			g_pCurrentScene->m_pEffectContainer->AddChild(pLevelUp);
+	}
+	if (pStd->Motion < 256)
+	{
+		if (g_pObjectManager->m_dwCharID == pStd->Header.ID)
+			m_SendeMotion = ECHAR_MOTION::ECMOTION_NONE;
+
+		auto eMotion = pStd->Motion;
+		if ((m_dwID > 0 && m_dwID < 1000) &&
+			(m_nSkinMeshType == 3 || m_nSkinMeshType == 8 || m_nSkinMeshType == 7 || m_nSkinMeshType == 25 || m_nSkinMeshType == 28) &&
+			((int)eMotion > 14 && (int)eMotion < 25 || eMotion == 13))
+		{
+			eMotion -= 14;
+		}
+
+		SetMotion((ECHAR_MOTION)eMotion, pStd->Direction);
+	}
+
+	return 1;
 }
+
 
 int TMHuman::OnPacketPremiumFireWork(MSG_STANDARD* pStd)
 {
