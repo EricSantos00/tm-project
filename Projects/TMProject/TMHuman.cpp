@@ -11715,8 +11715,8 @@ void TMHuman::CheckWeapon(short sIndexL, short sIndexR)
     itemR.sIndex = sIndexR;
     m_nWeaponTypeL = BASE_GetItemAbility(&itemL, 21);
     m_nWeaponTypeR = BASE_GetItemAbility(&itemR, 21);
-    int nWeaponPosL = BASE_GetItemAbility(&itemL, 17);
-    int nWeaponPosR = BASE_GetItemAbility(&itemR, 17);
+    unsigned int nWeaponPosL = BASE_GetItemAbility(&itemL, 17);
+	unsigned int nWeaponPosR = BASE_GetItemAbility(&itemR, 17);
 
     if (itemR.sIndex < 0 || itemL.sIndex < 0 || itemR.sIndex >= 6500 || itemL.sIndex >= 6500)
     {
@@ -12383,7 +12383,7 @@ void TMHuman::PlayAttackSound(ECHAR_MOTION eMotion, int nLR)
     itemR.sIndex = m_sRightIndex;
     BASE_GetItemAbility(&itemL, 17);
     
-    int nWeaponPosR = BASE_GetItemAbility(&itemR, 17);
+	unsigned int nWeaponPosR = BASE_GetItemAbility(&itemR, 17);
     int nSoundIndex = 121;
 
     if (m_nSkinMeshType == 3 || m_nClass == 40)

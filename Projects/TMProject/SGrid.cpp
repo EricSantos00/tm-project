@@ -160,7 +160,7 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 	if (dwFlags == 513)
 	{
 		STRUCT_ITEM item{};
-		int nItemPos = 0;
+		unsigned int nItemPos = 0;
 		if (g_pCursor->m_pAttachedItem)
 		{
 			if (g_pCursor->m_pAttachedItem->m_nCellIndexX < 0 || g_pCursor->m_pAttachedItem->m_nCellIndexX > 16	|| 
@@ -204,7 +204,7 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 		}
 
 		STRUCT_ITEM dst{};
-		int nItemPos = 0;
+		unsigned int nItemPos = 0;
 		if (g_pCursor->m_pAttachedItem)
 		{
 			memcpy(&dst, g_pCursor->m_pAttachedItem->m_pItem, sizeof(dst));
@@ -382,7 +382,7 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 		{
 			if (pItem->m_GCObj.dwColor != 0xFFFF0000)
 			{
-				int NewItemPos = BASE_GetItemAbility(pItem->m_pItem, 17);
+				unsigned int NewItemPos = BASE_GetItemAbility(pItem->m_pItem, 17);
 				int NewItemPosConv;
 				for (NewItemPosConv = 0; ; ++NewItemPosConv)
 				{
@@ -418,8 +418,8 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 
 						itemL.sIndex = g_pCurrentScene->m_pMyHuman->m_sLeftIndex;
 						itemR.sIndex = g_pCurrentScene->m_pMyHuman->m_sRightIndex;
-						int nWeaponLPos = BASE_GetItemAbility(&itemL, 17);
-						int nWeaponRPos = BASE_GetItemAbility(&itemR, 17);
+						unsigned int nWeaponLPos = BASE_GetItemAbility(&itemL, 17);
+						unsigned int nWeaponRPos = BASE_GetItemAbility(&itemR, 17);
 
 						cktrans = 0;
 						if (!(pMobData->LearnedSkill[0] & 0x40000000))
@@ -818,7 +818,7 @@ int SGridControl::CanChangeItem(SGridControlItem* ipNewItem, int inCellIndexX, i
 
 	if (!sType)
 	{
-		int nItemType = BASE_GetItemAbility(ipNewItem->m_pItem, 17);
+		unsigned int nItemType = BASE_GetItemAbility(ipNewItem->m_pItem, 17);
 		if (m_dwControlID == 65556)
 		{
 			if (nItemType == 128)
@@ -2354,7 +2354,7 @@ void SGridControl::SwapItem(int nCellX, int nCellY, int nCellVWidth, int nCellVH
 	auto pGeom = SGridControl::m_pLastAttachedItem->GetGeomControl();
 	auto nWidth = (int)(pGeom->nWidth / (float)nCellVWidth);
 	auto nHeight = (int)(pGeom->nHeight / (float)nCellVHeight);
-	auto nAtItemPos = 0;
+	unsigned int nAtItemPos = 0;
 
 	if (SGridControl::m_pLastAttachedItem)
 	{
@@ -4818,7 +4818,7 @@ char SGridControl::automove(int nCellX, int nCellY)
 
 	if (pItem && pItem->m_GCObj.dwColor != 0xFFFF0000)
 	{
-		int NewItemPos = BASE_GetItemAbility(pItem->m_pItem, 17);
+		unsigned int NewItemPos = BASE_GetItemAbility(pItem->m_pItem, 17);
 		for (int NewItemPosConv = 0; ; ++NewItemPosConv)
 		{
 			NewItemPos /= 2;
