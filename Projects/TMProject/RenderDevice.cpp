@@ -611,7 +611,8 @@ HRESULT RenderDevice::RestoreDeviceObjects()
 
 	InitializeRenderingState();
 	InitVertexShader();
-	InitPixelShader();
+	// Not used
+	//InitPixelShader();
 
 	if (d3dCaps.MaxTextureWidth > 256)
 	{
@@ -1508,7 +1509,7 @@ int RenderDevice::InitVertexShader()
 			int nLength = _filelength(fh);
 			D3DXCreateBuffer(nLength, &pCode);
 			_read(fh, pCode->GetBufferPointer(), pCode->GetBufferSize());
-
+			_close(fh);
 
 			if (FAILED(m_pd3dDevice->CreateVertexDeclaration(VertexDeclEff[j], &m_pVDEffect[j])))
 				return 0;
@@ -1547,6 +1548,7 @@ int RenderDevice::InitPixelShader()
 				int nLength = _filelength(handle);
 				D3DXCreateBuffer(nLength, &pCode);
 				_read(handle, pCode->GetBufferPointer(), pCode->GetBufferSize());
+				_close(handle);
 
 				if (FAILED(m_pd3dDevice->CreatePixelShader((const DWORD*)pCode->GetBufferPointer(), &m_pPSEffect[i])))
 					return 0;

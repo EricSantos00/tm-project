@@ -2618,7 +2618,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 				{
 					m_dwEnableColor = 0x33FF0000;
 
-					int nItemPos = BASE_GetItemAbility(pItem->m_pItem, 17);
+					unsigned int nItemPos = BASE_GetItemAbility(pItem->m_pItem, 17);
 					m_vecPickupedPos.x = pItem->m_nCellIndexX;
 					m_vecPickupedPos.y = pItem->m_nCellIndexY;
 					m_vecPickupedSize.x = pItem->m_nCellWidth;
@@ -2786,7 +2786,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 				dst.Header.ID = g_pCurrentScene->m_pMyHuman->m_dwID;
 				dst.Parm = nCapsuleIndex;
 
-				SendOneMessage((char*)&dst, sizeof(dst));
+				SendOneMessage((char*)& dst, sizeof(dst));
 			}
 
 			SGridControl::m_pLastMouseOverItem = pItem;
@@ -2902,7 +2902,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 	else if (pDescNameText)
 	{
 		char szText[128]{};
-		int nItemPos = BASE_GetItemAbility(pItem->m_pItem, 17);
+		unsigned int nItemPos = BASE_GetItemAbility(pItem->m_pItem, 17);
 
 		if (pItem->m_pItem->sIndex == 411 ||
 			pItem->m_pItem->sIndex >= 400 && pItem->m_pItem->sIndex <= 409 ||
@@ -2921,7 +2921,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 			pDescNameText->SetText(szText, 0);
 			pDescNameText->SetTextColor(0xFFFFFFAA);
 		}
-		else if (!BASE_HasSancAdd(pItem->m_pItem) && nItemPos && nItemPos != (int)TMEITEMTYPE::ITEMTYPE_MOUNT)
+		else if (!BASE_CanRefine(pItem->m_pItem) && nItemPos && nItemPos != (int)TMEITEMTYPE::ITEMTYPE_MOUNT)
 		{
 			sprintf(szText, g_pMessageStringTable[48], g_pItemList[pItem->m_pItem->sIndex].Name);
 
@@ -2994,7 +2994,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 
 	int nAddHP = BASE_GetItemAbility(pItem->m_pItem, 4);
 	int nAddMP = BASE_GetItemAbility(pItem->m_pItem, 5);
-	int nItemPos = BASE_GetItemAbility(pItem->m_pItem, 17);
+	unsigned int nItemPos = BASE_GetItemAbility(pItem->m_pItem, 17);
 	int nWeaponType = BASE_GetItemAbility(pItem->m_pItem, 21);
 	int nClassType = BASE_GetItemAbility(pItem->m_pItem, 18);
 	int nLineId = 0;
@@ -3021,10 +3021,10 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 	}
 	else if (nClassType & 8)
 	{
-	SGridControl::m_szParamString[23] = g_pMessageStringTable[106];
-	SGridControl::m_szParamString[24] = g_pMessageStringTable[133];
-	SGridControl::m_szParamString[25] = g_pMessageStringTable[134];
-	SGridControl::m_szParamString[26] = g_pMessageStringTable[135];
+		SGridControl::m_szParamString[23] = g_pMessageStringTable[106];
+		SGridControl::m_szParamString[24] = g_pMessageStringTable[133];
+		SGridControl::m_szParamString[25] = g_pMessageStringTable[134];
+		SGridControl::m_szParamString[26] = g_pMessageStringTable[135];
 	}
 	if (nClassType == 255)
 	{
@@ -3112,7 +3112,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 		if (g_pCurrentScene->m_pMyHuman)
 		{
 			auto vecPos = g_pCurrentScene->m_pMyHuman->m_vecPosition;
-			if ((int)vecPos.x >> 7 > 26	&& (int)vecPos.x >> 7 < 31 && 
+			if ((int)vecPos.x >> 7 > 26 && (int)vecPos.x >> 7 < 31 &&
 				(int)vecPos.y >> 7 > 20 && (int)vecPos.y >> 7 < 25)
 			{
 				weather = 2;
@@ -3133,7 +3133,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 		pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
 		pFScene->m_pParamText[nLineId]->SetTextColor(dwColor);
 		++nLineId;
-				
+
 		int attribute = 0;
 		if (g_pSpell[SkillNumber].InstanceAttribute <= g_pSpell[SkillNumber].TickAttribute)
 			attribute = g_pSpell[SkillNumber].TickAttribute;
@@ -3178,7 +3178,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 			int reqScore = BASE_GetItemAbility(pItem->m_pItem, dwEFParam[l]);
 			if (reqScore > 0)
 			{
-				if (reqScore <= *((unsigned short*)&g_pObjectManager->m_stMobData.CurrentScore.Dex + l))
+				if (reqScore <= *((unsigned short*)& g_pObjectManager->m_stMobData.CurrentScore.Dex + l))
 					dwColor = 0xFFFFFFFF;
 				else
 					dwColor = 0xFFFF0000;
@@ -3277,7 +3277,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 			Msg.Header.ID = g_pObjectManager->m_dwCharID;
 			Msg.Header.Type = MSG_MessageWhisper_Opcode;
 			sprintf(Msg.MobName, "nig");
-			SendOneMessage((char*)&Msg, sizeof(Msg));
+			SendOneMessage((char*)& Msg, sizeof(Msg));
 
 			if (!pFScene->m_dwLastNightmareTime)
 			{
@@ -3342,7 +3342,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 		++nLineId;
 	}
 	else if (pItem->m_pItem->sIndex >= 3000 && pItem->m_pItem->sIndex <= 3015
-		  || pItem->m_pItem->sIndex >= 3050 && pItem->m_pItem->sIndex <= 3099)
+		|| pItem->m_pItem->sIndex >= 3050 && pItem->m_pItem->sIndex <= 3099)
 	{
 		auto itemEffect = pItem->m_pItem->stEffect;
 
@@ -3403,7 +3403,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 			}
 		}
 	}
-	else if (pItem->m_pItem->sIndex >= 3900 && pItem->m_pItem->sIndex < 3980 && 
+	else if (pItem->m_pItem->sIndex >= 3900 && pItem->m_pItem->sIndex < 3980 &&
 		(pItem->m_pItem->sIndex != 3909 && pItem->m_pItem->sIndex != 3910))
 	{
 		auto itemEffect = pItem->m_pItem->stEffect;
@@ -3607,7 +3607,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 								strcat(szDesc, reqs[mm]);
 						}
 
-						pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);						
+						pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
 						pFScene->m_pParamText[nLineId]->SetTextColor(req.Class ? 0xFFFFFFFF : 0xFFFF0000);
 						++nLineId;
 					}
@@ -3741,7 +3741,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 							sprintf(szDesc, "%s", g_pMessageStringTable[168]);
 						pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
 						pFScene->m_pParamText[nLineId]->SetTextColor(0xFFFFFFFF);
-						++nLineId;					
+						++nLineId;
 					}
 					else if (dwEFParam[l] == 40)
 					{
@@ -3750,7 +3750,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 						pFScene->m_pParamText[nLineId]->SetTextColor(dwColor);
 						++nLineId;
 					}
-					else if (dwEFParam[l] == 84	&& pItem->m_pItem->sIndex >= 2300 && pItem->m_pItem->sIndex < 2330 && add <= 0)
+					else if (dwEFParam[l] == 84 && pItem->m_pItem->sIndex >= 2300 && pItem->m_pItem->sIndex < 2330 && add <= 0)
 					{
 						sprintf(szDesc, "%s", g_pMessageStringTable[170]);
 						pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
@@ -3782,7 +3782,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 						}
 
 						pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
-						
+
 						switch (l)
 						{
 						case 2:
@@ -3818,7 +3818,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 				nEf = 69;
 			if (nEf == 46)
 				nEf = 70;
-			int nPos = BASE_GetItemAbility(pItem->m_pItem, 17);
+			unsigned int nPos = BASE_GetItemAbility(pItem->m_pItem, 17);
 
 			if (nEf == 42 || nEf == 53 || nPos == 32 && nEf == 2)
 			{
@@ -3835,15 +3835,14 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 				if (dwEFParam[l] == 42)
 				{
 					if (nValue == nValueAbility)
-					
-						sprintf(szDesc, "%s : %d.%d%%", SGridControl::m_szParamString[l], nValueAbility / 10, nValueAbility % 10);					
-					else					
+						sprintf(szDesc, "%s : %d.%d%%", SGridControl::m_szParamString[l], nValueAbility / 10, nValueAbility % 10);
+					else
 						sprintf(szDesc, "%s : %d.%d%% (%d.%d%%)", SGridControl::m_szParamString[l],
 							nValue / 10,
 							nValue % 10,
 							nValueAbility / 10,
 							nValueAbility % 10);
-													}
+				}
 				else if (dwEFParam[l] == 26 || dwEFParam[l] == 60 || dwEFParam[l] == 45 || dwEFParam[l] == 46 || dwEFParam[l] == 68)
 				{
 					if (nValue == nValueAbility)
@@ -3858,17 +3857,18 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 					else
 						sprintf(szDesc, "%s : %d (%d)", SGridControl::m_szParamString[l], nValue, nValueAbility);
 				}
+				else
+					continue;
 
 				pFScene->m_pParamText[nLineId]->SetText(szDesc, 0);
 				pFScene->m_pParamText[nLineId]->SetTextColor(BASE_GetOptionColor(nPos, dwEFParam[l], nValue));
 				++nLineId;
-				continue;
-			}			
+			}
 		}
 
 		if (nLineId < 13 && BASE_GetItemSanc(pItem->m_pItem) >= 9)
 		{
-			int nPos = BASE_GetItemAbility(pItem->m_pItem, 17);
+			unsigned int nPos = BASE_GetItemAbility(pItem->m_pItem, 17);
 			if (nPos == 4 || nPos == 8 || nPos == 128)
 			{
 				sprintf(szDesc, "%s : 25", g_pMessageStringTable[80]);
