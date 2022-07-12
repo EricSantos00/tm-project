@@ -354,7 +354,8 @@ int TMObject::IsVisible()
 		return 1;
 	}
 
-	if (D3DXVec3Dot(&Vec, &D3DXVECTOR3(pCamera->m_vecCamDir.x, pCamera->m_vecCamDir.z, pCamera->m_vecCamDir.y)) <= 0.0f)
+	auto pV2 = D3DXVECTOR3(pCamera->m_vecCamDir.x, pCamera->m_vecCamDir.z, pCamera->m_vecCamDir.y);
+	if (D3DXVec3Dot(&Vec, &pV2) <= 0.0f)
 	{
 		m_bVisible = 0;
 		return 0;
@@ -697,7 +698,8 @@ int TMObject::isCamPos()
 	D3DXVECTOR3 VecCenter = D3DXVECTOR3(pCamera->m_pFocusedObject->m_vecPosition.x, pCamera->m_pFocusedObject->m_vecPosition.y, pCamera->m_pFocusedObject->m_fHeight);
 	D3DXVECTOR3 Vec = D3DXVECTOR3(m_vecPosition.x, m_vecPosition.y, m_fHeight) - VecCenter;
 
-	if (D3DXVec3Dot(&Vec, &D3DXVECTOR3(pCamera->m_vecCamDir.x, pCamera->m_vecCamDir.z, pCamera->m_vecCamDir.y)) > 0.0f)
+	auto pV2 = D3DXVECTOR3(pCamera->m_vecCamDir.x, pCamera->m_vecCamDir.z, pCamera->m_vecCamDir.y);
+	if (D3DXVec3Dot(&Vec, &pV2) > 0.0f)
 		return 0;
 
 	D3DXVECTOR3 CamPos(pCamera->m_cameraPos.x, pCamera->m_cameraPos.y, pCamera->m_cameraPos.z);

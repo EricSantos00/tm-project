@@ -993,7 +993,9 @@ void CMesh::SetMaterial(char cAlpha)
         D3DXVECTOR4 vConst(1.0f, 0.0f, fProgress, 765.01001f);
         D3DXCOLOR ambEmm;      
         
-        D3DXColorModulate(&ambEmm, &D3DXCOLOR(materials.Ambient), &D3DXCOLOR(0.25f, 0.25f, 0.25f, 1.0f));
+        auto pC1 = D3DXCOLOR(materials.Ambient);
+        auto pC2 = D3DXCOLOR(0.25f, 0.25f, 0.25f, 1.0f);
+        D3DXColorModulate(&ambEmm, &pC1, &pC2);
 
         if (m_sLegendType >= 116 && m_sLegendType <= 125 && m_sMultiType > 0)
         {

@@ -12864,10 +12864,12 @@ int TMHuman::StraightRouteTable(int nSX, int nSY, int nTargetX, int nTargetY, TM
     vecCurrent.y = m_vecPosition.y;
 
     D3DXVECTOR2 NorVec2;
-    D3DXVec2Normalize(&NorVec2, &D3DXVECTOR2((float)(nTargetX - nSX), (float)(nTargetY - nSY)));
+    auto pV = D3DXVECTOR2((float)(nTargetX - nSX), (float)(nTargetY - nSY));
+    D3DXVec2Normalize(&NorVec2, &pV);
 
-    float TargetLen = D3DXVec2Length(&D3DXVECTOR2((float)((float)nTargetX + 0.5f) - vecCurrent.x,
-                                                  (float)((float)nTargetY + 0.5f) - vecCurrent.y));
+    auto pV2 = D3DXVECTOR2((float)((float)nTargetX + 0.5f) - vecCurrent.x,
+        (float)((float)nTargetY + 0.5f) - vecCurrent.y);
+    float TargetLen = D3DXVec2Length(&pV2);
 
     pRouteTable[0] = vecCurrent;
 

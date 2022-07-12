@@ -327,7 +327,8 @@ int TMEffectMesh::IsVisible()
 		return 1;
 	}
 
-	if (D3DXVec3Dot(&Vec, &D3DXVECTOR3(pCamera->m_vecCamDir.x, pCamera->m_vecCamDir.z, pCamera->m_vecCamDir.y)) <= 0.0f)
+	auto pV = D3DXVECTOR3(pCamera->m_vecCamDir.x, pCamera->m_vecCamDir.z, pCamera->m_vecCamDir.y);
+	if (D3DXVec3Dot(&Vec, &pV) <= 0.0f)
 	{
 		m_bVisible = 0;
 		return 0;
