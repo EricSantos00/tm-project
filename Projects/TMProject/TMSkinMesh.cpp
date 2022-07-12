@@ -173,17 +173,8 @@ HRESULT TMSkinMesh::RestoreDeviceObjects()
 			sprintf(szName, "%s%02d%02d.msh", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName, i + 1, 1);
 		}
 
-		bool found = false;
-		for (int i = 0; i < MOB_TEXTURE_EXCEPTION_COUNT; i++)
-		{
-			if (strncmp(MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName, MOB_TEXTURE_EXCEPTION[i], 32) == 0)
-			{
-				found = true;
-			}
-		}
-
 		// Meshs that use only one texture must be in God2Exception
-		if (God2Exception(i) || found)
+		if (God2Exception(i))
 		{
 			sprintf(szTexture, "%s%02d%02d.wyt", MeshManager::m_BoneAnimationList[m_nBoneAniIndex].szAniName,
 				1, (look[2 * i + 1] & 0xFFF) + look[2 * i] + 20 * m_bExpand + 1);
