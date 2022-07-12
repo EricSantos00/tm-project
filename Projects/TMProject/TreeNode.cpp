@@ -93,12 +93,12 @@ int TreeNode::OnCommand(unsigned int dwID, int iCommand)
 
 int TreeNode::FrameMove(unsigned int dwServerTime)
 {
-	return 0;
+	return 1;
 }
 
 int TreeNode::Render()
 {
-	return 0;
+	return 1;
 }
 
 void TreeNode::RestoreDeviceObjects()
