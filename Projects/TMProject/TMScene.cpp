@@ -233,7 +233,8 @@ TMScene::TMScene() : TreeNode(0)
 	{
 		if (g_pEventTranslator->IsNative())
 		{
-			m_pAlphaNative->SetText("Ch", 0);
+			char tmp[] = "Ch";
+			m_pAlphaNative->SetText(tmp, 0);
 			
 			char szDesc[256]{};
 
@@ -244,7 +245,8 @@ TMScene::TMScene() : TreeNode(0)
 		}
 		else
 		{
-			m_pAlphaNative->SetText("En", 0);
+			char tmp[] = "En";
+			m_pAlphaNative->SetText(tmp, 0);
 		}
 	}
 
