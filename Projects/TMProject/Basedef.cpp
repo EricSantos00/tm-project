@@ -172,7 +172,7 @@ int BASE_ReadItemList()
         {
             short idx = *(short*)buff;
 
-            if (buff > 0 && idx < MAX_ITEMLIST)
+            if (idx > 0 && idx < MAX_ITEMLIST)
                 memcpy(&g_pItemList[idx], &buff[2], sizeof(STRUCT_ITEMLIST));
         }
 
