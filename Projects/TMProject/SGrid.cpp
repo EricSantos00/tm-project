@@ -404,7 +404,7 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 				if (sDestPos == -1)
 				{
 					int cktrans = 0;
-					if (!(pMobData->LearnedSkill[0] & 0x40000000))
+					if (pMobData->LearnedSkill[0] & 0x40000000)
 						cktrans = 1;
 
 					if (!BASE_CanEquip(pItem->m_pItem, &pMobData->CurrentScore, sDestPos, pMobData->Equip[0].sIndex, pMobData->Equip, 
@@ -422,7 +422,7 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 						unsigned int nWeaponRPos = BASE_GetItemAbility(&itemR, 17);
 
 						cktrans = 0;
-						if (!(pMobData->LearnedSkill[0] & 0x40000000))
+						if (pMobData->LearnedSkill[0] & 0x40000000)
 							cktrans = 1;
 
 						if (nWeaponLPos == 64 && nWeaponRPos == 128 && NewItemPos != 128)
@@ -830,7 +830,7 @@ int SGridControl::CanChangeItem(SGridControlItem* ipNewItem, int inCellIndexX, i
 					pMobData->Equip[0].sIndex,
 					pMobData->Equip,
 					g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][0].sIndex,
-					pMobData->LearnedSkill[0] & 0x40000000);
+					pMobData->LearnedSkill[0] & 0x40000000 ? 1 : 0);
 			}
 			if (nItemType == 64 || nItemType == 192)
 			{
@@ -843,7 +843,7 @@ int SGridControl::CanChangeItem(SGridControlItem* ipNewItem, int inCellIndexX, i
 						pMobData->Equip[0].sIndex,
 						pMobData->Equip,
 						g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][0].sIndex,
-						pMobData->LearnedSkill[0] & 0x40000000) == 1
+						pMobData->LearnedSkill[0] & 0x40000000 ? 1 : 0)
 						&& !bOnlyCheck)
 					{
 						short sDestType = CheckType(ipNewItem->m_pGridControl->m_eItemType, ipNewItem->m_pGridControl->m_eGridType);
@@ -879,7 +879,7 @@ int SGridControl::CanChangeItem(SGridControlItem* ipNewItem, int inCellIndexX, i
 			pMobData->Equip[0].sIndex,
 			pMobData->Equip,
 			g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][0].sIndex,
-			pMobData->LearnedSkill[0] & 0x40000000);
+			pMobData->LearnedSkill[0] & 0x40000000 ? 1 : 0);
 	}
 	else if (sType == 1)
 		return 1;
