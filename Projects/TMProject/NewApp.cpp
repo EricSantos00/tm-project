@@ -364,7 +364,7 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 			else
 			{
 				memset(szCol, 0, 8);
-				strncpy(szCol, szTemp, 8);
+				strncpy(szCol, szTemp, 6);
 				sscanf(szCol, "%x", &Color);
 				char* szRet = strstr(szTemp, "\n");
 				if (szRet)
@@ -372,7 +372,7 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 				if (szTemp[8] == '\t' || szTemp[8] == ' ')
 					sprintf(g_pItemHelp[ItemIndex].Help[j - 1], "%s", &szTemp[9]);
 
-				g_pItemHelp[ItemIndex].Color[j - 1] = Color;
+				g_pItemHelp[ItemIndex].Color[j - 1] = static_cast<short>(Color);
 			}
 		}
 		++NumHelp;
