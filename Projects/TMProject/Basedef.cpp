@@ -1815,7 +1815,7 @@ int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY)
     return 1;
 }
 
-int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, int cktrans)
+int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, bool checkTrans)
 {
     int idx = item->sIndex;
     if (idx <= 0 || idx >= 6500)
@@ -1893,7 +1893,7 @@ int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, ST
     case 3:
         if (trans < 6)
             return FALSE;
-        if (cktrans != 1)
+        if (!checkTrans)
             return FALSE;
         break;
     }
