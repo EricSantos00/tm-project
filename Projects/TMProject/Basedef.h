@@ -2896,7 +2896,7 @@ int BASE_CanTrade(STRUCT_ITEM* Dest, STRUCT_ITEM* Carry, char* MyTrade, STRUCT_I
 void BASE_ClearItem(STRUCT_ITEM* item);
 void BASE_SortTradeItem(STRUCT_ITEM* Item, int Type);
 int BASE_CanCargo(STRUCT_ITEM* item, STRUCT_ITEM* cargo, int DestX, int DestY);
-int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, bool skillCheck);
+int BASE_CanEquip(STRUCT_ITEM* item, STRUCT_SCORE* score, int Pos, int Class, STRUCT_ITEM* pBaseEquip, int OriginalFace, bool hasSoulLimitSkill);
 unsigned int BASE_GetItemColor(STRUCT_ITEM* item);
 int BASE_GetColorCount(unsigned int dwColor);
 int BASE_GetManaSpent(int SkillNumber, int SaveMana, int Special);
