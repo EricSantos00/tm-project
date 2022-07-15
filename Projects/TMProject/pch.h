@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <io.h>
 #include <fcntl.h>
-#include <winnt.h>
 #include <time.h>
 
 #define DIRECTINPUT_VERSION 0x0800
