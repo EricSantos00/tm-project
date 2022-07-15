@@ -1,10 +1,6 @@
 name: MSBuild
 on: [push, workflow_dispatch]
 
-env:
-  # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: .
-
 jobs:
   build:
     runs-on: windows-latest
@@ -13,10 +9,11 @@ jobs:
         build_configuration: [Release, Debug]
 
     steps:
+    - name: checkout repo
+      uses: actions/checkout@v2.3.4
+
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1
 
     - name: Build
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-      run: msbuild /m /p:Platform=x86 /p:Configuration=${{matrix.build_configuration}} ${{env.SOLUTION_FILE_PATH}}
+      run: msbuild /m /p:Platform=x86 /p:Configuration=${{matrix.build_configuration}} TM.sln
