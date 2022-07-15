@@ -17,3 +17,8 @@ jobs:
 
     - name: Build
       run: msbuild /m /p:Platform=x86 /p:Configuration=${{matrix.build_configuration}} TM.sln
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: TMProject_${{matrix.build_configuration}}
+        path: ${{matrix.build_configuration}}/TMProject.exe
