@@ -949,6 +949,7 @@ int RenderDevice::InitVertexShader()
 			int nLength = _filelength(handle);
 			D3DXCreateBuffer(nLength, &pCode);
 			_read(handle, pCode->GetBufferPointer(), pCode->GetBufferSize());
+			_close(handle);
 
 			if (FAILED(m_pd3dDevice->CreateVertexDeclaration(VertexDecl[i % 4], &m_pVertexDeclaration[i])))
 				return 0;
