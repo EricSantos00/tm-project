@@ -79,6 +79,7 @@ int TMObjectContainer::Load(const char* szFileName)
 	}
 
 	_read(Handle, buff, sz);
+	_close(Handle);
 
 	int nCheckSum = 0;
 	int sz1 = 28;
