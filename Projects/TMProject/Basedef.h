@@ -2923,7 +2923,7 @@ bool BASE_CanRefine(STRUCT_ITEM* item);
 
 int IsPassiveSkill(int nSkillIndex);
 
-bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect);
+bool BASE_HasSancAdd(const STRUCT_BONUSEFFECT& effect);
 int BASE_GetSancEffValue(const STRUCT_ITEM& item);
 
 int BASE_GetItemSancSuccess(STRUCT_ITEM* item);

@@ -3307,17 +3307,17 @@ int IsPassiveSkill(int nSkillIndex)
     return g_pSpell[nSkillIndex].Passive == 1;
 }
 
-bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect)
+bool BASE_HasSancAdd(const STRUCT_BONUSEFFECT& effect)
 {
     return effect.cEffect == EF_SANC || (effect.cEffect >= EF_STARTCOL && effect.cEffect < EF_MAXCOL);
 }
 
 int BASE_GetSancEffValue(const STRUCT_ITEM& item)
 {
-    for (const auto i : item.stEffect)
+    for (auto& effect : item.stEffect)
     {
-        if (BASE_HasSancAdd(i))
-            return i.cValue;
+        if (BASE_HasSancAdd(effect))
+            return effect.cValue;
     }
 
     return 0;
