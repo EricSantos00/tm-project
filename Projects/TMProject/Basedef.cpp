@@ -3307,30 +3307,16 @@ int IsPassiveSkill(int nSkillIndex)
     return g_pSpell[nSkillIndex].Passive == 1;
 }
 
-bool BASE_HasSancAdd(STRUCT_ITEM* item)
-{
-    for (auto i : item->stEffect)
-    {
-        if (i.cEffect == 43 || (i.cEffect >= 155 && i.cEffect <= 126))
-            return true;
-    }
-  
-    return false;
-}
-
 bool BASE_HasSancAdd(STRUCT_BONUSEFFECT effect)
 {
-    if (effect.cEffect == 43 || (effect.cEffect >= 155 && effect.cEffect <= 126))
-        return true;
-
-    return false;
+    return effect.cEffect == EF_SANC || (effect.cEffect >= EF_STARTCOL && effect.cEffect < EF_MAXCOL);
 }
 
-int BASE_GetSancEffValue(STRUCT_ITEM* item)
+int BASE_GetSancEffValue(const STRUCT_ITEM& item)
 {
-    for (auto i : item->stEffect)
+    for (const auto i : item.stEffect)
     {
-        if (i.cEffect == EF_SANC || (i.cEffect >= EF_STARTCOL && i.cEffect <= EF_MAXCOL))
+        if (BASE_HasSancAdd(i))
             return i.cValue;
     }
 
@@ -3346,7 +3332,7 @@ int BASE_GetItemSancSuccess(STRUCT_ITEM* item)
     if (item->sIndex >= 3980 && item->sIndex < 4000)
         return 0;
 
-    auto sanc = BASE_GetSancEffValue(item);
+    auto sanc = BASE_GetSancEffValue(*item);
 
     if (sanc <= 210)
         return sanc / 10;
