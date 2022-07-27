@@ -3917,16 +3917,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 	{
 		if (nSanc >= 10)
 		{
-			int sancValue = 0;
-			if (BASE_HasSancAdd(pItem->m_pItem))
-			{
-				if (BASE_HasSancAdd(pItem->m_pItem->stEffect[0]))
-					sancValue = pItem->m_pItem->stEffect[0].cValue;
-				else if (BASE_HasSancAdd(pItem->m_pItem->stEffect[1]))
-					sancValue = pItem->m_pItem->stEffect[1].cValue;
-				else
-					sancValue = pItem->m_pItem->stEffect[2].cValue;
-			}
+			int sancValue = BASE_GetSancEffValue(*pItem->m_pItem);			
 
 			int sancCalc = (sancValue - 230) % 4;
 			int mult = 1;
