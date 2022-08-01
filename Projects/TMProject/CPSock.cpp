@@ -80,7 +80,7 @@ unsigned int CPSock::StartListen(HWND hWnd, int ip, int port, int WSA)
 	
 	if (tSock == -1)
 	{
-		MessageBoxA(hWnd, "Initialize socket fail", "ERROR", 0);
+		MessageBoxA(hWnd, "Socket initialization failed!", "ERROR", 0);
 		return 0;
 	}
 
@@ -91,7 +91,7 @@ unsigned int CPSock::StartListen(HWND hWnd, int ip, int port, int WSA)
 
 	if (bind(tSock, (const struct sockaddr*) & local_sin, 16) == -1)
 	{
-		MessageBoxA(hWnd, "Binding fail", "ERROR", 0);
+		MessageBoxA(hWnd, "Binding failed!", "ERROR", 0);
 		closesocket(tSock);
 		return 0;
 	}
@@ -104,14 +104,14 @@ unsigned int CPSock::StartListen(HWND hWnd, int ip, int port, int WSA)
 		}
 		else
 		{
-			MessageBoxA(hWnd, "WSAAsyncSelect fail", "ERROR", 0);
+			MessageBoxA(hWnd, "WSAAsyncSelect failed!", "ERROR", 0);
 			closesocket(tSock);
 			return 0;
 		}
 	}
 	else
 	{
-		MessageBoxA(hWnd, "Listen fail", "ERROR", 0);
+		MessageBoxA(hWnd, "Listen to socket failed", "ERROR", 0);
 		closesocket(tSock);
 		return 0;
 	}
@@ -141,7 +141,7 @@ unsigned int CPSock::ConnectServer(char* HostAddr, int Port, int ip, int WSA)
 
 	if (tSock == -1)
 	{
-		MessageBoxA(0, "Initialize socket fai", "ERROR", 0);
+		MessageBoxA(0, "Socket initialization failed!", "ERROR", 0);
 		return 0;
 	}
 
@@ -188,7 +188,7 @@ unsigned int CPSock::ConnectServer(char* HostAddr, int Port, int ip, int WSA)
 	}
 	else
 	{
-		MessageBoxA(0, "Binding fail", "ERROR", 0);
+		MessageBoxA(0, "Binding failed!", "ERROR", 0);
 		closesocket(tSock);
 		return 0;
 	}
@@ -216,7 +216,7 @@ unsigned int CPSock::SingleConnect(char* HostAddr, int Port, int ip, int WSA)
 
 	if (tSock == -1)
 	{
-		MessageBoxA(0, "Initialize single socket fai", "ERROR", 0);
+		MessageBoxA(0, "Single socket initialization failed!", "ERROR", 0);
 		return 0;
 	}
 
@@ -263,7 +263,7 @@ unsigned int CPSock::SingleConnect(char* HostAddr, int Port, int ip, int WSA)
 	}
 	else
 	{
-		MessageBoxA(0, "single Binding fail", "ERROR", 0);
+		MessageBoxA(0, "Single binding failed!", "ERROR", 0);
 		closesocket(tSock);
 		return 0;
 	}
@@ -432,7 +432,7 @@ int CPSock::AddMessage(char* pMsg, int Size)
 		{
 			if (EncodeByte)
 			{
-				// we don't need this now... maaybe we can decompile later...
+				// No use for this at this stage. Will be added at a later time. Added to Documentation.dat.
 			}
 			else
 			{
