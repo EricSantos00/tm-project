@@ -767,7 +767,7 @@ void NewApp::MixHelp()
 			char szCol[7];
 			memset(szCol, 0, 7);
 			strncpy(szCol, szTemp, 6u);
-			sscanf(szCol, "%d", &Color);
+			sscanf(szCol, "%x", &Color);
 			char* szRet = strstr(szTemp, "\n");
 			if (szRet)
 				*szRet = 0;
