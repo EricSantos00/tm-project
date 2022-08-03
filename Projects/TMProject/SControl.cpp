@@ -1639,11 +1639,11 @@ int SCheckBox::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, i
 
 	m_bOver = PointInRect(nX, nY, m_nPosX, m_nPosY, m_nWidth, m_nHeight);
 
-	if (dwFlags == 512)
+	if (dwFlags == 512 || dwFlags == 513)
 		return 0;
 
-	if (dwFlags != 513)
-		return SPanel::OnMouseEvent(dwFlags, wParam, nX, nY);
+	if (!m_bOver)
+		return 0;
 
 	m_bValue = m_bValue == 0;
 	m_bFocused = 1;
