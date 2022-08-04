@@ -5079,7 +5079,7 @@ int TMFieldScene::OnControlEvent(unsigned int idwControlID, unsigned int idwEven
 			MSG_STANDARDPARM2 stParm2{};
 			stParm2.Header.Type = 0x39F;
 			stParm2.Header.ID = m_pMyHuman->m_dwID;;
-			stParm2.Parm1 = m_dwID;
+			stParm2.Parm1 = m_pPGTOver->m_dwID;
 
 			switch (idwControlID)
 			{
@@ -8153,7 +8153,7 @@ void TMFieldScene::PGTVisible(unsigned int dwServerTime)
 	m_pBtnPGT5_V_5->SetVisible(0);
 	m_pBtnPGT10_V_10->SetVisible(0);
 	m_pBtnPGTAll_V_All->SetVisible(0);
-	m_pBtnPGTChallenge->SetVisible(0);
+	m_pBtnPGTChallenge->SetVisible(1);
 	m_pBtnPGTGICommon->SetVisible(0);
 	m_pBtnPGTGIChief1->SetVisible(0);
 	m_pBtnPGTGIChief2->SetVisible(0);
