@@ -2706,13 +2706,13 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 		{
 			for (int i = 0; i < 9; ++i)
 			{
-				if (strcmp(g_pItemMixHelp[pItem->m_pItem->sIndex].Help[i], ""))
+				pFScene->m_pParamText[i + 2]->SetText((char*)"                                 ", 0);
+
+				if (g_pItemMixHelp[pItem->m_pItem->sIndex].Help[i][0] != '\0')
 				{
-					pFScene->m_pParamText[i]->SetTextColor(g_pItemMixHelp[pItem->m_pItem->sIndex].Color[i]);
-					pFScene->m_pParamText[i]->SetText(g_pItemMixHelp[pItem->m_pItem->sIndex].Help[i], 0);
+					pFScene->m_pParamText[i + 2]->SetTextColor(g_pItemMixHelp[pItem->m_pItem->sIndex].Color[i]);
+					pFScene->m_pParamText[i + 2]->SetText(g_pItemMixHelp[pItem->m_pItem->sIndex].Help[i], 0);
 				}
-				else
-					pFScene->m_pParamText[i]->SetText((char*)"                                 ", 0);
 			}
 		}
 
