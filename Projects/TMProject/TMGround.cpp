@@ -2591,7 +2591,7 @@ int TMGround::LoadTileMap(const char* szFileName)
                     if (nY >= 62)
                         f4 = m_TileMapData[j + (nY << 6)].cHeight;
                     else
-                        f4 = m_TileMapData[j + ((nY + 1) << 6) + 1].cHeight;
+                        f4 = m_TileMapData[j + ((nY + 1) << 6)].cHeight;
                 }
 
                 float fCenter = (((f1 + f2) + f3) + f4) / 4.0f;
