@@ -322,7 +322,7 @@ public:
     int m_nNextPage;
 };
 
-class SCheckBox : public SPanel
+class SCheckBox : public SButton
 {
 public:
     enum {
