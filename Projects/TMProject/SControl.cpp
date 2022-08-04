@@ -1609,7 +1609,7 @@ void SButtonBox::SetButtonBox(int nStartCount, int nEndCount, int nCurrnetPage, 
 }
 
 SCheckBox::SCheckBox(unsigned int inTextureSetIndex, float inX, float inY, float inWidth, float inHeight, unsigned int dwColor)
-	: SPanel(inTextureSetIndex, inX, inY, inWidth, inHeight, dwColor, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH)
+	: SButton(inTextureSetIndex, inX, inY, inWidth, inHeight, dwColor, TRUE, NULL)
 {
 	m_bValue = 0;
 	m_eCtrlType = CONTROL_TYPE::CTRL_TYPE_CHECKBOX;
@@ -1639,15 +1639,17 @@ int SCheckBox::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, i
 
 	m_bOver = PointInRect(nX, nY, m_nPosX, m_nPosY, m_nWidth, m_nHeight);
 
-	if (dwFlags == 512)
+	if (m_bOver != 1)
 		return 0;
 
-	if (dwFlags != 513)
-		return SPanel::OnMouseEvent(dwFlags, wParam, nX, nY);
+	if (dwFlags == WM_MOUSEMOVE)
+		return 0;
+
+	if (dwFlags != WM_LBUTTONDOWN)
+		SButton::OnMouseEvent(dwFlags, wParam, nX, nY);
 
 	m_bValue = m_bValue == 0;
 	m_bFocused = 1;
-	Update();
 
 	if (m_pEventListener)
 		m_pEventListener->OnControlEvent(m_dwControlID, 0);
