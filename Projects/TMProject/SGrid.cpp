@@ -1520,7 +1520,7 @@ int SGridControl::TradeItem(int nCellX, int nCellY)
 
 		SGridControl* pGridMyItem[3];
 		for (size_t i = 0; i < 3; i++)
-			pGridMyItem[i] = (SGridControl*)pFScene->m_pControlContainer->FindControl(6436);
+			pGridMyItem[i] = (SGridControl*)pFScene->m_pControlContainer->FindControl(i + 6436);
 
 		float nY = 0.0f;
 		float nX = 0.0f;
