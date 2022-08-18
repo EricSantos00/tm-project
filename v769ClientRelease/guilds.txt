@@ -1,0 +1,874 @@
+1 0 2 Whites Whites Whites Whites
+1 0 3 Armagedom Satan Archangels 
+1 0 4 DarkAngels DarkAngel BadAngels WithAngels
+1 0 5 Osiris   
+1 0 6 FEAR   
+1 0 8 SkyAngelS ExrctSky RevoluTioN 
+1 0 9 BlauHeer Schatten Spitzel Shutz
+1 0 10 RevolutioN RevolutioN 2 3
+1 0 11 Tomahawk Destroyers Carcamano Warriors
+1 0 12 DarkArmy AthenaArmy ZeusArmy HadesArmy
+1 0 13 BrotherS NightMare PopStar WarSky
+1 0 14 Hogwarts   
+1 0 15 Darkness   
+1 0 16 NoX   
+1 0 20 Troianos   
+1 0 21 Shadows AS Black Zen
+1 0 22 GoToHell ArThUrxP PhcR maniaq
+1 0 23 FileBeast FileHunter FileFoema FileTrans
+1 0 24 Destroyes Vaya BadBoys BadBoys
+1 0 25 premion   
+1 0 26 DarkForce   
+1 0 27 UnDerDeadS UnDerHeLL KiLLeRs 
+1 0 28 Archs   
+1 0 29 Diablos Demonios  
+1 0 30 SmirNoff   
+1 0 31 Fenix   
+1 0 32 BrForce   
+1 0 33 XacalS   
+1 0 34 DarkSS   
+1 0 36 Seicomp   
+1 0 37 Hellsing HellBoys  
+1 0 38 InSaNoS Corleone  LuNaTiCo
+1 0 39 RedCode   
+1 0 40 REDDRAGONS BRUTALITY FATALITY MORTALITY
+1 0 41 Tabajaras   
+1 0 42 Nightmare Darkness  
+1 0 43 BeginnerSz   
+1 0 44 BlackOrder Legion Illuminati Apocalipsy
+1 0 45 SkyWar SkyWarFire SkyWarArch SkyWarWind
+1 0 47 Lord loyalty courage friendship
+1 0 48 DarckDraco DarckDraco DrackLokos DrackWell
+1 0 49 Supreme   
+1 0 50 DarkAngel   
+1 0 51 WarOFGods FireSoul WaterSoul AirSoul
+1 0 52 SoulReaver FireWall Defiance DeathAngel
+1 0 54 BraveHeart BraveHeart Justice Honor
+1 0 55 ReBirth Tyr Thor Zeus
+1 0 56 DarkLife   
+1 0 57 MoonBlood Rage Iced Sepultura
+1 0 58 TITANS   
+1 0 59 MegasXLR ElitesXLR Kamikase Dark
+1 0 60 MaTaDoReS   
+1 0 62 Destroyers   
+1 0 63 SupLeX DiaManTiN xDiaManTiN DiaManTyN
+1 0 66 Sunshine   
+1 0 67 ExVoLuTioN GodWar  
+1 0 68 DarkMaster   
+1 0 69 MafiaDF   
+1 0 70 Scorpions Black  
+1 0 71 BostinhA   
+1 0 72 EmpirE   
+1 0 73 FaTaL DaNGeR WaRRioR DeaTH
+1 0 74 ELITE Darkness Chaos Unholy
+1 0 75 ImperioDE Trevas Supremus Rammstein
+1 0 77 ReNeGaDoS AcTioN  
+1 0 79 WarGate   
+1 0 80 McBra   
+1 0 83 Intruders DarkAngels DarkEvils DarkSouls
+1 0 86 BlueAngels AngelsDark AchAngels 
+1 0 89 PowerUser   
+1 0 92 ALLIANCE OrionFRONT EtaGUARDS TauSIEGE
+1 0 93 Lords Demons Angels 
+1 0 95 Lider   
+1 0 96 NQS AtitudE Honra Orgulho
+1 0 97 Pride Infinity Duality Revenge
+1 0 99 AlKaEdAs ALJAZEERA MOHAMED BinLaden
+1 0 100 FORBIDDEN Act Jpn Str
+1 0 101 SoulHeaven Paradise SunShine SkyWarrior
+1 0 102 HellNight SoCCeR Fire 
+1 0 103 lClaTzfahl MaoNegra C4s4d0r3s 4rc4nj0s
+1 0 104 NarcoticoS   
+1 0 105 BadBoys   
+1 0 106 Nomades Green Furyans DarkSide
+1 0 107 DarkAges   
+1 0 109 PlAyBoYs SeXy Zoo 
+1 0 111 ShadowKing SHINOBI  
+1 0 113 AllStarS Demolition Revolution Deluxe
+1 0 114 FrAcTiUs 0  
+1 0 115 Spartacus Poseidon  
+1 0 116 ReNeGaDeS HellFire Boundless Urghers
+1 0 117 GodsOfNigh NightWar SpeaCker SeaZonee
+1 0 119 ILLUMINAT   
+1 0 120 OsBaDs BaDs  
+1 0 121 Odiseia AloneDark  Vita
+1 0 122 WildAngelS FallenHell TigerAngeL LionAngeL
+1 0 123 forceblack   
+1 0 125 KaXuHuRvAx AFM  
+1 0 126 ExtClan1   
+1 0 127 HELL Warriors  
+1 0 128 DarkFoemas   
+1 0 129 PlaKillerS   
+1 0 130 DarkFakes   
+1 0 131 WarOfWorld Guardians Strongers 
+1 0 132 666   
+1 0 133 CANGACEIRO IceIsland DasSombras DasTrevas
+1 0 134 MaFiA Russa Alema Inglesa
+1 0 135 Reich Oblivion Panzer NightFall
+1 0 136 KingOFsky Darkness Angels Hellfire
+1 0 137 GoldStar Eizuka Caxao lXBladel
+1 0 140 SteanFront Magycians EXsoldiers Archs
+1 0 141 VagaBonds Relaxados  
+1 0 143 AnjosNight Kevin Vando Kenny
+1 0 144 WST   
+1 0 146 Recife Anigavanos  
+1 0 147 NoStreSs   
+1 0 148 Play4Fan   
+1 0 150 HardNeck TM EADA RedEyes
+1 0 152 AngelsBR Fieis SupremuS SupremoS
+1 0 153 BlakDragon   
+1 0 156 BlackForce MegaForce PowerForce 
+1 0 157 NameOfGods NoobOfKing  
+1 0 158 Chaos raptor templar exorcism
+1 0 159 Spirit   
+1 0 160 R0xDoO   
+1 0 161 JustLeague Superman Batman Flash
+1 0 162 Dominio589 DeTitans DaVida DoSystema
+1 0 163 LOSZICAS   
+1 0 164 DarKillers HealthMage DeadAngels TwisT
+1 0 165 DeltaForce NightWolf TeamForce XForceTeam
+1 0 166 OmG InSaNiTy ThUnDeRs ForCe
+1 0 167 Cruzada   
+1 0 169 DemonLords   
+1 0 170 SickMinder SubverT Influence HalloweeD
+1 0 173 IceGang IceGang Kalintz Amon
+1 0 174 TheDuel   
+1 0 175 HELLDEMONS   
+1 0 176 BlackAnjel Revenger Master SurvivoR
+1 0 177 NOfearTM DESTROY TRANS WAR
+1 0 178 SephiraWAR   
+1 0 179 UnlimiTeD   
+1 0 180 FullMetal Alquimista  
+1 0 181 PsYTeaM   
+1 0 182 ExrtDeShyr   
+1 0 183 ZODIACOS   
+1 0 184 BLADE Magic Trinity Gladiator
+1 0 186 Reyearth Orion MostW 
+1 0 187 BRTEAM WORLDTEAM SKYTEAM HELLTEAM
+1 0 189 OLYMPUS Zeus Athena Hades
+1 0 190 Experts   
+1 0 191 GangstasXD   
+1 0 192 KaMiKaZe   
+1 0 193 HADEN Armia Samech Kafma
+1 0 194 TRIBO VENTO FOGGO ACQUA
+1 0 195 AntiEmos   
+1 0 196 MafiaBm   
+1 0 197 UnderWorld   
+1 0 198 ChernobyL   
+1 0 199 skysLendS   
+1 0 200 SkyLendsTM SkyLendsTM DivineWar Pks
+1 0 201 BomDeBriga DeToNanDo BaTeNdO MaTaNdO
+1 0 202 RecifePE   
+1 0 203 Assassinos ofNIGHT DaNoItE ofDARK
+1 0 204 MaNiaCoS porPVP porBuFF 
+1 0 205 SagiTariuS   
+1 0 206 trollamare Metal  
+1 0 207 IWaRzOn3I MaTaDoR3s PKdores DarkWolf
+1 0 208 Action   
+1 0 209 Jedis Padawan Cavaleiro Mestre
+1 0 210 WolfCreck Yetzirah GoldenEye DarkSide
+1 0 211 REDLAW up side down
+1 0 213 DynaCOOL   
+1 0 214 FireBlack Totality Brutality Honor
+1 0 215 Anjos anjos da escuridao
+1 0 217 UNION ApusScutum AraPhoenix 
+1 0 218 GameOver   
+1 0 219 StRoNdA PrExEcA BaNgErS PlAySoN
+1 0 220 SkyGods Revenger FireZone Element
+1 0 221 kingsOFday Imhotep Osiris 
+1 0 222 Overlords Alchemists Barbarians Demoniacs
+1 0 223 BADBOY BADBOYx1 GangsTers 
+1 0 224 FIRENET Milenium  
+1 0 225 BRUTAIS   
+1 0 226 SoldierGod HollyLife Immortal 
+1 0 227 BATOEmvoce   
+1 0 228 PsYcoTrAi   
+1 0 229 WarRock Infantry Artillery Cavalry
+1 0 230 BlueFalcon Empire Legionary Kinslayer
+1 0 231 estripador   
+1 0 232 DarkFear   
+1 0 234 FireFurBY   
+1 0 235 DarKmaL   
+1 0 236 Tr0jaN   
+1 0 238 YaKuZa Tokio Hiroshima Nagoya
+1 0 239 NinjasRox IKaOsChild PvP WhitePower
+1 0 240 Camorra   
+1 0 241 XxtremexX   
+1 0 242 ALLIANCEll courige fiertre prod
+1 0 243 Slipknot   
+1 0 245 FLECHA   
+1 0 247 FuZiLeRs LordShean  
+1 0 248 PawerIce   
+1 0 249 EuApanho DeTodos  
+1 0 250 SERTAO Agreste Caatinga Oxe
+1 0 251 IKill3rSI   
+1 0 252 Inquisitor   
+1 0 253 Piratas DeNoatun DeAzran DeArmia
+1 0 254 MATO Voce Alguns Noobs
+1 0 255 Arcane TheLegend Cruzader 
+1 0 256 DEUSAS Afrodite Venus Hera
+1 0 258 BlitzKrieg Luftwaffe Panzers 
+1 0 259 Born2Fight Evolution Owned Superion
+1 0 260 TheFenix DarkFlame FireSky Legends
+1 0 261 SOAD Toxicity  
+1 0 263 GRPinside Ghalib  
+1 0 264 SKOLaxados SKOLemon SKOLBeats SKOLTwist
+1 0 265 DemoniacS Redent Conquest Order
+1 0 266 EVOLUTIONS Supremacy IsHonor Megaxrl
+1 0 267 WARRIOR FRIENDS  
+1 0 268 WestCoast   
+1 0 269 Mercenary Gold Silver Brass
+1 0 270 BlackDevil   
+1 0 271 TigerTeam   
+1 0 272 BlueKnight   
+1 0 273 Guardians Odium Excidium Metus
+1 0 274 Terribles Soldiers Warriors Stalkers
+1 0 275 Muquiranas Trompete Muletaaaaa Trairaaaaa
+1 0 276 ShadowHell Phoenix Apocalypse DarWarrior
+1 0 277 GooDBoyS FirEFouR Impact 
+1 0 278 ManowaR KingsMetal WarriorS CouragE
+1 0 279 GodsOfLand SkyWar HellWar 
+1 0 280 BigFamily GreatHeart FriendHand OneHope
+1 0 281 UnReaL   
+1 0 283 Extermin4r Apocalypse pks 
+1 0 284 SkyShield SkyShield Toxic 
+1 0 285 BlackAngel   
+1 0 286 Maniacs   
+1 0 287 Pro Rox SuperRox VeryRox
+1 0 288 IMORTAL   
+1 0 290 PHOENlX ALLIANCE DRAGONS TeSuDoS
+1 0 292 SuPr3mE   
+1 0 293 painkiller   
+1 0 294 FreundeS   
+1 0 295 HellSlayer   
+1 0 296 ReiHuntres MataVc  
+1 0 297 YourDesTny IsDead IsVictory IsHonor
+1 0 298 KingOfWyd PrincOfWyd TheLoRd OfTheRings
+1 0 301 Avenger BlueKiller  
+1 0 302 SeaWinds   
+1 0 303 menblack   
+1 0 305 CERVERUS   
+1 0 306 HelAnGels   
+1 0 307 UNDYING   
+1 0 309 Royals589 FromVenom FromMetal LetsRock
+1 0 311 Indignado   
+1 0 312 ZoloMaster   
+1 0 314 DragonBlue   
+1 0 315 GMGuild   
+1 0 316 Smurfs   
+1 0 320 ALLIANCE.   
+1 0 321 Fusion   
+1 0 322 Twilight   
+1 0 323 Asgard   
+1 0 324 MODTeam   
+1 0 325 BlueDemons   
+1 0 326 GodOFNight   
+1 0 327 DarkSouls   
+1 0 328 Mercen?ios   
+1 0 330 TeamOfWar   
+1 0 331 ShadowFire   
+1 1 3 Prophecy   
+1 1 5 Sephira   
+1 1 9 LorDsOfWyD   
+1 1 10 DarKnights Maximus ArchsWAR SunWars
+1 1 11 BATO EmTodos EmAlguns EmVoce
+1 1 13 ArchAngels   
+1 1 17 DeepFear Alpha Beta Delta
+1 1 18 WarFriends KnightsWF BeastsWF MagesWF
+1 1 19 XXX   
+1 1 21 Templarios   
+1 1 23 OutLaws   
+1 1 25 Batutinhas   
+1 1 26 MeuOvO Esquerdo DoMeio Direito
+1 1 27 Explosion DestroyerS PsyChO RedAlert
+1 1 28 HighLander   
+1 1 29 ExrctDeTyr 1 2 3
+1 1 31 chakals DragomRed GaviaoReal GaviaoReal
+1 1 32 TEMPLARES TEMPLARES1 TEMPLARES2 TEMPLARES3
+1 1 33 TnT ExXpLoSiOn TorNaTos DeMoLiTiOn
+1 1 34 Paradise   
+1 1 36 FearEffect Begins DarkStar KillsWitch
+1 1 37 TRYADE scorpion spider serpent
+1 1 39 Urantia Sub Urantia I
+1 1 40 Stigmata PKs LZs BPs
+1 1 41 YMCA   
+1 1 42 LordGreen   
+1 1 43 Destiny DarKnight  
+1 1 44 bobmoscaTM   
+1 1 45 ElitGroup   
+1 1 48 Tomodachis   
+1 1 49 Akatsuki   
+1 1 50 AnthraX   
+1 1 51 LENDARIOS   
+1 1 53 Arcanjo   
+1 1 54 ThEKiLLerS RoxXx EnDAttacK WYDKilLerS
+1 1 57 GodsOfWar TheGods GodsSephra 
+1 1 58 DeadFish CtR  
+1 1 59 ReinoUnido   
+1 1 61 DarckSoul   
+1 1 62 Eletro EletroFuck warrios storm
+1 1 63 GetBackers Volts LetsRock eLiTe13
+1 1 64 BlueBlood   
+1 1 65 AnarKistaS RadiKaiS  
+1 1 66 BadRabbit VeryBads Bads Goods
+1 1 67 Loves GeateX ProS2 Saionara
+1 1 68 WalkOn   
+1 1 69 EvilHordes   
+1 1 70 CaoslegioN ImperioS ByTheWay 
+1 1 71 RAGNAROK   
+1 1 72 EurOManOs   
+1 1 73 ExcrtDeLin Fragosos  
+1 1 74 XiuNoob   
+1 1 75 ArchersPks   
+1 1 76 XTheChaosX   
+1 1 77 FRIENDS   
+1 1 78 InFiNiT InFiNiT 4EveR 
+1 1 79 matsuguma   
+1 1 80 Kaldra Killers  
+1 1 81 XtremeTM Loyalty Honor Dignity
+1 1 83 NightWolf Might Strenght 
+1 1 84 Earthquake Thunder Fire Water
+1 1 85 Sparda   
+1 1 86 KOA   
+1 1 88 STARS Alpha Bravo Nemesis
+1 1 90 ScorpionXL   
+1 1 91 Sworder   
+1 1 92 SagradoS SageSSS AngeLSS MagiCSS
+1 1 97 GodsOFWyd   
+1 1 100 PinkSquad   
+1 1 101 Revenge   
+1 1 104 MASTERDIVE   
+1 1 105 wannaFuck   
+1 1 106 HellAngels Nightmare Revenge Justice
+1 1 107 AVANTASIA   
+1 1 108 Uktenas   
+1 1 109 Sephiroths   
+1 1 110 Eridion Clan Mints War
+1 1 112 KimeraCaos HOLYS DarkHole DarkFire
+1 1 114 Heineken kiLLerS LongNeck 350ml
+1 1 115 InCreD VIPS 4eVeR 
+1 1 116 AteCubanos   
+1 1 117 SPyWaRE Hells MeTr3S PhoniX
+1 1 119 GENESES geneses proverbios apocalipse
+1 1 121 XxNoFeArxX   
+1 1 123 SuPr3m3 Atena Ares Artemis
+1 1 124 AUSWIRKUNG IhFudeuxD SCHATTEN iMPaCT
+1 1 125 CreAtiVe   
+1 1 128 IrMaNdAdE   
+1 1 129 SatanMinds Lucifer Andariel Mephisto
+1 1 130 Cerberus Hell Gates Guardian
+1 1 131 Kaiser   
+1 1 132 system Demolicher  
+1 1 133 VorTeX   
+1 1 134 RocoLokos   
+1 1 135 EviL   
+1 1 136 PSYCOS   
+1 1 138 ALPHA Force  
+1 1 139 LoveXtreme   
+1 1 140 RocKeiroS DroGadOs ChaPadOs AmaDicoAdo
+1 1 141 LoKuRa   
+1 1 142 Guardian Angels Masterkill Demons
+1 1 143 SoulAngels Gods Heaven Sky
+1 1 144 SeXySTyLe   
+1 1 145 Huntress   
+1 1 146 AnonimousS jAckAsS HardC 
+1 1 147 Sayajin Majins Tsufurus Kaioshins
+1 1 148 XBrAnCoXLR GangsterS BaNdItS RoBBerS
+1 1 151 SoulSociet DarkSide  
+1 1 152 FiReDrAgOn Egregora Mamelucos Manikomio
+1 1 153 ELEMENTS ATACKERS DEFENDERS DARKSIDE
+1 1 154 BaDBoIs Red Blue Green
+1 1 155 ShadowClan FearShade FoReVeR forGLORY
+1 1 156 EXterMino   
+1 1 157 ZoDiAcS AsGaRd PoSsEiDoN HaDeS
+1 1 158 Bater Scoorpion  
+1 1 159 StyLeEX   
+1 1 160 APANHO DeTodos DeAlguns DeVoce
+1 1 161 OsPinto KatiaPinto  
+1 1 162 tenplarios   
+1 1 163 FearEfectt Imperius SerialKill 
+1 1 164 Sacrifice Diabolic BloodHell Imortality
+1 1 165 Otep   
+1 1 166 Chosen  Sacrifice Damned
+1 1 167 PeRFecTs PLayerS MurderS ARmY
+1 1 168 DarkKnight Dignity Honor Honest
+1 1 169 DeathAngel   
+1 1 170 FrezonKing Apokalipsy Dignity OUTLAW
+1 1 171 XForce   
+1 1 173 SANCTHUARY   
+1 1 174 Toxic Dangerous Nervous Poisonous
+1 1 175 TraceMinds   
+1 1 176 DRAGONS FRIENDSHIP BABALITY ANIMALITY
+1 1 177 Avalanche   
+1 1 178 PKdores NoKs NoPk NoKill
+1 1 179 ISENGARD Orcs ShadowLord Sauron
+1 1 180 OneWay   
+1 1 181 GangsterS   
+1 1 182 wArLoCk BlackFire  
+1 1 184 DragonFire DragonFire DragonHell DragonLord
+1 1 185 Perfect War Religion 
+1 1 188 OsPatetasS   
+1 1 189 SirDragon MrsDragon  FuryDragon
+1 1 190 HOLYSPEAR NewArrow  
+1 1 191 ExTerMiNaR Nobbs  
+1 1 192 DaRkSiDe INFERNAL DIVINO LIFE
+1 1 194 Seita OfHell Satanica DarkSide
+1 1 195 Intocaveis Valkyries Delta Stigma
+1 1 196 UnLIMITEDz LosT OrdeR ChaoS
+1 1 197 EMODRAGONS   
+1 1 198 Reclusao Humana Natural Fisica
+1 1 199 Kaosline Serpentine RedFour Mortine
+1 1 200 MoonWalker   
+1 1 201 SSayajins Evil Black Storn
+1 1 202 Afrodite   
+1 1 204 ScKillers   
+1 1 206 Crusaders BloodCross  
+1 1 207 TreisOitao NaBunda NaTesta NaNuca
+1 1 208 KC   
+1 1 210 Magicians courage proror profission
+1 1 211 emo   
+1 1 212 FoX Silver  
+1 1 213 FearDevils   
+1 1 214 PsyForce   
+1 1 215 XFighterS   
+1 1 216 Apostos Survivor Armageddon BioHazard
+1 1 217 FuckingYOU   
+1 1 218 RedBullxD   
+1 1 219 godsOfsky   
+1 1 220 Bentos deOuro  
+1 1 221 FireHorse   
+1 1 222 NaoBATO   
+1 1 223 NewAge   
+1 1 224 MARVEL   
+1 1 225 Meu0vo   
+1 1 226 SuPr3m3.   
+1 1 227 Armaggedon   
+1 1 228 LosFr4gs   
+1 1 229 Cl?erfecT   
+1 1 231 Espartanos   
+1 1 232 DragoNFury   
+1 1 233 DyNasTy   
+1 1 235 K1LLZ0N3   
+1 2 4 Seth Necron Omicon 
+1 2 7 SWAT   
+1 2 9 WYDKILLER   
+1 2 13 GuildaPW Peaceful Warriors Trocadores
+1 2 14 SOLS Templario SMURFS 
+1 2 15 ShowTime GodsOfWar  
+1 2 18 NovaEra Era01 Era02 Era03
+1 2 19 O44   
+1 2 22 Warriors   
+1 2 24 DeMeNTz   
+1 2 26 Apocalypse Apocalypse Apocalypse Apocalypse
+1 2 27 Umbrella Biohazard STARS RPD
+1 2 28 Sanctuary   
+1 2 31 BruXoS WarFriends KnightsWF 
+1 2 32 AngelsAsh DragonsAsh AngelsAsh AngelsAsh
+1 2 33 NigthAngel   
+1 2 35 TapensesSA PuxaSalame  
+1 2 36 Uchiha FmL2  
+1 2 37 AnGeLsS   
+1 2 38 OverWhelM   
+1 2 39 Jyhad Nemesis Vermillion 
+1 2 40 0siris   
+1 2 41 DragSlayer   
+1 2 42 PuNiSHeRS ArAwN Gondor 
+1 2 43 HEROIS   
+1 2 44 SlowerKill   
+1 2 45 HOTCROSS   
+1 2 46 Insanes 1 2 3
+1 2 47 DarkDemons   
+1 2 48 Shinys XxShinysxX XxShinysxX XxShinysxX
+1 2 49 Arcanjos Brothers Naruto 
+1 2 50 RONINS OsRebeldes Killers Sharingan
+1 2 51 FiReAnGeLs IceAngels HellsAngel FlyAngels
+1 2 52 maceio terra007  
+1 2 53 XextremerX XmetralX XmestreX Xgoldendor
+1 2 54 DarkMages DarkFoemas Foemas FoemasWar
+1 2 55 Demons   
+1 2 56 JaspiDea   
+1 2 57 Incriveis   
+1 2 58 WanTeD Theft Died 
+1 2 59 OnlyFoemas DarkFoema TheWindtk GhostDark
+1 2 60 lnx   
+1 2 61 Sleipnir Odin Thor Loki
+1 2 62 Nikerus Nks Rt Mb
+1 2 63 MyBigEggS   
+1 2 64 OsBeauty   
+1 2 65 WarriorAge   
+1 2 66 DraconianS   
+1 2 67 KnockOut DreamTeam  
+1 2 68 NightWar Hell Earth Sky
+1 2 69 Ekilibrium   
+1 2 70 Andarilhos DaNoite  
+1 2 75 BlodShower   
+1 2 76 TheLords   
+1 2 77 LaRgAdOs WaRRiOs FaNtAsTiC 
+1 2 78 AnjosBlack NigthAtak  
+1 2 79 Angel DivineArmy SkyGuard GodSoldier
+1 2 80 BastarDs   
+1 2 81 NbL4nD Galacticos Okata Spyro
+1 2 82 DarkDragon LordDragon LordTaurus LordPsycho
+1 2 83 LeBluE AngelS Silver MurderS
+1 2 84 GaMeOoVeRS   
+1 2 86 DarkPlayer Pks ArchS KillerS
+1 2 87 LordsOfWar   
+1 2 88 OsRoX ZaUm  
+1 2 89 XxAliancex   
+1 2 91 SimpsonS   
+1 2 92 DragonFury DFnny Surf Pitbull
+1 2 93 DeFeNdErS GuArDiAnS Warrior 
+1 2 94 TheEnd   
+1 2 95 KindonS   
+1 2 96 ALQUIMISTA HOMUNCULOS FederaL 
+1 2 97 Apocalipse General Coronel Tenente
+1 2 99 KAMELOT   
+1 2 100 infernus Capeta Demonio Diabo
+1 2 102 SentaPua Defenders Guardians Xplosion
+1 2 103 Kelemvor Advor Kelem Balem
+1 2 104 iAm God  
+1 2 105 DinoLindo   
+1 2 106 MATRIX NeO MorpheU TrinitY
+1 2 107 Avalon Lancelot Excalibur SantoGraal
+1 2 109 NoStyleTM   
+1 2 110 NighSpace War Hell NighWar
+1 2 111 DevilNight Storm Nightmare LichLords
+1 2 112 Necromancy Darkness Nigthmare Domination
+1 2 113 AntiEmo   
+1 2 114 HyperTM SilentDark  
+1 2 115 Barons Elite Insanity Fury
+1 2 116 WarKnights   
+1 2 118 INTERPOL CHAOSTEORY SOLDIERS VIETNA
+1 2 119 UnSagrada DaMorte  
+1 2 120 Unit KillerS DragonS UnitMaster
+1 2 121 CONEXAO   
+1 2 122 666ANGELS   
+1 2 123 MagNaTas   
+1 2 125 WANTEDs   
+1 2 126 SkinRed   
+1 2 128 PoSsuiDoS   
+1 2 129 Astros StarS MooN 
+1 2 130 VAMPIRE night Protector eternament
+1 2 131 Emperors   
+1 2 132 LegionS Soldz Nght Coss
+1 2 133 DIADORA xDIADORAx XDIADORAX xDIADORAX
+1 2 136 MagoOfChao   
+1 2 137 PayDay Premiun Gold Silver
+1 2 138 CdN   
+1 2 139 BlueFirexD CriatureS EliteforcE 
+1 2 141 FataLFury   
+1 2 143 RevoLTz   
+1 2 144 SkyLords   
+1 2 145 Imperium Master Africano 
+1 2 146 KiLLeR DeM0nYaC SaTaNyC pK
+1 2 148 HellBoys Avengers advanced GoToHell
+1 2 149 HellsMinds   
+1 2 150 DarkSun   
+1 2 151 SilverLord Redeye  
+1 2 152 NbL4nD5   
+1 2 154 FBI   
+1 2 155 suicida vaivendo  
+1 2 156 SuperioreS   
+1 2 157 DarkNesses Gods Angels Warriors
+1 2 158 CTB Comando Tatico Brasileiro
+1 2 160 Legacy OfHell OfDeath OfSatan
+1 2 161 BANGUERS   
+1 2 162 SayintSeya   
+1 2 163 Apocallyps Armagedon IceStorm BurnInHell
+1 2 164 HOOLIGANS   
+1 2 166 Arsenal   
+1 2 168 Freeride DownHill FreeStyle DirtyJump
+1 2 169 SadicoS Destroyer Cruelty Sanguinary
+1 2 171 CheGadoS   
+1 2 172 UnderLand   
+1 2 173 GodsOfHell NeterHelm HellOfDark HellOfMage
+1 2 175 Drag?s   
+1 2 176 PlayBoOyS   
+1 2 178 4TheGlory   
+1 2 179 GodOfWar   
+1 2 180 SPARTANS   
+1 2 181 Revolution   
+1 2 182 TORMENTOS   
+1 2 183 PoiSoN   
+1 2 184 50Cent   
+1 2 185 La-Onda   
+2 0 1 SupremoS Fatality Brutality Animality
+2 0 2 CSiTeam ArcanoS DwarfS GiantS
+2 0 3 BOSS EnemieS Feared Delinquent
+2 0 4 BhC   
+2 0 5 SephLorDs XtreMe OutBreaK 
+2 0 8 Avengers DiaboliC SaintS KnightS
+2 0 9 Excellence Passion Acords OxMen
+2 0 11 proK Advanceds Legends Warriors
+2 0 14 OngBaK Shinigami Hollow 
+2 0 16 WFriends Demons Templarios MyFans
+2 0 17 NoisCapota   
+2 0 18 EleveN   
+2 0 21 NewDestiny Evil Angel AlQaeda
+2 0 23 ExtClan   
+2 0 25 TheBest   
+2 0 26 SuperFoema   
+2 0 28 Monsters GeaTeX Dark Paulera
+2 0 29 Angels   
+2 0 30 FamiliaPks Adams Simpson Flinstones
+2 0 31 NoMercy   
+2 0 32 FaNaTiCoS COLISEU BroderHood 
+2 0 33 DARKWOLF   
+2 0 34 Ninjas   
+2 0 35 DistorcioN Damage Ressurect Fun
+2 0 36 N1ghtm4r3   
+2 0 63 SKYLENDs  Fear 
+2 0 64 ALIANCE TEAM FuSiON 
+2 0 65 Divinos   
+2 0 66 Revengers Revengers Lunatics FearEfect
+2 0 68 BlackSheeP   
+2 0 70 JaMmAnTaS   
+2 0 71 Gaia BlackMoon ArchAngels 
+2 0 72 Alchemist   
+2 0 73 Arkanjos WhitFire Gtx NightFire
+2 0 75 FuSiOn DarkNights Explosion Division
+2 0 76 Whatahell WARRIORSS  
+2 0 77 DestroYer Brothers ReciCLadO ProJect
+2 0 78 Mythology Empires Dynasty Legions
+2 0 79 TheTitans OdinRox IsisRox HadesRox
+2 0 80 Shadallu Antinoobs  
+2 0 81 Suicidas Sorahs Dheysons Shamas
+2 0 82 Colonia Demo Legends Templarios
+2 0 83 EyeOfHoruS   
+2 0 84 killers supremo mal killers
+2 0 85 CruzadasBR MoonLight Eternity Gladiador
+2 0 86 ElitePK Mercenario Mafia Hizbollah
+2 0 87 pLay10 pLay10 FriendS 
+2 0 89 TopPlayers   
+2 0 90 WYD   
+2 0 91 Damonen AsSAssiNS Dunkel Bumsen
+2 0 92 inFernaiZ   
+2 0 93 Neith   
+2 0 94 Damaged   
+2 0 97 CaVaLeIrOs   
+2 0 98 MacaBroX PheniX 360D 
+2 0 99 MasterS Sky TranS Land
+2 0 100 Heartless Angels Fighting SheeP
+2 0 101 imperius   
+2 0 102 FantaSy Black Blue White
+2 0 103 ExiLaDoS   
+2 0 105 SevenDays YourFear YourCry YourDie
+2 0 106 UnDeRw0rLd FrIEnDs SpEcTrOs GoDs
+2 0 107 TeSuDoS KbuLosOs MaTaDoReS AbUsAdOs
+2 0 108 DESTYNI DESTYNI MATADORES 
+2 0 109 SptGoDs DarKdemmon Elementais Tremor
+2 0 110 NeMeSiS Profecy Deastiny 
+2 0 111 Espartacos Gaia Troia Atenas
+2 0 112 SOLDIER   
+2 0 115 ThunderCat Hooo Xitara Munha
+2 0 116 GreenLayer   
+2 0 119 DeMenTs StriKerS VinGaDoReS 
+2 0 121 EcLiPs Lunar eSTRELAR SoLaR
+2 0 122 Metroid ReloadeD  
+2 0 123 Arch   
+2 0 125 FuRiOuS GeNeSiS ExTrEmE 
+2 0 126 Swats   
+2 0 127 Rangers Eagles  
+2 0 128 TheExtreme SkarlaTach  
+2 0 130 BuCeTiNhAs GaTasWyD  
+2 0 131 Shadowkhan   
+2 0 132 lSnowAngel boyz Lords LOOK
+2 0 133 TiTanSS EvoLuTioN WaR VinGaDoReS
+2 0 134 Trutas Lambaris Piranhas Baleias
+2 0 135 Disturbed   
+2 0 136 Desprezo   
+2 0 137 ArchFoemas NewOrder DevelStret 
+2 0 139 SkyEliteZ   
+2 0 140 WYDIIFC   
+2 0 141 EvilForce   
+2 0 142 Imperio Gondor Mordor 
+2 0 143 Comando devilloka Colossus 
+2 0 145 Blackmors DaRkS Killers 
+2 0 146 Atomic Proton Eletron Neutron
+2 0 147 ALLlANCE   
+2 0 148 Joker   
+2 0 149 Atlantys Horus Efesto Hades
+2 0 150 Sigma   
+2 0 153 PoweR   
+2 0 154 PsyAnGeLs PerFecT AbiSmO SorcEs
+2 0 155 TheDragon xD EleTrics 
+2 0 156 Armagedon FoemaS Huntress Tks
+2 0 158 Redbat   
+2 0 159 LordChaos Cursed  
+2 0 160 SoulMinds ParaAtaque ParaDefesa ParaAjudar
+2 0 161 Doors Sky Apocalypse Heroin
+2 0 162 SkYLifE Skyy Lifesky LifESkY
+2 0 163 Omega   
+2 0 165 LovsGang   
+2 0 166 Burnout Dominator  
+2 0 167 Poseidon Extreme Destroyer Defenders
+2 0 169 PhanTonS AsW InfinityS IspequitrO
+2 0 170 NoFear   
+2 0 171 Imunios Force demonios furios
+2 0 172 WForce   
+2 0 173 TheLegend Wyd Extreme World
+2 0 174 blackdrago RYderSs  
+2 0 175 Domain OfKillerS OfGods FunnyLove
+2 0 176 Yakusa Dragoes  
+2 0 179 EnemieS   
+2 0 180 Liberdade   
+2 0 181 IceForce DarkSpider  
+2 0 183 LordFenix Supremo Xstress METAL
+2 0 186 SiNtEtIcAs   
+2 0 187 Nippleheim   
+2 0 188 WyDragons   
+2 0 189 PySiCozEuS DarkGuild Submition BlackLife
+2 0 190 FraQuiN deFendeR megaPOWER evolutioN
+2 0 191 ThECoManD azul vermelha branca
+2 0 193 Draconyons Guardians  
+2 0 194 OrdemFenix Xplosion Xtreme 
+2 0 195 PHANTEON Lican  
+2 0 196 DranWolf   
+2 0 199 Tornados   
+2 0 201 RedAngels GodOfHell GodOfWar 
+2 0 202 AnGeS  SupremoS MaximuS
+2 0 205 Demolidors   
+2 0 206 Forever Diamonds Archangel Brothers
+2 0 207 DeltaS   
+2 0 209 SemXorah SemXorah defendeR 
+2 0 210 TheMarvels   
+2 0 211 SoulDecea   
+2 0 212 redhurric arsurf princizza cabesssa
+2 0 213 CaruaruTKD   
+2 0 214 MaTaDor   
+2 0 216 guildtest   
+2 0 217 Ol?   
+2 0 218 FAITHnMORE   
+2 0 219 ReVoLuTioN   
+2 0 220 HALLOWEEN   
+2 0 222 Warrior   
+2 0 223 Apocalypse   
+2 0 224 Anarkia   
+2 0 225 AAALOOOHHAA   
+2 0 226 4Ever   
+2 0 227 Red   
+2 0 228 AnhanguerA   
+2 0 229 Drakons   
+2 0 230 YNFINITY   
+2 0 232 HeroeS   
+2 0 233 Fantasy   
+2 2 1 inSaniTy BeginS Trinity nTx
+2 2 3 ChaRuTosS CUBANOs ImPoRtAdOs NaCiOnAiS
+2 2 4 DarkDemmos   
+2 2 5 WARFRlENDS Sorceres  
+2 2 7 Justice   
+2 2 8 Hogwartz Grifinoria Sonserina LufaLufa
+2 2 9 OwNed   
+2 2 10 XploadTM Xtreme Xplosion 
+2 2 12 ImOrTAis HiLLanDerS EteRNaL FeNiX
+2 2 14 HellFire XtremeSoul EnemieS DeviLs
+2 2 15 Force SupremoS MaximuS ReluxX
+2 2 16 KnightsBR IntecQues ResverSex 
+2 2 18 Phoenix Driade Fury Witchcraf
+2 2 19 KABOOOMMM MaTaPatO FastKiller OsAmAs
+2 2 20 eKiLL   
+2 2 27 PCC SP RJ WYD
+2 2 28 BrChoice   
+2 2 29 Guerreiros   
+2 2 30 ReSiDenT Evil Dark Intruder
+2 2 31 TaiPans Ronins  
+2 2 32 Battery DeepFear Boss Feared
+2 2 33 WarLords ManiacKs  
+2 2 34 Colossus OutLaws Glyphs Tiamat
+2 2 35 OsPiOres xXtremeXx  
+2 2 36 Terrorista Alqaida Baguida Jerusalem
+2 2 37 White   
+2 2 38 EternoS FanaTicoS ImOrTAis RocKs
+2 2 39 SethTeam Necron Omicon Owns
+2 2 40 WydWar BestWar CrazyWar BadWar
+2 2 41 MidleEarth Gondor Rohan Valinor
+2 2 42 DraGoNsCV PKSrexPKS VLdragonVL VynynhuPK
+2 2 43 AsssinosBR   
+2 2 44 KnightsWyd WarriorS ArcherS DruidS
+2 2 45 Tragic   
+2 2 46 DeuseS SupremoS  
+2 2 47 GodsChaos Mystic Saintet Slayer
+2 2 48 WyDmAsTeRs ReVoLuTiOn DaRkNeSs 
+2 2 49 OliMPiKuS   
+2 2 50 Skoll 500ml Beats Redondia
+2 2 51 SKY   
+2 2 52 JapanBr   
+2 2 58 Scorpion NightAngel DaRk TheBest
+2 2 59 BlackHouse   
+2 2 60 PVPs Armia Erion Arzan
+2 2 61 Demolisher Evouke Experience Evil
+2 2 62 FIREFOX PUTNYYO PARAMEDYYS FIREBADKIS
+2 2 63 ProTeam TheKillers TheDemons TwisterS
+2 2 64 DarksWild   
+2 2 65 Angelics   
+2 2 67 Knights Blacks  
+2 2 68 BROTHERWYD BROTHEANJO BROTHERWAY CROSLION
+2 2 69 GoDLiKe Owned NeverMore mamamya
+2 2 70 BlackNigth izZoO  
+2 2 71 LEVIATHAN EXTREME MALDRAVES SORDADU
+2 2 73 ANTICRISTO LORDFETO  
+2 2 74 Colossusw   
+2 2 75 MyFans   
+2 2 76 AliAdOs   
+2 2 77 TheForce Fury Phoenix UnderWater
+2 2 78 IAMEXTCLAN FIRE  
+2 2 80 Quezacotl VonDutch BillaBong HaradWarrh
+2 2 81 Authority MaXimuS  
+2 2 82 king ofwar ofwarriors ofchaos
+2 2 84 XAechers GTS DaRkNeSs 
+2 2 85 MeiKai Hades Thanatos Hypnos
+2 2 86 brutals   
+2 2 87 LongNight ForEver DeathNever GreenNight
+2 2 88 BlackRose Squad  
+2 2 89 LordFeras   
+2 2 90 FuriousAPN associasao poeteros nomades
+2 2 91 Imperial   
+2 2 92 GodKnights Red Black White
+2 2 93 Just4Fun   
+2 2 94 LaPeRgUnTa ArchFoemas BR Team
+2 2 98 Commandos   
+2 2 99 Guardioes   
+2 2 100 ExcaLibuR TheBest TheFire Masters
+2 2 101 DarkSpider TheDark TheProdigy BlackSpide
+2 2 102 TremeTreme TremeTreme SupremoX AvengersX
+2 2 104 CavdaLuz Celestiais Divindades Imortais
+2 2 105 SkyForce FireForce  
+2 2 106 GLADIATORS   
+2 2 107 NewOrder Dominium LeGeNdS 
+2 2 108 ArucarD HatreD  
+2 2 109 Ancients Kings Demons 
+2 2 110 FodasticoS Yakuza  
+2 2 111 MegaForce   
+2 2 112 MuTiLaDoR   
+2 2 113 CoLiSiOnEx   
+2 2 114 Eternity   
+2 2 115 Lost Team Sevanters Legenders
+2 2 116 WarOfRohan   
+2 2 117 TheAngels   
+2 2 118 DarKWarS LoRdS CrAzYs TheTitans
+2 2 119 lAFFl Cashers TaOsso PotaNoob
+2 2 120 MatanZza   
+2 2 122 AuRoRa   
+2 2 128 Pevertidos bonus theofs kojak
+2 2 129 DarkWeters DarkFury  
+2 2 131 MayDestyny   
+2 2 132 MadMax Destroyer  
+2 2 133 RedNose   
+2 2 135 bluehorse   
+2 2 140 DragonBlak   
+2 2 143 Prodesmine   
+2 2 144 Freedom Fraternity  
+2 2 145 CurimDruid   
+2 2 146 DemonBlack   
+2 2 147 FodeX DemaiS  
+2 2 149 guildgm   
+2 2 150 WFriend   
+2 2 153 Destruction   
+2 2 154 RedDragon   
+2 2 155 DeltaForce   
+2 2 156 MATRIX   
+2 2 157 EmOxInHoS   
+2 2 158 SUPREMOS   
+2 2 159 SKOLtados   
+2 2 160 SOBERANOS   
+2 2 161 TheTrinity   

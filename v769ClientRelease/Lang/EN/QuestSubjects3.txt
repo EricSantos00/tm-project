@@ -1,0 +1,5 @@
+351	FFFFFF	00	Discovery of the 4 Crystal		
+355	FFFFFF	10	An oath with the Water Spirits		
+355	FFFFFF	11	An oath with the Wind Spirits		
+355	FFFFFF	12	An oath with the Fire Spirits		
+355	FFFFFF	13	An oath with the Earth Spirits		

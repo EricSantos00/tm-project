@@ -1,0 +1,223 @@
+//----- (00504E30) --------------------------------------------------------
+_WORD *__thiscall TMFieldScene::OnPacketEvent(_BYTE *this, int a2, int a3)
+{
+  _BYTE *v3; // esi@1
+  _WORD *result; // eax@1
+  __int16 v5; // ax@2
+
+  v3 = this;
+  result = (_WORD *)sub_50CDD0(this, a2, a3);
+  if ( result != (_WORD *)1 )
+  {
+    v5 = *(_WORD *)(a3 + 4);
+    switch ( v5 )
+    {
+      case 868:
+      case 867:
+        result = (_WORD *)sub_4E8DC0((int)v3, a3);
+        break;
+      case 876:
+      case 870:
+        result = (_WORD *)sub_4E1280(v3, a3);
+        break;
+      case 449:
+        result = (_WORD *)sub_4DB3D0(a3);
+        break;
+      case 819:
+        result = (_WORD *)sub_4E88C0(v3, a3);
+        break;
+      case 263:
+        result = (_WORD *)sub_4DAAC0(a3);
+        break;
+      case 261:
+        result = (_WORD *)sub_4E89A0(v3, a3);
+        break;
+      case 262:
+        result = (_WORD *)sub_4E8B20(v3, a3);
+        break;
+      case 820:
+        result = (_WORD *)sub_4E3F40(v3, a3);
+        break;
+      case 1969:
+        result = (_WORD *)sub_4DABB0((int)v3, a3);
+        break;
+      case 946:
+        result = (_WORD *)sub_4E11F0(v3, a3);
+        break;
+      case 947:
+        result = (_WORD *)sub_4E1250(a3);
+        break;
+      case 931:
+        result = (_WORD *)sub_4DADA0(a3);
+        break;
+      case 278:
+        result = (_WORD *)sub_4E4230(v3, a3);
+        break;
+      case 1322:
+        result = (_WORD *)sub_4E42E0(v3, a3);
+        break;
+      case 266:
+        result = (_WORD *)sub_4DAE00(a3);
+        break;
+      case 276:
+        result = (_WORD *)sub_4E12C0((int)v3, a3);
+        break;
+      case 1000:
+        result = (_WORD *)sub_4E4880((int)v3, a3);
+        break;
+      case 923:
+        result = (_WORD *)sub_4E4640(v3, a3);
+        break;
+      case 825:
+        result = (_WORD *)sub_4E1500(v3, a3);
+        break;
+      case 395:
+        result = (_WORD *)sub_4DAEB0(v3, a3);
+        break;
+      case 622:
+        result = (_WORD *)sub_4E1530(v3, a3);
+        break;
+      case 373:
+        result = (_WORD *)sub_4E1A30((int)v3, a3);
+        break;
+      case 369:
+        result = (_WORD *)sub_4E1B40(v3, a3);
+        break;
+      case 884:
+        result = (_WORD *)sub_4E1CA0(v3, a3);
+        break;
+      case 367:
+        result = (_WORD *)sub_4DAED0((int)v3, a3);
+        break;
+      case 919:
+        result = (_WORD *)sub_4E8000((int)v3, (const void *)a3);
+        break;
+      case 886:
+        result = (_WORD *)sub_4E1DA0(v3, a3);
+        break;
+      case 380:
+        result = (_WORD *)sub_4F3480((int)v3, a3);
+        break;
+      case 889:
+        result = (_WORD *)sub_4DAF00(a3);
+        break;
+      case 890:
+        result = sub_4E46B0(v3, a3);
+        break;
+      case 824:
+        result = (_WORD *)sub_4E1ED0(v3, a3);
+        break;
+      case 895:
+        result = (_WORD *)sub_4FD6D0(v3, a3);
+        break;
+      case 893:
+        result = (_WORD *)sub_504820(a3);
+        break;
+      case 894:
+        result = (_WORD *)sub_504930(v3, a3);
+        break;
+      case 658:
+        result = (_WORD *)sub_4DAF10((int)v3, a3);
+        break;
+      case 904:
+        result = (_WORD *)sub_4E20E0(v3, a3);
+        break;
+      case 903:
+        result = (_WORD *)sub_4E2130(v3, a3);
+        break;
+      case 397:
+        result = (_WORD *)sub_4FCF70(a3);
+        break;
+      case 406:
+        result = (_WORD *)sub_4F3570(v3, a3);
+        break;
+      case 888:
+        result = (_WORD *)sub_4E2180(a3);
+        break;
+      case 412:
+        result = (_WORD *)sub_4EA920(v3, a3);
+        break;
+      case 935:
+        result = (_WORD *)sub_4FA710(v3, a3);
+        break;
+      case 940:
+        result = (_WORD *)sub_4DAFD0(a3);
+        break;
+      case 929:
+        result = (_WORD *)sub_4DB000((int)v3, a3);
+        break;
+      case 944:
+        result = (_WORD *)sub_4DB0A0(v3, a3);
+        break;
+      case 936:
+        result = (_WORD *)sub_4DB130((int)v3, a3);
+        break;
+      case 932:
+        result = (_WORD *)sub_4DB200(a3);
+        break;
+      case 930:
+        result = (_WORD *)sub_4E2340(v3, a3);
+        break;
+      case 955:
+        result = (_WORD *)sub_4DB210(v3, a3);
+        break;
+      case 447:
+        result = (_WORD *)sub_4DB2A0((int)v3, a3);
+        break;
+      case 871:
+      case 925:
+      case 926:
+        result = (_WORD *)sub_4EA930(v3, a3);
+        break;
+      case 453:
+        result = (_WORD *)sub_4DB480(a3);
+        break;
+      case 454:
+        result = (_WORD *)sub_4DB490((int)v3, a3);
+        break;
+      case 712:
+        result = (_WORD *)sub_4DB580((int)v3, a3);
+        break;
+      case 450:
+        result = (_WORD *)sub_4DB5F0(a3);
+        break;
+      case 3523:
+        result = (_WORD *)sub_4DB620(a3);
+        break;
+      case 975:
+        result = (_WORD *)sub_4DB6A0((int)v3, a3);
+        break;
+      case 976:
+        result = (_WORD *)sub_4DB780(v3, a3);
+        break;
+      case 1002:
+        result = (_WORD *)sub_4F2C00(v3, a3);
+        break;
+      case 753:
+        result = (_WORD *)sub_4DBB10((int)v3, a3);
+        break;
+      case 754:
+        result = (_WORD *)sub_4DBE70((int)v3, a3);
+        break;
+      case 757:
+        result = (_WORD *)sub_4FCC90((int)v3, a3);
+        break;
+      case 759:
+        result = (_WORD *)sub_4E27A0((int)v3, a3);
+        break;
+      case 760:
+        result = (_WORD *)sub_4DC110((int)v3, a3);
+        break;
+      case 15900:
+        result = (_WORD *)sub_4E4AB0((int)v3, a3);
+        break;
+      case 942:
+        result = (_WORD *)sub_4E24B0(a3);
+        break;
+      default:
+        result = 0;
+        break;
+    }
+  }
+  return result;
+}

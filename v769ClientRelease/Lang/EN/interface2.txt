@@ -1,0 +1,10 @@
+FFFFFF Open Character Info Window
+FFFFFF Open Inventory
+FFFFFF Open Chracter Skill Window
+FFFFFF Open Party Window
+FFFFFF Open Map/Minimap
+FFFFFF automatic skills bar ON/OFF
+FFFFFF PK Mode ON/OFF
+FFFFFF Toggle Character Name ON/OFF
+FFFFFF Change Camera View
+FFFFFF 

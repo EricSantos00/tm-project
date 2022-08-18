@@ -48,6 +48,8 @@ int SControl::OnPacketEvent(unsigned int dwCode, char* buf)
 
 int SControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
 {
+	m_bOver = PointInRect(nX, nY, m_nPosX, m_nPosY, m_nWidth, m_nHeight);
+	Update();
 	return 0;
 }
 
@@ -265,9 +267,11 @@ int SPanel::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int 
 	if (m_dwControlID == 65943 || m_dwControlID == 65947)
 		return 0;
 
+
+
 	int bInCaption = PointInRect(nX, nY, m_nPosX, m_nPosY, m_nWidth, 24.0f);
 	m_bOver = PointInRect(nX, nY, m_nPosX, m_nPosY, m_nWidth, m_nHeight);
-
+	m_cOver = m_bOver;
 	if (m_bOver == 0 && m_pDescPanel != nullptr)
 		m_pDescPanel->SetVisible(0);
 
@@ -2069,6 +2073,10 @@ SListBoxItem::SListBoxItem(const char* istrText, unsigned int idwFontColor, floa
 	m_eCtrlType = CONTROL_TYPE::CTRL_TYPE_LISTBOXITEM;
 	m_bBGColor = 0;
 	m_dwTime = 0;
+
+	m_pBackSelection = new SPanel(566, inX - 2.0f, inY, inWidth, inHeight, 0xFFFFFFFF, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
+	m_pBackSelection->GetGeomControl()->eRenderType = RENDERCTRLTYPE::RENDER_IMAGE_STRETCH;
+	m_pBackSelection->GetGeomControl()->nTextureIndex = 0;
 }
 
 SListBoxItem::~SListBoxItem()
@@ -2077,21 +2085,53 @@ SListBoxItem::~SListBoxItem()
 
 void SListBoxItem::FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, int inParentLayer, int nFlag)
 {
+	/*if (m_pMainListBox)
+	{
+		m_pBackSelection->m_nWidth = m_pMainListBox->m_nWidth;
+		for (int i = 0; i < m_pMainListBox->m_nNumItem; i++)
+		{
+			m_pBackSelection->GetGeomControl()->nTextureIndex = 3;
+		}
+		printf("m_pMainListBox->m_nHoverItem  %d - m_dwIndex %d nFlag %d\n", m_pMainListBox->m_nHoverItem, m_dwID, nFlag);
+		if (m_pMainListBox->m_nHoverItem == m_dwID)
+			m_pBackSelection->GetGeomControl()->nTextureIndex = 1;
+	}*/
 	if (m_bBGColor == 0)
 	{
+		 
 		if (nFlag == 1)
 		{
-			m_cBorder = 1;
-			SetType(2);			
+			m_cBorder = 0;
+			SetType(0);	
+			if (m_pBackSelection)
+				m_pBackSelection->GetGeomControl()->nTextureIndex = 0;
 		}
 		else
 		{
 			m_cBorder = 0;
-			SetType(1);
+			SetType(0);
+			if (m_pBackSelection)
+				m_pBackSelection->GetGeomControl()->nTextureIndex = 2;
 		}
 	}
 
 	SText::FrameMove2(pDrawList, ivItemPos, inParentLayer, nFlag);
+
+	
+
+	if (m_pBackSelection)
+	{
+		m_pBackSelection->m_nWidth = m_pMainListBox->m_nWidth;
+		m_pBackSelection->m_nHeight = m_nHeight - 1.8f;
+		m_pBackSelection->FrameMove2(pDrawList, ivItemPos, inParentLayer, nFlag);
+	}
+}
+
+int SListBoxItem::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
+{
+	m_bOver = PointInRect(nX, nY, m_nPosX, m_nPosY, m_nWidth, m_nHeight);
+	Update();
+	return 0;
 }
 
 SListBoxBoardItem::SListBoxBoardItem(char* szIndex, char* szVIndex, char* szTitle, char* szWriter, char* szCount, char* szDate, unsigned int dwColor, int bTitile)
@@ -2341,6 +2381,8 @@ int SListBox::AddItem(SListBoxItem* ipNewItem)
 			m_pItemList[i - 1] = m_pItemList[i];
 
 		m_pItemList[m_nNumItem - 1] = ipNewItem;
+		m_pItemList[m_nNumItem - 1]->m_pMainListBox = this;
+		m_pItemList[m_nNumItem - 1]->m_dwID = m_nNumItem - 1;
 
 		if (m_dwSetTime != 0)
 		{
@@ -2352,6 +2394,9 @@ int SListBox::AddItem(SListBoxItem* ipNewItem)
 	}
 
 	m_pItemList[m_nNumItem] = ipNewItem;
+	m_pItemList[m_nNumItem]->m_pMainListBox = this;
+	m_pItemList[m_nNumItem]->m_dwID = m_nNumItem;
+
 	if (m_dwSetTime)
 		m_pItemList[m_nNumItem]->m_dwTime = timeGetTime();
 
@@ -2382,6 +2427,7 @@ int SListBox::DeleteItem(int inItemIndex)
 		m_pItemList[i - 1] = m_pItemList[i];
 
 	m_pItemList[m_nNumItem - 1] = 0;
+	SAFE_DELETE(m_pItemList[m_nNumItem - 1]->m_pMainListBox);
 	m_nNumItem--;
 
 	if (m_cScrollBar != 0)
@@ -2612,6 +2658,14 @@ int SListBox::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, in
 		g_pCurrentScene->m_pControlContainer->SetFocusedControl(m_pEditLine);
 	}
 
+	if (dwFlags == 512)
+	{
+		m_nHoverItem = -1;
+		int nLocalIndex = (int)(((float)nY - m_nPosY) / (float)(m_nHeight / (float)m_nVisibleCount));
+		if (m_nStartItemIndex + nLocalIndex < m_nNumItem)
+			m_nHoverItem = m_nStartItemIndex + nLocalIndex;
+	}
+
 	if (bInListBox == 1 && (dwFlags == WM_LBUTTONDOWN || dwFlags == WM_RBUTTONDOWN))
 		return 1;
 
@@ -2632,6 +2686,8 @@ int SListBox::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, in
 			return 1;
 	}
 
+
+
 	if (bInListBox != 1 || dwFlags != WM_RBUTTONUP)
 		return 0;
 
@@ -2642,7 +2698,7 @@ int SListBox::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, in
 		if (m_pEventListener != nullptr)
 		{
 			m_bRButton = 1;
-			m_pEventListener->OnControlEvent(m_dwControlID,	m_nSelectedItem);
+			m_pEventListener->OnControlEvent(m_dwControlID, m_nSelectedItem);
 		}
 	}
 

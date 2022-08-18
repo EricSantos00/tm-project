@@ -1,0 +1,10 @@
+FFFFFF Beast masters have the power to transform 
+FFFFFF themselves into mysterious creatures which
+FFFFFF give them various physical abilities.
+FFFFFF They possess a special link with wild creatures so
+FFFFFF they can summon them for aid during battles.
+FFFFFF 
+FFFFFF They can have either Magical or Physical abilities:
+FFFFFF Element Mastery: Holy Magical powers. 
+FFFFFF Summon Mastery: Summoning wild monsters to aid.
+FFFFFF Nature Mastery: Creatures transformation abilties.

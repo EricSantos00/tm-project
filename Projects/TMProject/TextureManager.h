@@ -3,7 +3,7 @@
 constexpr auto MAX_UI_TEXTURE_SET_LIST = 600;
 constexpr auto MAX_UI_TEXTURE = 512;
 constexpr auto MAX_EFFECT_TEXTURE = 512;
-constexpr auto MAX_MODEL_TEXTURE = 2048;
+constexpr auto MAX_MODEL_TEXTURE = 3000;
 constexpr auto MAX_ENV_TEXTURE = 512;
 constexpr auto MAX_DYNAMIC_TEXTURE = 72;
 
@@ -39,9 +39,12 @@ struct ControlTextureSet
 struct stTextureListInfo
 {
 	char szFileName[255];
+	char szFilePart[255];
 	char cAlpha;
 	unsigned int dwLastUsedTime;
 	unsigned int dwShowTime;
+	unsigned int dwLastUsedTimeOld;
+	unsigned int dwShowTimeOld;
 };
 
 class TextureManager
@@ -107,11 +110,11 @@ public:
 	ControlTextureSet m_UITextureSetList[600];
 	stTextureListInfo m_stUITextureList[512];
 	stTextureListInfo m_stEffectTextureList[512];
-	stTextureListInfo m_stModelTextureList[2048];
+	stTextureListInfo m_stModelTextureList[MAX_MODEL_TEXTURE];
 	stTextureListInfo m_stEnvTextureList[512];
 	IDirect3DTexture9* m_ppUITexture[512];
 	IDirect3DTexture9* m_ppEffectTexture[512];
-	IDirect3DTexture9* m_ppModelTexture[2048];
+	IDirect3DTexture9* m_ppModelTexture[MAX_MODEL_TEXTURE];
 	IDirect3DTexture9* m_ppEnvTexture[512];
 	IDirect3DTexture9* m_ppDynamicTexture[72];
 	unsigned int m_dwDynamicLastUsedTime[72];

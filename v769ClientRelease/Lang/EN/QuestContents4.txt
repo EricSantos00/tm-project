@@ -1,0 +1,279 @@
+FFFFAA << Reset stat points >>
+FFFFFF Requirements:
+FFFFFF 10 Sapphires or 1x Return of Ability (purchased from Nell)
+FFFFFF 
+FFFFFF The process can be done at NPC Ability Master in Armia Town.
+FFFFFF Players are required to unequip their armors and accessories.
+FFFFFF Players are required to talk to Ability Master.
+FFFFFF Once done: 100 points will be restored from each stat.
+FFFFFF 
+FFFFAA <<Reset Skill Points>>
+FFFFFF Requirements:
+FFFFFF Pure Divine Circle. (Resets 50 Points of Masteries and used once)
+FFFFFF Pure Full Divine Circle.(Resets 100 points and used many times)
+FFFFFF 
+FFFFFF The process can be donee at NPC Shaman in Azran Town.
+FFFFFF Upon the process sucessful, skills will be resetted and your
+FFFFFF mastery points will be restored.
+FFFFFF 
+FFFFFF Divine Circle and Full Divine Circled can be refined at NPC Jeffi
+FFFFFF located at Azran beside NPC Shaman.
+FFFFAA << Citizenship >>
+FFFFFF 
+FFFFFF Requirements:
+FFFFFF Mortals: Free 
+FFFFFF Gods and Celestial Gods: Gold Depending on your level.
+FFFFFF 
+FFFFFF The process can be done at NPC Civil Delegate in Armia Town.
+FFFFFF Citizenship can be cancelled by typing /getout.
+FFFFFF Then you can choose your new citizenship by talking to NPC 
+FFFFFF Civil Delegate at the required server.
+FFFFFF 
+FFFFFF Mortals can change their citizenship for free by typing
+FFFFFF /getout and then changing server to the server of the required
+FFFFFF citizenship.
+FFFFFF 
+AAFFFF Citizenship can be checked by typing /Character name.
+AAFFFF Note:Citizenship is blessed with extra drop rate,damage and HP.
+FFAAFF 
+FFAAFF 
+FFAAFF 
+FFFFAA << Mount Revival>>
+FFFFFF 
+FFFFFF Requirements:
+FFFFFF 1 Million Golds.
+FFFFFF 
+FFFFFF 
+FFFFFF The process can be done at NPC MountMaster in Erion Town.
+FFFFFF Dead mount must be equip on mount slot located at left side
+FFFFFF of inventory.
+FFFFFF Players are required to talk to MountMaster.
+FFAAFF Result: The dead mount will be revived.
+FFFFFF  
+FFFFAA << Item Enhancement (From +0 to +11) >>
+FFFFFF 
+AAFFFF Upgrading Items up to +6 can be done by using Ori Powders.
+AAFFFF Upgrading Items up to +9 can be done by using Lak Powders.
+AAFFFF Upgrading Items to +10 can be done through NPC Akata. 
+AAFFFF Upgrading Items to +11 can be done by using Lak Powders.
+FFAAFF 
+FFAAAA 
+FFFFFF
+FFFFAA << Powder Combination>>
+FFFFFF 
+FFFFFF Requirements:
+FFFFFF Oriharukon/Laktorerium/Nightmare Scrap.
+FFFFFF Multiple of 10 Scraps are needed for 1 successful combination.
+FFFFFF 1 Million Gold
+FFFFFF  
+FFFFFF  
+FFFFFF  
+FFFFFF The Combination can be done at NPC Jeffi in Azran Town.
+FFFFFF Players are allow to include as many scraps in 1 combination.
+FFFFFF Upon Success, players will recieve their desired powder. 
+FFFFFF 
+AAFFFF Oriharukon Powder is used to upgrade items from +0~6.
+AAFFFF Laktorerium Powder is used to upgrade items from +6~9.
+AAFFFF Nightmare Scroll is a scroll to enter Nightmare Leveling Gound. 
+FFAAFF 
+FFAAFF 
+FFAAFF 
+FFFFAA << Plus 10 Item Combination >>
+FFFFFF 
+FFFFFF Requirements:
+FFFFFF 2 identical Armor/Weopen +9.
+FFFFFF 4 Similar Jewels of choice(Emerald,Diamond,Garnet and Coral),
+FFFFFF Wiseman's Stone and 50 Million Golds.
+FFFFFF 
+FFFFFF The process can be made at NPC Ailine in Azran Town.
+FFFFFF 
+FFAAFF Upon Succeeding The Combination:
+FFAAFF You will recieve Your item +10
+FFFFFF 
+FFAAFF Upon Failing the Combination:
+FFAAFF Jewels, Wiseman Stone and the 50 Million Gold Will be removed.
+FFFFFF 
+AAFFFF Note: Earings can be enhanced up to +11 by using Lak Powder.
+AAFFFF Upon successful Earing plus will increase by 1.
+AAFFFF Upon failure Earing will be destroyed.
+FFFFFF 
+FFFFFF 
+FFFFAA << Ancient Weopen System>>
+FFFFFF 
+FFFFFF Requirements:
+FFFFFF Weopen +9
+FFFFFF 4 types of +7-+9 Items (Increase the success rate).
+FFFFFF 1 Jewel of your choice(Emerald,Diamond,Garnet and Coral).
+FFFFFF 
+FFFFFF The process can be made at NPC Compounder in Azran Town.
+FFFFFF 
+FFAAFF Upon Succeeding the Combination:
+FFAAFF You will recieve The Weapon Ancient +7
+FFFFFF 
+FFAAFF Upon Failing The Combination:
+FFAAFF All Items will be destroyed.
+FFFFFF 
+AAFFFF 
+AAFFFF 
+FFAAFF 
+FFAAFF 
+FFAAFF 
+FFFFAA << God Armor Combination>>
+FFFFFF 
+FFFFFF Requirements:
+FFFFFF 1 God Armor Part Statless +9,
+FFFFFF 1 Mortal Armor Part D/E Grade with required stats +9,
+FFFFFF 4 Glittering Stones.
+FFFFFF 
+FFFFFF The process can be done at NPC Akata in Azran Town.
+FFFFFF 
+FFAAFF Upon Succeeding the Combination:
+FFAAFF You will recieve God Armor Part with the Required Stats +7
+FFFFFF 
+FFAAFF Upon Failing The Combination:
+FFAAFF The God Armor Part & the 4 Glittering Stones will be destroyed.
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA <<God Weopen Combination>>
+FFFFFF 
+FFFFFF Requirements:
+FFFFFF Ancient Mortal Weapon With required Stats +9,
+FFFFFF Ancient God Weopen+9 statless,
+FFFFFF Any D grade item +9 Except Accessories,
+FFFFFF 100 Million Golds.
+FFAAFF 
+FFAAFF Upon Succeeding in the combination:
+FFAAFF You will recieve God Weapon Ancient +7 with the required stats.
+FFFFFF 
+FFAAFF Upon Failing the Combination:
+FFAAFF The D Grade Item and the 100 Million Gold will be removed.
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFAAFF 
+FFAAFF 
+FFAAFF 
+FFFFAA << Soul of Limits Types>>
+FFFFFF 
+FFFFFF Requirements:
+FFFFFF Diamonds,Emerald,Coral and Garnet.
+FFFFFF  
+FFFFFF The process can be done at NPC Ehre in Erion Town.
+FFFFFF 
+FFFFFF Players are required to put items in correct order.
+FFFFFF In order to change certain stats,players must follow the below list:
+FFFFFF 3 Diamonds change it to to STR/CON Soul Type.
+FFFFFF 3 Emerald change it to to INT/CON Soul Type.
+FFFFFF 3 Coral change it to to DEX/CON Soul Type.
+FFFFFF 3 Garnet change it to to STR/DEX Soul Type.
+FFFFFF 1 Diamond, 1 Emerald and 1 Coral change it to INT/DEX Soul Type.
+FFFFFF 1 Diamond, 1 Coral and 1 Garnet change it to CON/DEX Soul Type.
+FFFFFF 1 Emerald, 1 Coral and 1 Garnet change it to to STR Soul Type.
+FFFFFF 1 Emerald, 1 Diamond and 1 Coral change it to to INT Soul Type.
+FFFFFF 1 Coral, 1 Emerald and 1 Garnet change it to to CON Soul Type.
+FFFFFF 1 Garnet, 1 Diamond and 1 Coral change it to to DEX Soul Type.
+FFFFFF 
+FFFFAA <<Spirit Stone Combination>>
+FFFFFF 
+FFFFFF Requirements:
+FFFFFF 4 Laktorerium Powder.
+FFFFFF 1 Spirit Stone E +9,1 Spirit Stone E +9 and 1 Spirit Stone E +0~9.
+FFFFFF 
+FFFFFF The process can be made at NPC Shany in Snowfield Town.
+FFFFFF Players are required to talk to NPC Shany and inser the requirements.
+FFFFFF
+FFAAFF If the process successful, NPC will deduct 2 Million Golds and you
+FFAAFF will recieve one of the following items:
+FFAAFF Spirit Stone F Grade: 15 AD or Spirit Stone F Grade: 15 PD
+FFAAFF Spirit Stone F Grade: 15 AD/15 PD  
+FFFFFF 
+FFAAFF Upon Failing the combination:
+FFAAFF The spirit stone +0~9 and the 4 Laktorerium Powder will be destroyed. 
+FFAAFF 
+FFAAFF 
+FFAAFF 
+FFAAAA 
+FFFFFF
+FFFFAA <<+12~15 Refine>>
+FFFFFF Requirements:
+FFFFFF Armor/Weopen +11 or higher.
+FFFFFF 2x Protection Emblem or 2x Laktarioum Powder Pack(10 pieces).
+FFFFFF 4 Secret Stones
+FFFFFF 
+FFFFFF Note: Secret Stones change it to with Bless Refine +0~9
+FFFFFF The higher the plus of Bless Refine the higher the success rate. 
+FFFFFF Using 1 Bless +1 or higher prevent your item from breaking.  
+FFFFFF 
+AAFFFF Upon Failing Using Secret Stones and Lak Powders:
+AAFFFF The Item will be destroyed
+AAFFFF Upon Failing Using Secret Stones and Protection Emblems:
+AAFFFF The Item will be desroyed & it's option will be stored in a crystal.
+AAFFFF Upon Failing Using Bless Refine +1 or higher:
+AAFFFF The Item Plus will be decreased by 1
+FFAAFF Example: If Failed Upgrading Throne of Zen +11 to +12 while
+FFAAFF using 1 Bless Refine +1:
+FFAAFF The Throne of Zen will be degraded to +10
+FFFFAA <<Repletion System>>
+FFFFFF 
+FFFFFF Requirements:
+FFFFFF Armor Part and 1 Replicant of the same grade.
+FFFFFF 
+FFFFFF The process can be done by puting the item part in Inventory
+FFFFFF and drag and drop the Replicant on the item.
+FFFFFF 
+FFAAFF Result: The Item Stat and Plus will be changed randomly.
+FFFFFF 
+FFFFAA <<Painting System>>
+FFFFFF 
+FFFFFF Requirements:
+FFFFFF 1 Firal ( can be purchased from Merchant Nell)
+FFFFFF 
+FFFFFF The process can be done by puting the firal in your first slot
+FFFFFF of the inventory and then submitting a ticket requesting 
+FFFFFF colouring one of your Armor (or shield) parts with your chosen 
+FFFFFF Colour.
+FFAAAA 
+FFFFFF
+FFFFAA <<Upgrading Item Options>> 
+FFFFFF Requirements:
+FFFFFF God Armor/Weopen +11 or higher.
+FFFFFF Mythril Ore (Can be purchased from Red or Blue Kingdom Shops)
+FFFFFF The process can be done by equipping the item and drag and drop
+FFFFFF the Mythril Ore on the item. 
+FFFFFF 
+FFAAFF Upon Successful:
+FFAAFF The Item option will be increased
+FFAAFF Upon Failure:
+FFAAFF Either Item Option will remian the same or it will be decreased.
+FFFFAA <<Character Sealing>>
+FFFFFF Requirements:
+FFFFFF God or Celestial God Character.
+FFFFFF Spirit Seal (can be purchased from Merchant Nell)
+FFFFFF
+FFFFFF Player are requested to remove all all items in inventory and all
+FFFFFF equipped items and right click the Spirit Seal in your inventory.
+FFAAFF Result: The player will recieved his sealed character in Cargo.
+FFFFAA <<Guild Creation>> 
+FFFFFF Player can create guild by using command: /creat GuildName
+FFFFFF must have 100 Million Gold in inventory.
+FFAAFF Result: Your guild will be created.
+FFFFAA <<Guild War System>> 
+FFFFFF Guilds can declare war on towns of their citizenship server.
+FFFFFF must have 100 Guild Fame in order to bid town.
+FFFFFF Bidding a town can be done on Saturday at anytime.
+FFFFFF The Challenger is picked on Sunday at 00:00 Game time.
+FFFFFF Guild War Occurs weekly at Sunday 22:00 Game time.
+FFAAFF Upon winning Guild War; the guild recieves 50 Guild Fame.
+FFFFAA <<Seige War System>> 
+FFFFFF Guilds who own a town in their server can join Seige War in
+FFFFFF order to occupy the Kingdom of Nauten
+FFFFFF Seige War Occurs once every 2 Weeks in turns between even and
+FFFFFF odd servers.
+FFFFFF Inorder to win Seige War Guild Leader needs to stand on The
+FFFFFF Alter of Thor for 5 Minutes to be declared winner.
+FFAAFF Upon Winning Seige War Guild Recieves 650 Guild Fame.

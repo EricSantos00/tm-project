@@ -1224,6 +1224,10 @@ short SGridControl::CheckPos(TMEITEMTYPE eType)
 		return 14;
 	case TMEITEMTYPE::ITEMTYPE_MANTUA:
 		return 15;
+	case TMEITEMTYPE::ITEMTYPE_NEWSLOT1:
+		return 16;
+	case TMEITEMTYPE::ITEMTYPE_NEWSLOT2:
+		return 17;
 		break;
 	}
 
@@ -1232,9 +1236,9 @@ short SGridControl::CheckPos(TMEITEMTYPE eType)
 
 void SGridControl::BuyItem(int nCellX, int nCellY)
 {
+	auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
 	if (m_eGridType == TMEGRIDTYPE::GRID_SHOP)
 	{
-		auto pScene = static_cast<TMFieldScene*>(g_pCurrentScene);
 		auto pItem = GetItem(nCellX, nCellY);
 		if (pItem)
 		{
@@ -1300,7 +1304,8 @@ void SGridControl::BuyItem(int nCellX, int nCellY)
 			MSG_Buy stBuy{};
 			stBuy.Header.ID = g_pCurrentScene->m_pMyHuman->m_dwID;
 			stBuy.Header.Type = MSG_Buy_Opcode;
-			stBuy.TargetID = m_dwMerchantID;
+			stBuy.TargetID = pScene->m_sShopTarget;
+
 			if (pScene->m_bIsUndoShoplist)
 				stBuy.TargetID = g_pCurrentScene->m_pMyHuman->m_dwID;
 
@@ -1367,7 +1372,7 @@ void SGridControl::BuyItem(int nCellX, int nCellY)
 			sprintf(szMsg, g_pMessageStringTable[47], g_pItemList[pItem->m_pItem->sIndex].Name);			
 			g_pCurrentScene->m_pMessageBox->SetMessage(szMsg, 4, 0);
 			g_pCurrentScene->m_pMessageBox->SetVisible(1);
-			g_pCurrentScene->m_pMessageBox->m_dwArg = m_dwMerchantID | (pItem->m_pItem->sIndex << 16);
+			g_pCurrentScene->m_pMessageBox->m_dwArg = pScene->m_sShopTarget | (pItem->m_pItem->sIndex << 16);
 		}
 	}
 }
@@ -3561,7 +3566,7 @@ int SGridControl::MouseOver(int nCellX, int nCellY, int bPtInRect)
 			pMobData->Equip[0].sIndex,
 			pMobData->Equip,
 			g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][0].sIndex);
-
+ 
 		for (int l = 0; l < 49; ++l)
 		{
 			int add = BASE_GetStaticItemAbility(pItem->m_pItem, dwEFParam[l]);

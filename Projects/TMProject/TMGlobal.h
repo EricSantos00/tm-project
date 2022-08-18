@@ -51,11 +51,12 @@ extern int g_bDebugMsg;
 extern int g_nReflection;
 extern char g_szFontName[128];
 extern int g_nFontBold;
+extern int g_nLangIndex;
 extern float g_ClipNear;
 extern float g_ClipFar;
 
 extern int g_nServerCountList[11];
-extern char g_szServerNameList[11][9];
+extern char g_szServerNameList[11][16];
 extern char g_szServerName[10][10][9];
 
 extern char g_UIString[500][64];
@@ -122,7 +123,7 @@ extern int g_nUpdateGuildName;
 extern char g_szEncryptedAcc[256];
 extern int g_bMoveServer;
 
-extern stCurse_num g_pCurseList;
+ 
 extern int g_bTestServer;
 
 extern int Game_grade;
@@ -158,6 +159,12 @@ extern int g_nCombineMode;
 extern int g_nItemCount;
 extern int g_nSpringTree;
 
+const static char* g_pLangPatch[] = {
+    "Lang\\EN\\",
+    "Lang\\PL\\",
+    "Lang\\PT\\",
+    "Lang\\TK\\",
+};
 const static TMVector3 g_vecItemBillPos[28] = 
 {
     {0.398f, 5.7620001f, 0.70599997f},
@@ -190,7 +197,8 @@ const static TMVector3 g_vecItemBillPos[28] =
     {0.76899999f, 0.509f, -1.143f},
 };
 
-const static stTeleportPos g_TeleportTable[37] =
+
+const static stTeleportPos g_TeleportTable[] =
 {
   { 2116, 2100, 700, g_pMessageStringTable[209] },
   { 2480, 1716, 700, g_pMessageStringTable[209] },
@@ -228,7 +236,12 @@ const static stTeleportPos g_TeleportTable[37] =
   { 3648, 3140, 700, g_pMessageStringTable[211] },
   { 2480, 1648, 700, g_pMessageStringTable[301] },
   { 1052, 1708, 0, g_pMessageStringTable[321] },
-  { 1056, 1724, 0, g_pMessageStringTable[485] }
+  { 1056, 1724, 0, g_pMessageStringTable[485] },
+  { 2364, 4072, 0, g_pMessageStringTable[210] },//entrada kefra dentro/fora
+  { 1312, 1900, 0, g_pMessageStringTable[1370] },//entrada kefra fora/dentro ok
+  { 2360, 3892, 0, g_pMessageStringTable[1370] },//entrada boss kefra
+  { 2364, 3892, 0, g_pMessageStringTable[1370] },//entrada boss kefra
+  { 2368, 3892, 0, g_pMessageStringTable[1370] }//entrada boss kefra
 };
 
 static unsigned int g_dwFoodColor[7] =

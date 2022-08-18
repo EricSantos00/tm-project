@@ -1,0 +1,60 @@
+FFFFFF      [Armia]                         Cemitério                     2370 2106
+FFFFFF      [Armia]                   Local do Meio_Orc               2508 2101
+FFFFFF      [Armia]                   Local do Meio_Orc               2526 2009
+FFFFFF      [Armia]                 Local do Caçador_Troll           2529 1882
+FFFFFF      [Azran]                  Local do Orc_Shaman           2126 1600
+FFFFFF      [Azran]                  Local do Rei_Taurus             2005 1617
+FFFFFF      [Azran]                 Local do CiclopeSangr           2241 1474
+FFFFFF      [Azran]                Local do Ciclope_Ancião          1858 1721
+FFFFFF      [Azran]                Local do Ciclope_Ancião          2250 1316
+FFFFFF      [Azran]                 Local do Ciclope_Sangr          1989 1755
+FFFFFF    [Dungeon 1]             Local do Troll_Zumbi               290 3799
+FFFFFF    [Dungeon 1]            Local do Cav. Caveira            724 3781
+FFFFFF    [Dungeon 1]            Local do Cav. Caveira            481 4062
+FFFFFF    [Dungeon 1]                Local do Golem                  876 4058
+FFFFFF    [Dungeon 2]           Local do Golem de Fogo           855 3922
+FFFFFF    [Dungeon 2]           Local do Golem_de_Fogo           808 3876
+FFFFFF    [Dungeon 2]           Local do Golem_de_Fogo           959 3813
+FFFFFF    [Dungeon 2]           Local do Golem_de_Fogo           926 3750
+FFFFFF    [Dungeon 2]            Local do Dragon Lich             1096 3730
+FFFFFF    [Dungeon 3]            Local do Dragon Lich             1132 3800
+FFFFFF  [Submundo 1]           Local do Aquagolem              1242 4035
+FFFFFF  [Submundo 1]           Local do Aquagolem              1264 4017
+FFFFFF  [Submundo 1]           Local do Aquagolem              1333 3994
+FFFFFF  [Submundo 1]      Local do Cavaleiro ElfoNegro      1358 4041
+FFFFFF  [Submundo 1]      Local do Cavaleiro_ElfoNegro      1462 4033
+FFFFFF  [Submundo 1]           Local do Chefe Zumbi           1326 3788
+FFFFFF  [Submundo 2]        Local do Chefe_Zumbi_Troll       1493 3777
+FFFFFF  [Submundo 2]          Local do Demo_Gorgon           1437 3741
+FFFFFF  [Submundo 2]            Local do Morlock                  1389 3740
+FFFFFF  [Submundo 2]            Local do Morlock                  1422 3810
+FFFFFF   [Deserto Kult]      Local do Verme do Freixo         1376 1722
+FFFFFF   [Deserto Kult]      Local do Verme do Freixo         1426 1686
+FFFFFF   [Deserto Kult]       Local do LugeferBroken           1381 1861
+FFFFFF   [Deserto Kult]       Local do LugeferBroken           1326 1896
+FFFFFF   [Deserto Kult]        Local do Assas._Taron            1510 1723
+FFFFFF   [Deserto Kult]            Local do Tauron                 1543 1726
+FFFFFF   [Deserto Kult]            Local do Tauron                 1580 1758
+FFFFFF   [Deserto Kult]            Local do Tauron                 1182 1714
+FFFFFF   [Deserto Kult]       Local da Aranha_Inferno           1634 1727
+FFFFFF   [Deserto Kult]       Local da Aranha_Inferno           1237 1764
+FFFFFF      [Kefra]             Local da Aranha_Dourada           2367 4024
+FFFFFF      [Kefra]             Local do Horizon_Cropper           2236 4044
+FFFFFF      [Kefra]             Local do Horizon_Cropper           2236 3993
+FFFFFF      [Kefra]             Local do Horizon_Cropper           2209 3989
+FFFFFF      [Kefra]             Local do Horizon_Cropper           2453 4067
+FFFFFF      [Kefra]             Local do Horizon_Cropper           2485 4043
+FFFFFF      [Kefra]                Local do Símio_Bleg               2534 3897
+FFFFFF      [Kefra]                Local do Símio_Bleg               2489 3919
+FFFFFF      [Kefra]               Local do Lich_Batama              2269 3910
+FFFFFF      [Kefra]                Local do Lich_Crunt                2202 3866
+FFFFFF   [Nippleheim]               Local do Urso_Polar              3664 3024
+FFFFFF   [Nippleheim]               Local do Troll_Ártico              3582 3007
+FFFFFF   [Nippleheim]               Local do Ent_Ancião              3514 3008
+FFFFFF   [Nippleheim]            Local do Soldado Amon            3818 2977
+FFFFFF   [Nippleheim]           Local do Guerreiro_Amon           3517 2889
+FFFFFF   [Nippleheim]             Local do Chefe_Amon             3745 2977
+FFFFFF   [Nippleheim]           Local do Homem_Kalintz            3639 2877
+FFFFFF   [Nippleheim]            Local da Mulher_Kalintz             3650 2727
+FFFFFF   [Nippleheim]          Local da Vila_Amaldiçoada          3660 2773
+FFFFFF   [Nippleheim]           Local da Valquíria_Rosen           3746 2879

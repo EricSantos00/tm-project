@@ -102,6 +102,7 @@ public:
     float m_nHeight;
     IEventListener* m_pEventListener;
     int m_bModal;
+    int m_cOver;
 };
 
 class SPanel : public SControl
@@ -444,6 +445,7 @@ public:
     SPanel* m_pBackground1;
 };
 
+class SListBox;
 class SListBoxItem : public SText
 {
 public:
@@ -451,10 +453,13 @@ public:
         int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SListBoxItem();
     void FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, int inParentLayer, int nFlag) override;
-        
+    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY) override;
 public:
+    int m_dwIndex;
     int m_bBGColor;
     unsigned int m_dwTime;
+    SPanel* m_pBackSelection;
+    SListBox* m_pMainListBox;
 };
 
 class SListBoxBoardItem : public SListBoxItem
@@ -550,6 +555,7 @@ public:
     int m_nVisibleCount;
     int m_nStartItemIndex;
     int m_nSelectedItem;
+    int m_nHoverItem;
     float m_fPickWidth;
     float m_fPickHeight;
     SEditableText* m_pEditLine;

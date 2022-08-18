@@ -31,5 +31,6 @@ using namespace std::chrono_literals;
 #pragma comment(lib, "IPHLPAPI.lib")
 #pragma comment(lib, "Strmiids.lib")
 
+#include  "SharedStructs.h"
 
 #endif //PCH_H

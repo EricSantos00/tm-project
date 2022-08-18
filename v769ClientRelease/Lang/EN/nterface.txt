@@ -1,0 +1,86 @@
+FFFFFF  
+FFFFFF Hotkey
+FFFFAA
+FFFFAA 1-10
+AAFFAA Selection skill in quick skill slot
+FFFFAA
+FFFFAA Shift+1-10
+AAFFAA Registering skill in quick skill slot
+FFFFAA
+FFFFAA -
+AAFFAA Controls the number of skills cast in Auto Attack mode
+AAFFAA Adjustable from 2 to 10
+FFFFAA
+FFFFAA Q
+AAFFAA Use HP Recovery Potion
+FFFFAA
+FFFFAA W
+AAFFAA Use MP Recovery Potion
+FFFFAA
+FFFFAA E, R, T
+AAFFAA After registering consumable item
+FFFFAA
+FFFFAA V
+AAFFAA Feed mounts
+FFFFAA
+FFFFAA F11
+AAFFAA Use recall scrolling
+FFFFAA
+FFFFAA Print Scrn SysRq
+AAFFAA Take a screenshot, save it in the ScreenShot folder in the folder where SD is installed
+FFFFAA
+FFFFAA C
+AAFFAA Open character window
+FFFFAA
+FFFFAA I
+AAFFAA Open inventory window
+FFFFAA
+FFFFAA S
+AAFFAA Open skill window
+FFFFAA
+FFFFAA P
+AAFFAA Open Party Window
+FFFFAA
+FFFFAA M
+AAFFAA Open mini-map window
+FFFFAA
+FFFFAA ~
+AAFFAA PK mode ON/OFF
+FFFFAA
+FFFFAA Y
+AAFFAA Auto Attack ON/OFF
+FFFFAA
+FFFFAA N
+AAFFAA character name display ON/OFF
+FFFFAA
+FFFFAA Tab
+AAFFAA viewpoint conversion key
+FFFFAA
+FFFFAA +
+AAFFAA Chat window size adjustment (4 steps)
+FFFFAA
+FFFFAA PageUp or PageDown
+AAFFAA Chat window Scroll contents of a conversation
+FFFFAA
+FFFFAA Direction key (ก่) or (ก้)
+AAFFAA View recently typed contact and previous chat input
+FFFFAA
+FFFFAA F1,F2,F3,F4
+AAFFAA Bag Shortcut
+FFFFAA
+FFFFAA H
+AAFFAA Open help, Open note
+FFFFAA
+FFFFAA Z
+AAFFAA Quick Skill Slot Window Change
+FFFFAA
+FFFFAA ]
+AAFFAA Auto Running (Auto Run Mode)ON/OFF
+FFFFAA
+FFFFAA X
+AAFFAA View the quest log
+FFFFAA
+FFFFAA Enter
+AAFFAA Chat input status
+FFFFAA
+

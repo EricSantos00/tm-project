@@ -1,0 +1,100 @@
+AAFFAA Essa é a loja do Portão Infernal
+AAFFAA Vendemos armas, armaduras, acessórios e 
+AAFFAA equipamentos variados.
+AAFFAA * Atenção
+AAFFAA Na compra as opções são atribuídas de  
+AAFFAA forma aleatória.
+AAFFAA Caso não possua espaço no 
+AAFFAA seu inventario, não será possível comprar.
+AAFFAA Não há limite na quantidade de compra.
+AAFFAA Não cobramos custo de produção
+AAFFAA dos itens aqui vendidos.
+AAFFAA Podem vender de volta os itens.
+AAFFAA 
+AAFFAA 
+AAFFAA 
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+AAFFAA [Arma]
+AAFFAA Estamos vendendo armas de 9-10 niveis.
+AAFFAA Ex. Nona Gram, Décima Espada.
+AAFFAA Mas não é possivel escolher, pois 
+AAFFAA isso depende da sorte de cada um.
+AAFFAA Não vendemos armas de Ancient (Anct). 
+AAFFAA Precisa de espaço, 2 horizontal e 4
+AAFFAA vertical, no inventario pra comprar.
+AAFFAA 
+AAFFAA 
+AAFFAA 
+AAFFAA Preço é 9.000.000 GOLD
+AAFFAA 
+AAFFAA 
+AAFFAA
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+AAFFAA [Defesa] 
+AAFFAA Estamos vendendo armas de 7-8 niveis.
+AAFFAA Ex. Sétima Armadura Dwarbon
+AAFFAA Mas não é possivel escolher, pois 
+AAFFAA isso depende da sorte de cada um.
+AAFFAA Precisa de espaço, 2 horizontal 
+AAFFAA e 3 vertical, no inventario pra comprar.
+AAFFAA 
+AAFFAA 
+AAFFAA 
+AAFFAA 
+AAFFAA Preço é 6.000.000 GOLD
+AAFFAA 
+AAFFAA 
+AAFFAA
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+AAFFAA [Acessórios]
+AAFFAA Vedemos amuletos de 1 até 3
+AAFFAA niveis.
+AAFFAA Ex. Amuleto Prateado e Dourado.
+AAFFAA Mas não é possivel escolher, pois
+AAFFAA isso depende da sorte de cada um. 
+AAFFAA 
+AAFFAA 
+AAFFAA Precisa de espaço 1 horizontal
+AAFFAA e 1 vertical no inventario pra comprar.
+AAFFAA 
+AAFFAA Preço é 5.000.000 GOLD
+AAFFAA 
+AAFFAA 
+AAFFAA
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+AAFFAA [Aleatório]
+AAFFAA Vende randomicamente armas,
+AAFFAA defesas, equipamentos e
+AAFFAA acessórios em geral.
+AAFFAA Os atributos opcionais são
+AAFFAA dados de forma aleatória.
+AAFFAA Mas não é possivel escolher, pois
+AAFFAA isso depende da sorte de cada um.
+AAFFAA Precisa de espaço, 2 horizontal 
+AAFFAA e 4 vertical, no inventario pra comprar.
+AAFFAA 
+AAFFAA Preço é 7.000.000 GOLD
+AAFFAA 
+AAFFAA 
+AAFFAA
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF

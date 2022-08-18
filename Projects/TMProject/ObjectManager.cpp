@@ -25,7 +25,7 @@ ObjectManager::ObjectManager()
 
 	InitResourceList();
 	InitAniSoundTable();
-	InitCurseList();
+ 
 
 	m_pTargetObject = nullptr;
 
@@ -909,25 +909,7 @@ void ObjectManager::InitAniSoundTable()
 	fclose(fp);
 }
 
-void ObjectManager::InitCurseList()
-{
-	FILE* fpBin = nullptr;
-	fopen_s(&fpBin, "curse.bin", "rb");
-
-	if (fpBin == nullptr)
-		return;
-
-	fread(&g_pCurseList.dnum, 4, 1, fpBin);
-
-	g_pCurseList.pCurseList = new stCurse[g_pCurseList.dnum * sizeof(stCurse)];
-	for (size_t i = 0; i < g_pCurseList.dnum - 1; ++i)
-	{
-		fread(&g_pCurseList.pCurseList[i], sizeof(stCurse), 1, fpBin);
-		fread(g_pCurseList.pCurseList[i].szTrans, sizeof(stCurse), 1, fpBin);
-	}
-
-	fclose(fpBin);
-}
+ 
 
 TMCamera* ObjectManager::GetCamera()
 {

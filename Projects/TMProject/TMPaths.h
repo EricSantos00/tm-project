@@ -8,7 +8,6 @@ constexpr const char* LogFile_Path = "WYD.log";
 constexpr const char* ChangeUpdate_Path = "Change.exe";
 
 constexpr const char* ServerName_Path = "sn.bin";
-constexpr const char* ServerName2_Path = "sn2.bin";
 constexpr const char* ServerList_Path = "serverlist.bin";
 constexpr const char* ConfigFile_Path = "Config.bin";
 constexpr const char* VideoClipFile_Path = "WYD.avi";

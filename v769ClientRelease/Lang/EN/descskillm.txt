@@ -1,0 +1,5 @@
+FFFFFF Character builds are related to which skills
+FFFFFF a character chooses to learn.
+FFFFFF Same type of characters may learn different
+FFFFFF skills depending on their character builds.
+FFFFFF Skill points are limited so be careful.

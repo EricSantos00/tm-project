@@ -1,0 +1,8 @@
+040	FFFFFF	50	Destrave do level 40
+090	FFFFFF	51	Destrave do level 90
+120	FFFFFF	51	Sub-Celestial
+200	FFFFFF	52	Destrave do level 200
+240	FFFFFF	53	Destrave do level 240
+280	FFFFFF	54	Destrave do level 280
+320	FFFFFF	55	Destrave do level 320
+360	FFFFFF	56	Destrave do level 360

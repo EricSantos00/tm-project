@@ -1,0 +1,8 @@
+001	FFFFFF	01	The Runic Secret
+040	FFFFFF	50	Bound 40 levels
+090	FFFFFF	51	Bound 90 levels
+200	FFFFFF	52	Bound 200 levels
+240	FFFFFF	53	Bound 240 levels
+280	FFFFFF	54	Bound 280 levels
+320	FFFFFF	55	Bound 300 levels
+360	FFFFFF	56	Bound 360 levels

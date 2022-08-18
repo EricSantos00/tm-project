@@ -27,6 +27,7 @@ TextureManager::TextureManager()
 		m_stUITextureList[nIndex].cAlpha = 78;
 		m_stUITextureList[nIndex].dwLastUsedTime = 0;
 		m_stUITextureList[nIndex].dwShowTime = 0;
+
 	}
 
 	memset(m_UITextureSetList, 0, sizeof(m_UITextureSetList));
@@ -445,7 +446,7 @@ int TextureManager::InitUITextureSetList()
 
 		m_UITextureSetList[nSetIndex].nCount = nItemCount;
 		m_UITextureSetList[nSetIndex].pTextureCoord = new ControlTextureCoord[nItemCount];
-
+		int CurIcon = 0;
 		for (int nCount = 0; nCount < nItemCount; ++nCount)
 		{
 			fscanf(fp, "%d,%d,%d,%d,%d,%d,%d\r\n",
@@ -456,7 +457,24 @@ int TextureManager::InitUITextureSetList()
 				&m_UITextureSetList[nSetIndex].pTextureCoord[nCount].nHeight,
 				&m_UITextureSetList[nSetIndex].pTextureCoord[nCount].nDestX,
 				&m_UITextureSetList[nSetIndex].pTextureCoord[nCount].nDestY);
+
+
+			if (nSetIndex == 526)
+			{
+				if (CurIcon > (100 - 1))
+					CurIcon = 0;
+
+				m_UITextureSetList[nSetIndex].pTextureCoord[nCount].nStartX = 100 * (CurIcon % 100 % 10);
+				m_UITextureSetList[nSetIndex].pTextureCoord[nCount].nStartY = 100 * (CurIcon % 100 / 10);
+				m_UITextureSetList[nSetIndex].pTextureCoord[nCount].nWidth = 100;
+				m_UITextureSetList[nSetIndex].pTextureCoord[nCount].nHeight = 100;
+				CurIcon++;
+			}
 		}
+
+
+
+
 	}
 
 	fclose(fp);

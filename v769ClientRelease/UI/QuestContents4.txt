@@ -1,0 +1,160 @@
+FFFFAA << Destrave do level 40 >>
+FFFFFF 
+FFFFFF Como destravar o personagem
+FFFFFF celestial level 40?
+FFFFFF 
+FFFFFF É bem simples, você deve ir até o
+FFFFFF NPC Alquimista Odin no continente 
+FFFFFF desconhecido. (Kefra)
+FFFFFF 
+FFFFFF Coordenadas :  X: 3236 Y: 1690
+FFFFFF 
+AAFFFF Itens requeridos:
+AAFFFF x02 Pergaminho Selado
+AAFFFF x01 Selo Mágico
+AAFFFF x04 Runas (Fehu, Mannaz, Thurizas and 
+AAFFFF and Anzus)
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Destrave do level 90 >>
+FFFFFF 
+FFFFFF Como destravar o personagem celestial level 90?
+FFFFFF É bem simples, você irá precisar dos seguintes 
+FFFFFF itens:
+AAFFFF Pedra da Fúria
+AAFFFF 500 pontos de fama
+FFFFFF Dica: A Pedra da Fúria pode ser criada no 
+FFFFFF NPC Alquimista Odin no continente desconhecido
+FFFFFF Coordenadas : X: 3236 Y: 1690 
+FFFFFF 
+AAFFFF Runas requeridas: Sowilo, Kenaz, Uraz, 
+AAFFFF Thurisaz, Isa, Tiwaz,Hagalaz
+FFFFFF 
+FFFFFF Você pode obter fama com o item Selo 
+FFFFFF do Guerreiro a venda no NPC Farche em Erion 
+AAFFFF Coordenadas : X: 2467 Y: 2004
+FFFFFF ou
+FFFFFF no NPC Creta no continente desconhecido
+AAFFFF coordenadas X: 3265 Y: 1707 
+FFFFAA << Criacao do Personagem Sub-Celestial >>
+FFFFFF 
+FFFFFF A partir do nível 120, o Celestial pode 
+FFFFFF ser aprimorado. Utilize uma Pedra Ideal
+FFFFFF para criar um Sub-Celestial de Nível 1.
+FFFFFF 
+FFFFFF Para Criar o Sub-celestial, Equipe um
+FFFFFF Sephirot (Classe do Sub-Celestial),
+FFFFFF Obtenha 100 de fama e clique na Ideal.
+AAFFFF 
+FFFFFF Os pontos de habilidade adquiridos no 
+FFFFFF Celestial também serão enviados para o 
+FFFFFF Sub-Celestial, e vice versa.
+AAFFFF 
+FFFFFF Para alternar entre Celestial e Sub-
+FFFFFF Celestial, utilize a Pedra Misteriosa,
+FFFFFF Que pode ser composta através do NPC
+FFFFFF Conjurer Ehre, na cidade de Erion.
+AAFFFF 
+AAFFFF Coordenadas : X: 2455 Y: 2002
+FFFFAA << Destrave do level 200 >>
+FFFFFF 
+FFFFFF Como destravar o personagem celestial level 200?
+FFFFFF Você deve destrava-lo utilizando o item 
+FFFFFF Proteção Divina.
+FFFFFF O item Proteção Divina pode ser 
+FFFFFF criado no NPC Dedekinto NPC Dedekinto está 
+FFFFFF localizado no continente desconhecido.
+AAFFFF coordenadas : X: 3229 Y: 1697
+AAFFFF Materiais necessarios para o selo:   
+AAFFFF Coração de Beriel(x02) + Alma do Beriel(x02)
+FFFFFF 
+FFFFFF Item da combinação do selo: Proteção Divina
+FFFFFF (Use com o botão direito, haverá uma 
+FFFFFF chance do selo ser removido.)
+FFFFFF 
+AAFFFF Combinação do selo (2): The Devil Whisper  
+AAFFFF (Use com o botão direito do mouse)
+FFFFFF 
+FFFFFF 
+FFFFAA << Destrave do level 240 >>
+FFFFFF 
+FFFFFF Como destravar o personagem celestial level 240?
+FFFFFF Você deve destrava-lo utilizando o item 
+FFFFFF Proteção Divina.
+FFFFFF O item Proteção Divina pode ser 
+FFFFFF criado no NPC Dedekinto NPC Dedekinto está 
+FFFFFF localizado no continente desconhecido.
+AAFFFF coordenadas : X: 3229 Y: 1697
+AAFFFF Materiais necessarios para o selo:   
+AAFFFF Coração de Beriel(x02) + Alma do Beriel(x02)
+FFFFFF 
+FFFFFF Item da combinação do selo: Proteção Divina
+FFFFFF (Use com o botão direito, haverá uma 
+FFFFFF chance do selo ser removido.)
+FFFFFF 
+AAFFFF Combinação do selo (2): The Devil Whisper  
+AAFFFF (Use com o botão direito do mouse)
+FFFFFF 
+FFFFFF 
+FFFFAA << Destrave do level 280 >>
+FFFFFF 
+FFFFFF Como destravar o personagem celestial level 280?
+FFFFFF Você deve destrava-lo utilizando o item 
+FFFFFF Proteção Divina.
+FFFFFF O item Proteção Divina pode ser 
+FFFFFF criado no NPC Dedekinto NPC Dedekinto está 
+FFFFFF localizado no continente desconhecido.
+AAFFFF coordenadas : X: 3229 Y: 1697
+AAFFFF Materiais necessarios para o selo:   
+AAFFFF Coração de Beriel(x02) + Alma do Beriel(x02)
+FFFFFF 
+FFFFFF Item da combinação do selo: Proteção Divina
+FFFFFF (Use com o botão direito, haverá uma 
+FFFFFF chance do selo ser removido.)
+FFFFFF 
+AAFFFF Combinação do selo (2): The Devil Whisper  
+AAFFFF (Use com o botão direito do mouse)
+FFFFFF 
+FFFFFF 
+FFFFAA << Destrave do level 320 >>
+FFFFFF 
+FFFFFF Como destravar o personagem celestial level 320?
+FFFFFF Você deve destrava-lo utilizando o item 
+FFFFFF Proteção Divina.
+FFFFFF O item Proteção Divina pode ser 
+FFFFFF criado no NPC Dedekinto NPC Dedekinto está 
+FFFFFF localizado no continente desconhecido.
+AAFFFF coordenadas : X: 3229 Y: 1697
+AAFFFF Materiais necessarios para o selo:   
+AAFFFF Coração de Beriel(x02) + Alma do Beriel(x02)
+FFFFFF 
+FFFFFF Item da combinação do selo: Proteção Divina
+FFFFFF (Use com o botão direito, haverá uma 
+FFFFFF chance do selo ser removido.)
+FFFFFF 
+AAFFFF Combinação do selo (2): The Devil Whisper  
+AAFFFF (Use com o botão direito do mouse)
+FFFFFF 
+FFFFFF 
+FFFFAA << Destrave do level 360 >>
+FFFFFF 
+FFFFFF Como destravar o personagem celestial level 360?
+FFFFFF Você deve destrava-lo utilizando o item 
+FFFFFF Proteção Divina.
+FFFFFF O item Proteção Divina pode ser 
+FFFFFF criado no NPC Dedekinto NPC Dedekinto está 
+FFFFFF localizado no continente desconhecido.
+AAFFFF coordenadas : X: 3229 Y: 1697
+AAFFFF Materiais necessarios para o selo:   
+AAFFFF Coração de Beriel(x02) + Alma do Beriel(x02)
+FFFFFF 
+FFFFFF Item da combinação do selo: Proteção Divina
+FFFFFF (Use com o botão direito, haverá uma 
+FFFFFF chance do selo ser removido.)
+FFFFFF 
+AAFFFF Combinação do selo (2): The Devil Whisper  
+AAFFFF (Use com o botão direito do mouse)
+FFFFFF 
+FFFFFF 

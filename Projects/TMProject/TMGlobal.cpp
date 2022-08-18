@@ -20,11 +20,12 @@ int g_bDebugMsg = 1;
 int g_nReflection;
 char g_szFontName[128] = { "Tahoma" };
 int g_nFontBold = 500;
+int g_nLangIndex = 0;
 float g_ClipNear = 0.69f;
 float g_ClipFar = 540.0f;
 
 int g_nServerCountList[11];
-char g_szServerNameList[11][9];
+char g_szServerNameList[11][16];
 char g_szServerName[10][10][9];
 
 char g_UIString[500][64];
@@ -90,7 +91,7 @@ int g_totaleffect;
 
 int g_nUpdateGuildName;
 
-stCurse_num g_pCurseList;
+ 
 
 char g_pAttribute[1024][1024];
 

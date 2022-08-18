@@ -1,0 +1,23 @@
+070	FFFFFF	00	Divine Circle
+071	FFFFFF	00	Magic Chamber
+075	FFFFFF	00	Monster Trader
+080	FFFFFF	00	Finding Heaven's Track
+085	FFFFFF	00	Nightmare(N)
+100	FFFFFF	00	Switch Stone
+100	FFFFFF	00	Chaos Cube(N)
+110	FFFFFF	00	Water Elemental Zone(N)
+150	FFFFFF	00	Legend of the Chaos Devil
+150	FFFFFF	00	WYD Expedition
+180	FFFFFF	00	Water Elemental Zone(M)
+200	FFFFFF	00	Nightmare(M)
+201	FFFFFF	00	Chaos Cube(M)
+210	FFFFFF	00	Hellgate
+220	FFFFFF	00	Medal of Kingdom
+256	FFFFFF	00	Endless Storm
+260	FFFFFF	00	Legend of the Chaos Devil
+275	FFFFFF	00	Water Elemental Zone(A)
+280	FFFFFF	00	To Find Eternal Life
+280	FFFFFF	00	To The New Beginning
+295	FFFFFF	00	Nightmare(A)
+300	FFFFFF	00	Legend of the Chaos Devil
+301	FFFFFF	00	Chaos Cube(A)

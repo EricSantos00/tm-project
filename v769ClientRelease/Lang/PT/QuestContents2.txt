@@ -1,0 +1,454 @@
+FFFFAA << Cubo da Maldade - Normal >>  
+FFFFFF 
+FFFFFF Arnold, o ferreiro, está tramando uma coisa
+FFFFFF interessante. Ele está vendendo convites, isso é
+FFFFFF estranho. Bom... Com o convite que ele vende vá  
+FFFFFF até onde ele trabalha na entrada de Azran. Estou
+FFFFFF muito curioso, ele é uma pessoa séria e não sei
+FFFFFF o porque de vender convites.
+FFFFFF Você poderia matar minha curiosidade?
+FFFFFF 
+AAFFFF Comece pela Quest Normal primeiro. 
+FFFFFF 
+FFFFFF 
+AAFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Círculo Divino >>  
+FFFFFF 
+FFFFFF Eu ouvi uns boatos sobre a reconstrução do círculo
+FFFFFF divino.
+FFFFFF 
+FFFFFF As tribos de trolls e dread Tauros estão com
+FFFFFF os pedaços dos círculos divinos que já estão
+FFFFFF contaminados pela maldade dos monstros.
+FFFFFF 
+FFFFFF Se levar os pedaços ao alquimista e uma pequena
+FFFFFF quantia de GOLD ele pode purificar
+FFFFFF novamente o círculo divino.
+FFFFFF Levando os pedaços purificados ao Sacerdote, 
+FFFFFF você poderá redefinir suas capacidades.
+FFFFFF 
+AAFFFF Você não quer redistribuir a sua capacidade?
+FFFFFF
+AAFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Sala Secreta >>
+FFFFFF   
+FFFFFF Estarei agradecido para sempre.
+FFFFFF Espero que você também saiba disso.
+FFFFFF 
+FFFFFF Se você quer ficar nessa terra, então pegue
+FFFFFF o papel de desafiante que deve estar com você,
+FFFFFF vá ao castelo de Noatun e use a carta de duelo
+FFFFFF sobre o altar. Se conseguir resolver o mistério
+FFFFFF que esta escondido no quarto
+FFFFFF você poderá ganhar muita experiência.
+FFFFFF 
+FFFFFF Se você tiver em mãos o símbolo de coragem, 
+FFFFFF poderá obter a "Pedra da Luz Sagrada"
+FFFFFF e a "Pedra Espiritual".
+FFFFFF 
+AAFFFF Está preparado para desvendar o mistério?
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Monstro Comerciante >>
+FFFFAA   
+FFFFFF Vi algo há muito tempo atrás,
+FFFFFF Um monstro vendendo itens, isso não é estranho?
+FFFFFF 
+FFFFFF Não é só porque todos os monstros são maldosos
+FFFFFF que esse não pode ser bondoso. 
+FFFFFF Humanos também podem ser maldosos.
+FFFFFF 
+FFFFFF Ele é muito rápido, por isso não vai ser 
+FFFFFF fácil comprar algo dele.
+FFFFFF Mas ele comercializa coisas surpreendentes,
+FFFFFF será uma sorte encontra-lo.
+FFFFFF 
+FFFFFF 
+AAFFFF Teste a sua sorte também.
+FFFFFF 
+AAFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Rastros além do céu >> 
+FFFFFF 
+FFFFFF Como se sente em descobrir os segredos celeste?
+FFFFFF Junte 7 cristais que foram usados além do céu,
+FFFFFF e leve-os para o Dragão Dourado de Armia.
+FFFFFF 
+FFFFFF Ele irá atribuir poderes especiais em sua arma.
+FFFFFF Mas lembre-se, isso pode ser bom ou ruim.
+FFFFFF 
+AAFFFF Espero que os deuses o ajudem.
+FFFFFF 
+AAFFFF 
+FFFFFF 
+AAFFFF 
+AAFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Pesadelo - Normal >>  
+FFFFFF 
+FFFFFF Recentemente nos reinos de Armia, Azran e Erion
+FFFFFF estão acontecendo coisas misteriosas.
+FFFFFF Não há nada explicando sobre essas coisas,
+FFFFFF Queria que você investigasse sobre esse fato 
+FFFFFF Por favor, investigue em Erion primeiro.
+FFFFFF As pessoas de Erion precisam da sua ajuda.
+FFFFFF Sabemos que esse fenomeno é chamado
+FFFFFF de Pesadelo, pois as pessoas morrem enquanto
+FFFFFF dormem....em seus sonhos.
+FFFFFF 
+FFFFFF 
+AAFFFF O pesadelo pode ser muito real!
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF
+FFFFAA << Cubo da Maldade - Místico >>  
+FFFFFF 
+FFFFFF O Ferreiro de Azran Arnold está tramando alguma
+FFFFFF coisa. Ele está vendendo convites, isso é
+FFFFFF estranho. Bom... Com o convite que ele vende vá  
+FFFFFF até onde ele trabalha na entrada de Azran. Estou
+FFFFFF muito curioso, ele é uma pessoa séria e não sei
+FFFFFF o porque de vender convites.
+FFFFFF Você poderia matar minha curiosidade?
+FFFFFF 
+AAFFFF Agora é a hora de solucionar a parte mística.  
+FFFFFF 
+FFFFFF 
+AAFFFF 
+FFFFFF 
+FFFFFF 
+AAFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Pedra da Troca >>  
+FFFFFF 
+FFFFFF Ei! Porque está tão desanimado?
+FFFFFF 
+FFFFFF Não gostou do seu nome? Você pode mudar!
+FFFFFF 
+FFFFFF A comerciante Berdes, de Akelonia está vendendo
+FFFFFF pedras especiais. Compre a Pedra da Troca Maior.
+FFFFFF Para a trocar, você também precisará da Pedra
+FFFFFF da Troca Menor, vendida pela Redmiron, 
+FFFFFF em Hekalotia. Com as duas pedras mágicas,
+FFFFFF você terá um nome digno de um guerreiro
+FFFFFF do seu nivel e poder.
+AAFFFF Agora é hora de trocar nomes...
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Zona Elemental da Água - Normal >> 
+FFFFFF 
+FFFFFF São 8 quartos que formam a Zona da Água. 
+FFFFFF Você, que passou por todas com o Pergaminho,
+FFFFFF sabe que a recompensa é o "Tomo do Mago".
+FFFFFF Se você estiver realmente com sorte,
+FFFFFF poderá até obter a "Fada Guardiã".
+FFFFFF Essa quest está dividida em Normal, Místico
+FFFFFF e Arcano, e cada nível possui monstros 
+FFFFFF mais fortes.
+FFFFFF Acho que o seu nível é normal mesmo.
+FFFFFF Então...espero q tenha sorte.
+FFFFFF 
+AAFFFF E lembre-se, a água é o elemento da vida.
+FFFFFF 
+AAFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Sociedade do WYD - Dois Castelos >>  
+FFFFFF 
+FFFFFF Já ouviu dizer sobre o castelo de Yanus, que
+FFFFFF fica a leste das terras em liberdade?
+FFFFFF 
+FFFFFF Este lugar possui características muito diferentes.
+FFFFFF Há uma simetria exata entre os lados do castelo,
+FFFFFF por isso você vai poderá escolher apenas um dos
+FFFFFF lados para explorar..
+FFFFFF 
+FFFFFF No centro do castelo, se tiver sorte, você 
+FFFFFF encontrará o Lorde Zakum, e poderá obter o Imp
+FFFFFF que é evocado por ele.
+FFFFFF 
+FFFFFF 
+AAFFFF O Imp pode ser um bom aliado ou um temivel inimigo.
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Cubo da Maldade - Arcano >>  
+FFFFFF 
+FFFFFF O Ferreiro de Azran Arnold está tramando alguma
+FFFFFF coisa. Ele está vendendo convites, isso é
+FFFFFF estranho. Bom... Com o convite que ele vende vá  
+FFFFFF até onde ele trabalha na entrada de Azran. Estou
+FFFFFF muito curioso, ele é uma pessoa séria e não sei
+FFFFFF o porque de vender convites.
+FFFFFF Você poderia matar minha curiosidade?
+FFFFFF 
+FFFFFF Só falta a parte Arcana. 
+AAFFFF Essa é a mais dificil, será que você
+AAFFFF conseguirá sair dessa com vida?
+AAFFFF 
+FFFFFF 
+FFFFFF 
+AAFFFF 
+AAFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF
+FFFFAA << Zona Elemental da Água - Místico >> 
+FFFFFF 
+FFFFFF São 8 quartos que formam a Zona da Água. 
+FFFFFF Você, que passou por todas com o Pergaminho,
+FFFFFF sabe que a recompensa é o "Tomo do Mago".
+FFFFFF Se você estiver realmente com sorte,
+FFFFFF poderá até obter a "Fada Guardiã".
+FFFFFF Essa quest está dividida em Normal, Místico
+FFFFFF e Arcano, e cada nível possui monstros 
+FFFFFF mais fortes.
+FFFFFF Pra você o nivel místico é o ideal.
+FFFFFF Então...espero q tenha sorte.
+FFFFFF 
+AAFFFF E lembre-se, a água é o elemento da vida.
+FFFFFF 
+AAFFFF 
+FFFFFF 
+AAFFFF 
+FFFFFF 
+FFFFAA << Coliseu - Normal >>
+FFFFFF 
+FFFFFF Por acaso você quer se tornar rico? Se sim, 
+FFFFFF ouça com atenção o que vou falar agora. Você 
+FFFFFF sabe que o continente onde você está agora,
+FFFFFF o continente KerSerf, é formado por dois reinos. 
+FFFFFF E ambos disputam entre si para ver quem tem os
+FFFFFF melhores guerreiros.
+FFFFFF Para isso foi criado um coliseu na cidade de Azran,
+FFFFFF e eles deixam monstros soltos ali... quem tiver o
+FFFFFF melhor desempenho recebe prêmios.
+FFFFFF Se quiser ganhar fama e GOLD, vá ao coliseu.
+FFFFFF 
+AAFFFF Nesse nivel, acho melhor você ir às 8 horas da noite.
+FFAAFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF
+FFFFAA < Pesadelo - Místico >  
+FFFFFF 
+FFFFFF Recentemente nos reinos de Armia, Azran e Erion
+FFFFFF estão acontecendo coisas misteriosas.
+FFFFFF Não há nada explicando sobre essas coisas,
+FFFFFF Queria que você investigasse sobre esse fato 
+FFFFFF Por favor, investigue em Erion primeiro.
+FFFFFF As pessoas de Erion precisam da sua ajuda
+FFFFFF Sabemos que esse fenomeno é chamado
+FFFFFF de Pesadelo, pois as pessoas morrem enquanto
+FFFFFF dormem....em seus sonhos.
+FFFFFF 
+AAFFFF Agora é a vez de ajudar a cidade de Armia.
+FFFFFF 
+AAFFFF O pesadelo pode ser muito real!
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Portão Infernal >>  
+FFFFFF 
+FFFFFF Você ouviu boatos sobre o Portão do Inferno?
+FFFFFF 
+FFFFFF O reino todo está só falando sobre este assunto,
+FFFFFF Todos os guerreiros chamam esse local assim
+FFFFFF Você também não está curioso? 
+FFFFFF 
+FFFFFF Para entrar, é necessário um "ticket"...
+FFFFFF Mas o resto é por sua conta e risco. 
+FFFFFF Dizem que nesse portão existem lindas mulheres...
+FFFFFF  
+FFFFFF 
+AAFFFF Ou é esse o boato criado por monstros?
+FFFFFF 
+FFFFFF 
+FFFFFF 
+AAFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Medalha do Reino >>  
+FFFFFF 
+FFFFFF Vi o Oráculo fazendo magias bem interessantes.
+FFFFFF Junte 10 Safiras e,
+FFFFFF junto ao seu Mestre da guilda,
+FFFFFF dê ao Oráculo, assim a sua medalha de Guilda
+FFFFFF vira uma medalha de Reino e você poderá
+FFFFFF transferir a medalha para alguém da sua guilda.
+FFFFFF Não é interessante? 
+FFFFFF 
+FFFFFF Isso vai agilizar as tarefas da sua guilda.
+FFFFFF 
+AAFFFF Lembre-se, uma guilda unida é mais forte.
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF
+FFFFAA << Tempestade Inacabável >>  
+FFFFFF 
+FFFFFF Está na hora de mostrar a sua lealdade e sua
+FFFFFF coragem para todo o reino.
+FFFFFF Estamos com dificuldades no Castelo Noatun 
+FFFFFF porque os inimigos estão cada vez mais fortes.
+FFFFFF Se derrotar o rei do reino oponente, você poderá 
+FFFFFF obter o símbolo da coragem.
+FFFFFF Esse símbolo serve também para desvendar 
+FFFFFF o mistério do quarto secreto.
+FFFFFF Estarei esperando por sua coragem!
+FFFFFF 
+AAFFFF Mas já vou avisando, a guerra não é lugar para
+AAFFFF quem não possuem bravura no coração.
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFAA << Coliseu - Místico >>  
+FFFFFF 
+FFFFFF Por acaso você quer se tornar rico? Se sim,  
+FFFFFF ouça com atenção o que vou falar agora. Você
+FFFFFF sabe que o continente onde você está agora,
+FFFFFF o continente KerSerf, é formado por dois reinos.
+FFFFFF E ambos disputam entre si para ver quem tem
+FFFFFF os melhores guerreiros.
+FFFFFF Para isso foi criado um coliseu na cidade de Azran,
+FFFFFF e eles deixam monstros soltos ali... quem tiver o
+FFFFFF melhor desempenho recebe premios.
+FFFFFF Se quiser ganhar fama e GOLD, vá ao coliseu.
+AAFFFF 
+AAFFFF Nesse nivel, acho melhor você ir às 9 horas da noite.
+FFFFFF
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFAAFF 
+FFFFAA << Zona Elemental da Água - Arcano >>  
+FFFFFF 
+FFFFFF São 8 quartos que formam a Zona da Água. 
+FFFFFF Você, que passou por todas com o Pergaminho,
+FFFFFF sabe que a recompensa é o "Tomo do Mago".
+FFFFFF Se você estiver realmente com sorte,
+FFFFFF poderá até obter a "Fada Guardiã".
+FFFFFF Essa quest está dividida em Normal, Místico
+FFFFFF e Arcano, e cada nível possui monstros 
+FFFFFF mais fortes.
+FFFFFF Agora só resta o nível Arcano... 
+FFFFFF Sei que você está querendo descansar um pouco,
+FFFFFF mas o caminho é o mais longo e perigoso.
+AAFFFF 
+AAFFFF E lembre-se, a água é o elemento da vida.
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << À procura da Vida Eterna >>  
+FFFFFF 
+FFFFFF Passou-se muito tempo que estamos juntos...
+FFFFFF 
+FFFFFF Você deve ter ouvido entre os 
+FFFFFF aventureiros... Sobre o poder que surge 
+FFFFFF quando alguém junta todas as almas 
+FFFFFF escondidas na época da Guerra Lendária.
+FFFFFF 
+FFFFFF Junte as Almas da Fênix e Unicórnio
+FFFFFF e entregue-as para o Oráculo.
+FFFFFF 
+FFFFFF Esse é o primeiro passo para se tornar um Arch.
+FFFFFF 
+AAFFFF Vamos! Força!
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Um novo começo >>  
+FFFFFF 
+FFFFFF Faz um longo tempo...
+FFFFFF Estive observando o seu crescimento e 
+FFFFFF estou feliz com o que vi.
+FFFFFF você conseguiu a pedra da imortalidade!
+FFFFFF Mas agora é só o começo.
+FFFFFF 
+FFFFFF Vou te contar o segredo da Sephira. Junte os 8 
+FFFFFF elementos de Sephira mais o GOLD necessário
+FFFFFF e vá para o Mestre de Skill de Armia.
+FFFFFF 
+FFFFFF Ele irá produzir o Sephirot para você.
+FFFFFF Leve o Sephirot e a pedra da
+FFFFFF imortalidade ao seu rei, e se tornará um Arch! 
+FFFFFF 
+AAFFFF Que a glória do Sephira esteja com você!
+AAFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Pesadelo - Arcano >>  
+FFFFFF 
+FFFFFF Recentemente nos reinos de Armia, Azran e Erion
+FFFFFF estão acontecendo coisas misteriosas.
+FFFFFF Não há nada explicando sobre essas coisas,
+FFFFFF Queria que você investigasse sobre esse fato 
+FFFFFF Por favor, investigue em Erion primeiro.
+FFFFFF As pessoas de Erion precisam da sua ajuda
+FFFFFF  Sabemos que esse fenomeno é chamado
+FFFFFF de Pesadelo, pois as pessoas morrem enquanto
+FFFFFF dormem....em seus sonhos.
+FFFFFF 
+FFFFFF Você já é um herói do reino... Não está 
+FFFFFF percebendo a sua fama?
+FFFFFF 
+AAFFFF Agora só falta a cidade de Azran!
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Coliseu - Arcano >>  
+FFFFFF 
+FFFFFF Por acaso você quer se tornar rico? Se sim,  
+FFFFFF ouça com atenção o que vou falar agora. Você
+FFFFFF sabe que o continente onde você está agora,
+FFFFFF o continente KerSerf, é formado por dois reinos.
+FFFFFF E ambos disputam entre si para ver quem tem
+FFFFFF os melhores guerreiros.
+FFFFFF Para isso foi criado um coliseu na cidade de Azran,
+FFFFFF e eles deixam monstros soltos ali... quem tiver o
+FFFFFF melhor desempenho recebe premios.
+FFFFFF Se quiser ganhar fama e GOLD, vá ao coliseu.
+AAFFFF 
+AAFFFF Você já está bem forte, pode ir às 10 horas da noite.

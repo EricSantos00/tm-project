@@ -1,0 +1,18 @@
+001	FFFFFF	00	Training Camp
+040	FFFFFF	00	Spirit Guardian
+040	FFFFFF	00	Conquering Orc Castle 
+060	FFFFFF	00	Defending Mystic Land
+070	FFFFFF	14	Bless of the God
+101	FFFFFF	00	Ceremony to Apprentice
+116	FFFFFF	00	God's Garden
+120	FFFFFF	15	Balance of Power
+191	FFFFFF	00	Revival of the Dark Knight
+201	FFFFFF	16	Gargoyle's Molar Tooth
+221	FFFFFF	17	Knight of the Kingdom
+255	FFFFFF	00	Daemon Load Attack
+266	FFFFFF	00	Immortality of Hydra
+300	FFFFFF	00	Underworld
+321	FFFFFF	00	Beginning of Unhappiness
+351	FFFFFF	00	King of Underworld
+355	FFFFFF	20	Release 355 Level Limit
+370	FFFFFF	21	Release 370 Level Limit

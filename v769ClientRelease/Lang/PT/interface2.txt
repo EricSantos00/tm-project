@@ -1,0 +1,10 @@
+FFFFFF Abrir janela de personagem
+FFFFFF Abrir janela de inventário
+FFFFFF Abrir janela de Skill
+FFFFFF Abrir janela de grupo
+FFFFFF Abrir janela de mini-mapa
+FFFFFF Ativa / desativa a barra automática de Skills
+FFFFFF (Mesma função do atalho ''K'' para PvP)
+FFFFFF Exibe nome dos personagens liga/desliga
+FFFFFF Muda visualização
+FFFFFF 

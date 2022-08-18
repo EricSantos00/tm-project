@@ -453,6 +453,9 @@
     <ClInclude Include="ResourceControl.h">
       <Filter>Header Files\Engine\UI</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\CommonFiles\SharedStructs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TMProject.cpp">

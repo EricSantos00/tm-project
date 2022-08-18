@@ -699,8 +699,8 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 			MSG_AccountLogin stAccountLogin{};
 			stAccountLogin.Header.ID = 0;
 			stAccountLogin.Header.Type = MSG_AccountLogin_Opcode;
-			stAccountLogin.Force = 1;
-			stAccountLogin.Version = 1758;
+			stAccountLogin.DBNeedSave = 1;
+			stAccountLogin.ClientVersion = 1758;
 			
 			DWORD dwSize = 0;
 			IP_ADAPTER_INFO stInfo{};
@@ -730,16 +730,16 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 
 				temp[tpos] = '\0';
 
-				sscanf_s(temp, "%x %x %x %x", &stAccountLogin.Mac[0], &stAccountLogin.Mac[1], &stAccountLogin.Mac[2], &stAccountLogin.Mac[3]);
+				sscanf_s(temp, "%x %x %x %x", &stAccountLogin.AdapterName[0], &stAccountLogin.AdapterName[1], &stAccountLogin.AdapterName[2], &stAccountLogin.AdapterName[3]);
 
 				free(pInfo);
 			}
 
 			sprintf_s(stAccountLogin.AccountName, "%s", pEditID->GetText());
-			sprintf_s(stAccountLogin.AccountPass, "%s", pEditPassword->GetText());
+			sprintf_s(stAccountLogin.AccountPassword, "%s", pEditPassword->GetText());
 			sprintf_s(g_pObjectManager->m_szAccountName, "%s", stAccountLogin.AccountName);
-			g_pObjectManager->m_szAccountPass[0] = stAccountLogin.AccountPass[0];
-			g_pObjectManager->m_szAccountPass[1] = stAccountLogin.AccountPass[1];
+			g_pObjectManager->m_szAccountPass[0] = stAccountLogin.AccountPassword[0];
+			g_pObjectManager->m_szAccountPass[1] = stAccountLogin.AccountPassword[1];
 			for (int mm = 2; mm < 16; ++mm)
 				g_pObjectManager->m_szAccountPass[mm] = rand() % 10 + 48;
 

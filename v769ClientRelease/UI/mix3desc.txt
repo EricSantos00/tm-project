@@ -1,0 +1,5 @@
+FFFFFF   Um item superior a +9 e 
+FFFFFF   4 unidades de Pedra_da_luz
+FFFFFF   são necessários para poder atribuir
+FFFFFF   opções de equipamento comum para
+FFFFFF   um item Arch.

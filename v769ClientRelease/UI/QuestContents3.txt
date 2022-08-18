@@ -1,0 +1,180 @@
+FFFFAA << Contrato dos Espíritos >>  
+FFFFFF 
+FFFFFF Na guerra lendária, o General Kafma
+FFFFFF liderava o batalhão comandado por 4
+FFFFFF contratantes dos espíritos.
+FFFFFF 
+FFFFFF Esse foi o fator principal para
+FFFFFF acabar com a tropa inimiga.
+FFFFFF Elime, espírito da Água. Sylphed, espírito do Vento.
+FFFFFF Thelio do Fogo e Noas, da Terra...
+FFFFFF O seu poder está chegando ao limite.
+FFFFFF 
+FFFFFF A partir de agora você poderá realizar 
+FFFFFF contratos com os 4 espíritos.
+FFFFFF 
+FFFFFF Os cristais dos espíritos são essenciais para
+FFFFFF realizar os contratos. Os cristais
+FFFFFF podem ser achados na Dungeon de Kefra.
+FFFFFF O contrato com os espíritos pode ser 
+FFFFFF realizado apenas no 355º nivel
+FFFFAA << Primeiro: Espírito da Água >> 
+FFFFFF 
+FFFFFF Para fazer o contrato com Elime é necessário
+FFFFFF ser um Arch de level de 355 ou superior e precisa
+FFFFFF sacrificar 100.000.000 de experiência, e o item
+FFFFFF Cristal de Elime.
+FFFFFF 
+FFFFFF Pelo contrato com Elime você ganha 80 de MP,
+FFFFFF e a autorização para poder realizar contrato
+FFFFFF com espírito do Vento, Sylphed.
+FFFFFF O Cristal de Elime pode ser obtido matando o 
+FFFFFF Espírito_Maldito que reside na Dungeon de Kefra.
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Segundo: Espírito do Vento >>  
+FFFFFF 
+FFFFFF Para o contrato com Sylphed é necessário ser
+FFFFFF um Arch de level de 355 ou superior e precisa
+FFFFFF sacrificar 100.000.000 de experiência, e o item
+FFFFFF Cristal de Sylphed.
+FFFFFF 
+FFFFFF Pelo contrato com Sylphed você ganha 30 de AC,
+FFFFFF e a autorização para poder realizar contrato
+FFFFFF com espírito de fogo, Thelio.
+FFFFFF O Cristal de Sylphed pode ser obtido matando o
+FFFFFF Esqueleto_Maldito que reside na Dungeon de Kefra.
+FFFFFF  
+FFFFFF Se não possuir o contrato com espírito da água,
+FFFFFF não é possível realizar com o espírito do vento.
+FFFFFF 
+FFFFFF  
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Terceiro: Espírito do Fogo >>  
+FFFFFF 
+FFFFFF Para o contrato com Thelio é necessário 
+FFFFFF ser um personagem Arch de
+FFFFFF level 355 ou superior e precisa sacrificar
+FFFFFF 100.000.000 de experiência e o Cristal de Thelion.
+FFFFFF 
+FFFFFF Pelo contrato com Thelion você ganha 80 de HP
+FFFFFF e a autorização para poder realizar contrato
+FFFFFF com espírito de terra Noas.
+FFFFFF 
+FFFFFF O Cristal de Thelion pode ser obtido matando o
+FFFFFF Monge_Canibal que reside na Dungeon de Kefra.
+FFFFFF 
+FFFFFF Se não possuir o contrato com espírito do vento,
+FFFFFF não é possível realizar com o espírito de fogo.
+FFFFFF  
+FFFFFF  
+FFFFFF 
+FFFFFF 
+FFFFAA << Quarto: Espírito da Terra >> 
+FFFFFF 
+FFFFFF Para o contrato com Noas é necessário ser 
+FFFFFF um personagem Arch com level de 355 ou superior
+FFFFFF e precisa sacrificar 100.000.000 de experiência, 
+FFFFFF e o item Cristal de Noas.
+FFFFFF 
+FFFFFF Pelo contrato você ganha 60 de HP, 20 de AC
+FFFFFF e 60 de MP. 
+FFFFFF 
+FFFFFF O Cristal de Noas pode ser obtido matando o
+FFFFFF Morcego que reside na Dungeon de Kefra.
+FFFFFF 
+FFFFFF Se não possuir o contrato com o do fogo, não
+FFFFFF é possível realizar com o espírito da terra.
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Desbloqueio do lvl 355 >> 
+FFFFFF 
+FFFFFF Ao atingir o lvl 355, a experiência do 
+FFFFFF personagem bloqueia.
+FFFFFF Utilize o NPC Lindy, localizado no 
+FFFFFF Reino (X: 1707 Y:1727)
+FFFFFF 
+FFAAFF Item necessário: 
+FFAAFF [1] Pergaminho Selado
+FFFFFF 
+AAFFFF Após o desbloqueio, o ganho de 
+AAFFFF experiência será normalizado e só 
+AAFFFF voltarar a desbloquear no lvl 370.
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Desbloqueio do lvl 370 >> 
+FFFFFF 
+FFFFFF Ao atingir o lvl 370, a experiência do 
+FFFFFF personagem bloqueia.
+FFFFFF Utilize o NPC Lindy, localizado no 
+FFFFFF Reino (X: 1707 Y:1727)
+FFFFFF 
+FFAAFF Item necessário: 
+FFAAFF [1] Pergaminho Selado
+FFAAFF [1] Poeira de Ori
+FFFFFF 
+AAFFFF Após o desbloqueio, o ganho de 
+AAFFFF experiência será normalizado.
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Criação de Personagem Celestial >> 
+FFFFFF 
+FFFFFF Ao atingir o nível 400, o Arch
+FFFFFF poderá ser evoluído para um Celestial.
+FFFFFF Para Criar um Celestial com o poder máximo,
+FFFFFF lembre-se de completar todas as Quests Arch:
+FFAAFF 
+FFAAFF Personagem Mortal: Level 400.
+FFAAFF Primeiro: [Espírito da Água]
+FFAAFF Segundo: [Espírito da Vento]
+FFAAFF [Terceiro: [Espírito do Fogo]
+FFAAFF Quarto: [Espírito da Terra]
+FFAAFF Personagem Arch: Level 400.
+AAFFFF 
+AAFFFF Para criar o Celestial, utilize uma
+AAFFFF Pedra Ideal no personagem Arch.
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Criação de Pedra Ideal >> 
+FFFFFF 
+FFFFFF Para criar uma pedra ideal, equipe
+FFFFFF uma Pedra da Imortalidade (Móvel), 
+FFFFFF Um Sephirot aleatório e fale com o Rei
+FFFFFF do seu Reino com os seguintes 
+FFFFFF itens no inventário:
+FFAAFF 
+FFAAFF Pedra Secreta da Água.
+FFAAFF Pedra Secreta do Sol.
+FFAAFF Pedra Secreta do Vento.
+FFAAFF Pedra Secreta da Terra.
+FFAAFF Utilize o NPC Odin (Kefra) para compor
+FFAAFF as Pedras acima.
+AAFFFF 
+AAFFFF Lembre-se de falar com o Rei com um
+AAFFFF personagem Arch ou Celestial.
+AAFFFF Personagens Mortais não possuem o
+AAFFFF poder de criar Pedras Ideais.
+FFFFFF 

@@ -1,0 +1,5 @@
+FFFFFF O dano e efeito de uma skill,
+FFFFFF depende do aprendizado, status 
+FFFFFF e itens equipados. Quanto maior 
+FFFFFF o aprendizado, maior o gasto de mana.
+FFFFFF 

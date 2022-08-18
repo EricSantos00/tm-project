@@ -75,6 +75,4 @@ public:
     int china_Playtime;
     JBlur* m_pBlur;
 };
-
-void InitServerName2();
 void CreateConsole();

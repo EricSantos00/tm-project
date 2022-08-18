@@ -1,0 +1,60 @@
+FFFFFF __________[Armia]__________Gremlin_King____________________________2370_2106
+FFFFFF __________[Armia]__________Half_Orc___________________________________2508_2101
+FFFFFF __________[Armia]__________Half_Orc___________________________________2526_2009
+FFFFFF __________[Armia]__________Hunter_Troll_____________________________2609_2001
+FFFFFF __________[Azran]__________Orc_Shaman____________________________2126_1600
+FFFFFF __________[Azran]__________Taurus_King_____________________________2005_1617
+FFFFFF __________[Azran]__________Bloody_Cyclops_______________________2241_1474
+FFFFFF __________[Azran]__________Elder_Cyclops__________________________1858_1721
+FFFFFF __________[Azran]__________Brutal_Cyclops_________________________2250_1316
+FFFFFF __________[Azran]__________Brutal_Cyclops_________________________1989_1755
+FFFFFF _______[Dungeon1]     Troll Zombie_________________________________290 3799
+FFFFFF _______[Dungeon1]     Skeleton Knight____________________________724 3781
+FFFFFF _______[Dungeon1]     Skel Soldier__________________________________481 4062
+FFFFFF _______[Dungeon2]     Stone Golem_________________________________876 4058
+FFFFFF _______[Dungeon2]     Fire Golem____________________________________855 3922
+FFFFFF _______[Dungeon2]     Fire Golem____________________________________808 3876
+FFFFFF _______[Dungeon3]     Fire Golem____________________________________959 3813
+FFFFFF _______[Dungeon3]     Fire Golem____________________________________926 3750
+FFFFFF _______[Dungeon3]     Dark Knight_________________________________1096 3730
+FFFFFF _______[Dungeon3]     Bone Dragon_______________________________1132 3800
+FFFFFF _____[Underworld1]____Water_Elemental___________________________1242_4035
+FFFFFF _____[Underworld1]____Water_Elemental___________________________1264_4017
+FFFFFF _____[Underworld1]____Water_Elemental___________________________1333_3994
+FFFFFF _____[Underworld1]____Dark_Elf_Knight____________________________1358_4041
+FFFFFF _____[Underworld1]____Dark_Elf_Knight____________________________1462_4033
+FFFFFF _____[Underworld2]____Und_Troll_Lord_____________________________1326_3788
+FFFFFF _____[Underworld2]____Demi_Gorgon_______________________________1493_3777
+FFFFFF _____[Underworld2]____Moloch________________________________________1437_3741
+FFFFFF _____[Underworld2]____Moloch________________________________________1389_3740
+FFFFFF _____[Underworld2]____Moloch________________________________________1422_3810
+FFFFFF _________[Desert]          Giant Sand Worm                    1376 1722
+FFFFFF _________[Desert]          Giant Sand Worm                    1426 1686
+FFFFFF _________[Desert]          Asteroth Knight                       1381 1861
+FFFFFF _________[Desert]          Asteroth Knight                       1326 1896
+FFFFFF _________[Desert]          Taron Assasin                          1510 1723
+FFFFFF _________[Desert]          Taron                                      1543 1726
+FFFFFF _________[Desert]          Taron                                      1580 1758
+FFFFFF _________[Desert]          Taron                                      1182 1714
+FFFFFF _________[Desert]          Hell Spider                               1634 1727
+FFFFFF _________[Desert]          Hell Spider                               1237 1764
+FFFFFF _________[Kehpra]          Gold Widower                          2367 4024
+FFFFFF _________[Kehpra]          Horizon Cropper                      2236 4044
+FFFFFF _________[Kehpra]          Horizon Cropper                      2236 3993
+FFFFFF _________[Kehpra]          Horizon Cropper                      2209 3989
+FFFFFF _________[Kehpra]          Horizon Cropper					                      2453 4067
+FFFFFF _________[Kehpra]          Horizon Cropper                      2485 4043
+FFFFFF _________[Kehpra]          Cruel Ape       	                         2534 3897
+FFFFFF _________[Kehpra]          Cruel Ape       	                         2489 3919
+FFFFFF _________[Kehpra]          Lich Vatama                             2269 3910
+FFFFFF _________[Kehpra]          Lich Crunt                               2202 3866
+FFFFFF ________[Nifleheim]_________Riflaim_Bear________  ___________________3664_3024
+FFFFFF ________[Nifleheim]_________Frost_Troll_________  ____________________3582_3007
+FFFFFF ________[Nifleheim]_________Ancient_Ent_________  __________________3514_3008
+FFFFFF ________[Nifleheim]_________Amon________________  ___________________3818_2977
+FFFFFF ________[Nifleheim]_________Amon_Warrior________  ______________3517_2889
+FFFFFF ________[Nifleheim]_________Amon_Chief__________  ________________3745_2977
+FFFFFF ________[Nifleheim]_________Kalintz_Man_________  __________________3639_2877
+FFFFFF ________[Nifleheim]_________Kalintz_Town________  _________________3650_2727
+FFFFFF ________[Nifleheim]_________Cursed_Town_________  _______________3660_2773
+FFFFFF ________[Nifleheim]_________Valkyrie_Rosen______  ________________3746_2879

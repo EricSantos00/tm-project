@@ -1,0 +1,98 @@
+FFFFFF  
+FFFFFF Como manusear
+FFFFAA
+FFFFAA Usar Skill
+AAFFAA 
+AAFFAA 
+AAFFAA 
+FFFFFF  
+FFFFFF Auto Ataque
+FFFFAA
+FFFFAA Acionar Auto-ataque
+AAFFAA 
+AAFFAA 
+AAFFAA 
+AAFFAA 
+FFFFFF  
+FFFFFF Tecla de atalho
+FFFFAA
+FFFFAA F1 - F10 ou 1 a 10
+AAFFAA 
+FFFFAA
+FFFFAA Shift + 1 - 10 ou Shift + F1 - F10
+AAFFAA 
+FFFFAA
+FFFFAA -
+AAFFAA Controla a quant. de skill no auto ataque
+AAFFAA 
+FFFFAA
+FFFFAA Q
+AAFFAA Usa poção de energia (vida)
+FFFFAA
+FFFFAA W
+AAFFAA Usa poção de mana
+FFFFAA
+FFFFAA E
+AAFFAA 
+FFFFAA
+FFFFAA V
+AAFFAA 
+FFFFAA
+FFFFAA F11
+AAFFAA Usa pergaminho de volta
+FFFFAA
+FFFFAA Ctrl
+AAFFAA 
+FFFFAA
+FFFFAA Print Scrn SysRq
+AAFFAA Tira screenshot, é guardado na pasta do WYD.
+FFFFAA
+FFFFAA C
+AAFFAA Abrir a janela de personagem
+FFFFAA
+FFFFAA I
+AAFFAA Abrir inventário
+FFFFAA
+FFFFAA S
+AAFFAA Abrir janela de skill
+FFFFAA
+FFFFAA P ou D
+AAFFAA Abrir a janela de grupo
+FFFFAA
+FFFFAA M ou A
+AAFFAA Abrir minimapa
+FFFFAA
+FFFFAA R
+AAFFAA 
+FFFFAA
+FFFFAA ~
+AAFFAA 
+FFFFAA
+FFFFAA T
+AAFFAA 
+FFFFAA
+FFFFAA N
+AAFFAA Exibe nome dos personagens liga/desliga
+FFFFAA
+FFFFAA Tab
+AAFFAA Muda a visualização
+FFFFAA
+FFFFAA Enter
+AAFFAA Usar chat
+FFFFAA
+FFFFAA +
+AAFFAA Controla o tamanho da janela de chat
+FFFFAA
+FFFFAA PageUp ou PageDown
+AAFFAA 
+FFFFAA
+FFFFAA Setas cima ou baixo
+AAFFAA 
+FFFFAA
+FFFFAA F
+AAFFAA 
+FFFFAA
+FFFFAA H
+AAFFAA Abrir janela de ajuda
+FFFFFF  
+

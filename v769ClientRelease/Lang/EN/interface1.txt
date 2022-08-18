@@ -1,0 +1,10 @@
+FFFFFF Choose skill from quick skill slots
+FFFFFF To assign skill in quick skill slots
+FFFFFF To control skills in Auto Attack Mode
+FFFFFF Use Healing Potion
+FFFFFF Use Mana Potion
+FFFFFF Use Kapa Potion
+FFFFFF Feed your mount
+FFFFFF Use Recall Scroll 
+FFFFFF For screen shots, Save screen shots to WYD folder
+FFFFFF

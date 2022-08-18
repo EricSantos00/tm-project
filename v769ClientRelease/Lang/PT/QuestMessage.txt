@@ -1,0 +1,36 @@
+001 FFFFFF [Campo de Treino] Quest 
+040 FFAAAA [Defensor da Alma] Quest
+045 FFFFFF [Conquista do Castelo Orc] Quest 
+050 FFFFFF [Cubo da Maldade - Normal] Quest
+060 FFFFFF [Defensor da Terra Mística] Quest
+070 FFAAAA [Benção de Deus] Quest
+071 FFFFFF [Sala Secreta] Quest
+075 FFFFFF [Monstro Comerciante] Quest
+085 FFFFFF [Pesadelo - Normal] Quest
+090 FFFFFF [Cubo da Maldade - Místico] Quest
+100 FFAAAA [Formatura dos Cav. Aprendizes] Quest
+100 FFFFFF [Pedra da Troca] Quest
+116 FFAAAA [Jardim do Deus] Quest
+110 FFFFFF [Zona Elemental da Água - Normal] Quest
+120 FFFFFF [Equilíbrio da Força] Quest
+150 FFFFFF [Sociedade do WYD - Dois Castelos] Quest
+160 FFFFFF [Cubo da Maldade - Arcano] Quest
+180 FFFFFF [Zona Elemental da Água - Místico] Quest
+191 FFAAAA [Ressurreição do Cavaleiro Negro] Quest
+200 FFFFFF [Pesadelo - Místico] Quest
+201 FFAAAA [Molar do Gárgula] Quest
+210 FFFFFF [Portal Infernal] Quest
+220 FFAAAA [Cavaleiro do Reino] Quest
+220 FFFFFF [Guilda Mezor ] Quest
+256 FFFFFF [Tempestade Inacabável] Quest
+266 FFAAAA [Hidra Imortal] Quest
+275 FFFFFF [Zona Elemental da Água - Arcano] Quest
+280 FFFFFF [À procura da Vida Eterna] Quest
+280 FFFFFF [Um novo começo] Quest
+295 FFFFFF [Pesadelo - Arcano] Quest
+321 FFAAAA [Início da Infelicidade] Quest
+351 FFFFFF [Contrato dos Espíritos] Quest
+351 FFFFFF [Primeiro: Espírito da Água] Quest
+351 FFFFFF [Segundo: Espírito do Vento] Quest
+351 FFFFFF [Terceiro: Espírito do Fogo] Quest
+351 FFFFFF [Quarto: Espírito do Terra] Quest

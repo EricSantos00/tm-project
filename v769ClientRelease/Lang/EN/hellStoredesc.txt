@@ -1,0 +1,100 @@
+AAFFAA 헬게이트 상점입니다.
+AAFFAA 각종 무기,방어구,악세사리를
+AAFFAA 판매합니다.
+AAFFAA *주의 사항
+AAFFAA 구입시 아이템의 옵션은 랜덤하게 
+AAFFAA 부여 됩니다.
+AAFFAA 인벤토리에 여유공간이 없을 경
+AAFFAA 우에는 구입하실수 없습니다
+AAFFAA 구입시 횟수의 제약은 없습니다.
+AAFFAA 구입되는 아이템에는 제련값은
+AAFFAA 부여되지 않습니다.
+AAFFAA 상점에 아이템을 되팔수있습니다.
+AAFFAA 
+AAFFAA 
+AAFFAA 
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+AAFFAA [무기]
+AAFFAA 9~10차 급의 모든 무기들을 판매
+AAFFAA 하고 있습니다.
+AAFFAA 예: 9차 그람 , 10차 보팔스워드 
+AAFFAA 단, 선택하여 구입 하실순 없으며
+AAFFAA 운이 따른다면 궁극의 아이템이
+AAFFAA 선택 되어 질수도 있습니다.
+AAFFAA 에이션트무기는 판매하지 않습니다
+AAFFAA 인벤토리에 가로 2칸 세로 4칸의
+AAFFAA 여유공간이 필요합니다.
+AAFFAA 
+AAFFAA 가격은 900만 골드 입니다.
+AAFFAA 
+AAFFAA 
+AAFFAA
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+AAFFAA [방어구] 
+AAFFAA 7~8차 급의 모든 방어구를 판매 
+AAFFAA 하고 있습니다.
+AAFFAA 예: 7차 드워븐플레이트아머 
+AAFFAA 단, 선택하여 구입 하실순 없으며
+AAFFAA 운이 따른다면 궁극의 아이템이 
+AAFFAA 선택 되어 질수도 있습니다.
+AAFFAA 
+AAFFAA 인벤토리에 가로 2칸 세로 3칸의
+AAFFAA 여유공간이 필요합니다.
+AAFFAA 
+AAFFAA 가격은 600만 골드 입니다.
+AAFFAA 
+AAFFAA 
+AAFFAA
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+AAFFAA [악세사리]
+AAFFAA 1~3차 급의 모든 아뮬렛을 판매
+AAFFAA 하고 있습니다.
+AAFFAA 예 : 실버아뮬렛,골드아뮬렛
+AAFFAA 단, 선택하여 구입 하실순 없으며
+AAFFAA 운이 따른다면 최고의 아이템이 
+AAFFAA 선택 되어 질수도 있습니다.
+AAFFAA 
+AAFFAA 인벤토리에 가로 1칸 세로 1칸의
+AAFFAA 여유공간이 필요합니다.
+AAFFAA 
+AAFFAA 가격은 500만 골드 입니다.
+AAFFAA 
+AAFFAA 
+AAFFAA
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+AAFFAA [랜덤]
+AAFFAA 무기,방어구,악세사리 를 랜덤하
+AAFFAA 게 판매하고 있습니다.
+AAFFAA 구입되는 아이템의 옵션은 랜덤
+AAFFAA 하게 부여 됩니다.
+AAFFAA 단, 선택하여 구입 하실순 없으며
+AAFFAA 운이 따른다면 최상의 아이템이
+AAFFAA 선택 되어 질수도 있습니다.
+AAFFAA 인벤토리에 가로 2칸 세로 4칸의
+AAFFAA 여유공간이 필요합니다.
+AAFFAA 
+AAFFAA 가격은 700만 골드 입니다.
+AAFFAA 
+AAFFAA 
+AAFFAA
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF
+FFFFFF

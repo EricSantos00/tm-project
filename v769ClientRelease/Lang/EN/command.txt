@@ -1,0 +1,97 @@
+FFFFFF 
+FFFFFF << Guild Commands >>
+FFFFAA 
+FFFFAA guild
+AAFFAA Check online guild members and guilds you have alliance or war with
+FFFFAA 
+FFFFAA /guildtax [tax rate]
+AAFFAA Command use to adjust guild's taxes (Taxes range 0-30)
+AAFFAA Used by guild masters to set the taxes on the town they conquer
+FFFFAA 
+FFFFAA /create [guild name]
+AAFFAA Create new guild at a cost of 100,000,000 gold
+FFFFAA 
+FFFFAA /handover [guild member's name]
+AAFFAA Pass the guild leader medal to any guild member
+FFFFAA 
+FFFFAA /summonguild
+AAFFAA Summon all guild members that are online
+AAFFAA - Guild master can summon all guild members, including chief guild master
+AAFFAA - Chief guild master can summon members that belong to his sub guild
+AAFFAA (Only guild master and chief guild master can summon)
+FFFFAA 
+FFFFAA /cancellation [guild member's name]
+AAFFAA Expel certain guild member out of the guild
+AAFFAA Guild member can also use to leave from guild
+FFFFAA 
+FFFFAA /relo [guild member's name]
+AAFFAA Teleport to any guild or party member
+AAFFAA > Only master, chief, characters that are wearing the medal of kingdom
+AAFFAA   and Foema type of characters with party summon skill
+FFFFAA 
+FFFFAA /endwar
+AAFFAA End the war with other guild
+FFFFAA 
+FFFFAA /allystop
+AAFFAA End the alliance with other guild
+FFFFFF 
+FFFFFF << Chat Commands >>
+FFFFAA 
+FFFFAA /character name [Content of Chat]
+AAFFAA Whisper other characters
+FFFFAA 
+FFFFAA /r [message]
+AAFFAA Reply the last person to whisper you
+FFFFAA 
+FFFFAA = [message]
+AAFFAA Party chat, only party members can see it
+FFFFAA 
+FFFFAA - [message]
+AAFFAA Guild tag on  : Guild chat, only guild members can see
+AAFFAA Guild tag off : Global chat, only characters with no guild can see
+FFFFAA 
+FFFFAA -- [message]
+AAFFAA Allies chat, allies and your guild members can see it
+AAFFAA >Guild tag should be on
+AAFFAA Guild tag off : Global chat, only characters with no guild can see
+FFFFAA 
+FFFFAA * [message]
+AAFFAA Display message above player's head for 10 seconds
+FFFFAA 
+FFFFAA /character name ! [message]
+AAFFAA Send a massage to a certain player, it will dissapear
+AAFFAA when the other player logs out
+FFFFAA 
+FFFFAA /snd [message]
+AAFFAA Shows a notice to the message sender
+FFFFFF 
+FFFFFF << Citizen Commands >>
+FFFFAA 
+FFFFAA /getout
+AAFFAA Use to leave from registered citizen
+FFFFAA 
+FFFFAA /[character name]
+AAFFAA Show a character's guild, citizenship and fame
+FFFFFF 
+FFFFFF << Kingdom Commands >>
+FFFFAA 
+FFFFAA /Kingdom
+AAFFAA Teleport players to their respective kingdom 
+AAFFAA > Only applies to players that belong to a kingdom
+AAFFAA > Requires a warp scroll to use this command
+FFFFAA 
+FFFFAA /king
+AAFFAA Teleport players to the king
+AAFFAA > Only applies to players that belong to a kingdom
+AAFFAA > Requires a warp scroll to use this command
+FFFFFF 
+FFFFFF << Other Commands >>
+FFFFAA 
+FFFFAA exp
+AAFFAA Shows or hides experience gained 
+FFFFAA 
+FFFFAA effects
+AAFFAA Turns on or off special effects
+FFFFAA 
+FFFFAA whisper
+AAFFAA Turn on or off whisper chat

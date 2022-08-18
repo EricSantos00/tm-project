@@ -1,0 +1,10 @@
+FFFFFF Escolha skill da barra de skill
+FFFFFF Comando desabilitado.
+FFFFFF Para controlar a skill no modo de Auto Atk
+FFFFFF Usar Poção de cura
+FFFFFF Usar Poção de mana
+FFFFFF Usar Poção Kapa
+FFFFFF Alimentar sua montaria
+FFFFFF Usar Pergaminho de Retorno
+FFFFFF Para screen shots, salva na pasta SD
+FFFFFF 

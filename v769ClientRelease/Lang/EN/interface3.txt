@@ -1,0 +1,10 @@
+FFFFFF Adjusting chat window size(4 sizes can be selected)
+FFFFFF Scroll between chat contents
+FFFFFF Check previous chating contents(Chating Mode)
+FFFFFF open inventory (bags 1,2,3 and 4)
+FFFFFF Open Help and Message Window
+FFFFFF Quick switch between skills(2 times switch)
+FFFFFF Auto Run ON/OFF
+FFFFFF Open Quest Window
+FFFFFF Chating Mode
+FFFFFF (') = Guild badge ON / OFF

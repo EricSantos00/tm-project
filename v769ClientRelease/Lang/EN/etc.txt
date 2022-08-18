@@ -1,0 +1,76 @@
+FFFFFF 
+FFFFFF << C.C. (Combat Control) System >>
+FFFFFF 
+FFFFAA C.C Mode Setup
+AAFFAA Melee : attack all monsters within range with physical damage
+AAFFAA Magic : attack all monsters within range with spells
+AAFFAA         (Skills under the auto attack toggle bar will be cast)
+AAFFAA > Click on C.C. Mode button to choose which type of C.C. mode to use
+FFFFFF 
+FFFFAA C.C Mode Features
+AAFFAA Attack or cast spells on monsters within your attack range
+AAFFAA Cast all the buff skills in the current quick slot bar
+AAFFAA Use potions when your HP/MP goes down at a certain percentage
+AAFFAA Use mount feed when mount HP reaches 5 or less
+FFFFFF  
+FFFFFF << Auto Trade >>
+FFFFFF 
+FFFFAA Auto Trade Procedures
+AAFFAA Click the main menu at bottom right of your screen
+AAFFAA Click the auto trade button to start the setup
+AAFFAA Input auto trade title then click confirm
+AAFFAA Select items you want to sell at a certain price
+AAFFAA Click the start auto trade button at the bottom
+FFFFFF 
+FFFFFF << Trade >>
+FFFFFF 
+FFFFAA Request trade
+AAFFAA Ctrl+right click on players then click the Trade button
+FFFFFF 
+FFFFAA Input amount of gold
+AAFFAA Click gold button, input amount of gold then confirm
+FFFFFF 
+FFFFFF << Skill >>
+FFFFFF 
+FFFFAA Learn Skills
+AAFFAA Can learn from the "Skill Master" inside Armia town 
+AAFFAA Skills require certain level, special points and skills points
+FFFFFF 
+FFFFAA Use skills
+AAFFAA Open skill window(S) 
+AAFFAA Click then drop the desired skill into the quick slot bar or
+AAFFAA Mouse over the skill you want to be placed in the quick slot bar
+AAFFAA then press "Shift + F1 ~ F10" (desired function key)
+AAFFAA To use skills, choose any of the skills in the quick slot bar by 
+AAFFAA clicking or pressing the corresponding Function Keys.
+AAFFAA Then the press right-click button
+FFFFFF 
+FFFFFF << Party >>
+FFFFFF 
+FFFFAA Request Party
+AAFFAA Press Ctrl+right click on players then select Party in the menu window
+FFFFFF 
+FFFFAA Acept Party
+AAFFAA Click the character name in the party window
+FFFFFF 
+FFFFFF << Item Upgrade >>
+FFFFFF 
+FFFFAA Refinemen Procedures
+FFFFFF 
+AAFFAA Click the Oriharukon or Laktorerium Powder and 
+AAFFAA drop them on the armors/weapons currently equipped
+AAFFAA If success, the status of the equipment will increase by 10 percent
+FFFFFF 
+FFFFFF << Hotkeys >>
+FFFFFF 
+FFFFAA Auto Attack
+AAFFAA Press "T" to activate auto attack toggle bar
+AAFFAA When Auto Attack is activated, Press "-" to adjust the number of skills
+AAFFAA that will be continually cast when you hold right click
+FFFFFF 
+FFFFAA Change quick slot bar
+AAFFAA Press "Z" button or click "<" and ">" to switch quick slot bar
+FFFFFF 
+FFFFAA Auto Run
+AAFFAA Press "]" automatically run in a straight forward direction
+AAFFAA Directions of movement can be controlled by mouse wheel

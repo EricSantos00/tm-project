@@ -188,8 +188,8 @@ FILTER_STATE DS_SOUND_CHANNEL::GetState()
 
 void DS_SOUND_CHANNEL::OnEvent()
 {
-	long lParam1;
-	long lParam2;
+	LONG_PTR lParam1;
+	LONG_PTR lParam2;
 	long lEventCode;
 
 	if (!media_event->GetEvent(&lEventCode, &lParam1, &lParam2, 0) && lEventCode == 1)

@@ -1,0 +1,13 @@
+FFFFFF Alterar tamanho da janela de chat
+FFFFFF Sobe / desse o conteúdo do bate-papo
+FFFFFF Checa conteúdos anteriores ditos no chat
+FFFFFF Abrir inventário. (bolsa 1,2,3 e 4)
+FFFFFF Abrir janela de ajuda
+FFFFFF Troca rápida entre skills
+FFFFFF Andar automaticamente para frente ON/OFF
+FFFFFF Abrir menu de quest
+FFFFFF Usar chat
+FFFFFF Aspas (') = Emblema da Guild ON/OFF
+FFFFFF
+
+

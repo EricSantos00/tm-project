@@ -1,0 +1,280 @@
+FFFFAA << Training Camp >>
+FFFFFF 
+FFFFFF Hey there, young lad...
+FFFFFF This is our first meeting...? Anything wrong?
+FFFFFF Oh... well... so you would like to become a knight...?
+FFFFFF Then let me tell you a great place to start. There is
+FFFFFF a "Novice Village" to the east of Armia that teaches
+FFFFFF beginners lots of tricks and experience to get started,
+FFFFFF 
+FFFFFF There are many trainers located there to aid you.
+FFFFFF Don't forget, each of them possess special powers   
+FFFFFF that gives you different kinds of blessings. See you later!
+FFFFFF 
+AAFFFF Go and look for Armia's Trainer Leader then!
+AAFFFF Coordinate : 2106 2083
+FFFFFF 
+FFAAFF Level Requirements : 1 ~ 35 LV
+FFAAFF Reward: Orc Emblem
+FFAAAA Show the Symbol of Orc Warrior to the Trainer Leader
+FFFFFF
+FFFFAA << Spirit Guardian >>
+FFFFFF 
+FFFFFF Lad.. Rumour says that there is an ancient spirit resting
+FFFFFF in the graveyard near Armia. But the number of monster 
+FFFFFF has recently been on the rise. There was an inpector 
+FFFFFF which talks about something shocking: "The Ancient Spirit"
+FFFFFF which rests here is about to be summoned by someone  
+FFFFFF known as the "Demon Worshipper". We must prevent the 
+FFFFFF ancient spirit from falling under the influence of demonic 
+FFFFFF curses at all cost! If any of these ancient spirits are 
+FFFFFF revived, save them by killing them! So then the rescued 
+FFFFFF souls may depart with the wisdom chest that carries
+FFFFFF ancient knowledge.
+FFFFFF 
+AAFFFF Go locate the graveyard to the north of Armia!
+AAFFFF Coordinate : 2374 2097
+FFAAFF Level Requirements : 40 ~ 115 LV
+FFAAFF Time Limit : Reset every 10 minutes.
+FFAAFF Reward : Box Of Wisdom (No Drop/Trade)
+FFAAAA Usage : Grants Experience points
+FFFFFF
+FFFFAA << Conquering Orc Castle >>
+FFFFFF 
+FFFFFF Hey... lad... Have you heard of orcs before? Hehe...
+FFFFFF I heard there's still people who have never heard of Orcs
+FFFFFF before... These orcs have established a base of operation 
+FFFFFF on the abandoned castle between Armia and Azran, and 
+FFFFFF prey upon the lives and money of travellers and 
+FFFFFF adventurers The leader of the pack, 'Orc Lord', which is 
+FFFFFF under the influence of a certain demonic pill, has been 
+FFFFFF eyeing the villages for a long time. Many brave 
+FFFFFF adventurers who have sought to hunt him met with 
+FFFFFF gruesome fate. If you defeat the orc lord, and get the 
+FFFFFF 'Carbunkle Heart' from him, you will find great powers 
+FFFFFF within it. Well? Would you want to give it a try now?
+AAFFFF Defeat the orc guardian in front of each castle gate 
+AAFFFF to acquire the key to enter the castle.
+AAFFFF Coordinates : 2476 2130
+FFAAFF Rewards : Magical Pill(Usable once only)
+FFAAAA Usage : Awards 9 extra distributable skill mastery points 
+FFFFAA << Defending Mystery Land >>
+FFFFFF 
+FFFFFF Lad... Rumor has it that there is a place near Azran village
+FFFFFF that produces mysterious gems. We call it the "Mystery
+FFFFFF Land". Not too long ago, a group of miners was 
+FFFFFF dispatched there to establish a mining  facility, but the 
+FFFFFF miners were met with constant attacks from the monsters. 
+FFFFFF I heard the knight leader has posted offers to hire 
+FFFFFF merceneries to help defend this mysterious place. Would 
+FFFFFF you want to give it a try? There will be a hefty reward.
+FFFFFF 
+AAFFFF Locate the 'Knight Leader' South of Azran Village
+AAFFFF You must be in a group of adventurers.
+AAFFFF Coordinate : 2446 1719
+FFFFFF 
+AAFFFF Locate the The Miner 'General' near the Mystery Land
+AAFFFF Coordinate : 2400 1599
+FFFFFF 
+FFAAFF Level Limit : None
+FFAAFF Reward : Silver/Gold/Mystic Amulet
+FFFFAA << Bless of the God >>
+FFFFFF 
+FFFFFF Lad... Did you hear?  While passing through Armia's
+FFFFFF Sacred Temple, the 'Fragment of Luck' under the 
+FFFFFF protection of Prophet Kelunok was stolen by monsters. 
+FFFFFF Would you like to help recover these fragments? If you 
+FFFFFF can return these fragments to Prophet Kelunok, he will be 
+FFFFFF able to fashion the Complete Luck which is a holy object
+FFFFFF that carries god's blessing. Then you would be able to
+FFFFFF discover a new path for you to follow. This is an urgent
+FFFFFF matter, can you look into it immediately?
+FFFFFF 
+AAFFFF Prophet Jesseter located in the northern end of Armia
+AAFFFF Coordinates : 2625 1984, Level Limit : 70 ~ 75 LV
+FFAAFF Rewards : Opportunity's Piece (No Drop/Trade)
+AAFFFF Show the fragment of luck to Prophet Kelunok
+AAFFFF Coordinates : 2663 1970
+FFAAFF Rewards : Opportunity's Compound
+FFAAAA Usage : Restore skill masteries by 50 points
+FFFFFF
+FFFFAA << Path to Knighthood >>
+FFFFFF 
+FFFFFF Lad... It seems you have developed some knight qualities,
+FFFFFF but it is too early to tell if you will be one of the kingdom's
+FFFFFF knights. If you intend to become a kingdom¡¯s knight, then 
+FFFFFF head to the 'Squire Training Ground' near the south of 
+FFFFFF Azran Field. With some hard work, you will achieve the
+FFFFFF squire status in no time. Once you achieve the Squire 
+FFFFFF status, you will be eligible to wear the 'Squire Mantle'. 
+FFFFFF Well, would you like the challenge? Once you become an
+FFFFFF squire, you will receive much needed help by many along
+FFFFFF your path to Knighthood.
+AAFFFF Locate the Squire Guide in the Training Ground of Azran 
+AAFFFF Coordinate : 2246 1596
+FFAAFF Level Limit : 101 ~ 150 LV
+FFAAFF Time Limit : Reset every 10 minutes.
+FFAAFF Reward : Apprentice Emblem(No Drop/Trade)
+FFAAAA Equip the Apprentice Emblem.
+FFAAAA Locate the Squad Leader in the Training Ground.
+FFAAAA Coordinate : 2232 1568
+FFFFAA << God's Garden >>
+FFFFFF 
+FFFFFF Lad... There was a place called 'Sacred Garden' in front 
+FFFFFF of the Azran village. It was a place the gods used for 
+FFFFFF calming the humans during the Great Heavenly War. 
+FFFFFF When the war was over, the villagers decorated the
+FFFFFF Sacred Garden, retaining god's blessing until today. But 
+FFFFFF due to the monster attacks the Sacred Garden slowly
+FFFFFF being deserted, enraging the gods. Please lend us a hand
+FFFFFF to stop this! Let¡¯s try our best to change this place 
+FFFFFF We must defend the 'Sacred Garden' well.
+FFFFFF
+AAFFFF Locate the Garderner near the south of Azran.
+AAFFFF Coordinate : 2220 1714
+FFFFFF 
+FFAAFF Level Limit : 116 ~ 190 LV
+FFAAFF Time Limit : Reset every 10 minutes
+FFAAFF Reward : Tears_Of_Angel(No Drop/Trade)
+FFAAAA Usage : Grants Experience Points
+FFFFFF
+FFFFAA << Balance of Power >>
+FFFFFF 
+FFFFFF We are the protectors of 'Shrine Akhero' which is the
+FFFFFF symbol of balance between Akelonia Kingdom and 
+FFFFFF Hekalotia Kingdom. Recently, the Shrine has been off  
+FFFFFF limits due to attacks from monsters. Only Priestess 
+FFFFFF 'Ameria' is keeping the Shrine from being run over by the 
+FFFFFF monsters. If priestess 'Ameria' has fallen, the balance 
+FFFFFF between the kingdom will be lost, and the world will be 
+FFFFFF engulfed in endless war and bloodshed again. Please help 
+FFFFFF us protect the balance between kindoms. You must find 
+FFFFFF the way to help priestess ¡°Ameria¡±.
+AAFFFF Locate the guard at south of Azran.
+AAFFFF Coordinate : 1969 1578
+FFAAFF Level Limit : 120 ~125 LV
+FFAAFF Reward : Balance's Piece(No Drop/Trade)
+AAFFFF Show the Balance's Piece to Priest Ameria.
+AAFFFF Coordinate : 1973 1579
+FFAAFF Reward : Balance's Compound(No Drop/Trade)
+FFAAAA Usage : Restore Skill materies by 100 points.
+FFFFAA << Return of the Dark Knight >>
+FFFFFF 
+FFFFFF Hehe... This happened long ago. There was this great
+FFFFFF hero knight from Armia called 'Kaizen', who was the mortal
+FFFFFF that lead the Victorious war in the great Heavenly War.
+FFFFFF Soon after Kaizen passed away, he was buried in the
+FFFFFF tomb underneath the palace. The monster "Skeletal
+FFFFFF Summoner", who had been hiding "in the tomb awakened
+FFFFFF Kaizen. Kaizen is now as the ¡°Death Knight Kaizen¡±.  If
+FFFFFF they were to raid the village, bloodshed will begin There's 
+FFFFFF no time, let¡¯s defeat this "Death Knight Kaizen" before 
+FFFFFF they manage to organize an army. 
+FFFFFF Make Haste!
+FFFFFF 
+AAFFFF Locate the scout at underground dungeon level 1.
+AAFFFF Coordinates : 454 3912
+FFAAFF Level Limit: 191 ~ 265 LV
+FFAAFF Time Limit : Reset every 10 minutes
+FFAAFF Reward : Heart Of Kaizen(No Drop/Trade)
+FFAAAA Usage : Grants Experience Points
+FFFFAA << Gargoyle's Molar Tooth >>
+FFFFFF 
+FFFFFF I think you have heard about this rumor. It seems to be 
+FFFFFF real. Whenever someone uses a Gargoyle¡¯s Tooth on 
+FFFFFF their equipment, it would improve the equipment 
+FFFFFF dramatically. But acquiring one of these Gargoyle¡¯s Tooth 
+FFFFFF is not an easy task. These creatures reside deep in the 
+FFFFFF underground dungeon, along with many others just as 
+FFFFFF enormous. Many who ventured there have never 
+FFFFFF returned. Think carefully before you make a decision to 
+FFFFFF go, but think about all the power a Gargoyle¡¯s Tooth could 
+FFFFFF bring you. It could be well worth the effort.
+FFFFFF 
+AAFFFF Locate the scout in underworld dungeon level 2.
+AAFFFF Coordinate : 787 4058
+FFAAFF Level Limit : 201 ~ 255 LV
+FFAAFF Time Limit : Reset ever 10 minutes.
+FFAAFF Reward : Gargoyle's Molar(No Drop/Trade)
+FFAAAA Usage : Upgrade all equipped armors to grade 6.
+FFFFFF
+FFFFAA << Knight of the Kingdom >>
+FFFFFF 
+FFFFFF Young Squire, it is time to take the challenge to become 
+FFFFFF one of the kingdom's Knight. However, our nation is 
+FFFFFF divided into two. Each holding its own meaning and hopes 
+FFFFFF for advancements. It will be hard to choose between the 
+FFFFFF 'Hekaloth Kingdom' which bears the name of Heavenly 
+FFFFFF Nation or 'Akelonia Kingdom' which carries the meaning of 
+FFFFFF divine blessings. The decision to join which kingdom rests 
+FFFFFF on the shoulders of the Knight. Once you make that 
+FFFFFF decision, you will protect your kingdom with faith and 
+FFFFFF devotion. There will be more perilous journeys awaiting 
+FFFFFF you. You must keep your word and serve your kingdom
+FFFFFF to expand its influence until the day both kingdoms unite.
+FFFFFF May you stay true to your path.
+AAFFFF Now go locate the king's guard of the two kingdom 
+FFAAFF Level Limit : 220 ~ 250 LV
+FFAAFF Time Limit : Reset every 10 minutes. 
+FFAAFF Reward : Kingdom Emblem (No Drop/Trade)
+FFAAAA Equip the Kingdom Emblem and approach the king.
+FFFFAA << Daemon Load Attack >>
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Immortality of Hydra >>
+FFFFFF 
+FFFFFF Hrm... What a tough battle. I'm refering to the battle with 
+FFFFFF the bloody Medusa near the Swamp north of Armia. Such 
+FFFFFF painful memories. But recently, I heard that the medusa 
+FFFFFF left the swamp and fled into the Underground dungeon. 
+FFFFFF There, with the use of the Eye of Blood, she found ways 
+FFFFFF to evil powers turning her into the Golden Medusa. The 
+FFFFFF safety of Armia will be in jeopardy if this continues. Like 
+FFFFFF the medussa, if any man can acquire the Eye of Blood, 
+FFFFFF their knowledge and powers will be boosted significantly.
+FFFFFF 
+AAFFFF Locate the scout in Dungeon level 1.
+AAFFFF Coordinate : 667 3767
+FFAAFF Level Limit : 266 ~ 320 LV
+FFAAFF Time Limit : Reset every 10 minutes.
+FFAAFF Reward : Boold Eye (No Drop/Trade)
+FFFFFF 
+FFAAAA Usage : Grants Experience Points
+FFFFFF
+FFFFAA << Underworld >>
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Beginning of Unhappiness >>
+FFFFFF 
+FFFFFF Civilization was almost destroyed during the Great 
+FFFFFF Heavenly War. The few survivors founded Armia and 
+FFFFFF started a new life on this piece of land. Over the decades, 
+FFFFFF several races of creatures have been attracted into 
+FFFFFF plundering the wealth of Armia. These creatures had 
+FFFFFF eternal life, much different to the humans. Driven by 
+FFFFFF greed and jealousy, the humans pursued the monsters 
+FFFFFF into the deep hellgate. The creatures that was thrown
+FFFFFF into the hellgate eventually banded together with hatred 
+FFFFFF and revenge. These dark hunter is now on the prowl to 
+FFFFFF cause more destructions and evil to the worlds. 
+FFFFFF 
+AAFFFF Locate the guard in the Underworld dungeon level 1.
+AAFFFF Coordinate : 1300 4036
+FFAAFF Level Limit : 321 ~ 355 LV
+FFAAFF Time Limit : Reset every 10 minutes. 
+FFAAFF Reward : Elf's Spirit Stone(No Drop/Trade)
+FFAAAA Usage : Grants Experience Points
+FFFFAA << King of Underworld >>
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Release 355 Level Limit >>
+FFFFFF 
+FFFFFF 
+FFFFFF 
+FFFFAA << Release 370 Level Limit>>
+FFFFFF 
+FFFFFF 
+FFFFFF 

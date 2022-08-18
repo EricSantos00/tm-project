@@ -1,0 +1,10 @@
+FFFFFF Hunters are the masters of bows and claws, their
+FFFFFF ranged attacks provide the best support in wars. 
+FFFFFF They can either use arrows to slow their targets or
+FFFFFF claws to poison them, Although they are not the 
+FFFFFF toughest but they have their own way to survive 
+FFFFFF and win every war they join.
+FFFFFF They have the highest accuracy and evasion ablilities:
+FFFFFF Survival Mastery: Damage and Bow skills.
+FFFFFF Trade Mastery: Jewel Combination, Trade, AEO skills.
+FFFFFF Capture Mastery: Evasion and Claw skills.

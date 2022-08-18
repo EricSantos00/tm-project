@@ -1,0 +1,8 @@
+Téc_-1s
+Resist_+25
+Detecta
+Abs_HP
++HP/DEF
++HP/ATQ
++Precisão
+MP_=_HP

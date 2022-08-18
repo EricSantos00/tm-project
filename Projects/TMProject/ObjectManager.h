@@ -63,8 +63,7 @@ public:
 	virtual void DisconnectEffectFromMob(TMHuman* pMob);
 	virtual int InitResourceList();
 	virtual void InitAniSoundTable();
-	virtual void InitCurseList();
-
+ 
 	virtual TMCamera* GetCamera();
 
 	void CleanUp();

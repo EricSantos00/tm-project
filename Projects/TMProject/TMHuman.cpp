@@ -4176,7 +4176,7 @@ int TMHuman::OnPacketSendItem(MSG_STANDARD* pStd)
             if (pSendItem->DestPos)
                 memcpy(&g_pObjectManager->m_stSelCharData.Equip[g_pObjectManager->m_cCharacterSlot][pSendItem->DestPos], &pSendItem->Item, sizeof(STRUCT_ITEM));
 
-            SGridControl* pGridEquip[16]{};
+            SGridControl* pGridEquip[MAX_EQUIPITEM]{};
 
             pGridEquip[1] = pFScene->m_pGridHelm;
             pGridEquip[2] = pFScene->m_pGridCoat;
@@ -4193,8 +4193,9 @@ int TMHuman::OnPacketSendItem(MSG_STANDARD* pStd)
             pGridEquip[13] = pFScene->m_pGridEvent;
             pGridEquip[14] = pFScene->m_pGridDRing;
             pGridEquip[15] = pFScene->m_pGridMantua;
-
-            if (pSendItem->DestPos > 0 && pSendItem->DestPos < 16)
+            pGridEquip[16] = pFScene->m_pGridNewSlot1;
+            pGridEquip[17] = pFScene->m_pGridNewSlot2;
+            if (pSendItem->DestPos > 0 && pSendItem->DestPos < MAX_EQUIPITEM)
             {
                 if (pGridEquip[pSendItem->DestPos] != nullptr)
                 {
