@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	if (argc != 2)
 	{
 		std::cout << "Correct usage: <[bin2csv][csv2bin]>";
-
+		system("pause");
 		return 0;
 	}
 
@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 		if (!(bool)converter)
 		{
 			MessageBoxA(NULL, "Correct usage: <[bin2csv][csv2bin]>", "Error", MB_OK);
-
+			system("pause");
 			return 0;
 		}
 
@@ -39,6 +39,7 @@ int main(int argc, char* argv[])
 	catch (std::exception& e)
 	{
 		MessageBoxA(NULL, e.what(), "ERROR", MB_OK);
+		system("pause");
 	}
 
 	return 0;
