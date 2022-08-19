@@ -11,8 +11,10 @@ public:
 	WYDBin2CsvConverter()
 	{
 		Read();
+		ReadItemName();
 	}
-
+	virtual void ReadItemName();
 	virtual void Convert();
+	virtual void ConvertExtra();
 };
 

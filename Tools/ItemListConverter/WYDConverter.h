@@ -49,7 +49,7 @@ protected:
 
 	std::map<std::string, int> _effects;
 	std::array<STRUCT_ITEMLIST, 6500> _itemList;
-
+	std::array<STRUCT_ITEMLIST, 6500> _extraitem;
 	virtual void Read() = 0;
 
 public:

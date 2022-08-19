@@ -65,9 +65,9 @@ void WYDCsv2BinConverter::Read()
 
 void WYDCsv2BinConverter::Convert()
 {
-	std::fstream stream{ "Itemlist.bin", std::ios::out | std::ios::binary };
+	std::fstream stream{ "Itemlist_new.bin", std::ios::out | std::ios::binary };
 	if (!stream.is_open())
-		throw std::exception("Can't open ItemList.bin");
+		throw std::exception("Can't open ItemList_new.bin");
 
 	auto itemList = _itemList;
 
