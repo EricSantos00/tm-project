@@ -101,7 +101,7 @@ void WYDBin2CsvConverter::Convert()
 		for (size_t i = 0; i < 12; i++)
 		{
 			int index = item.stEffect[i].sEffect;
-			if (index <= 0)
+			if (index <= 0 || index >= 255)
 				continue;
 
 			std::string effectName;
@@ -116,9 +116,9 @@ void WYDBin2CsvConverter::Convert()
 			}
 
 			if (effectName.empty())
-				continue;
-
-			stream << "," << effectName << "," << item.stEffect[i].sValue;
+				stream << "," << "EF_NEWVALUE" << index << "," << item.stEffect[i].sValue;
+			else
+				stream << "," << effectName << "," << item.stEffect[i].sValue;
 		}
 
 		stream << std::endl;
@@ -156,7 +156,7 @@ void WYDBin2CsvConverter::ConvertExtra()
 		for (size_t i = 0; i < 12; i++)
 		{
 			int index = item.stEffect[i].sEffect;
-			if (index <= 0)
+			if (index <= 0 || index >= 255)
 				continue;
 
 			std::string effectName;
@@ -171,9 +171,9 @@ void WYDBin2CsvConverter::ConvertExtra()
 			}
 
 			if (effectName.empty())
-				continue;
-
-			stream << "," << effectName << "," << item.stEffect[i].sValue;
+				stream << "," << "EF_NEWVALUE" << index << "," << item.stEffect[i].sValue;
+			else
+				stream << "," << effectName << "," << item.stEffect[i].sValue;
 		}
 
 		stream << std::endl;
