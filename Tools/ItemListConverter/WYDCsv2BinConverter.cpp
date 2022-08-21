@@ -25,8 +25,8 @@ void WYDCsv2BinConverter::Read()
 			else
 				fixedString += character;
 		}
-
-		int ret = sscanf(fixedString.c_str(), "%d %s %s %s %d %d %d %d %d %hd %d %hd %hd %hd %hd %s %d %s %d %s %d %s %d %s %d %s %d %s %d %s %d %s %d %s %d %s %d %s %d",
+ 
+		int ret = sscanf(fixedString.c_str(), "%d %s %s %s %hd %d %d %hd %hd %hd %d %hd %hd %hd %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd",
 			&itemId,
 			item.Name,
 			meshBuf,
