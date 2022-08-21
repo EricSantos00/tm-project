@@ -26,12 +26,29 @@ void WYDCsv2BinConverter::Read()
 				fixedString += character;
 		}
 
-		int ret = sscanf_s(fixedString.c_str(), "%d %63s %15s %31s %hd %d %d %hd %hd %31s %hd %31s %hd %31s %hd %31s %hd %31s %hd %31s %hd %31s %hd %31s %hd %31s %hd %31s %hd %31s %hd %31s %hd",
-			&itemId, item.Name, 63, meshBuf, 15, scoreBuf, 31, &item.nUnique, &item.nPrice, &item.nPos, &item.nExtra, &item.nGrade,
-			effBuf[0], 31, &item.stEffect[0].sValue, effBuf[1], 31, &item.stEffect[1].sValue, effBuf[2], 31, &item.stEffect[2].sValue,
-			effBuf[3], 31, &item.stEffect[3].sValue, effBuf[4], 31, &item.stEffect[4].sValue, effBuf[5], 31, &item.stEffect[5].sValue,
-			effBuf[6], 31, &item.stEffect[6].sValue, effBuf[7], 31, &item.stEffect[7].sValue, effBuf[8], 31, &item.stEffect[8].sValue,
-			effBuf[9], 31, &item.stEffect[9].sValue, effBuf[10], 31, &item.stEffect[10].sValue, effBuf[11], 31, &item.stEffect[11].sValue);
+		int ret = sscanf(fixedString.c_str(), "%d %s %s %s %d %d %d %d %d %hd %d %hd %hd %hd %hd %s %d %s %d %s %d %s %d %s %d %s %d %s %d %s %d %s %d %s %d %s %d %s %d",
+			&itemId,
+			item.Name,
+			meshBuf,
+			scoreBuf,
+			&item.nUnique,
+			&item.nPrice,
+			&item.nPos,
+			&item.nExtra,
+			&item.nGrade,
+			&item.UNK_1, &item.UNK_2, &item.mType, &item.mData, &item.UNK_3, &item.UNK_4,
+			effBuf[0], &item.stEffect[0].sValue,
+			effBuf[1], &item.stEffect[1].sValue,
+			effBuf[2], &item.stEffect[2].sValue,
+			effBuf[3], &item.stEffect[3].sValue,
+			effBuf[4], &item.stEffect[4].sValue,
+			effBuf[5], &item.stEffect[5].sValue,
+			effBuf[6], &item.stEffect[6].sValue,
+			effBuf[7], &item.stEffect[7].sValue,
+			effBuf[8], &item.stEffect[8].sValue,
+			effBuf[9], &item.stEffect[9].sValue,
+			effBuf[10], &item.stEffect[10].sValue,
+			effBuf[11], &item.stEffect[11].sValue);
 
 		if (ret < 9 || itemId <= 0 || itemId >= 6500)
 			continue;
