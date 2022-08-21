@@ -96,9 +96,9 @@ void WYDBin2CsvConverter::Convert()
 		stream << item.nReqInt << "." << item.nReqDex << ".";
 		stream << item.nReqCon << "," << item.nUnique << ",";
 		stream << item.nPrice << "," << item.nPos << ",";
-		stream << item.nExtra << "," << item.nGrade;
-		stream << item.UNK_1 << "," << item.UNK_2;
-		stream << item.mType << "," << item.mData;
+		stream << item.nExtra << "," << item.nGrade << ",";
+		stream << item.UNK_1 << "," << item.UNK_2 << ",";
+		stream << item.mType << "," << item.mData << ",";
 		stream << item.UNK_3 << "," << item.UNK_4;
  
 
@@ -155,9 +155,9 @@ void WYDBin2CsvConverter::ConvertExtra()
 		stream << item.nReqInt << "." << item.nReqDex << ".";
 		stream << item.nReqCon << "," << item.nUnique << ",";
 		stream << item.nPrice << "," << item.nPos << ",";
-		stream << item.nExtra << "," << item.nGrade;
-		stream << item.UNK_1 << "," << item.UNK_2;
-		stream << item.mType << "," << item.mData;
+		stream << item.nExtra << "," << item.nGrade << ",";
+		stream << item.UNK_1 << "," << item.UNK_2 << ",";
+		stream << item.mType << "," << item.mData << ",";
 		stream << item.UNK_3 << "," << item.UNK_4;
 		for (size_t i = 0; i < 12; i++)
 		{
