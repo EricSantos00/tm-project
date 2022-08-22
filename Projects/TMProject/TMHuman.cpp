@@ -15439,8 +15439,453 @@ int TMHuman::MAutoAttack(TMHuman* pTarget, int mode)
     return 2;
 }
 
+//----- (00542B10) --------------------------------------------------------
+  int  TMHuman::sub_542B10( int index)
+{
+    signed int result; // eax@3
+
+    if (g_pItemList[index].nPos == 4096)
+    {
+        m_sCostume = index;
+
+        switch (index)
+        {
+        case 4334:
+        case 4335:
+        case 4336:
+        case 4337:
+            result = 46;
+            break;
+        case 4338:
+        case 4339:
+        case 4369:
+        case 4393:
+        case 4394:
+            result = 39;
+            break;
+        default:
+            goto LABEL_5;
+        }
+    }
+    else
+    {
+    LABEL_5:
+        result = 0;
+    }
+    return result;
+}
+
+
+  //----- (00545ED0) --------------------------------------------------------
+  void  TMHuman::SetMountCostume2(unsigned int  index)
+  {
+      int nSanc = 0,nSkin = 0;
+      int checkIdx = sub_542B10(m_sCostume);
+      int curIndex = index;
+      if (!index)
+      {
+          if (!checkIdx)
+              return;
+          curIndex = checkIdx;
+      }
+      if (index >= 11 && index <= 88 && (checkIdx || !(m_stScore.Reserved & 2)))
+      {
+          m_stMountLook.Mesh2 = 0;
+          m_stMountLook.Mesh1 = 0;
+          m_stMountLook.Mesh0 = 0;
+          m_stMountLook.Skin2 = 0;
+          m_stMountLook.Skin1 = 0;
+          m_stMountLook.Skin0 = 0;
+          memset(&m_stMountSanc.Sanc0, 0, sizeof m_stMountSanc);
+          memset(&m_stOldMountSanc.Sanc0, 0, sizeof m_stOldMountSanc);
+
+          switch (curIndex)
+          {
+          case 11:
+              m_fMountScale = 1.25;
+              m_stMountLook.Mesh0 = 5;
+              m_stMountLook.Mesh1 = 5;
+              m_nMountSkinMeshType = 29;
+              m_stMountSanc.Sanc2 = 13;
+              m_stOldMountSanc.Sanc2 = 3341;
+              goto LABEL_63;
+          case 12:
+          case 13:
+              m_stMountLook.Mesh1 = 8;
+              m_nMountSkinMeshType = 31;
+              m_stMountLook.Mesh0 = 8;
+              if (curIndex == 12)
+              {
+                  m_fMountScale = 1.0;
+                  m_stMountLook.Skin0 = 1;
+                  m_stMountLook.Skin1 = 1;
+              }
+              else
+              {
+                  m_stOldMountSanc.Sanc2 = 3084;
+                  m_fMountScale = 1.0;
+                  m_stMountSanc.Sanc1 = 12;
+                  m_stOldMountSanc.Sanc1 = 3084;
+                  m_stMountSanc.Sanc2 = 12;
+              }
+              return;
+          case 14:
+              m_nMountSkinMeshType = 48;
+              m_fMountScale = 0.80000001;
+              return;
+          case 15:
+          case 16:
+              if (curIndex != 16)
+                  goto LABEL_16;
+              //v8 = 1;
+              goto LABEL_15;
+          case 17:
+          case 18:
+              m_nMountSkinMeshType = 31;
+              m_stMountLook.Mesh0 = 14;
+              m_stMountLook.Mesh1 = 14;
+              if (curIndex == 18)
+              {
+                  m_stMountLook.Skin0 = 1;
+                  m_stMountLook.Skin1 = 1;
+              }
+              m_fMountScale = 0.89999998;
+              goto LABEL_20;
+          case 19:
+              m_nMountSkinMeshType = 50;
+              m_stOldMountSanc.Sanc2 = 3341;
+              m_stMountSanc.Sanc1 = 13;
+              m_stOldMountSanc.Sanc1 = 3341;
+              m_stMountSanc.Sanc2 = 13;
+              return;
+          case 20:
+              nSkin = 1;
+              m_stMountLook.Skin1 = 1;
+              m_stMountLook.Mesh0 = 1;
+              m_stMountLook.Mesh1 = 1;
+              goto LABEL_15;
+          case 21:
+              m_nMountSkinMeshType = 51;
+              m_fMountScale = 1.0;
+              return;
+          case 22:
+              m_nMountSkinMeshType = 59;
+              m_fMountScale = 1.0;
+              return;
+          case 23:
+              m_fMountScale = 1.0;
+              m_nMountSkinMeshType = 31;
+              m_stMountLook.Mesh0 = 11;
+              goto LABEL_60;
+          case 24:
+              m_fMountScale = 1.0;
+              m_nMountSkinMeshType = 39;
+              m_stMountLook.Mesh0 = 1;
+              goto LABEL_60;
+          case 25:
+              m_fMountScale = 1.0;
+              m_nMountSkinMeshType = 39;
+              m_stMountLook.Mesh0 = 2;
+              goto LABEL_60;
+          case 26:
+              m_fMountScale = 1.0;
+              m_stMountSanc.Sanc2 = 12;
+              m_stMountLook.Mesh0 = 12;
+              m_nMountSkinMeshType = 31;
+              m_stMountLook.Mesh1 = 12;
+              goto LABEL_61;
+          case 27:
+              m_fMountScale = 1.0;
+              m_stMountSanc.Sanc2 = 13;
+              m_stMountLook.Mesh0 = 13;
+              m_nMountSkinMeshType = 31;
+              m_stMountLook.Mesh1 = 13;
+              m_stMountSanc.Sanc2 = 3341;
+              m_stOldMountSanc.Sanc1 = 3341;
+              goto LABEL_62;
+          case 28:
+              m_fMountScale = 1.0;
+              m_stMountLook.Mesh0 = 6;
+              m_stMountLook.Mesh1 = 6;
+              m_nMountSkinMeshType = 29;
+              m_stMountSanc.Sanc2 = 13;
+              m_stMountSanc.Sanc2 = 3341;
+              m_stOldMountSanc.Sanc1 = 3341;
+              goto LABEL_62;
+          case 29:
+              m_fMountScale = 1.0;
+              m_stMountLook.Mesh0 = 46;
+              m_nMountSkinMeshType = 40;
+              m_stMountLook.Mesh1 = 46;
+              m_stMountSanc.Sanc2 = 2056;
+              m_stOldMountSanc.Sanc1 = 2056;
+              m_stMountSanc.Sanc2 = 8;
+              m_stMountSanc.Sanc1 = 8;
+              return;
+          case 30:
+              m_stMountLook.Mesh0 = 46;
+              m_fMountScale = 1.0;
+              m_nMountSkinMeshType = 40;
+              m_stOldMountSanc.Sanc0 = 3014657;
+              m_stMountLook.Skin1 = 1;
+              m_stMountSanc.Sanc2 = 3341;
+              m_stOldMountSanc.Sanc1 = 3341;
+              m_stMountSanc.Sanc2 = 13;
+              m_stMountSanc.Sanc1 = 13;
+              return;
+          case 31:
+              m_fMountScale = 0.80000001;
+              m_nMountSkinMeshType = 48;
+              m_stMountLook.Mesh0 = 1;
+              m_stMountLook.Mesh1 = 1;
+          LABEL_20:
+              //v10 = 13;
+              m_stMountSanc.Sanc2 = 3341;
+              m_stOldMountSanc.Sanc1 = 3341;
+              goto LABEL_21;
+          case 32:
+              m_stMountLook.Mesh0 = 14;
+              m_fMountScale = 1.0;
+              m_nMountSkinMeshType = 31;
+              m_stOldMountSanc.Sanc0 = 917506;
+              m_stMountSanc.Sanc2 = 2570;
+              m_stOldMountSanc.Sanc1 = 2570;
+              m_stMountSanc.Sanc2 = 10;
+              m_stMountSanc.Sanc1 = 10;
+              return;
+          case 33:
+              m_stMountLook.Mesh0 = 3;
+              m_stMountLook.Mesh1 = 3;
+              goto LABEL_16;
+          case 34:
+              m_fMountScale = 0.5;
+              m_stMountLook.Mesh0 = 48;
+              m_stMountSanc.Sanc1 = 13;
+              m_nMountSkinMeshType = 20;
+              m_stMountLook.Mesh1 = 48;
+              m_stMountSanc.Sanc2 = 3341;
+              m_stOldMountSanc.Sanc1 = 3084;
+              m_stMountSanc.Sanc2 = 12;
+              return;
+          case 35:
+              m_fMountScale = 1.0;
+              m_stMountLook.Mesh1 = 46;
+              m_stMountLook.Mesh0 = 46;
+              m_stMountLook.Mesh2 = 46;
+              m_stMountLook.Skin0 = 3;
+              m_nMountSkinMeshType = 40;
+              m_stMountLook.Skin1 = 3;
+              m_stMountSanc.Sanc2 = 1542;
+              m_stOldMountSanc.Sanc1 = 1542;
+              m_stMountSanc.Sanc2 = 6;
+              m_stMountSanc.Sanc1 = 6;
+              return;
+          case 36:
+              m_fMountScale = 1.0;
+              m_stMountLook.Mesh1 = 0;
+              m_stMountLook.Mesh0 = 0;
+              m_stMountLook.Mesh2 = 0;
+              m_stMountLook.Skin1 = 1;
+              m_nMountSkinMeshType = 51;
+              m_stMountLook.Skin0 = 1;
+              m_stMountLook.Skin2 = 1;
+              //v10 = 6;
+              m_stMountSanc.Sanc2 = 1542;
+              m_stOldMountSanc.Sanc1 = 1542;
+              goto LABEL_21;
+          case 37:
+              m_fMountScale = 0.69999999;
+              m_stMountLook.Mesh0 = 4;
+              m_stMountLook.Mesh1 = 4;
+              m_nMountSkinMeshType = 49;
+              m_stMountSanc.Sanc2 = 3084;
+              m_stOldMountSanc.Sanc1 = 3084;
+              m_stMountSanc.Sanc2 = 12;
+              m_stMountSanc.Sanc1 = 12;
+              return;
+          case 38:
+              m_fMountScale = 1.0;
+              m_stMountLook.Mesh0 = 3;
+              m_nMountSkinMeshType = 39;
+              m_stMountLook.Mesh1 = 3;
+              m_stMountSanc.Sanc2 = 3084;
+              m_stOldMountSanc.Sanc1 = 3084;
+              m_stMountSanc.Sanc2 = 12;
+              m_stMountSanc.Sanc1 = 12;
+              return;
+          case 39:
+              m_stMountLook.Mesh0 = 1;
+              m_nMountSkinMeshType = 50;
+              m_stMountLook.Mesh1 = 1;
+              m_stMountSanc.Sanc2 = 3341;
+              m_stMountSanc.Sanc1 = 13;
+              m_stOldMountSanc.Sanc1 = 3341;
+              m_stMountSanc.Sanc2 = 13;
+              return;
+          case 40:
+              m_fMountScale = 1.0;
+              m_stMountLook.Mesh0 = 18;
+              m_stMountLook.Mesh1 = 18;
+              m_nMountSkinMeshType = 31;
+              m_stMountSanc.Sanc2 = 10;
+              m_stMountSanc.Sanc2 = 2570;
+              m_stOldMountSanc.Sanc1 = 2570;
+              goto LABEL_62;
+          case 41:
+              m_fMountScale = 1.0;
+              m_stMountLook.Mesh0 = 19;
+              m_stMountLook.Mesh1 = 19;
+              m_nMountSkinMeshType = 31;
+              m_stMountSanc.Sanc2 = 13;
+              m_stMountSanc.Sanc2 = 3341;
+              goto LABEL_63;
+          case 42:
+              m_stMountLook.Skin0 = 5;
+              goto LABEL_16;
+          case 43:
+              m_stMountLook.Mesh0 = 20;
+              m_nMountSkinMeshType = 31;
+              m_stMountLook.Mesh1 = 20;
+              m_stMountSanc.Sanc2 = 3341;
+              m_stMountSanc.Sanc1 = 13;
+              return;
+          case 44:
+              m_fMountScale = 1.0;
+              m_stMountLook.Mesh0 = 1;
+              m_stMountLook.Mesh2 = 1;
+              m_nMountSkinMeshType = 59;
+              m_stMountLook.Mesh1 = 1;
+              m_stMountSanc.Sanc2 = 7;
+              m_stMountSanc.Sanc2 = 1799;
+              goto LABEL_63;
+          case 45:
+              m_stMountLook.Skin0 = 6;
+              goto LABEL_16;
+          case 46:
+              m_fMountScale = 0.89999998;
+              m_stMountLook.Mesh0 = 21;
+              m_nMountSkinMeshType = 31;
+              m_stMountLook.Mesh1 = 21;
+              nSanc = 10;
+              m_stMountSanc.Sanc2 = 2570;
+              m_stOldMountSanc.Sanc1 = 2570;
+          LABEL_21:
+              m_fMountScale = m_fMountScale;
+              m_stMountSanc.Sanc2 = nSanc;
+              m_stMountSanc.Sanc1 = nSanc;
+              return;
+          case 47:
+              m_fMountScale = 0.89999998;
+              m_stMountLook.Mesh1 = 48;
+              m_stMountLook.Mesh0 = 48;
+              m_stMountLook.Mesh2 = 48;
+              m_stMountLook.Skin0 = 0;
+              m_nMountSkinMeshType = 40;
+              m_stMountLook.Skin1 = 0;
+              m_stMountSanc.Sanc2 = 2313;
+              m_stOldMountSanc.Sanc1 = 2313;
+              m_stMountSanc.Sanc2 = 9;
+              m_stMountSanc.Sanc1 = 9;
+              return;
+              //case 48:
+              //    *(_BYTE*)(v3 + 328) = 15;
+              //    m_nMountSkinMeshType = 31;
+              //    *(_WORD*)(v3 + 326) = 3855;
+              //    m_stMountLook.Mesh1 = 17;
+              //    *(_DWORD*)(v3 + 294) = 17;
+              //    m_stMountLook.Skin1 = 0;
+              //    v11 = BASE_GetMountScale(31, 17);
+              //    m_fMountScale = v11;
+              //    return;
+          case 49:
+              m_fMountScale = 0.80000001;
+              m_stMountLook.Skin0 = 0;
+              m_stMountLook.Skin1 = 0;
+              m_stMountLook.Mesh0 = 7;
+              m_stMountLook.Mesh1 = 7;
+              m_nMountSkinMeshType = 49;
+              m_stMountSanc.Sanc2 = 13;
+              m_stMountSanc.Sanc2 = 3341;
+              goto LABEL_63;
+          case 50:
+              m_stMountLook.Skin0 = 0;
+              m_fMountScale = 0.80000001;
+              m_stMountLook.Skin1 = 0;
+              m_stMountLook.Mesh1 = 8;
+              m_stMountLook.Mesh0 = 8;
+              m_nMountSkinMeshType = 49;
+              //*(_WORD*)(v3 + 326) = 3341;
+              //*(_BYTE*)(v3 + 328) = 13;
+              return;
+          case 51:
+              m_fMountScale = 1.25;
+              m_stMountLook.Skin0 = 0;
+              m_stMountLook.Skin1 = 0;
+              m_stMountLook.Mesh0 = 10;
+              m_stMountLook.Mesh1 = 10;
+              m_nMountSkinMeshType = 29;
+              m_stMountSanc.Sanc2 = 13;
+              m_stMountSanc.Sanc2 = 3341;
+              goto LABEL_63;
+          case 52:
+              m_fMountScale = 0.60000002;
+              m_stMountLook.Skin0 = 0;
+              m_stMountLook.Skin1 = 0;
+              m_stMountLook.Mesh0 = 9;
+              m_stMountLook.Mesh1 = 9;
+              m_nMountSkinMeshType = 49;
+              m_stMountSanc.Sanc2 = 12;
+              m_stMountSanc.Sanc2 = 3084;
+              goto LABEL_63;
+          case 53:
+          case 55:
+              m_stMountLook.Skin0 = 10;
+              goto LABEL_16;
+          case 54:
+              nSanc = 10;
+          LABEL_15:
+              m_stMountLook.Skin0 = nSkin;
+          LABEL_16:
+              m_nMountSkinMeshType = 49;
+              m_fMountScale = 0.69999999;
+              return;
+          case 56:
+              m_fMountScale = 0.60000002;
+              m_stMountLook.Skin0 = 0;
+              m_stMountLook.Mesh0 = 11;
+              m_stMountLook.Skin1 = 0;
+              m_stMountLook.Mesh1 = 11;
+              m_nMountSkinMeshType = 49;
+              m_stMountSanc.Sanc2 = 9;
+              m_stMountSanc.Sanc2 = 2313;
+              goto LABEL_63;
+          case 62:
+              m_fMountScale = 0.69999999;
+              m_stMountLook.Mesh0 = 17;
+              m_nMountSkinMeshType = 49;
+          LABEL_60:
+              m_stMountLook.Mesh1 = m_stMountLook.Mesh0;
+              m_stMountSanc.Sanc2 = 12;
+          LABEL_61:
+              m_stMountSanc.Sanc2 = 3084;
+              m_stOldMountSanc.Sanc1 = 3084;
+          LABEL_62:
+              m_stMountSanc.Sanc2 = m_stMountSanc.Sanc2;
+          LABEL_63:
+              m_fMountScale = m_fMountScale;
+              m_stMountLook.Mesh0 = m_stMountLook.Mesh0;
+              m_stMountSanc.Sanc1 = m_stMountSanc.Sanc2;
+              break;
+          default:
+              return;
+          }
+      }
+  }
+  
+
 void TMHuman::SetMountCostume(unsigned int index)
 {
+    return SetMountCostume2(index);
     if (index >= 11)
     {
         m_stMountLook.Mesh2 = 0;
