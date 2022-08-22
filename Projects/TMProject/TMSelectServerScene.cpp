@@ -735,8 +735,9 @@ int TMSelectServerScene::OnControlEvent(unsigned int idwControlID, unsigned int 
 				free(pInfo);
 			}
 
-			sprintf_s(stAccountLogin.AccountName, "%s", pEditID->GetText());
-			sprintf_s(stAccountLogin.AccountPassword, "%s", pEditPassword->GetText());
+			strcpy(stAccountLogin.AccountName,pEditID->GetText());
+			strcpy(stAccountLogin.AccountPassword, pEditPassword->GetText());
+			 
 			sprintf_s(g_pObjectManager->m_szAccountName, "%s", stAccountLogin.AccountName);
 			g_pObjectManager->m_szAccountPass[0] = stAccountLogin.AccountPassword[0];
 			g_pObjectManager->m_szAccountPass[1] = stAccountLogin.AccountPassword[1];
