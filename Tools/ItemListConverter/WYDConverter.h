@@ -36,23 +36,55 @@ struct STRUCT_ITEMLIST
 	short UNK_4;
 };
 
+#pragma pack(push, 1)
+struct STRUCT_MOUNTDATA
+{
+		int Index;
+		int CotumeIndex;
+		int MountIndex;
+		int BabyItem;
+		int BabyIndex;
+		int MaxVita;
+		int MountItem;
+		struct  
+		{
+			int MaxHp;
+			int Damage;
+			int Magic;
+			int Parry;
+			int Resist;
+			int Speed;
+			int Abs;
+		}Status;
+		short CostumeList[6];
+		 
+};
+#pragma pack(pop)
+ 
+//int eee = sizeof STRUCT_MOUNTDATA;
+//28668
+ 
 class WYDConverter
 {
 private:
 	void ReadItemEffect();
-
+	void ReadItemName();
 protected:
 	WYDConverter()
 	{
 		ReadItemEffect();
+		ReadItemName();
 	}
-
+	
 	std::map<std::string, int> _effects;
+	std::array<std::string, 6500> _itemName;
 	std::array<STRUCT_ITEMLIST, 6500> _itemList;
 	std::array<STRUCT_ITEMLIST, 6500> _extraitem;
+	std::array<STRUCT_MOUNTDATA, 400> _mountdata;
 	virtual void Read() = 0;
 
 public:
+	
 	virtual void Convert() = 0;
 };
 

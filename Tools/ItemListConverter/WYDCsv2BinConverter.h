@@ -11,7 +11,6 @@ public:
 	{
 		Read();
 	}
-
 	virtual void Convert();
 };
 

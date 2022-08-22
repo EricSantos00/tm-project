@@ -1,41 +1,7 @@
 #include "WYDBin2CsvConverter.h"
 #include <fstream>
 
-void WYDBin2CsvConverter::ReadItemName()
-{
-	FILE* fpBin = nullptr;
-	fopen_s(&fpBin, "itemname.bin", "rb");
 
-	if (!fpBin)
-		return;
-
-	for (int i = 0; i < 6500; ++i)
-	{
-		int Index = -1;
-		char Name[256]{};
-
-		if (!fread(&Index, 4, 1, fpBin) || !fread(Name, 64, 1, fpBin))
-			break;
-
-		for (int nTemp = 0; nTemp < 62; ++nTemp)
-			Name[nTemp] -= nTemp;
-
-		if (Index != -1 && Index < 6500)
-		{
-			if (strlen(Name) >= 63)
-			{
-				Name[63] = 0;
-				Name[62] = 0;
-			}
-
-			strcpy_s(_itemList[Index].Name, Name);
-			if(strlen(_extraitem[Index].Name))
-			strcpy_s(_extraitem[Index].Name, Name);
-		}
-	}
-
-	fclose(fpBin);
-}
 void WYDBin2CsvConverter::Read()
 {
 	std::fstream stream{ "Itemlist.bin", std::ios::in | std::ios::binary };
@@ -177,7 +143,9 @@ void WYDBin2CsvConverter::ConvertExtra()
 			}
 
 			if (effectName.empty())
+			{
 				stream << "," << "EF_NEWVALUE" << index << "," << item.stEffect[i].sValue;
+			}
 			else
 				stream << "," << effectName << "," << item.stEffect[i].sValue;
 		}
