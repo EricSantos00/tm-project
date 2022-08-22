@@ -27,6 +27,12 @@
     <ClCompile Include="WYDBin2CsvConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WYDMountBin2CsvConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WYDMountCsv2BinConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WYDConverter.h">
@@ -36,6 +42,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WYDBin2CsvConverter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WYDMountBin2CsvConverter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WYDMountCsv2BinConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
