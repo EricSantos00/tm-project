@@ -94,11 +94,15 @@
     <ClCompile Include="WYDBin2CsvConverter.cpp" />
     <ClCompile Include="WYDConverter.cpp" />
     <ClCompile Include="WYDCsv2BinConverter.cpp" />
+    <ClCompile Include="WYDMountBin2CsvConverter.cpp" />
+    <ClCompile Include="WYDMountCsv2BinConverter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WYDBin2CsvConverter.h" />
     <ClInclude Include="WYDConverter.h" />
     <ClInclude Include="WYDCsv2BinConverter.h" />
+    <ClInclude Include="WYDMountBin2CsvConverter.h" />
+    <ClInclude Include="WYDMountCsv2BinConverter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
