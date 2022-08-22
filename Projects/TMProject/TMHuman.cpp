@@ -15502,72 +15502,83 @@ int TMHuman::MAutoAttack(TMHuman* pTarget, int mode)
           switch (curIndex)
           {
           case 11:
-              m_fMountScale = 1.25;
+              m_nMountSkinMeshType = 29;
               m_stMountLook.Mesh0 = 5;
               m_stMountLook.Mesh1 = 5;
-              m_nMountSkinMeshType = 29;
-              m_stMountSanc.Sanc2 = 13;
-              m_stOldMountSanc.Sanc2 = 3341;
-              goto LABEL_63;
+              m_fMountScale = 1.25f;
+              break;
           case 12:
           case 13:
-              m_stMountLook.Mesh1 = 8;
               m_nMountSkinMeshType = 31;
               m_stMountLook.Mesh0 = 8;
-              if (curIndex == 12)
+              m_stMountLook.Mesh1 = 8;
+              if (index == 12)
               {
-                  m_fMountScale = 1.0;
                   m_stMountLook.Skin0 = 1;
                   m_stMountLook.Skin1 = 1;
               }
               else
               {
-                  m_stOldMountSanc.Sanc2 = 3084;
-                  m_fMountScale = 1.0;
-                  m_stMountSanc.Sanc1 = 12;
-                  m_stOldMountSanc.Sanc1 = 3084;
                   m_stMountSanc.Sanc2 = 12;
+                  m_stMountSanc.Sanc1 = 12;
+                  m_stMountSanc.Sanc0 = 12;
+                  m_stOldMountSanc.Sanc2 = 12;
+                  m_stOldMountSanc.Sanc1 = 12;
+                  m_stOldMountSanc.Sanc0 = 12;
               }
-              return;
+
+              m_fMountScale = 1.0f;
+              break;
           case 14:
               m_nMountSkinMeshType = 48;
-              m_fMountScale = 0.80000001;
-              return;
+              m_fMountScale = 0.80f;
+              break;
           case 15:
           case 16:
-              if (curIndex != 16)
-                  goto LABEL_16;
-              //v8 = 1;
-              goto LABEL_15;
+              m_stMountLook.Skin0 = 1;
+              m_nMountSkinMeshType = 49;
+              m_fMountScale = 0.69f;
+              break;
           case 17:
           case 18:
               m_nMountSkinMeshType = 31;
               m_stMountLook.Mesh0 = 14;
               m_stMountLook.Mesh1 = 14;
-              if (curIndex == 18)
+              if (index == 18)
               {
                   m_stMountLook.Skin0 = 1;
                   m_stMountLook.Skin1 = 1;
               }
-              m_fMountScale = 0.89999998;
-              goto LABEL_20;
+
+              m_fMountScale = 0.89f;
+              m_stMountSanc.Sanc2 = 13;
+              m_stMountSanc.Sanc1 = 13;
+              m_stMountSanc.Sanc0 = 13;
+              m_stOldMountSanc.Sanc2 = 13;
+              m_stOldMountSanc.Sanc1 = 13;
+              m_stOldMountSanc.Sanc0 = 13;
+              break;
           case 19:
               m_nMountSkinMeshType = 50;
-              m_stOldMountSanc.Sanc2 = 3341;
-              m_stMountSanc.Sanc1 = 13;
-              m_stOldMountSanc.Sanc1 = 3341;
               m_stMountSanc.Sanc2 = 13;
-              return;
+              m_stMountSanc.Sanc1 = 13;
+              m_stMountSanc.Sanc0 = 13;
+              m_stOldMountSanc.Sanc2 = 13;
+              m_stOldMountSanc.Sanc1 = 13;
+              m_stOldMountSanc.Sanc0 = 13;
+              break;
           case 20:
-              nSkin = 1;
+              m_stMountLook.Skin0 = 1;
               m_stMountLook.Skin1 = 1;
               m_stMountLook.Mesh0 = 1;
               m_stMountLook.Mesh1 = 1;
-              goto LABEL_15;
+              m_nMountSkinMeshType = 49;
+              m_fMountScale = 0.69f;
+              break;
           case 21:
               m_nMountSkinMeshType = 51;
-              m_fMountScale = 1.0;
-              return;
+              m_fMountScale = 1.0f;
+              break;
           case 22:
               m_nMountSkinMeshType = 59;
               m_fMountScale = 1.0;
@@ -15787,16 +15798,15 @@ int TMHuman::MAutoAttack(TMHuman* pTarget, int mode)
               m_stMountSanc.Sanc2 = 9;
               m_stMountSanc.Sanc1 = 9;
               return;
-              //case 48:
-              //    *(_BYTE*)(v3 + 328) = 15;
-              //    m_nMountSkinMeshType = 31;
-              //    *(_WORD*)(v3 + 326) = 3855;
-              //    m_stMountLook.Mesh1 = 17;
-              //    *(_DWORD*)(v3 + 294) = 17;
-              //    m_stMountLook.Skin1 = 0;
-              //    v11 = BASE_GetMountScale(31, 17);
-              //    m_fMountScale = v11;
-              //    return;
+              case 48:
+                 // *(_BYTE*)(v3 + 328) = 15;?
+                  m_nMountSkinMeshType = 31;
+                  //*(_WORD*)(v3 + 326) = 3855;
+                  m_stMountLook.Mesh1 = 17;
+                 // *(_DWORD*)(v3 + 294) = 17;?
+                  m_stMountLook.Skin1 = 0;
+                  m_fMountScale = BASE_GetMountScale(31, 17);
+                  return;
           case 49:
               m_fMountScale = 0.80000001;
               m_stMountLook.Skin0 = 0;
