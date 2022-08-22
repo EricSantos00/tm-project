@@ -780,22 +780,38 @@ int BASE_DefineSkinMeshType(int nClass)
     return 0;
 }
 
-float BASE_GetMountScale(int nSkinMeshType, int nMeshIndex)
+//----- (005400A0) --------------------------------------------------------
+float   BASE_GetMountScale(int nSkinMeshType, int nMeshIndex)
 {
-    float fSize;
+    float fSize; // [sp+0h] [bp-4h]@1
 
-    fSize = 1.0f;
+    fSize = 1.0;
     if (nSkinMeshType == 28)
-        fSize = 1.45f;
-    else if (nSkinMeshType == 25 && nMeshIndex == 1)
-        fSize = 1.4f;
-    else if (nSkinMeshType == 20 && nMeshIndex == 7)
-        fSize = 0.6f;
-    else if (nSkinMeshType == 20 && !nMeshIndex)
-        fSize = 1.3f;
-    else if (nSkinMeshType == 29 && nMeshIndex == 4)
-        fSize = 1.3f;
-
+        return (float)1.45;
+    switch (nSkinMeshType)
+    {
+    case 35:
+        if (nSkinMeshType == 1)
+            fSize = 1.2;
+        break;
+    case 25:
+        if (nMeshIndex == 1)
+            fSize = 1.4;
+        break;
+    case 20:
+        if (nMeshIndex == 7)
+            goto LABEL_23;
+        if (!nMeshIndex || nMeshIndex == 40 || nMeshIndex == 41)
+            return (float)1.3;
+        if (nMeshIndex == 47)
+            LABEL_23:
+        fSize = 0.60000002;
+        break;
+    default:
+        if (nSkinMeshType == 29 && nMeshIndex == 4)
+            return (float)1.3;
+        break;
+    }
     return fSize;
 }
 
