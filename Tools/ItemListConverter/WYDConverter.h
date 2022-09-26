@@ -34,6 +34,8 @@ struct STRUCT_ITEMLIST
 	short mData;
 	short UNK_3;
 	short UNK_4;
+
+	unsigned short UNKValues[4];
 };
 
 #pragma pack(push, 1)
@@ -82,7 +84,7 @@ protected:
 	std::array<STRUCT_ITEMLIST, 6500> _extraitem;
 	std::array<STRUCT_MOUNTDATA, 400> _mountdata;
 	virtual void Read() = 0;
-
+ 
 public:
 	
 	virtual void Convert() = 0;

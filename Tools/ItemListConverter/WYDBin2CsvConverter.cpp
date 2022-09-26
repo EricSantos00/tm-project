@@ -66,7 +66,8 @@ void WYDBin2CsvConverter::Convert()
 		stream << item.UNK_1 << "," << item.UNK_2 << ",";
 		stream << item.mType << "," << item.mData << ",";
 		stream << item.UNK_3 << "," << item.UNK_4;
- 
+
+
 
 		for (size_t i = 0; i < 12; i++)
 		{
@@ -91,6 +92,8 @@ void WYDBin2CsvConverter::Convert()
 				stream << "," << effectName << "," << item.stEffect[i].sValue;
 		}
 
+		stream << "," << item.UNKValues[0] << "." << item.UNKValues[1] << ".";
+		stream << item.UNKValues[2] << "." << item.UNKValues[3];
 		stream << std::endl;
 	}
 
@@ -125,6 +128,8 @@ void WYDBin2CsvConverter::ConvertExtra()
 		stream << item.UNK_1 << "," << item.UNK_2 << ",";
 		stream << item.mType << "," << item.mData << ",";
 		stream << item.UNK_3 << "," << item.UNK_4;
+
+
 		for (size_t i = 0; i < 12; i++)
 		{
 			int index = item.stEffect[i].sEffect;
@@ -150,6 +155,8 @@ void WYDBin2CsvConverter::ConvertExtra()
 				stream << "," << effectName << "," << item.stEffect[i].sValue;
 		}
 
+		stream << "," << item.UNKValues[0] << "." << item.UNKValues[1] << ".";
+		stream << item.UNKValues[2] << "." << item.UNKValues[3];
 		stream << std::endl;
 	}
 

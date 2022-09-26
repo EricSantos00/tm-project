@@ -259,6 +259,8 @@ struct STRUCT_ITEMLIST
 	short mData;
 	short UNK_3;
 	short UNK_4;
+	//add in v769.2
+	unsigned short UnkNewValues[4];
 };
 
 struct STRUCT_EXT1

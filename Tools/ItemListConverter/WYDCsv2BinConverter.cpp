@@ -16,7 +16,7 @@ void WYDCsv2BinConverter::Read()
 		char meshBuf[16] = { 0 };
 		char scoreBuf[32] = { 0 };
 		char effBuf[12][32] = { { 0 } };
-
+		char newValuesBuff[16] = { 0 };
 		std::string fixedString;
 		for (auto& character : line)
 		{
@@ -26,7 +26,7 @@ void WYDCsv2BinConverter::Read()
 				fixedString += character;
 		}
  
-		int ret = sscanf(fixedString.c_str(), "%d %s %s %s %hd %d %d %hd %hd %hd %d %hd %hd %hd %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd",
+		int ret = sscanf(fixedString.c_str(), "%d %s %s %s %hd %d %d %hd %hd %hd %d %hd %hd %hd %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s %hd %s",
 			&itemId,
 			item.Name,
 			meshBuf,
@@ -48,14 +48,15 @@ void WYDCsv2BinConverter::Read()
 			effBuf[8], &item.stEffect[8].sValue,
 			effBuf[9], &item.stEffect[9].sValue,
 			effBuf[10], &item.stEffect[10].sValue,
-			effBuf[11], &item.stEffect[11].sValue);
+			effBuf[11], &item.stEffect[11].sValue, newValuesBuff);
 
 		if (ret < 9 || itemId <= 0 || itemId >= 6500)
 			continue;
 
+
 		sscanf_s(meshBuf, "%hd.%hd", &item.nIndexMesh, &item.nIndexTexture);
 		sscanf_s(scoreBuf, "%hd.%hd.%hd.%hd.%hd", &item.nReqLvl, &item.nReqStr, &item.nReqInt, &item.nReqDex, &item.nReqCon);
-
+		sscanf_s(newValuesBuff, "%d.%d.%d.%d", &item.UNKValues[0], &item.UNKValues[1], &item.UNKValues[2], &item.UNKValues[3]);
 		if (itemId == 4808)
 			itemId = itemId;
 
@@ -66,7 +67,7 @@ void WYDCsv2BinConverter::Read()
 
 			if (_effects.find(effBuf[i]) == std::end(_effects))
 			{
-				std::cout << "Não foi poss�vel encontrar o effect \"" << effBuf[i] << "\"" << std::endl;
+				std::cout << "Não foi possível encontrar o effect \"" << effBuf[i] << "\"" << std::endl;
 				
 				continue;
 			}
