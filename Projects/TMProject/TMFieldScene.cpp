@@ -1095,6 +1095,7 @@ int TMFieldScene::InitializeScene()
 
 	m_ItemMixClass.Read_MixListFile();
 	m_ItemMixClass.TakeItResource(m_pControlContainer, g_pObjectManager->m_dwCharID);
+	m_MissionClass.Read_MixListFile();
 	m_MissionClass.TakeItResource(m_pControlContainer, g_pObjectManager->m_dwCharID);
 
 	if (m_pItemMixPanel4)
@@ -11018,15 +11019,15 @@ int TMFieldScene::MouseClick_NPC(int nX, int nY, D3DXVECTOR3 vec, unsigned int d
 		m_pGround->m_vecOffsetIndex.y != 16)
 	{
 		
-		if (pOver->m_dwID >= 1000 &&
-			pOver->m_sHeadIndex == 67 &&
-			m_pGround->m_vecOffsetIndex.x == 16 &&
-			m_pGround->m_vecOffsetIndex.y == 16)
-		{
-			m_MissionClass.ResultItemListSet();
-			SetVisibleMissionPanel(m_MissionClass.m_pMissionPanel->m_bVisible == 0);
-			return 1;
-		}
+		//if (pOver->m_dwID >= 1000 &&
+		//	pOver->m_sHeadIndex == 67 &&
+		//	m_pGround->m_vecOffsetIndex.x == 16 &&
+		//	m_pGround->m_vecOffsetIndex.y == 16)
+		//{
+		//	m_MissionClass.ResultItemListSet();
+		//	SetVisibleMissionPanel(m_MissionClass.m_pMissionPanel->m_bVisible == 0);
+		//	return 1;
+		//}
 
 		if (MouseClick_MixNPC(pOver))
 			return 1;
@@ -24151,6 +24152,14 @@ void TMFieldScene::GameAuto()
 
 int TMFieldScene::MouseClick_MixNPC(TMHuman* pOver)
 {
+
+	if (pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 67 && pOver->m_sHelmIndex == 1110)
+	{
+		m_ItemMixClass.ResultItemListSet(pOver->m_sHeadIndex, m_pGround->m_vecOffsetIndex.x , m_pGround->m_vecOffsetIndex.y);
+		SetVisibleMissionPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
+		return 1;
+	}
+
 	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 67 && 
 		m_pGround->m_vecOffsetIndex.x == 13 && m_pGround->m_vecOffsetIndex.y == 13)
 	{
