@@ -11,7 +11,12 @@
 - Foi adicionado os slots novos 16 e 17, deve ser alterado no servidor o MAX_EQUIP para 18
 - Foi adicionado algumas descompilações na pasta Descompilations
 - Deve se utilizar o visual studio 2022
-
+- Atualizando o projeto para v769.2
+- Alterado a estrutura da itemlist para v769.2
+- Adicionado Mission System, deve ser revisado antes de usar
+- Adicionado MountData Bin e Csv nos conversores
+- Deve ser adicionado a leitura da nova itemlist no servidor, use a base do conversor de itemlist
+- Adicionado .c da versão v769.2
 
 
 
