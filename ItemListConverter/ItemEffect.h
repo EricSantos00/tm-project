@@ -63,8 +63,6 @@
 /////////////////////////////////////////////////////////////////////////
 // * 주 요구치이나, 아이템은 기본 SIDC에 추가되는 값이다.
 /////////////////////////////////////////////////////////////////////////
-
-
 #define EF_ATTSPEED  	       	 26	 // 공속 공격속도
 #define EF_RANGE                 27  // 사정 사정거리. 전체중 최대값이 적용됨.
 #define EF_CITIZEN				 28	 // 시민
@@ -72,13 +70,12 @@
 #define EF_SPELL    	    	 30	 // 스펠 Item을 먹거나 입었을때 걸리는 마법
 #define EF_DURATION              31  // 지속 Item 파라메타1 - 먹을때 효력이 발생하는 시간, 입는아이템은 항상 
 #define EF_PARM2     			 32	 // 파람 Item 파라메타2
-#define EF_GRID                  33  // 크기 Carry를 차지하는 아이템그리드
+#define EF_GRID                  33  // 크기 Inventory를 차지하는 아이템그리드
 #define EF_GROUND                34  // 땅칸 성문등에서 땅을 차지하는 크기
 #define EF_CLAN                  35  // 종족
 #define EF_HWORDCOIN             36  // 대돈 
 #define EF_LWORDCOIN             37  // 소돈 
-#define EF_VOLATILE              38  // 소모 먹으면 바로 사라지는 아이템.  0:일반장구  1:물약계통  2:돈계통   3:열쇠 4:축1  5:축2  6:축3
-                                     //                               6:스펠+15   7:레벨+1
+#define EF_VOLATILE              38  // 소모 먹으면 바로 사라지는 아이템.  0:일반장구  1:물약계통  2:돈계통   3:열쇠 4:축1  5:축2  6:축3 6:스펠+15   7:레벨+1
 #define EF_KEYID                 39  // 키번
 #define EF_PARRY                 40  // 회피 회피율 보나스
 #define EF_HITRATE               41  // 밍중 명중률 보나스
@@ -117,36 +114,28 @@
 #define EF_ACADD2                72  // 방증
 #define EF_DAMAGE2               73  // 
 #define EF_SPECIALALL            74  // 마스터리 무마제외 증가 
-
 #define	EF_CURKILL				 75  // not used
 #define EF_LTOTKILL				 76  // not used
 #define EF_HTOTKILL				 77  // not used
 #define EF_INCUBATE				 78  // 부화임계치
-
-
 #define EF_MOUNTLIFE			 79  // 말 총 생명 
 #define EF_MOUNTHP				 80  // 말 현 피
 #define EF_MOUNTSANC			 81  // 말 성장도
 #define EF_MOUNTFEED			 82  // 말 배부름 정도	
 #define EF_MOUNTKILL			 83  // 말이 죽인 몬스터 갯수?
-
 #define EF_INCUDELAY             84
 #define EF_SUBGUILD				 85	// SUB길드, 0이면 최대길드 1,2,3까지 있다
 #define EF_PREVBONUS			 86	// 이전캐랙터 레벨보너스 
-
 #define EF_REFLEVEL              87 // 제련 확률이 적용되는 level
 #define EF_GAMEROOM	             88
-
 #define EF_ABSDAM                89 // 절대 데미지, 방어력 무시
 #define EF_ABSAC                 90 // 절대 방어력 
-
 #define EF_GRADE0				 100 // 0급
 #define EF_GRADE1				 101 // 1급
 #define EF_GRADE2				 102 // 2급
 #define EF_GRADE3				 103 // 3급
 #define EF_GRADE4				 104 // 4급
 #define EF_GRADE5				 105 // 5급
-
 #define EF_DATE                  106 // 날짜
 #define EF_HOUR                  107 // 시간
 #define EF_MIN                   108 // 분
@@ -154,9 +143,7 @@
 #define EF_MONTH                 110 // 월
 #define EF_NOTRADE               111 // 거래불가
 #define EF_TRANS				 112 // 전신 아이템 (0:전체)(1:전신)(2:일반)(3:전직) 
-
 #define EF_FAME					 113
-
 #define EF_STARTCOL              115
 #define EF_COLOR0                116
 #define EF_COLOR1                117
@@ -169,13 +156,24 @@
 #define EF_COLOR8                124
 #define EF_COLOR9                125
 #define EF_MAXCOL                126
-
 #define EF_STARTCOS				 130	//아이템 코스튬 시작
 #define EF_T_COS				 131	//사용하는 코드 없음
 #define EF_F_COS				 140	//사용하는 코드 없음
 #define EF_B_COS				 150	//사용하는 코드 없음
+#define EF_LIFESTEAL			 150
+#define EF_BONUSEXP				 151
+#define EF_POTIONHEAL			 152
+#define EF_BONUSEXPIND			 153
+#define EF_VAMPIRISM			 154
+#define EF_IGNORERESISTANCE		 155
+#define EF_SLOW					 156
+#define EF_RESISTANCE			 157
+#define EF_DROPBONUS             158
+#define EF_GIFTID                159
 #define EF_H_COS				 160	//사용하는 코드 없음
 #define EF_MAXCOS				 170
-
+#define EF_PRICEROYAL            171
+#define EF_SLOT                  172
+#define EF_ICON                  173
 
 #endif  _ITEMEFFECT_H_

@@ -1,1 +1,0 @@
-itemlistconverter.exe bin2csv
