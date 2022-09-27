@@ -426,16 +426,7 @@ int MeshManager::ReadObjectMask()
 	for (int j = 0; j < sizeof(MeshManager::m_aObjectMask); ++j)
 		pTemp[j] = pTemp[j] - ObjectMaskEncKeys[j % nLen] - j;
 
-	int nRCheckSum = 0;
-	fread(&nRCheckSum, 4u, 1u, fp);
 	fclose(fp);
-
-	if (nCheckSum != nRCheckSum)
-	{
-		MessageBoxA(0, "Object.bin File Crashed", "CheckSum Error", MB_OK);
-		return 0;
-	}
-
 	return 1;
 }
 

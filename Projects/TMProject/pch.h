@@ -12,11 +12,6 @@
 #include <fcntl.h>
 #include <time.h>
 
-#include <map>
-#include <array>
-#include <string>
-#include <exception>
-
 #define DIRECTINPUT_VERSION 0x0800
 
 #pragma warning(push, 0)        
@@ -36,6 +31,5 @@ using namespace std::chrono_literals;
 #pragma comment(lib, "IPHLPAPI.lib")
 #pragma comment(lib, "Strmiids.lib")
 
-#include  "SharedStructs.h"
 
 #endif //PCH_H

@@ -193,8 +193,6 @@ TMFieldScene::TMFieldScene()
 	m_pGridDRing = nullptr;
 	m_pGridMantua = nullptr;
 	m_pEventPanel = nullptr;
-	m_pGridNewSlot1 = nullptr;
-	m_pGridNewSlot2 = nullptr;
 	m_dwLastAutoAttackTime = 0;
 	m_nCoinMsgType = 0;
 	m_dwOpID = 0;
@@ -1095,7 +1093,6 @@ int TMFieldScene::InitializeScene()
 
 	m_ItemMixClass.Read_MixListFile();
 	m_ItemMixClass.TakeItResource(m_pControlContainer, g_pObjectManager->m_dwCharID);
-	m_MissionClass.Read_MixListFile();
 	m_MissionClass.TakeItResource(m_pControlContainer, g_pObjectManager->m_dwCharID);
 
 	if (m_pItemMixPanel4)
@@ -1505,16 +1502,6 @@ int TMFieldScene::InitializeScene()
 	m_pGridInv = m_pGridInvList[0];
 	m_pGridInv->SetVisible(1);
 
-
-	//Arena Real @SkyDrive 16/08/2022
-	m_pArenaGamePanel = (SPanel*)m_pControlContainer->FindControl(90631u);
-	if(m_pArenaGamePanel)
-		m_pArenaGamePanel->SetVisible(0);
-
-	m_pArenaGameScorePanel = (SPanel*)m_pControlContainer->FindControl(90624u);
-	if(m_pArenaGameScorePanel)
-		m_pArenaGameScorePanel->SetVisible(0);
-
 	m_pQuicInvDelete = (SGridControl*)m_pControlContainer->FindControl(67080);
 	m_pQuicInvDelete->m_eGridType = TMEGRIDTYPE::GRID_DELETE;
 	m_pGridHelm = (SGridControl*)m_pControlContainer->FindControl(65555);
@@ -1532,10 +1519,20 @@ int TMFieldScene::InitializeScene()
 	m_pGridCabuncle = (SGridControl*)m_pControlContainer->FindControl(65553);
 	m_pGridDRing = (SGridControl*)m_pControlContainer->FindControl(65546);
 	m_pGridMantua = (SGridControl*)m_pControlContainer->FindControl(65547);
-	m_pGridSkillMaster = (SGridControl*)m_pControlContainer->FindControl(65607);
-	m_pGridShop = (SGridControl*)m_pControlContainer->FindControl(65694);
 	m_pGridNewSlot1 = (SGridControl*)m_pControlContainer->FindControl(1048976);
 	m_pGridNewSlot2 = (SGridControl*)m_pControlContainer->FindControl(1048977);
+	m_pGridSkillMaster = (SGridControl*)m_pControlContainer->FindControl(65607);
+	m_pGridShop = (SGridControl*)m_pControlContainer->FindControl(65694);
+
+
+	m_pArenaGamePanel = (SPanel*)m_pControlContainer->FindControl(90631u);
+	if (m_pArenaGamePanel)
+		m_pArenaGamePanel->SetVisible(0);
+
+	m_pArenaGameScorePanel = (SPanel*)m_pControlContainer->FindControl(90624u);
+	if (m_pArenaGameScorePanel)
+		m_pArenaGameScorePanel->SetVisible(0);
+
 	m_pGridShop->m_bDrawGrid = 1;
 	m_pGridShop->m_eGridType = TMEGRIDTYPE::GRID_SHOP;
 	m_pGridMantua->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
@@ -1648,19 +1645,6 @@ int TMFieldScene::InitializeScene()
 
 		m_pGridMantua->AddItem(new SGridControlItem(nullptr, pItemMantua, 0.0f, 0.0f), 0, 0);
 	}
-	if (pMobData->Equip[16].sIndex > 40)
-	{
-		STRUCT_ITEM* pItemDRing = new STRUCT_ITEM;
-		memcpy(pItemDRing, &pMobData->Equip[16], 8);
-
-		m_pGridNewSlot1->AddItem(new SGridControlItem(nullptr, pItemDRing, 0.0f, 0.0f), 0, 0);
-	}
-	if (pMobData->Equip[17].sIndex > 40)
-	{
-		STRUCT_ITEM* pItemMantua = new STRUCT_ITEM;
-		memcpy(pItemMantua, &pMobData->Equip[17], 8);
-		m_pGridNewSlot2->AddItem(new SGridControlItem(nullptr, pItemMantua, 0.0f, 0.0f), 0, 0);
-	}
 	if (pMobData->Equip[8].sIndex > 40)
 	{
 		STRUCT_ITEM* pItemRing = new STRUCT_ITEM;
@@ -1710,7 +1694,7 @@ int TMFieldScene::InitializeScene()
 	}
 
 	STRUCT_ITEM* pCargo = g_pObjectManager->m_stItemCargo;
-	for (int nCargoIndex = 0; nCargoIndex < 120; ++nCargoIndex)
+	for (int nCargoIndex = 0; nCargoIndex < MAX_CARGO; ++nCargoIndex)
 	{
 		if (g_pObjectManager->m_stItemCargo[nCargoIndex].sIndex)
 		{
@@ -7884,7 +7868,7 @@ int TMFieldScene::FrameMove(unsigned int dwServerTime)
 		int x = (int)m_pMyHuman->m_vecPosition.x & 0xFFFC;
 		int y = (int)m_pMyHuman->m_vecPosition.y & 0xFFFC;
 
-		for (int ll = 0; ll < _countof(g_TeleportTable); ++ll)
+		for (int ll = 0; ll < 37; ++ll)
 		{
 			if (g_TeleportTable[ll].nX == x && g_TeleportTable[ll].nY == y)
 			{
@@ -11019,15 +11003,15 @@ int TMFieldScene::MouseClick_NPC(int nX, int nY, D3DXVECTOR3 vec, unsigned int d
 		m_pGround->m_vecOffsetIndex.y != 16)
 	{
 		
-		//if (pOver->m_dwID >= 1000 &&
-		//	pOver->m_sHeadIndex == 67 &&
-		//	m_pGround->m_vecOffsetIndex.x == 16 &&
-		//	m_pGround->m_vecOffsetIndex.y == 16)
-		//{
-		//	m_MissionClass.ResultItemListSet();
-		//	SetVisibleMissionPanel(m_MissionClass.m_pMissionPanel->m_bVisible == 0);
-		//	return 1;
-		//}
+		if (pOver->m_dwID >= 1000 &&
+			pOver->m_sHeadIndex == 67 &&
+			m_pGround->m_vecOffsetIndex.x == 16 &&
+			m_pGround->m_vecOffsetIndex.y == 16)
+		{
+			m_MissionClass.ResultItemListSet();
+			SetVisibleMissionPanel(m_MissionClass.m_pMissionPanel->m_bVisible == 0);
+			return 1;
+		}
 
 		if (MouseClick_MixNPC(pOver))
 			return 1;
@@ -13232,7 +13216,7 @@ void TMFieldScene::SetEquipGridState(int bDefault)
 		m_pGridCabuncle->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
 		m_pGridDRing->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
 		m_pGridNewSlot1->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
-		m_pGridNewSlot1->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
+		m_pGridNewSlot2->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
 	}
 
 	m_pGridMantua->m_eGridType = TMEGRIDTYPE::GRID_TRADENONE;
@@ -15412,10 +15396,10 @@ void TMFieldScene::InitBoard()
 
 	m_pPotalPanel = (SPanel*)m_pControlContainer->FindControl(12544);
 	m_pPotalList = (SListBox*)m_pControlContainer->FindControl(12545);
-	m_pPotalText = (SText*)m_pControlContainer->FindControl(12551);
-	m_pPotalText1 = (SText*)m_pControlContainer->FindControl(12552);
-	m_pPotalText2 = (SText*)m_pControlContainer->FindControl(12553);
-	m_pPotalText3 = (SText*)m_pControlContainer->FindControl(12560);
+	m_pPotalText = (SText*)m_pControlContainer->FindControl(12549);
+	m_pPotalText1 = (SText*)m_pControlContainer->FindControl(12550);
+	m_pPotalText2 = (SText*)m_pControlContainer->FindControl(12551);
+	m_pPotalText3 = (SText*)m_pControlContainer->FindControl(12552);
 
 	m_pPotalPanel->SetPos(((float)g_pDevice->m_dwScreenWidth * 0.5f) - (m_pQuestPanel->m_nWidth * 0.5f),
 		((float)g_pDevice->m_dwScreenHeight * 0.5f) - (m_pQuestPanel->m_nHeight * 0.6f));
@@ -18016,7 +18000,7 @@ int TMFieldScene::OnPacketCreateMob(MSG_STANDARD* pStd)
 		int len = strlen(pCreateMobTrade->Desc);
 		if (len > 0)
 		{
-			for (int i = 1; i < MAX_EQUIPITEM; ++i)
+			for (int i = 1; i < 18; ++i)
 			{
 				pCreateMob->Equip[i] &= 0xFFF;
 				pCreateMob->Equip2[i] = 0;
@@ -18712,8 +18696,8 @@ int TMFieldScene::OnPacketCNFRemoveServer(MSG_CNFRemoveServer* pStd)
 		MSG_AccountLogin stAccountLogin{};
 		stAccountLogin.Header.ID = 0;
 		stAccountLogin.Header.Type = MSG_AccountLogin_Opcode;
-		stAccountLogin.ClientVersion = 1758;
-		stAccountLogin.DBNeedSave = 1;
+		stAccountLogin.Version = 1758;
+		stAccountLogin.Force = 1;
 
 		ULONG dwSize = 0;
 		IP_ADAPTER_INFO stInfo{};
@@ -18738,13 +18722,13 @@ int TMFieldScene::OnPacketCNFRemoveServer(MSG_CNFRemoveServer* pStd)
 			}
 
 			temp[tpos] = 0;
-			sscanf(temp, "%x %x %x %x",	stAccountLogin.AdapterName,	&stAccountLogin.AdapterName[1],	&stAccountLogin.AdapterName[2],	&stAccountLogin.AdapterName[3]);
+			sscanf(temp, "%x %x %x %x",	stAccountLogin.Mac,	&stAccountLogin.Mac[1],	&stAccountLogin.Mac[2],	&stAccountLogin.Mac[3]);
 			free(pInfo);
 		}
 
 		strncpy(stAccountLogin.AccountName, pStd->AccountName, sizeof(pStd->AccountName));
-		strncpy(stAccountLogin.Zero, pStd->TID, sizeof(pStd->TID));
-		sprintf(stAccountLogin.AccountPassword, "");
+		strncpy(stAccountLogin.TID, pStd->TID, sizeof(pStd->TID));
+		sprintf(stAccountLogin.AccountPass, "");
 		SendOneMessage((char*)&stAccountLogin, sizeof(stAccountLogin));
 		return 1;
 	}
@@ -18946,7 +18930,7 @@ int TMFieldScene::OnPacketCNFDropItem(MSG_CNFDropItem* pMsg)
 	SGridControlItem* pGridItem = nullptr;
 	if (pMsg->SourType == 0)
 	{
-		SGridControl* pGridList[MAX_EQUIPITEM]{};
+		SGridControl* pGridList[18]{};
 		pGridList[0] = nullptr;
 		pGridList[1] = m_pGridHelm;
 		pGridList[2] = m_pGridCoat;
@@ -18965,6 +18949,7 @@ int TMFieldScene::OnPacketCNFDropItem(MSG_CNFDropItem* pMsg)
 		pGridList[15] = m_pGridMantua;
 		pGridList[16] = m_pGridNewSlot1;
 		pGridList[17] = m_pGridNewSlot2;
+
 		if (pGridList[pMsg->SourPos])
 			pGridItem = pGridList[pMsg->SourPos]->PickupItem(0, 0);
 
@@ -19136,7 +19121,7 @@ int TMFieldScene::OnPacketSwapItem(MSG_STANDARD* pStd)
 	SGridControlItem* pSrcItem = nullptr;
 	SGridControlItem* pDestItem = nullptr;
 
-	SGridControl* pGridSrc[MAX_EQUIPITEM]{};
+	SGridControl* pGridSrc[18]{};
 
 	if (!pSwapItem->SourType)
 	{
@@ -19176,7 +19161,7 @@ int TMFieldScene::OnPacketSwapItem(MSG_STANDARD* pStd)
 		memset(&g_pObjectManager->m_stItemCargo[pSwapItem->SourPos], 0, sizeof(STRUCT_ITEM));
 	}
 
-	SGridControl* pGridDest[MAX_EQUIPITEM]{};
+	SGridControl* pGridDest[18]{};
 	if (!pSwapItem->DestType)
 	{
 		pGridDest[0] = m_pGridInv;
@@ -19602,7 +19587,7 @@ int TMFieldScene::OnPacketSell(MSG_STANDARD* pStd)
 
 		if (pSell->MyType == 0)
 		{
-			SGridControl* pGridDest[MAX_EQUIPITEM]{};
+			SGridControl* pGridDest[18]{};
 
 			pGridDest[0] = m_pGridInv;
 			pGridDest[1] = m_pGridHelm;
@@ -21738,7 +21723,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 													pFont = new TMFont3(szStr, nTX + 20 - 10 * bViewHalf,
 														(int)(RenderDevice::m_fHeightRatio * 80.0f) +
 														(int)(((float)nTY - (float)(10.0f * RenderDevice::m_fHeightRatio)) -
-															((float)(-50 * bViewHalf) * RenderDevice::m_fHeightRatio)),
+															((float)(40 * bViewHalf) * RenderDevice::m_fHeightRatio)),
 														dwColor,
 														fSize,
 														dwDelay,
@@ -21760,7 +21745,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 													pFont = new TMFont3(szStr, nTX,
 														(int)(RenderDevice::m_fHeightRatio * 80.0f) +
 														(int)(((float)nTY - (float)(20.0f * RenderDevice::m_fHeightRatio)) -
-															((float)(-50 * bViewHalf) * RenderDevice::m_fHeightRatio)),
+															((float)(40 * bViewHalf) * RenderDevice::m_fHeightRatio)),
 														dwColor,
 														fSize,
 														dwDelay,
@@ -24152,14 +24137,6 @@ void TMFieldScene::GameAuto()
 
 int TMFieldScene::MouseClick_MixNPC(TMHuman* pOver)
 {
-
-	if (pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 67 && pOver->m_sHelmIndex == 1110)
-	{
-		m_ItemMixClass.ResultItemListSet(pOver->m_sHeadIndex, m_pGround->m_vecOffsetIndex.x , m_pGround->m_vecOffsetIndex.y);
-		SetVisibleMissionPanel(m_ItemMixClass.m_pMixPanel->m_bVisible == 0);
-		return 1;
-	}
-
 	if (pOver->m_dwID <= 0 || pOver->m_dwID >= 1000 && pOver->m_sHeadIndex == 67 && 
 		m_pGround->m_vecOffsetIndex.x == 13 && m_pGround->m_vecOffsetIndex.y == 13)
 	{

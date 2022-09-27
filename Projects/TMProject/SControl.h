@@ -58,12 +58,12 @@ public:
     virtual void SetVisible(int bVisible);
     virtual void SetEnable(int bEnable);
     virtual void SetFocused(int bFocused);
-   
+
     int IsVisible();
     int IsFocused();
     int IsOver();
     TMVector2 GetPos();
-   
+
     virtual int ChildCount();
     virtual void SetPos(float nPosX, float nPosY);
     virtual void SetSize(float nWidth, float nHeight);
@@ -102,13 +102,12 @@ public:
     float m_nHeight;
     IEventListener* m_pEventListener;
     int m_bModal;
-    int m_cOver;
 };
 
 class SPanel : public SControl
 {
 public:
-    SPanel(int inTextureSetIndex, float inX, float inY, float inWidth, float inHeight, unsigned int idwColor, RENDERCTRLTYPE eRenderType); 
+    SPanel(int inTextureSetIndex, float inX, float inY, float inWidth, float inHeight, unsigned int idwColor, RENDERCTRLTYPE eRenderType);
     ~SPanel();
 
     int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY) override;
@@ -194,7 +193,7 @@ public:
     };
 
 public:
-    SText(int inTextureSetIndex, const char* istrText, unsigned int idwFontColor, float inX, float inY, 
+    SText(int inTextureSetIndex, const char* istrText, unsigned int idwFontColor, float inX, float inY,
         float inWidth, float inHeight, int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SText();
     virtual void SetText(char* istrText, int bCheckZero);
@@ -236,8 +235,8 @@ public:
     };
 
 public:
-    SEditableText(int inTextureSetIndex, const char* istrText, size_t inMaxStringLen, int ibPasswd, 
-        unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder, 
+    SEditableText(int inTextureSetIndex, const char* istrText, size_t inMaxStringLen, int ibPasswd,
+        unsigned int idwFontColor, float inX, float inY, float inWidth, float inHeight, int ibBorder,
         unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SEditableText();
 
@@ -278,7 +277,7 @@ public:
     enum { TMC_BUTTON_CLICK = 0x0 };
 
 public:
-    SButton(int inTextureSetIndex, float inX, float inY, float inWidth, float inHeight, 
+    SButton(int inTextureSetIndex, float inX, float inY, float inWidth, float inHeight,
         unsigned int idwColor, int bSound, char* istrText);
     ~SButton();
     virtual void SetText(char* istrText);
@@ -445,7 +444,6 @@ public:
     SPanel* m_pBackground1;
 };
 
-class SListBox;
 class SListBoxItem : public SText
 {
 public:
@@ -453,13 +451,10 @@ public:
         int ibBorder, unsigned int idwBorderColor, unsigned int dwType, unsigned int dwAlignType);
     ~SListBoxItem();
     void FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, int inParentLayer, int nFlag) override;
-    int OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY) override;
+
 public:
-    int m_dwIndex;
     int m_bBGColor;
     unsigned int m_dwTime;
-    SPanel* m_pBackSelection;
-    SListBox* m_pMainListBox;
 };
 
 class SListBoxBoardItem : public SListBoxItem
@@ -486,7 +481,7 @@ public:
     ~SListBoxPartyItem();
 
     void FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, int inParentLayer, int nFlag) override;
-        
+
 public:
     unsigned int m_dwCharID;
     int m_nClass;
@@ -504,7 +499,7 @@ public:
         int nCount, char cCastle, char cGoldBug, int Num);
     ~SListBoxServerItem();
     void FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, int inParentLayer, int nFlag) override;
-        
+
 public:
     SProgressBar* m_pBusyProgress;
     SPanel* m_pCrownPanel;
@@ -555,7 +550,6 @@ public:
     int m_nVisibleCount;
     int m_nStartItemIndex;
     int m_nSelectedItem;
-    int m_nHoverItem;
     float m_fPickWidth;
     float m_fPickHeight;
     SEditableText* m_pEditLine;

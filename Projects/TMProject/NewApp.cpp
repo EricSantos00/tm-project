@@ -48,9 +48,8 @@ NewApp::NewApp()
 	china_bWrite = 0;
 	china_Playtime = -1;
 	m_binactive = 1;
-#ifdef _DEBUG
+
 	CreateConsole();
-#endif // DEBUG
 }
 
 NewApp::~NewApp()
@@ -61,6 +60,17 @@ NewApp::~NewApp()
 	LOG_FINALIZELOG();
 }
 
+void InitServerName2()
+{
+	memset(g_szServerName, 0, sizeof(g_szServerName));
+	FILE* fpBin = nullptr;
+	fopen_s(&fpBin, ServerName2_Path, "rb");
+	if (fpBin)
+	{
+		fread(g_szServerName, sizeof(g_szServerName), 1u, fpBin);
+		fclose(fpBin);
+	}
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -249,6 +259,7 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 
 	RenderDevice::m_nFontSize = _nFontSize;
 	RenderDevice::m_nFontTextureSize = 512;
+	InitServerName2();
 	InitServerName();
 
 	if (m_hWnd == nullptr)
@@ -301,7 +312,6 @@ HRESULT NewApp::Initialize(HINSTANCE hInstance, int nFull)
 	{
 		MessageBoxA(m_hWnd, "Initialize Data Failed", "Error", 0);
 		LOG_WRITELOGSTRING("Initialize Data Failed\r\n");
-		LOG_FINALIZELOG();
 		return 0;
 	}
 
@@ -411,11 +421,8 @@ HRESULT NewApp::InitDevice()
 		if (nVolume < -2500)
 			nVolume = -2500;
 
-		if (m_pSoundManager)
-		{
-			m_pSoundManager->SetSoundVolume(nVolume);
-			m_pSoundManager->LoadSoundData();
-		}
+		m_pSoundManager->SetSoundVolume(nVolume);
+		m_pSoundManager->LoadSoundData();
 	}
 
 	if (m_nMusic > 0)
@@ -489,29 +496,19 @@ HRESULT NewApp::InitDevice()
 
 void NewApp::InitServerName()
 {
-	
+	int nTempList[11];
 	memset(g_szServerNameList, 0, sizeof(g_szServerNameList));
 	memset(g_nServerCountList, 0, sizeof(g_nServerCountList));
-	
-	FILE* fp = nullptr;
-	fopen_s(&fp, ServerName_Path, "rt");
+	memset(nTempList, 0, sizeof(nTempList));
 
-	if (fp == nullptr)
-		return;
-
-	char szTemp1[256];
-	for (int i = 0; i < 11 && fgets(szTemp1, 256, fp); ++i)
+	FILE* fpBin = nullptr;
+	fopen_s(&fpBin, ServerName_Path, "rb");
+	if (fpBin)
 	{
-		int ServerCount = 0;
-		char NameServer[16]{};
-
-		if (sscanf(szTemp1, "%d %s\n", &ServerCount ,NameServer) == -1)
-			break;
-
-		g_nServerCountList[i] = ServerCount;
-		strcpy_s(g_szServerNameList[i], NameServer);
+		fread(g_szServerNameList, 1, sizeof(g_szServerNameList), fpBin);
+		fread(g_nServerCountList, 1, sizeof(g_nServerCountList), fpBin);
+		fclose(fpBin);
 	}
-	fclose(fp);
 }
 
 void NewApp::InitMusicList()

@@ -465,6 +465,7 @@ int CPSock::AddMessage(char* pMsg, int Size)
 
 int CPSock::AddMessage(char* pMsg, int Size, int FixedKeyWord)
 {
+	FixedKeyWord = 0x3;
 	if (!Sock)
 	{
 		ErrCount = 10;

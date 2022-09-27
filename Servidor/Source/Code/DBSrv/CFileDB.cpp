@@ -623,14 +623,6 @@ int CFileDB::ProcessMessage(char *Msg, int conn)
 			if(ret == 0)
 			{
 				SendDBSignal(conn, m->ID, _MSG_DBAccountLoginFail_Account);
-				
-				//desativando criação de conta direto no client
-				file.Info.NumericToken[0] = -1;
-
-				DBWriteAccount(&file);
-
-				memcpy(&file.Info.AccountName, m->AccountName, ACCOUNTNAME_LENGTH);
-				memcpy(&file.Info.AccountPass, m->AccountPassword, ACCOUNTPASS_LENGTH);
 				return FALSE;
 			}
 
@@ -1460,21 +1452,21 @@ int CFileDB::ProcessMessage(char *Msg, int conn)
 
 			mob = &pAccountList[Idx].File.Char[Slot];
 
-			if (pAccountList[Idx].File.mobExtra[Slot].ClassMaster != MORTAL && pAccountList[Idx].File.mobExtra[Slot].ClassMaster != ARCH)
-			{
-				SendDBSignal(conn, m->ID, _MSG_DBDeleteCharacterFail);
-				return TRUE;
-			}
+			//if (pAccountList[Idx].File.mobExtra[Slot].ClassMaster != MORTAL && pAccountList[Idx].File.mobExtra[Slot].ClassMaster != ARCH)
+			//{
+			//	SendDBSignal(conn, m->ID, _MSG_DBDeleteCharacterFail);
+			//	return TRUE;
+			//}
 
-			/*alterado para que não seja possivel deletar personagem arch*/
-			if (mob->BaseScore.Level >= 219 || pAccountList[Idx].File.mobExtra[Slot].ClassMaster > MORTAL)
-			{
-				SendDBSignal(conn, m->ID, _MSG_DBDeleteCharacterFail);
+			///*alterado para que não seja possivel deletar personagem arch*/
+			//if (mob->BaseScore.Level >= 219 || pAccountList[Idx].File.mobExtra[Slot].ClassMaster > MORTAL)
+			//{
+			//	SendDBSignal(conn, m->ID, _MSG_DBDeleteCharacterFail);
 
-				Log("err,deletechar level 219", pAccountList[Idx].File.Info.AccountName, 0);
+			//	Log("err,deletechar level 219", pAccountList[Idx].File.Info.AccountName, 0);
 
-				return TRUE;
-			}
+			//	return TRUE;
+			//}
 
 	
 			memset(pAccountList[Idx].File.ShortSkill[Slot], 0, 16);

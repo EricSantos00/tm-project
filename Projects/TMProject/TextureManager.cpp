@@ -27,7 +27,6 @@ TextureManager::TextureManager()
 		m_stUITextureList[nIndex].cAlpha = 78;
 		m_stUITextureList[nIndex].dwLastUsedTime = 0;
 		m_stUITextureList[nIndex].dwShowTime = 0;
-
 	}
 
 	memset(m_UITextureSetList, 0, sizeof(m_UITextureSetList));
@@ -458,7 +457,6 @@ int TextureManager::InitUITextureSetList()
 				&m_UITextureSetList[nSetIndex].pTextureCoord[nCount].nDestX,
 				&m_UITextureSetList[nSetIndex].pTextureCoord[nCount].nDestY);
 
-
 			if (nSetIndex == 526)
 			{
 				if (CurIcon > (100 - 1))
@@ -471,10 +469,6 @@ int TextureManager::InitUITextureSetList()
 				CurIcon++;
 			}
 		}
-
-
-
-
 	}
 
 	fclose(fp);

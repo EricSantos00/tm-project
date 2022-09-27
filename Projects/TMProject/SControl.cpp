@@ -13,7 +13,7 @@ int SCursor::m_nCursorType{ 0 };
 HCURSOR SCursor::m_hCursor1{};
 HCURSOR SCursor::m_hCursor2{};
 
-SControl::SControl(float inPosX, float inPosY, float inWidth, float inHeight) 
+SControl::SControl(float inPosX, float inPosY, float inWidth, float inHeight)
 	: TreeNode(0)
 {
 	m_bAlwaysOnTop = 0;
@@ -48,8 +48,6 @@ int SControl::OnPacketEvent(unsigned int dwCode, char* buf)
 
 int SControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
 {
-	m_bOver = PointInRect(nX, nY, m_nPosX, m_nPosY, m_nWidth, m_nHeight);
-	Update();
 	return 0;
 }
 
@@ -267,11 +265,9 @@ int SPanel::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int 
 	if (m_dwControlID == 65943 || m_dwControlID == 65947)
 		return 0;
 
-
-
 	int bInCaption = PointInRect(nX, nY, m_nPosX, m_nPosY, m_nWidth, 24.0f);
 	m_bOver = PointInRect(nX, nY, m_nPosX, m_nPosY, m_nWidth, m_nHeight);
-	m_cOver = m_bOver;
+
 	if (m_bOver == 0 && m_pDescPanel != nullptr)
 		m_pDescPanel->SetVisible(0);
 
@@ -295,12 +291,12 @@ int SPanel::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int 
 
 			m_nPickPosX = nX;
 			m_nPickPosY = nY;
-		}		
+		}
 		if (m_bOver == 1 && (wParam & 1))
 			return 1;
-		
+
 		if (m_bOver == 1 && m_pDescPanel != nullptr)
-			m_pDescPanel->SetVisible(1);		
+			m_pDescPanel->SetVisible(1);
 	}
 	break;
 	case WM_LBUTTONDOWN:
@@ -375,9 +371,9 @@ void SPanel::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inPare
 		m_GCPanel.nWidth = m_nWidth;
 		m_GCPanel.nHeight = m_nHeight;
 		m_GCPanel.nLayer = inParentLayer;
-		if ((float)(m_GCPanel.nPosX + m_GCPanel.nWidth) >= 0.0f && 
+		if ((float)(m_GCPanel.nPosX + m_GCPanel.nWidth) >= 0.0f &&
 			(float)(m_GCPanel.nPosY + m_GCPanel.nHeight) >= 0.0f &&
-			m_GCPanel.nPosX <= (float)(800.0 * RenderDevice::m_fWidthRatio) && 
+			m_GCPanel.nPosX <= (float)(800.0 * RenderDevice::m_fWidthRatio) &&
 			m_GCPanel.nPosY <= (float)(600.0 * RenderDevice::m_fHeightRatio))
 		{
 			AddRenderControlItem(pDrawList, &m_GCPanel, inParentLayer);
@@ -459,7 +455,7 @@ SCursor::~SCursor()
 		SControlContainer* pControlContainer = g_pCurrentScene->m_pControlContainer;
 		if (pControlContainer != nullptr)
 		{
-			if(m_GeomItem.nLayer >= 0)
+			if (m_GeomItem.nLayer >= 0)
 				RemoveRenderControlItem(pControlContainer->m_pDrawControl, &m_GeomItem, m_GeomItem.nLayer);
 		}
 	}
@@ -855,7 +851,7 @@ void SText::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParen
 		m_GCBorder.nHeight = m_nHeight;
 		m_GCBorder.nLayer = inParentLayer;
 
-		if ((float)(m_GCBorder.nPosX + m_GCBorder.nWidth) < 0.0f || 
+		if ((float)(m_GCBorder.nPosX + m_GCBorder.nWidth) < 0.0f ||
 			(float)(m_GCBorder.nPosY + m_GCBorder.nHeight) < 0.0f ||
 			m_GCBorder.nPosX > (float)(800.0f * RenderDevice::m_fWidthRatio) ||
 			m_GCBorder.nPosY > (float)(600.0f * RenderDevice::m_fHeightRatio))
@@ -880,12 +876,12 @@ void SText::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParen
 		}
 	}
 	else if (m_dwAlignType == 1)
-	{				
+	{
 		// This code is from chinese cliente version.
 		//int len = strlen(m_GCText.strString);
 		//m_GCText.nPosX = (float)(ivParentPos.x + m_nPosX)
 		//	+ (float)((float)(m_nWidth - (float)((float)(6 * len) * fHeightRatio)) / 2.0f);
-				
+
 		// This code is from WYD BR version.
 		SIZE size;
 		GetTextExtentPoint32(g_pDevice->m_hDC, m_GCText.strString, strlen(m_GCText.strString), &size);
@@ -957,11 +953,11 @@ void SText::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParen
 	m_GCText.nHeight = m_nHeight;
 	m_GCText.nLayer = inParentLayer;
 
-	if ((float)(m_GCText.nPosX + m_GCText.nWidth) >= 0.0f && 
+	if ((float)(m_GCText.nPosX + m_GCText.nWidth) >= 0.0f &&
 		(float)(m_GCText.nPosY + m_GCText.nHeight) >= 0.0f &&
-		m_GCText.nPosX <= (float)(800.0f * RenderDevice::m_fWidthRatio) && 
+		m_GCText.nPosX <= (float)(800.0f * RenderDevice::m_fWidthRatio) &&
 		m_GCText.nPosY <= (float)(600.0f * RenderDevice::m_fHeightRatio))
-	{		
+	{
 		AddRenderControlItem(pDrawList, &m_GCText, inParentLayer);
 
 		if (m_cComma == 2)
@@ -970,7 +966,7 @@ void SText::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParen
 				(((m_nHeight - (16.0f * fHeightRatio)) / 2.0f) + 2.0f));
 			m_GCText2.nWidth = m_nWidth;
 			m_GCText2.nHeight = m_nHeight;
-			m_GCText2.nLayer = inParentLayer; 
+			m_GCText2.nLayer = inParentLayer;
 			AddRenderControlItem(pDrawList, &m_GCText2, inParentLayer);
 
 			m_GCText3.nPosY = ((ivParentPos.y + m_nPosY)
@@ -988,7 +984,7 @@ void SText::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inParen
 			m_GCText4.nHeight = m_nHeight;
 			m_GCText4.nLayer = inParentLayer;
 			AddRenderControlItem(pDrawList, &m_GCText4, inParentLayer);
-		}		
+		}
 	}
 }
 
@@ -1123,11 +1119,11 @@ int SEditableText::OnCharEvent(char iCharCode, int lParam)
 	SButton* Button2 = nullptr;
 
 	int nTextLen = strlen(m_strText);
-	if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD && 
+	if (g_pCurrentScene->GetSceneType() == ESCENE_TYPE::ESCENE_FIELD &&
 		iCharCode != VK_BACK &&
-		nTextLen <= 1 && 
+		nTextLen <= 1 &&
 		(iCharCode == '=' || iCharCode == '-' || iCharCode == '@'))
-	{		
+	{
 		if (nTextLen == 0)
 		{
 			switch (iCharCode)
@@ -1265,7 +1261,7 @@ int SEditableText::OnCharEvent(char iCharCode, int lParam)
 		lpCurrent++;
 		Update();
 
-		return 1;	
+		return 1;
 	}
 	else
 	{
@@ -1314,7 +1310,7 @@ int SEditableText::OnKeyDownEvent(unsigned int iKeyCode)
 		return m_pEventListener->OnControlEvent(m_dwControlID, 4);
 	if (iKeyCode == VK_DOWN)
 		return m_pEventListener->OnControlEvent(m_dwControlID, 5);
-	if(iKeyCode == VK_DELETE)
+	if (iKeyCode == VK_DELETE)
 		return m_pEventListener->OnControlEvent(m_dwControlID, 6);
 
 	return 0;
@@ -1370,7 +1366,7 @@ void SEditableText::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int
 		m_GCText.strString[nStringLen] = 0;
 		m_GCText.pFont->SetText(m_GCText.strString, m_GCText.dwColor, 0);
 	}
-	else 
+	else
 		m_GCText.strString[nStringLen] = 0;
 
 	SText::FrameMove2(pDrawList, ivParentPos, inParentLayer, nFlag);
@@ -1517,7 +1513,7 @@ int SButton::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int
 				m_dwOldTime = g_pTimerManager->GetServerTime();
 				m_bPressed = 0;
 			}
-			return 1;			
+			return 1;
 		}
 		m_bPressed = 0;
 		break;
@@ -1552,15 +1548,15 @@ void SButton::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inPar
 	}
 
 	SPanel::FrameMove2(pDrawList, ivParentPos, inParentLayer, nFlag);
-	if (m_pAltText != nullptr && 
-		m_pAltText->IsVisible()	&& 
+	if (m_pAltText != nullptr &&
+		m_pAltText->IsVisible() &&
 		(m_GCPanel.nTextureSetIndex > 0 || m_GCPanel.nTextureSetIndex < -2))
 	{
 		ivParentPos = ivParentPos + TMVector2(m_nPosX, m_nPosY);
 
 		if (((ivParentPos.x + m_pAltText->m_nPosX) + m_pAltText->m_nWidth) > (float)g_pDevice->m_dwScreenWidth)
 			ivParentPos.x = ((float)g_pDevice->m_dwScreenWidth - (m_pAltText->m_nPosX * 2.0f)) - m_pAltText->m_nWidth;
-		
+
 		m_pAltText->FrameMove2(pDrawList, ivParentPos, 28, nFlag);
 	}
 }
@@ -1765,7 +1761,7 @@ void SProgressBar::Update()
 		m_nMax = 1;
 
 	if (m_dwStyle == 1)
-		m_nProgressWidth = (float)((float)m_nCurrent * m_nWidth) / (float)m_nMax;	
+		m_nProgressWidth = (float)((float)m_nCurrent * m_nWidth) / (float)m_nMax;
 	else if (m_dwStyle == 2)
 		m_nProgressWidth = (float)((float)m_nCurrent * m_nWidth) / (float)m_nMax;
 	else
@@ -1865,7 +1861,7 @@ SScrollBar::SScrollBar(int inCurrent, int inMax, float inX, float inY, float inW
 		m_pBar = new SPanel(-2, 0.0f, 0.0f, m_nBarSize, m_nBarSize, 0, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
 		m_pBackground1 = new SPanel(-2, 0.0f, 0.0f, m_nWidth, inHeight, 0x77777777, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
 
-		if(m_pBackground1 != nullptr)
+		if (m_pBackground1 != nullptr)
 			m_pBackground1->GetGeomControl()->nTextureIndex = 0;
 	}
 
@@ -1989,7 +1985,7 @@ void SScrollBar::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int in
 }
 
 int SScrollBar::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
-{ 
+{
 	if (m_bSelectEnable == 0)
 		return 0;
 
@@ -2073,10 +2069,6 @@ SListBoxItem::SListBoxItem(const char* istrText, unsigned int idwFontColor, floa
 	m_eCtrlType = CONTROL_TYPE::CTRL_TYPE_LISTBOXITEM;
 	m_bBGColor = 0;
 	m_dwTime = 0;
-
-	m_pBackSelection = new SPanel(566, inX - 2.0f, inY, inWidth, inHeight, 0xFFFFFFFF, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
-	m_pBackSelection->GetGeomControl()->eRenderType = RENDERCTRLTYPE::RENDER_IMAGE_STRETCH;
-	m_pBackSelection->GetGeomControl()->nTextureIndex = 0;
 }
 
 SListBoxItem::~SListBoxItem()
@@ -2085,53 +2077,21 @@ SListBoxItem::~SListBoxItem()
 
 void SListBoxItem::FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, int inParentLayer, int nFlag)
 {
-	/*if (m_pMainListBox)
-	{
-		m_pBackSelection->m_nWidth = m_pMainListBox->m_nWidth;
-		for (int i = 0; i < m_pMainListBox->m_nNumItem; i++)
-		{
-			m_pBackSelection->GetGeomControl()->nTextureIndex = 3;
-		}
-		printf("m_pMainListBox->m_nHoverItem  %d - m_dwIndex %d nFlag %d\n", m_pMainListBox->m_nHoverItem, m_dwID, nFlag);
-		if (m_pMainListBox->m_nHoverItem == m_dwID)
-			m_pBackSelection->GetGeomControl()->nTextureIndex = 1;
-	}*/
 	if (m_bBGColor == 0)
 	{
-		 
 		if (nFlag == 1)
 		{
-			m_cBorder = 0;
-			SetType(0);	
-			if (m_pBackSelection)
-				m_pBackSelection->GetGeomControl()->nTextureIndex = 0;
+			m_cBorder = 1;
+			SetType(2);
 		}
 		else
 		{
 			m_cBorder = 0;
-			SetType(0);
-			if (m_pBackSelection)
-				m_pBackSelection->GetGeomControl()->nTextureIndex = 2;
+			SetType(1);
 		}
 	}
 
 	SText::FrameMove2(pDrawList, ivItemPos, inParentLayer, nFlag);
-
-	
-
-	if (m_pBackSelection)
-	{
-		m_pBackSelection->m_nWidth = m_pMainListBox->m_nWidth;
-		m_pBackSelection->m_nHeight = m_nHeight - 1.8f;
-		m_pBackSelection->FrameMove2(pDrawList, ivItemPos, inParentLayer, nFlag);
-	}
-}
-
-int SListBoxItem::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, int nY)
-{
-	m_bOver = PointInRect(nX, nY, m_nPosX, m_nPosY, m_nWidth, m_nHeight);
-	Update();
-	return 0;
 }
 
 SListBoxBoardItem::SListBoxBoardItem(char* szIndex, char* szVIndex, char* szTitle, char* szWriter, char* szCount, char* szDate, unsigned int dwColor, int bTitile)
@@ -2194,7 +2154,7 @@ SListBoxPartyItem::SListBoxPartyItem(char* iStrText, unsigned int idwFontColor, 
 	m_nLevel = nLevel;
 	m_nState = 0;
 	m_pLevelText = 0;
-	m_pHpProgress = 0; 
+	m_pHpProgress = 0;
 
 	char szLevel[16]{};
 	sprintf(szLevel, "%d", m_nLevel + 1);
@@ -2203,7 +2163,7 @@ SListBoxPartyItem::SListBoxPartyItem(char* iStrText, unsigned int idwFontColor, 
 	m_pHpProgress = new SProgressBar(7, nHp, nMaxHp, 0.0f, 15.0f, 110.0f, 8.0f, 0xFFFFFFFF, 0xFFFFFFFF, 1);
 	m_pDirPanel = new SPanel(-1, 66.0f, 0.0f, 16.0f, 16.0f, 0, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
 
-	char *pDest = strchr(iStrText, '^');
+	char* pDest = strchr(iStrText, '^');
 	if (pDest && !IsClearString2(iStrText, pDest - iStrText))
 		pDest = 0;
 
@@ -2214,7 +2174,7 @@ SListBoxPartyItem::SListBoxPartyItem(char* iStrText, unsigned int idwFontColor, 
 		memcpy(szMyMob, iStrText, pDest - iStrText);
 		SetText(szMyMob, 0);
 	}
-	else 
+	else
 		SetText(iStrText, 0);
 }
 
@@ -2237,7 +2197,7 @@ void SListBoxPartyItem::FrameMove2(stGeomList* pDrawList, TMVector2 ivItemPos, i
 	{
 		if ((g_pTimerManager->GetServerTime() % 1000) / 500)
 			m_GCText.dwColor = 0xFFFF0000;
-		else 
+		else
 			m_GCText.dwColor = 0xFFFFFFFF;
 
 		m_GCText.pFont->SetText(m_GCText.strString, m_GCText.dwColor, 0);
@@ -2275,7 +2235,7 @@ SListBoxServerItem::SListBoxServerItem(int nTextureSet, char* iStrText, unsigned
 		m_pCrownPanel = new SPanel(151, 24.0f + 104.0f, 1.0f, 16.0f, 16.0f, 0xFFFFFFFF, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
 	if (m_cGoldBug == 1)
 		m_pGoldBugPanel = new SPanel(316, 24.0f + 122.0f, 1.0f, 16.0f, 16.0f, 0xFFFFFFFF, RENDERCTRLTYPE::RENDER_IMAGE_STRETCH);
-	
+
 	if (nTextureSet <= -1)
 	{
 		dwCol1 = 0xFFFF0000;
@@ -2381,8 +2341,6 @@ int SListBox::AddItem(SListBoxItem* ipNewItem)
 			m_pItemList[i - 1] = m_pItemList[i];
 
 		m_pItemList[m_nNumItem - 1] = ipNewItem;
-		m_pItemList[m_nNumItem - 1]->m_pMainListBox = this;
-		m_pItemList[m_nNumItem - 1]->m_dwID = m_nNumItem - 1;
 
 		if (m_dwSetTime != 0)
 		{
@@ -2394,9 +2352,6 @@ int SListBox::AddItem(SListBoxItem* ipNewItem)
 	}
 
 	m_pItemList[m_nNumItem] = ipNewItem;
-	m_pItemList[m_nNumItem]->m_pMainListBox = this;
-	m_pItemList[m_nNumItem]->m_dwID = m_nNumItem;
-
 	if (m_dwSetTime)
 		m_pItemList[m_nNumItem]->m_dwTime = timeGetTime();
 
@@ -2427,7 +2382,6 @@ int SListBox::DeleteItem(int inItemIndex)
 		m_pItemList[i - 1] = m_pItemList[i];
 
 	m_pItemList[m_nNumItem - 1] = 0;
-	SAFE_DELETE(m_pItemList[m_nNumItem - 1]->m_pMainListBox);
 	m_nNumItem--;
 
 	if (m_cScrollBar != 0)
@@ -2534,7 +2488,7 @@ void SListBox::SetEditable()
 		m_cEditable = 1;
 		m_sEditLine = 0;
 
-		m_pEditLine = new SEditableText(-2,	"", 79,	0, 0xFFFFFFFF, 0.0f, 0.0f, m_nWidth, 16.0f, 0, 0, 1, 0);
+		m_pEditLine = new SEditableText(-2, "", 79, 0, 0xFFFFFFFF, 0.0f, 0.0f, m_nWidth, 16.0f, 0, 0, 1, 0);
 		if (m_pEditLine != nullptr)
 		{
 			m_pEditLine->SetVisible(1);
@@ -2549,7 +2503,7 @@ void SListBox::SetEditable()
 int SListBox::OnControlEvent(DWORD idwControlID, DWORD idwEvent)
 {
 	if (idwControlID == 1)
-	{		
+	{
 		SetStartItemIndex(idwEvent);
 		return 1;
 	}
@@ -2557,13 +2511,13 @@ int SListBox::OnControlEvent(DWORD idwControlID, DWORD idwEvent)
 	if (idwControlID != 2)
 		return 0;
 
-	if (idwEvent == 0|| idwEvent == 8)
+	if (idwEvent == 0 || idwEvent == 8)
 	{
 		if (m_sEditLine >= m_nMaxCount - 1)
 			return 1;
 
-		char *szText = m_pEditLine->GetText();
-		
+		char* szText = m_pEditLine->GetText();
+
 		SListBoxItem* pItem = new SListBoxItem(szText, 0xFFFFFFFF, 0.0f, 0.0f, 300.0f, 16.0f, 0, 0x77777777, 1, 0);
 		AddItem(pItem);
 
@@ -2571,7 +2525,7 @@ int SListBox::OnControlEvent(DWORD idwControlID, DWORD idwEvent)
 		++m_sEditLine;
 
 		if (idwEvent == 8)
-			m_pEditLine->OnCharEvent(m_pEditLine->m_cTempChar, 0);		
+			m_pEditLine->OnCharEvent(m_pEditLine->m_cTempChar, 0);
 	}
 	else if (idwEvent == 7)
 	{
@@ -2586,9 +2540,9 @@ int SListBox::OnControlEvent(DWORD idwControlID, DWORD idwEvent)
 		}
 	}
 	else if (idwEvent == 2)
-		m_pScrollBar->Up();	
+		m_pScrollBar->Up();
 	else if (idwEvent == 4)
-		m_pScrollBar->Down();	
+		m_pScrollBar->Down();
 
 	return 1;
 }
@@ -2636,8 +2590,8 @@ void SListBox::FrameMove2(stGeomList* pDrawList, TMVector2 ivParentPos, int inPa
 		m_pEditLine->SetPos(0.0f, ((float)(m_sEditLine - m_nStartItemIndex) * m_nHeight) / (float)m_nVisibleCount);
 
 		if (m_sEditLine - m_nStartItemIndex > nCurrentVisibleCount || m_sEditLine - m_nStartItemIndex < 0)
-			m_pEditLine->SetVisible(0);		
-		else 
+			m_pEditLine->SetVisible(0);
+		else
 			m_pEditLine->SetVisible(1);
 	}
 }
@@ -2656,14 +2610,6 @@ int SListBox::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, in
 	if (bInListBox == 1 && dwFlags == WM_LBUTTONUP && m_cEditable == 1 && m_pEditLine != nullptr)
 	{
 		g_pCurrentScene->m_pControlContainer->SetFocusedControl(m_pEditLine);
-	}
-
-	if (dwFlags == 512)
-	{
-		m_nHoverItem = -1;
-		int nLocalIndex = (int)(((float)nY - m_nPosY) / (float)(m_nHeight / (float)m_nVisibleCount));
-		if (m_nStartItemIndex + nLocalIndex < m_nNumItem)
-			m_nHoverItem = m_nStartItemIndex + nLocalIndex;
 	}
 
 	if (bInListBox == 1 && (dwFlags == WM_LBUTTONDOWN || dwFlags == WM_RBUTTONDOWN))
@@ -2685,8 +2631,6 @@ int SListBox::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX, in
 		if (m_bSelectEnable == 1)
 			return 1;
 	}
-
-
 
 	if (bInListBox != 1 || dwFlags != WM_RBUTTONUP)
 		return 0;
@@ -2784,8 +2728,8 @@ SMessageBox::~SMessageBox()
 
 int SMessageBox::OnControlEvent(DWORD idwControlID, DWORD idwEvent)
 {
-	if (idwControlID == m_pOKButton->GetControlID()	&& 
-		!idwEvent && 
+	if (idwControlID == m_pOKButton->GetControlID() &&
+		!idwEvent &&
 		m_pEventListener != nullptr)
 	{
 		SetVisible(0);
@@ -2793,9 +2737,9 @@ int SMessageBox::OnControlEvent(DWORD idwControlID, DWORD idwEvent)
 		m_pEventListener->OnControlEvent(m_dwControlID, 0);
 		return 1;
 	}
-	else if (m_pCancelButton != nullptr && 
-		idwControlID == m_pCancelButton->GetControlID()	&& 
-		!idwEvent && 
+	else if (m_pCancelButton != nullptr &&
+		idwControlID == m_pCancelButton->GetControlID() &&
+		!idwEvent &&
 		m_pEventListener != nullptr)
 	{
 		SetVisible(0);
@@ -2812,7 +2756,7 @@ void SMessageBox::SetMessage(char* istrMessage, unsigned int dwMessageValue, cha
 	m_dwMessage = dwMessageValue;
 
 	if (strlen(istrMessage) > 34 && !istrMessage2)
-	{ 
+	{
 		LPSTR pPrev = CharPrev(istrMessage, &istrMessage[34]);
 		int nLen = pPrev - istrMessage;
 

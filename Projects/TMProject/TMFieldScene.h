@@ -663,9 +663,9 @@ public:
 	SGridControl* m_pGridCabuncle;
 	SGridControl* m_pGridDRing;
 	SGridControl* m_pGridMantua;
+	SGridControl* m_pGridHellStore;
 	SGridControl* m_pGridNewSlot1;
 	SGridControl* m_pGridNewSlot2;
-	SGridControl* m_pGridHellStore;
 	MSG_MOVESTOP m_stMoveStop;
 	SPanel* m_pFlagDesc;
 	SText* m_pFlagDescText[3];
@@ -770,11 +770,8 @@ public:
 	STRUCT_REPURCHASEITEM m_stRepurcharse[10];
 	int m_bIsUndoShoplist;
 	unsigned short m_sShopTarget;
-
-	//Arena Real
 	SPanel* m_pArenaGamePanel;
 	SPanel* m_pArenaGameScorePanel;
-
 public:
 	static RECT m_rectWarning[7];
 	static int m_bPK;

@@ -106,7 +106,11 @@ int BASE_InitializeAttribute()
     }
 
     fread(g_pAttribute, 1024, 1024, fp);
+
+;
     fclose(fp);
+
+    
 
     return 1;
 }
@@ -128,9 +132,6 @@ void BASE_ApplyAttribute(char* pHeight, int size)
 
 int BASE_ReadItemList()
 {
-
-     
-
     FILE* fp = nullptr;
 
     fopen_s(&fp, ".\\ItemList.bin", "rb");
@@ -145,12 +146,15 @@ int BASE_ReadItemList()
 
     char* temp = (char*)g_pItemList;
 
+
     fread(g_pItemList, size, 1u, fp);
+
     fclose(fp);
 
-    for (int i = 0; i < size; ++i)
-        temp[i] ^= 0x5A;
-
+    for (int i = 0; i < size; i++)
+    {
+        temp[i] = temp[i] ^ 0x5A;
+    }
     return 1;
 }
 
@@ -160,21 +164,25 @@ int BASE_ReadSkillBin()
     char* temp = (char*)g_pSpell;
 
     FILE* fp = fopen(SkillData_Path, "rb");
-    int CheckSumValue = 0;
+
     if (fp != NULL)
     {
         fread(g_pSpell, size, 1, fp);
-        fread(&CheckSumValue, 4u, 1u, fp);
         fclose(fp);
-
-        for (int i = 0; i < size; i++)
-            temp[i] = temp[i] ^ 0x5A;
     }
     else
     {
         MessageBox(NULL, "Can't read SkillData.bin", "ERROR", NULL);
         return FALSE;
     }
+
+   
+
+    for (int i = 0; i < size; i++)
+    {
+        temp[i] = temp[i] ^ 0x5A;
+    }
+
     return TRUE;
 }
 
@@ -299,11 +307,14 @@ void BASE_InitEffectString()
 int BASE_InitializeBaseDef()
 {
     int ret = 0;
-    ret = BASE_InitializeServerList() & 1;
+	ret = BASE_InitializeServerList() & 1;
     ret = BASE_ReadSkillBin() & ret;
     ret = BASE_ReadItemList() & ret;
-    ret = BASE_GetLanguage() & ret;
+    ret = BASE_ReadInitItem() & ret;
     ret = BASE_InitializeAttribute() & ret;
+
+    BASE_InitialItemRePrice();
+
 	return ret;
 }
 
@@ -783,38 +794,22 @@ int BASE_DefineSkinMeshType(int nClass)
     return 0;
 }
 
-//----- (005400A0) --------------------------------------------------------
-float   BASE_GetMountScale(int nSkinMeshType, int nMeshIndex)
+float BASE_GetMountScale(int nSkinMeshType, int nMeshIndex)
 {
-    float fSize; // [sp+0h] [bp-4h]@1
+    float fSize;
 
-    fSize = 1.0;
+    fSize = 1.0f;
     if (nSkinMeshType == 28)
-        return (float)1.45;
-    switch (nSkinMeshType)
-    {
-    case 35:
-        if (nSkinMeshType == 1)
-            fSize = 1.2;
-        break;
-    case 25:
-        if (nMeshIndex == 1)
-            fSize = 1.4;
-        break;
-    case 20:
-        if (nMeshIndex == 7)
-            goto LABEL_23;
-        if (!nMeshIndex || nMeshIndex == 40 || nMeshIndex == 41)
-            return (float)1.3;
-        if (nMeshIndex == 47)
-            LABEL_23:
-        fSize = 0.60000002;
-        break;
-    default:
-        if (nSkinMeshType == 29 && nMeshIndex == 4)
-            return (float)1.3;
-        break;
-    }
+        fSize = 1.45f;
+    else if (nSkinMeshType == 25 && nMeshIndex == 1)
+        fSize = 1.4f;
+    else if (nSkinMeshType == 20 && nMeshIndex == 7)
+        fSize = 0.6f;
+    else if (nSkinMeshType == 20 && !nMeshIndex)
+        fSize = 1.3f;
+    else if (nSkinMeshType == 29 && nMeshIndex == 4)
+        fSize = 1.3f;
+
     return fSize;
 }
 
@@ -1311,26 +1306,6 @@ int BASE_InitializeServerList()
 	}
 
 	return 0;
-}
-
-
-int BASE_GetLanguage()
-{
-    FILE* fpFont = nullptr;
-    fopen_s(&fpFont, "Lang.txt", "rt");
-
-    if (fpFont != nullptr)
-    {
-        char szTemp[256]{};
-        fgets(szTemp, 256, fpFont);
-        sscanf(szTemp, "%d", &g_nLangIndex);
-        if (g_nFontBold < 0 || g_nLangIndex > 4)
-            g_nFontBold = 0;
-
-        fclose(fpFont);
-        return 1;
-    }
-    return 0;
 }
 
 int BASE_GetVillage(int x, int y)
@@ -2750,8 +2725,8 @@ int BASE_GetMobAbility(STRUCT_MOB* mob, char Type)
         return value;
     }
 
-    int nUnique[MAX_EQUIPITEM]{};
-    for (int i = 0; i < MAX_EQUIPITEM; ++i)
+    int nUnique[18]{};
+    for (int i = 0; i < 18; ++i)
     {
         if (!mob->Equip[i].sIndex && i == 7)
             continue;
@@ -2821,7 +2796,7 @@ int BASE_GetMobAbility(STRUCT_MOB* mob, char Type)
 int BASE_GetMaxAbility(STRUCT_MOB* mob, char Type)
 {
     int value = 0;
-    for (int i = 0; i < MAX_EQUIPITEM; ++i)
+    for (int i = 0; i < 18; ++i)
     {
         if (mob->Equip[i].sIndex)
         {

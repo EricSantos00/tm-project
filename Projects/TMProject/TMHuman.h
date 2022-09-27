@@ -166,10 +166,6 @@ public:
     int UnSetCitizenMantle(int BaseSkin);
     int MAutoAttack(TMHuman* pTarget, int mode);
 
-    int sub_542B10(int index);
-
-    void SetMountCostume2(unsigned int index);
-
     void SetMountCostume(unsigned int index);
 
 private:

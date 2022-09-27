@@ -63,14 +63,14 @@ public:
 	virtual void DisconnectEffectFromMob(TMHuman* pMob);
 	virtual int InitResourceList();
 	virtual void InitAniSoundTable();
- 
+
 	virtual TMCamera* GetCamera();
 
 	void CleanUp();
 
 public:
 	STRUCT_SELCHAR m_stSelCharData;
-	STRUCT_ITEM m_stItemCargo[128];
+	STRUCT_ITEM m_stItemCargo[MAX_CARGO];
 	STRUCT_MOB m_stMobData;
 	MSG_CAPSULEINFO m_stCapsuleInfo[12];
 	int m_nFakeExp;

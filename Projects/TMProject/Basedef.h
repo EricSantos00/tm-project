@@ -1,6 +1,6 @@
 #pragma once
-#define MAX_EQUIPITEM 18
-constexpr int MAX_CARGO = 128;
+
+constexpr int MAX_CARGO = 120;
 constexpr auto MAX_CARRY = 64;
 constexpr auto MAX_VISIBLE_CARRY = MAX_CARRY - 4;
 constexpr int MAX_STRING = 2000;
@@ -24,7 +24,15 @@ constexpr auto MAX_ITEM_PRICE_REPLACE = 100;
 
 constexpr auto MSG_Recall_Opcode = 0x289;
 constexpr auto MSG_Ping_Opcode = 0x3A0;
-
+struct MSG_STANDARD
+{
+	unsigned short Size;
+	char KeyWord;
+	char CheckSum;
+	unsigned short Type;
+	unsigned short ID;
+	unsigned int Tick;
+};
 
 constexpr auto MSG_RequestCapsuleInfo_Opcode = 0x2CD;
 constexpr auto MSG_DelayStart_Opcode = 0x3AE;
@@ -98,7 +106,7 @@ struct STRUCT_SELCHAR
 	unsigned short HomeTownY[4];
 	char MobName[4][16];
 	STRUCT_SCORE Score[4];
-	STRUCT_ITEM Equip[4][MAX_EQUIPITEM];
+	STRUCT_ITEM Equip[4][18];
 	unsigned short Guild[4];
 	int Coin[4];
 	long long Exp[4];
@@ -119,7 +127,7 @@ struct STRUCT_MOB
 	unsigned short HomeTownY;
 	STRUCT_SCORE BaseScore;
 	STRUCT_SCORE CurrentScore;
-	STRUCT_ITEM Equip[MAX_EQUIPITEM];
+	STRUCT_ITEM Equip[18];
 	STRUCT_ITEM Carry[64];
 	unsigned int LearnedSkill[2];
 	short ScoreBonus;
@@ -322,10 +330,6 @@ struct STRUCT_SPELL
 	int AffectResist;
 	int Passive;
 	int ForceDamage;
-
-	int UNK_01;
-	int UNK_02;
-
 };
 
 struct STRUCT_INITITEM
@@ -500,7 +504,7 @@ struct STRUCT_MOB_OLD
 	unsigned short HomeTownY;
 	STRUCT_SCORE_OLD BaseScore;
 	STRUCT_SCORE_OLD CurrentScore;
-	STRUCT_ITEM Equip[MAX_EQUIPITEM];
+	STRUCT_ITEM Equip[18];
 	STRUCT_ITEM Carry[64];
 	unsigned int LearnedSkill;
 	short ScoreBonus;
@@ -618,7 +622,7 @@ struct STRUCT_SELCHAR_OLD
 	unsigned short HomeTownY[4];
 	char MobName[4][16];
 	STRUCT_SCORE_OLD Score[4];
-	STRUCT_ITEM Equip[4][MAX_EQUIPITEM];
+	STRUCT_ITEM Equip[4][18];
 	unsigned short Guild[4];
 	int Coin[4];
 	unsigned int Exp[4];
@@ -785,7 +789,7 @@ struct MSG_CNFAccountLogin
 	MSG_STANDARD Header;
 	char SecretCode[16];
 	STRUCT_SELCHAR SelChar;
-	STRUCT_ITEM Cargo[128];
+	STRUCT_ITEM Cargo[MAX_CARGO];
 	int Coin;
 	char AccountName[16];
 	int SSN1;
@@ -887,8 +891,8 @@ constexpr auto MSG_UpdateEquip_Opcode = 0x36B;
 struct MSG_UpdateEquip
 {
 	MSG_STANDARD Header;
-	unsigned short sEquip[MAX_EQUIPITEM];
-	char Equip2[MAX_EQUIPITEM];
+	unsigned short sEquip[18];
+	char Equip2[18];
 };
 
 constexpr auto MSG_UpdateAffect_Opcode = 0x3B9;
@@ -899,7 +903,16 @@ struct MSG_UpdateAffect
 };
 
 constexpr auto MSG_AccountLogin_Opcode = 0x20D;
- 
+struct MSG_AccountLogin
+{
+	MSG_STANDARD Header;
+	char AccountPass[12];
+	char AccountName[16];
+	char TID[52];
+	int Version;
+	int Force;
+	unsigned int Mac[4];
+};
 
 constexpr auto MSG_MessageWhisper_Opcode = 0x334;
 constexpr auto MSG_MessageShout_Opcode = 0xD1D;
@@ -1060,13 +1073,13 @@ struct MSG_CreateMob
 	short PosY;
 	unsigned short MobID;
 	char MobName[16];
-	unsigned short Equip[MAX_EQUIPITEM];
+	unsigned short Equip[18];
 	unsigned short Affect[32];
 	unsigned short Guild;
 	char GuildLevel;
 	STRUCT_SCORE Score;
 	unsigned short CreateType;
-	char Equip2[MAX_EQUIPITEM];
+	char Equip2[18];
 	char Nick[26];
 	char Server;
 };
@@ -1079,13 +1092,13 @@ struct MSG_CreateMobTrade
 	short PosY;
 	unsigned short MobID;
 	char MobName[16];
-	unsigned short Equip[MAX_EQUIPITEM];
+	unsigned short Equip[18];
 	unsigned short Affect[32];
 	unsigned short Guild;
 	char GuildLevel;
 	STRUCT_SCORE Score;
 	unsigned short CreateType;
-	char Equip2[MAX_EQUIPITEM];
+	char Equip2[18];
 	char Nick[26];
 	char Desc[24];
 	char Server;
@@ -1360,7 +1373,7 @@ struct MSG_CNFRemoveServerLogin
 	MSG_STANDARD Header;
 	STRUCT_SELCHAR SelChar;
 	char AccountName[16];
-	STRUCT_ITEM Cargo[128];
+	STRUCT_ITEM Cargo[MAX_CARGO];
 	int Coin;
 	char SecretCode[16];
 	int SSN1;
@@ -2871,7 +2884,6 @@ int BASE_GetItemSanc(STRUCT_ITEM* item);
 int BASE_GetItemAbility(STRUCT_ITEM* item, char Type);
 int BASE_DefineSkinMeshType(int nClass);
 float BASE_GetMountScale(int nSkinMeshType, int nMeshIndex);
-int BASE_GetLanguage();
 int BASE_GetVillage(int x, int y);
 int BASE_GetRoute(int x, int y, int* targetx, int* targety, char* Route, int distance, char* pHeight, int MH);
 int BASE_GetDistance(int x1, int y1, int x2, int y2);

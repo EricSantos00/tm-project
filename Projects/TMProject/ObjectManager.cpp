@@ -25,7 +25,6 @@ ObjectManager::ObjectManager()
 
 	InitResourceList();
 	InitAniSoundTable();
- 
 
 	m_pTargetObject = nullptr;
 
@@ -909,7 +908,7 @@ void ObjectManager::InitAniSoundTable()
 	fclose(fp);
 }
 
- 
+
 
 TMCamera* ObjectManager::GetCamera()
 {
