@@ -4193,7 +4193,8 @@ int TMHuman::OnPacketSendItem(MSG_STANDARD* pStd)
             pGridEquip[13] = pFScene->m_pGridEvent;
             pGridEquip[14] = pFScene->m_pGridDRing;
             pGridEquip[15] = pFScene->m_pGridMantua;
-
+            pGridEquip[16] = pFScene->m_pGridNewSlot1;
+            pGridEquip[17] = pFScene->m_pGridNewSlot2;
             if (pSendItem->DestPos > 0 && pSendItem->DestPos < 18)
             {
                 if (pGridEquip[pSendItem->DestPos] != nullptr)
