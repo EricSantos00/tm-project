@@ -128,6 +128,9 @@ void BASE_ApplyAttribute(char* pHeight, int size)
 
 int BASE_ReadItemList()
 {
+
+     
+
     FILE* fp = nullptr;
 
     fopen_s(&fp, ".\\ItemList.bin", "rb");

@@ -802,8 +802,8 @@ IVector2 SGridControl::CanAddItemInEmpty(int nWidth, int nHeight)
 
 int SGridControl::CanChangeItem(SGridControlItem* ipNewItem, int inCellIndexX, int inCellIndexY, int bOnlyCheck)
 {
-	if (IsSkill(ipNewItem->m_pItem->sIndex) == 1)
-		return 0;
+	//if (IsSkill(ipNewItem->m_pItem->sIndex) == 1)
+	//	return 0;
 
 	auto pMobData = &g_pObjectManager->m_stMobData;
 	short sType = CheckType(m_eItemType, m_eGridType);
@@ -852,7 +852,7 @@ int SGridControl::CanChangeItem(SGridControlItem* ipNewItem, int inCellIndexX, i
 						stSwapItem.DestType = static_cast<char>(sDestType);
 						stSwapItem.DestPos = static_cast<char>(sDestPos);
 						stSwapItem.TargetID = TMFieldScene::m_dwCargoID;
-						SendOneMessage((char*)&stSwapItem, 20);
+						SendOneMessage((char*)&stSwapItem, sizeof MSG_SwapItem);
 					}
 
 					return 0;

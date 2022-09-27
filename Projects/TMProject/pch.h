@@ -12,6 +12,11 @@
 #include <fcntl.h>
 #include <time.h>
 
+#include <map>
+#include <array>
+#include <string>
+#include <exception>
+
 #define DIRECTINPUT_VERSION 0x0800
 
 #pragma warning(push, 0)        

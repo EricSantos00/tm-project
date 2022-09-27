@@ -24477,7 +24477,7 @@ DWORD WINAPI Guildmark_Download(void* pArg)
 	pFScene->m_dwLastGetGuildmarkTime = timeGetTime();
 
 	char strMarkBuffer[632]{};
-	char strURL[64]{};
+	char strURL[256]{};
 
 	strcpy(strURL, g_pMessageStringTable[377]);
 	strcat(strURL, pMark->strMarkFileName);

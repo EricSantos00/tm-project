@@ -38,6 +38,7 @@ public:
 	int HardCode(SMessagePanel* MessagePanel, SGridControl** GridInvList);
 
 public:
+	STRUCT_MIXHELP m_stMissionHelp[1000];
 	STRUCT_RESULT_ITEMLIST stResult_itemList[100];
 	STRUCT_NEED_ITEMLIST stNeed_itemList[100];
 	unsigned int m_NPCHead;

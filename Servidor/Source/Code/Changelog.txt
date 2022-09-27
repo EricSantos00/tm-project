@@ -1,0 +1,40 @@
+[Kersef Destiny v760]
+	- Lucas Rocha
+
+Legenda: 
+	[+] Adicionado			[-] Removido		[x] Log finalizado
+	[*] Arrumado			[!] Novidades			[#] Comentário
+
+[06/07/2019]
+    [#] Projeto iniciado
+	[*] Controle de mana totalmente refeito (podendo sofrer alterações).
+	[+] Quests mortais agora vão até o nivel 370.
+	[+] Quests mortais agora contam com tempo individual de 10 minutos.
+	[+] Fada Mágica agrupando os itens dropados, dando bonus de 30% exp, 20% drop e 10% chance nas refinações.
+	[+] Elixir de Kersef, aumenta o tempo das quests.
+	[+] Extração Arcana, passando adicional para o Amuleto Lendário.
+	[*] Frezzy nos mobs, que causava congelamentos.
+	[+] Elixir Qetsiyah,  que torna sua montaria imortal (Não dependendo de ração).
+	[+] Quebra de item, diminuição de refinação ao passar para +7.
+	[+] Mensagem ao passar um item para +7.
+	[+] Guarda Real para eventos via leitura .txt.
+	[+] Pacote 0x3E8, para recuperar itens vendidos por enganos.
+	[+] Guerra Reinos vs Renos (RvR)
+	[#] O objetivo da guerra é possuir maior soma de pontos para se tornar vencedor.
+    [1.0] Destruindo a torre do reino oposto, seu reino ganha 25 pontos.
+    [1.1] A cada kill realizado em personagem do reino oposto seu reino ganha 1 ponto.
+    [1.2] Após 30 minutos de guerra, o reino que possuir a maior soma de pontos, vence a batalha.
+    [1.3] Nossa RvR é em um mapa totalmente novo/diferente.
+	[+] Quest diaria enviando para o personagem três missões diarias. (caso não completar a missão diaria, ela é excluida).
+	[*] Skill soul agora dando os atributos corretos.
+	[+] Saudades da versão 754? agora é possivel jogar/pegar os itens no chão.
+	[+] Macro magico continuo.
+	[+] Leitura dos trajes agora 
+	[+] Visualização de drops e gold adquiridos.
+	[+] Descrição da validade, de fácil entendimento nos trajes e esferas.
+	[+] Novas composições dinamicas.
+	[x]
+	[11/07/2019]
+	[+] /block e /unblock para bloquear movimentação em itens.
+    [+] Comando /transgroup para transferir a liderença e seu grupo para o usuario escrito.
+	[+] Funções do SendBanAccount feita.

@@ -42,8 +42,8 @@ struct		  MSG_AccountLogin
 {
 	_PCKHEADER;
 
-	char AccountPassword[16];
-	char AccountName[12];
+	char AccountPassword[12];
+	char AccountName[16];
 	char Zero[52];
 	int  ClientVersion;
 	int  DBNeedSave;
