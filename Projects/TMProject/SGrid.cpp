@@ -443,9 +443,13 @@ int SGridControl::OnMouseEvent(unsigned int dwFlags, unsigned int wParam, int nX
 					stSwapItem.DestType = sDestType;
 					stSwapItem.TargetID = TMFieldScene::m_dwCargoID;
 
-					if (sDestType)
+					if (pItem->m_pGridControl->m_eGridType == TMEGRIDTYPE::GRID_CARGO)
 					{
-						int page = m_dwControlID - 67072;
+						page = m_dwControlID - 67328;
+						stSwapItem.DestPos = 40 * page + nAX + 5 * nAY;
+					}
+					else if (sDestType)
+					{
 						if (page == 2 && g_pObjectManager->m_stMobData.Carry[60].sIndex != 3467)
 							return 0;
 						if (page == 3 && g_pObjectManager->m_stMobData.Carry[61].sIndex != 3467)
