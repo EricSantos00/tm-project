@@ -17292,7 +17292,7 @@ int TMFieldScene::OnKeyGuildOnOff(char iCharCode, int lParam)
 int TMFieldScene::OnKeyShortSkill(char iCharCode, int lParam)
 {
 	if ((iCharCode < '0' || iCharCode > '9') && iCharCode != '!' && iCharCode != '@' && 
-		iCharCode != '#' && iCharCode != '$' && iCharCode != '%' && iCharCode != '¨' && 
+		iCharCode != '#' && iCharCode != '$' && iCharCode != '%' && iCharCode != 'Â¨' && 
 		iCharCode != '&' && iCharCode != '*' && iCharCode != '(' && iCharCode != ')')
 	{
 		return 0;
@@ -17329,7 +17329,7 @@ int TMFieldScene::OnKeyShortSkill(char iCharCode, int lParam)
 		case '%':
 			g_pObjectManager->m_cSelectShortSkill = 4;
 			break;
-		case '¨':
+		case 'Â¨':
 			g_pObjectManager->m_cSelectShortSkill = 5;
 			break;
 		case '&':
@@ -20236,7 +20236,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 		if (pAttacker != m_pMyHuman || pAttack->FlagLocal == 1 && pAttacker == m_pMyHuman || !pAttack->FlagLocal && 
 			pAttacker == m_pMyHuman && (unsigned char)pAttack->Motion == 254)
 		{
-			if (pAttack->SkillIndex == 4) // Possuído
+			if (pAttack->SkillIndex == 4) // PossuÃ­do
 			{
 				pAttacker->m_cPunish = 1;
 				pAttacker->m_dwPunishedTime = g_pTimerManager->GetServerTime();
@@ -20259,7 +20259,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 					fAngle = atan2f(pTarget->m_vecPosition.x - pAttacker->m_vecPosition.x, pTarget->m_vecPosition.y - pAttacker->m_vecPosition.y) + D3DXToRadian(90);
 			}
 
-			if (pAttack->SkillIndex == 98) // Canhão Superior
+			if (pAttack->SkillIndex == 98) // CanhÃ£o Superior
 				fAngle = atan2f((float)pAttack->TargetX - pAttacker->m_vecPosition.x, (float)pAttack->TargetY - pAttacker->m_vecPosition.y) + D3DXToRadian(90);
 			if (pAttack->DoubleCritical & 1)
 				pAttacker->m_bDoubleAttack = 1;
@@ -20329,7 +20329,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 				if (pEffect && m_pEffectContainer)
 					m_pEffectContainer->AddChild(pEffect);
 			}
-			else if (pAttack->SkillIndex == 3) // Perseguição
+			else if (pAttack->SkillIndex == 3) // PerseguiÃ§Ã£o
 			{
 				if (pAttacker)
 				{
@@ -20356,7 +20356,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 					GetSoundAndPlay(151, 0, 0);
 				}
 			}
-			else if (pAttack->SkillIndex == 45) // Arma Mágica
+			else if (pAttack->SkillIndex == 45) // Arma MÃ¡gica
 			{
 				float fY = (float)pAttack->TargetY + 0.5f;
 				TMVector3 vecTarget{ (float)pAttack->TargetX + 0.5f, (float)GroundGetMask(TMVector2((float)pAttack->TargetX + 0.5f, fY)) * 0.1f, fY };
@@ -20614,7 +20614,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 			{
 				GetSoundAndPlay(34, 0, 0);
 			}
-			else if (pAttack->SkillIndex == 77) // Meditação
+			else if (pAttack->SkillIndex == 77) // MeditaÃ§Ã£o
 			{
 				GetSoundAndPlay(36, 0, 0);
 			}
@@ -20654,7 +20654,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 					}
 				}
 			}
-			else if (pAttack->SkillIndex == 86) // Explosão Etérea
+			else if (pAttack->SkillIndex == 86) // ExplosÃ£o EtÃ©rea
 			{
 				if (pAttacker)
 				{
@@ -20834,7 +20834,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 
 				GetSoundAndPlay(1, 0, 0);
 			}
-			else if (pAttack->SkillIndex == 100) // Ressureição
+			else if (pAttack->SkillIndex == 100) // RessureiÃ§Ã£o
 			{
 				GetSoundAndPlay(156, 0, 0);
 			}
@@ -21365,7 +21365,7 @@ int TMFieldScene::OnPacketAttack(MSG_STANDARD* pStd)
 			if (pAttack->Header.Type == MSG_Attack_Two_Opcode && i >= 2)
 				break;
 
-			if (pAttack->Dam[i].TargetID = m_pMyHuman->m_dwID)
+			if (pAttack->Dam[i].TargetID == m_pMyHuman->m_dwID)
 			{
 				bFind = true;
 				break;
